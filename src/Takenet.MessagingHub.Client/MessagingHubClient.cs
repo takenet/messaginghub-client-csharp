@@ -7,13 +7,12 @@ using Lime.Transport.Tcp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client
 {
-    public class MessagingHubClient
+    public class MessagingHubClient : IMessagingHubClient
     {
         static readonly MediaType defaultReceiverMediaType = new MediaType("null", "null");
 
