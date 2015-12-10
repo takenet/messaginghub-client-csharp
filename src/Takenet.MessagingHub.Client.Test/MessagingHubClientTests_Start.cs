@@ -1,6 +1,8 @@
-﻿using Lime.Protocol;
+﻿using Lime.Messaging.Resources;
+using Lime.Protocol;
 using NSubstitute;
 using NUnit.Framework;
+using Shouldly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,10 +29,44 @@ namespace Takenet.MessagingHub.Client.Test
 
 
         [Test]
-        public void WhenClientStartShouldBeConnected()
+        public void WhenClientStartUsingAccountShouldConnectToServer()
         {
+            // Arrange
             _SUT.UsingAccount("login", "pass");
+
+            // Act
             var x = _SUT.StartAsync().Result;
+
+            // Assert
+            _SUT.ClientChannelCreated.ShouldBe(true);
+            _SUT.ClientChannel.Received().SendCommandAsync(
+                Arg.Is<Command>(c => c.Uri.ToString().Equals(UriTemplates.PRESENCE)));
         }
+
+        [Test]
+        public void WhenClientStartUsingAccessKeyShouldConnectToServer()
+        {
+            // Arrange
+            _SUT.UsingAccessKey("login", "key");
+
+            // Act
+            var x = _SUT.StartAsync().Result;
+
+            // Assert
+            _SUT.ClientChannelCreated.ShouldBe(true);
+        }
+
+        [Test]
+        public void WhenClientStartWithoutCredentialsShouldThrowException()
+        {
+            // Arrange
+
+            // Act
+            Should.ThrowAsync<InvalidOperationException>(async () => await _SUT.StartAsync());
+
+            // Assert
+            _SUT.ClientChannelCreated.ShouldBe(false);
+        }
+
     }
 }

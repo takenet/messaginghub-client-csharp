@@ -15,6 +15,7 @@ namespace Takenet.MessagingHub.Client.Test
     {
         public IClientChannel ClientChannel { get; private set; }
         public Session Session { get; private set; }
+        public bool ClientChannelCreated { get; private set; }
 
         public MessagingHubClientSUT(string hostname) : base(hostname)
         {
@@ -27,6 +28,7 @@ namespace Takenet.MessagingHub.Client.Test
 
         internal override Task<IClientChannel> CreateAndOpenAsync()
         {
+            ClientChannelCreated = true;
             return Task.FromResult(ClientChannel);
         }
 
