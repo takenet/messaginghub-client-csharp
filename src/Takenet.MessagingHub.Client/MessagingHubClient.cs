@@ -77,7 +77,10 @@ namespace Takenet.MessagingHub.Client
 
             var session = await EstablishSession(authentication);
 
-            if (session.State != SessionState.Established) throw new Exception($"Could not connect: {session.Reason.Description} (code: {session.Reason.Code})");
+            if (session.State != SessionState.Established)
+            {
+                throw new Exception($"Could not connect: {session.Reason.Description} (code: {session.Reason.Code})");
+            }
 
             MessageSender = new MessageSenderWrapper(clientChannel);
             await clientChannel.SetResourceAsync(
@@ -185,7 +188,10 @@ namespace Takenet.MessagingHub.Client
                 result = keyAuthentication;
             }
 
-            if (result == null) throw new InvalidOperationException($"A password (method {nameof(UsingAccount)}) or accessKey (method {nameof(UsingAccessKey)}) should be informed");
+            if (result == null)
+            {
+                throw new InvalidOperationException($"A password (method {nameof(UsingAccount)}) or accessKey (method {nameof(UsingAccessKey)}) should be informed");
+            }
 
             return result;
         }

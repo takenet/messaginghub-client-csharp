@@ -26,6 +26,12 @@ namespace Takenet.MessagingHub.Client.Test
             };
         }
 
+        public void SetSessionResult(SessionState state, Reason reason = null)
+        {
+            Session.State = state;
+            Session.Reason = reason;
+        }
+
         internal override Task<IClientChannel> CreateAndOpenAsync()
         {
             ClientChannelCreated = true;

@@ -62,10 +62,27 @@ namespace Takenet.MessagingHub.Client.Test
             // Arrange
 
             // Act
-            Should.ThrowAsync<InvalidOperationException>(async () => await _SUT.StartAsync());
+            Should.ThrowAsync<InvalidOperationException>(async () => await _SUT.StartAsync()).Wait();
 
             // Assert
             _SUT.ClientChannelCreated.ShouldBe(false);
+        }
+
+
+        [Test]
+        public void WhenClientStartAndServerDoNotAcceptTheSessionShouldThrowException()
+        {
+            // Arrange
+            var reason = new Reason { Code = 1, Description = "failure message" };
+            _SUT.SetSessionResult(SessionState.Failed, reason);
+            _SUT.UsingAccount("login", "pass");
+
+            // Act
+            var exception = Should.ThrowAsync<Exception>(async () => await _SUT.StartAsync()).Result;
+
+            // Assert
+            exception.Message.ShouldContain(reason.Description);
+            exception.Message.ShouldContain(reason.Code.ToString());
         }
 
     }
