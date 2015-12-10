@@ -56,7 +56,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="IMessageReceiver.cs" />
     <Compile Include="IMessageSender.cs" />
     <Compile Include="MediaTypes.cs" />

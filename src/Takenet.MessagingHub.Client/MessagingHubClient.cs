@@ -149,7 +149,7 @@ namespace Takenet.MessagingHub.Client
             return receiver.ReceiveAsync(message);
         }
 
-        async Task<ClientChannel> CreateAndOpenAsync()
+        internal virtual async Task<ClientChannel> CreateAndOpenAsync()
         {
             var transport = new TcpTransport(traceWriter: new TraceWriter());
             var sendTimeout = TimeSpan.FromSeconds(3);
