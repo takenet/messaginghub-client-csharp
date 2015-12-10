@@ -75,13 +75,7 @@ namespace Takenet.MessagingHub.Client
 
             clientChannel = await CreateAndOpenAsync();
 
-            var session = await clientChannel.EstablishSessionAsync(
-                _ => SessionCompression.None,
-                _ => SessionEncryption.TLS,
-                Identity.Parse(this.login),
-                (_, __) => authentication,
-                Environment.MachineName,
-                CancellationToken.None);
+            var session = await EstablishSession(authentication);
 
             if (session.State != SessionState.Established) throw new Exception($"Could not connect: {session.Reason.Description} (code: {session.Reason.Code})");
 
@@ -96,6 +90,16 @@ namespace Takenet.MessagingHub.Client
             return running.Task;
         }
 
+        internal virtual Task<Session> EstablishSession(Authentication authentication)
+        {
+            return clientChannel.EstablishSessionAsync(
+                            _ => SessionCompression.None,
+                            _ => SessionEncryption.TLS,
+                            Identity.Parse(this.login),
+                            (_, __) => authentication,
+                            Environment.MachineName,
+                            CancellationToken.None);
+        }
 
         public async Task StopAsync()
         {
@@ -149,7 +153,7 @@ namespace Takenet.MessagingHub.Client
             return receiver.ReceiveAsync(message);
         }
 
-        internal virtual async Task<ClientChannel> CreateAndOpenAsync()
+        internal virtual async Task<IClientChannel> CreateAndOpenAsync()
         {
             var transport = new TcpTransport(traceWriter: new TraceWriter());
             var sendTimeout = TimeSpan.FromSeconds(3);
