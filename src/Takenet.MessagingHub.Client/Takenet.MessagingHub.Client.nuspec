@@ -14,12 +14,11 @@
     <tags>lime messaginghub</tags>
     <dependencies>
       <dependency id="Lime.Protocol" />
-	  <dependency id="Lime.Transport.Tcp" />
-	  <dependency id="Lime.Messaging" />
+      <dependency id="Lime.Transport.Tcp" />
+      <dependency id="Lime.Messaging" />
     </dependencies>
   </metadata>
   <files>
-	<file src="bin\Release\Takenet.MessagingHub.Client.dll" target="lib\net45\Takenet.MessagingHub.Client.dll" />
-    <file src="bin\Release\Takenet.MessagingHub.Client.XML" target="lib\net45\Takenet.MessagingHub.Client.XML" />
+    <file src="bin\Release\Takenet.MessagingHub.Client.dll" target="lib\net45\Takenet.MessagingHub.Client.dll" />
   </files>
 </package>
