@@ -20,17 +20,19 @@ namespace Takenet.MessagingHub.Client
 
         readonly Uri endpoint;
         readonly IDictionary<MediaType, IList<IMessageReceiver>> receivers;
-        readonly TaskCompletionSource<bool> running;
 
         string login;
         string password;
         string accessKey;
         IClientChannel clientChannel;
 
+        CancellationTokenSource cancellationTokenSource;
+        Task backgroundExecution;
+        Task messageReceiver;
+
         MessagingHubClient()
         {
             receivers = new Dictionary<MediaType, IList<IMessageReceiver>>();
-            running = new TaskCompletionSource<bool>();
         }
 
         public MessagingHubClient(string hostname) : this()
@@ -88,9 +90,12 @@ namespace Takenet.MessagingHub.Client
                 CancellationToken.None)
                 .ConfigureAwait(false);
 
-            StartReceiving();
+            cancellationTokenSource = new CancellationTokenSource();
+            messageReceiver = Task.Run(() => ProcessIncomingMessages(cancellationTokenSource.Token));
+            //Add all background tasks here. Ex: notification receiver
+            backgroundExecution = Task.WhenAll(messageReceiver);
 
-            return running.Task;
+            return backgroundExecution;
         }
 
         internal virtual Task<Session> EstablishSession(Authentication authentication)
@@ -106,42 +111,40 @@ namespace Takenet.MessagingHub.Client
 
         public async Task StopAsync()
         {
-            try
-            {
-                if (clientChannel?.State == SessionState.Established)
-                {
-                    await clientChannel.SendFinishingSessionAsync().ConfigureAwait(false);
-                }
-                else
-                {
-                    await clientChannel.Transport.CloseAsync(CancellationToken.None).ConfigureAwait(false);
-                }
 
-                running.SetResult(true);
-            }
-            catch (Exception e)
+            if (clientChannel?.State == SessionState.Established)
             {
-                running.SetException(e);
+                await clientChannel.SendFinishingSessionAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                await clientChannel.Transport.CloseAsync(CancellationToken.None).ConfigureAwait(false);
+            }
+
+            if (cancellationTokenSource != null && !cancellationTokenSource.IsCancellationRequested)
+            {
+                cancellationTokenSource.Cancel();
+                await backgroundExecution;
+                cancellationTokenSource.Dispose();
             }
         }
 
-        void StartReceiving()
+        async Task ProcessIncomingMessages(CancellationToken cancellationToken)
         {
-            Task.Run(ProcessIncomingMessages);
-        }
-
-        async Task ProcessIncomingMessages()
-        {
-            while (running.Task.Status == TaskStatus.Running)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                var message = await clientChannel.ReceiveMessageAsync(CancellationToken.None).ConfigureAwait(false);
+                var message = await clientChannel.ReceiveMessageAsync(cancellationToken).ConfigureAwait(false);
                 IList<IMessageReceiver> mimeTypeReceivers = null;
                 if (receivers.TryGetValue(message.Type, out mimeTypeReceivers) ||
                     receivers.TryGetValue(MediaTypes.Any, out mimeTypeReceivers) ||
                     receivers.TryGetValue(defaultReceiverMediaType, out mimeTypeReceivers))
                 {
-                    await Task.WhenAll(
-                        mimeTypeReceivers.Select(r => CallMessageReceiver(r, message))).ConfigureAwait(false);
+                    try
+                    {
+                        await Task.WhenAll(
+                            mimeTypeReceivers.Select(r => CallMessageReceiver(r, message))).ConfigureAwait(false);
+                    }
+                    catch { }
                 }
             }
         }
