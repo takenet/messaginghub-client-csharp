@@ -26,7 +26,7 @@ namespace Takenet.MessagingHub.Client
             return sender.SendMessageAsync(message);
         }
 
-        public static Task SendMessageAsync(this MessagingHubClient client, string content, string to) => client.MessageSender.SendMessageAsync(content, to);
+        public static Task SendMessageAsync(this IMessagingHubClient client, string content, string to) => client.MessageSender.SendMessageAsync(content, to);
 
         static PlainText CreatePlainTextContent(string content) => new PlainText { Text = content };
     }
