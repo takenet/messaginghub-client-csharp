@@ -15,12 +15,14 @@ namespace Takenet.MessagingHub.Client
     public class MessagingHubClient : IMessagingHubClient
     {
         static readonly MediaType defaultReceiverMediaType = new MediaType("null", "null");
+        static readonly string defaultDomainName = "msging.net";
 
         public IMessageSender MessageSender { get; private set; }
 
         readonly Uri endpoint;
         readonly IDictionary<MediaType, IList<IMessageReceiver>> receivers;
 
+        string domainName;
         string login;
         string password;
         string accessKey;
@@ -35,8 +37,10 @@ namespace Takenet.MessagingHub.Client
             receivers = new Dictionary<MediaType, IList<IMessageReceiver>>();
         }
 
-        public MessagingHubClient(string hostname) : this()
+        public MessagingHubClient(string hostname = null, string domainName = null) : this()
         {
+            this.domainName = domainName ?? defaultDomainName;
+            hostname = hostname ?? defaultDomainName;
             this.endpoint = new Uri($"net.tcp://{hostname}:55321");
         }
 
@@ -54,11 +58,13 @@ namespace Takenet.MessagingHub.Client
             return this;
         }
 
+        #region PublicMethods
+
         /// <summary>
-        /// 
+        /// Add a message receiver listener to handle received messages
         /// </summary>
-        /// <param name="receiver"></param>
-        /// <param name="forMimeType">When not informed, only receives messages which no 'typed' receiver is registered</param>
+        /// <param name="receiver">Listener</param>
+        /// <param name="forMimeType">MediaType used as a filter of messages received by listener. When not informed, only receives messages which no 'typed' receiver is registered</param>
         /// <returns></returns>
         public MessagingHubClient AddMessageReceiver(IMessageReceiver receiver, MediaType forMimeType = null)
         {
@@ -98,17 +104,10 @@ namespace Takenet.MessagingHub.Client
             return backgroundExecution;
         }
 
-        internal virtual Task<Session> EstablishSession(Authentication authentication)
-        {
-            return clientChannel.EstablishSessionAsync(
-                            _ => SessionCompression.None,
-                            _ => SessionEncryption.TLS,
-                            Identity.Parse(this.login),
-                            (_, __) => authentication,
-                            Environment.MachineName,
-                            CancellationToken.None);
-        }
-
+        /// <summary>
+        /// Close connecetion and stop to receive messages from Lime server 
+        /// </summary>
+        /// <returns>
         public async Task StopAsync()
         {
 
@@ -129,11 +128,36 @@ namespace Takenet.MessagingHub.Client
             }
         }
 
+        #endregion PublicMethods
+
+        #region InternalMethods
+
+        void AddReceiver(MediaType mediaType, IMessageReceiver receiver)
+        {
+            var mediaTypeToSave = mediaType ?? MediaTypes.Any;
+
+            IList<IMessageReceiver> mediaTypeReceivers;
+            if (!receivers.TryGetValue(mediaTypeToSave, out mediaTypeReceivers))
+            {
+                mediaTypeReceivers = new List<IMessageReceiver>();
+                receivers.Add(mediaTypeToSave, mediaTypeReceivers);
+            }
+
+            mediaTypeReceivers.Add(receiver);
+        }
+
         async Task ProcessIncomingMessages(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
                 var message = await clientChannel.ReceiveMessageAsync(cancellationToken).ConfigureAwait(false);
+
+                //When cancelation 
+                if(message == null)
+                {
+                    continue;
+                }
+
                 IList<IMessageReceiver> mimeTypeReceivers = null;
                 if (receivers.TryGetValue(message.Type, out mimeTypeReceivers) ||
                     receivers.TryGetValue(MediaTypes.Any, out mimeTypeReceivers) ||
@@ -142,7 +166,7 @@ namespace Takenet.MessagingHub.Client
                     try
                     {
                         await Task.WhenAll(
-                            mimeTypeReceivers.Select(r => CallMessageReceiver(r, message))).ConfigureAwait(false);
+                                mimeTypeReceivers.Select(r => CallMessageReceiver(r, message))).ConfigureAwait(false);
                     }
                     catch { }
                 }
@@ -174,6 +198,17 @@ namespace Takenet.MessagingHub.Client
             return clientChannel;
         }
 
+        internal virtual Task<Session> EstablishSession(Authentication authentication)
+        {
+            return clientChannel.EstablishSessionAsync(
+                        _ => SessionCompression.None,
+                        _ => SessionEncryption.TLS,
+                        Identity.Parse($"{this.login}@{this.domainName}"),
+                        (_, __) => authentication,
+                        Environment.MachineName,
+                        CancellationToken.None);
+        }
+
         Authentication GetAuthenticationScheme()
         {
             Authentication result = null;
@@ -199,18 +234,6 @@ namespace Takenet.MessagingHub.Client
             return result;
         }
 
-        void AddReceiver(MediaType mediaType, IMessageReceiver receiver)
-        {
-            var mediaTypeToSave = mediaType ?? defaultReceiverMediaType;
-
-            IList<IMessageReceiver> mediaTypeReceivers;
-            if (!receivers.TryGetValue(mediaTypeToSave, out mediaTypeReceivers))
-            {
-                mediaTypeReceivers = new List<IMessageReceiver>();
-                receivers.Add(mediaTypeToSave, mediaTypeReceivers);
-            }
-
-            mediaTypeReceivers.Add(receiver);
-        }
+        #endregion InternalMethods
     }
 }
