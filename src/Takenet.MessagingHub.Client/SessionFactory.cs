@@ -14,12 +14,12 @@ namespace Takenet.MessagingHub.Client
 {
     internal class SessionFactory : ISessionFactory
     {
-        public async Task<Session> CreateSessionAsync(IClientChannel clientChannel, string login, Authentication authentication)
+        public async Task<Session> CreateSessionAsync(IClientChannel clientChannel, Identity identity, Authentication authentication)
         {
             return await clientChannel.EstablishSessionAsync(
                             _ => SessionCompression.None,
                             _ => SessionEncryption.TLS,
-                            Identity.Parse(login),
+                            identity,
                             (_, __) => authentication,
                             Environment.MachineName,
                             CancellationToken.None);

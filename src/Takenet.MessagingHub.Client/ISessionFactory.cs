@@ -8,6 +8,6 @@ namespace Takenet.MessagingHub.Client
 {
     internal interface ISessionFactory
     {
-        Task<Session> CreateSessionAsync(IClientChannel clientChannel, string login, Authentication authentication);
+        Task<Session> CreateSessionAsync(IClientChannel clientChannel, Identity identity, Authentication authentication);
     }
 }

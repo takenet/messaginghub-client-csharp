@@ -9,7 +9,7 @@ namespace Takenet.MessagingHub.Client.BasicSample
         public override async Task ReceiveAsync(Message message)
         {
             Console.WriteLine(message.Content.ToString());
-            await Sender.SendMessageAsync("Obrigado pela sua mensagem", message.From);
+            await MessageSender.SendMessageAsync("Obrigado pela sua mensagem", message.From);
         }
     }
 }

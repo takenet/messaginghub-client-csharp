@@ -9,7 +9,8 @@ namespace Takenet.MessagingHub.Client
 {
     public abstract class MessageReceiverBase : IMessageReceiver
     {
-        public IMessageSender Sender { get; internal set; }
+        public IMessageSender MessageSender { get; internal set; }
+        public INotificationSender NotificationSender { get; internal set; }
 
         public abstract Task ReceiveAsync(Message message);
     }
