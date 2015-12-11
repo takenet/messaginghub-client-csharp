@@ -1,4 +1,6 @@
-﻿namespace Takenet.MessagingHub.Client.Receivers
+﻿using Takenet.MessagingHub.Client.Senders;
+
+namespace Takenet.MessagingHub.Client.Receivers
 {
     /// <summary>
     /// Base class offering Senders (automaticly injected by MessagingHubClient)

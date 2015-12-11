@@ -59,7 +59,7 @@
     <Compile Include="EnvelopeProcessor.cs" />
     <Compile Include="Receivers\CommandReceiverBase.cs" />
     <Compile Include="Receivers\ICommandReceiver.cs" />
-    <Compile Include="ICommandSender.cs" />
+    <Compile Include="Senders\ICommandSender.cs" />
     <Compile Include="Receivers\INotificationReceiver.cs" />
     <Compile Include="Receivers\IReceiver.cs" />
     <Compile Include="Receivers\NotificationReceiverBase.cs" />
@@ -69,12 +69,12 @@
     <Compile Include="ISessionFactory.cs" />
     <Compile Include="IClientChannelFactory.cs" />
     <Compile Include="Receivers\IMessageReceiver.cs" />
-    <Compile Include="IMessageSender.cs" />
+    <Compile Include="Senders\IMessageSender.cs" />
     <Compile Include="IMessagingHubClient.cs" />
-    <Compile Include="INotificationSender.cs" />
+    <Compile Include="Senders\INotificationSender.cs" />
     <Compile Include="MediaTypes.cs" />
     <Compile Include="Receivers\MessageReceiverBase.cs" />
-    <Compile Include="SenderWrapper.cs" />
+    <Compile Include="Senders\SenderWrapper.cs" />
     <Compile Include="MessagingHubClient.cs" />
     <Compile Include="MessagingHubClientExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Takenet.MessagingHub.Client.Receivers;
+using Takenet.MessagingHub.Client.Senders;
 
 namespace Takenet.MessagingHub.Client
 {
