@@ -91,7 +91,7 @@ namespace Takenet.MessagingHub.Client.Test
             //Act
             await _messagingHubClient.StartAsync().ConfigureAwait(false);
 
-            await Task.Delay(2000);
+            await Task.Delay(3000);
 
             //Assert
             messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);

@@ -14,8 +14,14 @@ namespace Takenet.MessagingHub.Client.BasicSample
         {
             var client = new MessagingHubClient()
                             .UsingAccount("andreminelli", "123456")
-                            .AddMessageReceiver(new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText);
+                            .AddMessageReceiver(new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText)
+                            .AddCommandReceiver(new MyAccountCommandReceiver())
+                            .AddNotificationReceiver(new PrintNotificationReceiver());
+                            
             await client.StartAsync();
+
+            //Send a get account command to server (Only sample)
+            //client.SendCommandAsync();
 
             Console.WriteLine("Press any key to stop");
             await WaitKeyAsync();

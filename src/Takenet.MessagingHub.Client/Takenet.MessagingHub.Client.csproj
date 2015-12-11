@@ -57,10 +57,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EnvelopeProcessor.cs" />
+    <Compile Include="Receivers\CommandReceiverBase.cs" />
     <Compile Include="Receivers\ICommandReceiver.cs" />
     <Compile Include="ICommandSender.cs" />
     <Compile Include="Receivers\INotificationReceiver.cs" />
     <Compile Include="Receivers\IReceiver.cs" />
+    <Compile Include="Receivers\NotificationReceiverBase.cs" />
     <Compile Include="Receivers\ReceiverBase.cs" />
     <Compile Include="SessionFactory.cs" />
     <Compile Include="ClientChannelFactory.cs" />
