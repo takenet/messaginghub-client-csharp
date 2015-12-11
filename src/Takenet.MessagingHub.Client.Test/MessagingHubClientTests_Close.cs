@@ -1,6 +1,7 @@
 ﻿using Lime.Messaging.Resources;
 using Lime.Protocol;
 using Lime.Protocol.Client;
+using Lime.Protocol.Network;
 using NSubstitute;
 using NUnit.Framework;
 using Shouldly;
@@ -56,6 +57,34 @@ namespace Takenet.MessagingHub.Client.Test
             _clientChannel.State.ShouldBe(SessionState.Finished);
         }
 
+        [Test]
+        public void WhenClientIsNotConnectedAndCloseConnectionShouldThrowException()
+        {
+            //Arrange
+            _SUT.UsingAccessKey("login", "key");
+            
+            // Act // Asert
+            Should.ThrowAsync<InvalidOperationException>(async () => await _SUT.StopAsync()).Wait();
+        }
 
+        [Test]
+        public void WhenClientHasntEstablishedSessionAndCloseConnectionShouldDisconnectFromServer()
+        {
+            //Arrange
+            _clientChannel.State.Returns(SessionState.Failed);
+
+            var transport = Substitute.For<ITransport>();
+            _clientChannel.Transport.Returns(transport);
+
+            _SUT.UsingAccessKey("login", "key");
+            var y = _SUT.StartAsync().Result;
+
+            // Act
+            var x = _SUT.StopAsync();
+
+            // Assert
+            _clientChannel.State.ShouldBe(SessionState.Failed);
+            transport.CloseAsync(CancellationToken.None);
+        }
     }
 }

@@ -112,6 +112,7 @@ namespace Takenet.MessagingHub.Client
         /// <returns>
         public async Task StopAsync()
         {
+            if (_clientChannel == null) throw new InvalidOperationException("Is not possible call 'Stop' method before 'Start'");
 
             if (_clientChannel?.State == SessionState.Established)
             {
