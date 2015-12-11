@@ -14,7 +14,6 @@ namespace Takenet.MessagingHub.Client
 {
     public class MessagingHubClient : IMessagingHubClient
     {
-        static readonly MediaType defaultReceiverMediaType = new MediaType("null", "null");
         static readonly string defaultDomainName = "msging.net";
 
         public IMessageSender MessageSender { get; private set; }
@@ -160,8 +159,7 @@ namespace Takenet.MessagingHub.Client
 
                 IList<IMessageReceiver> mimeTypeReceivers = null;
                 if (receivers.TryGetValue(message.Type, out mimeTypeReceivers) ||
-                    receivers.TryGetValue(MediaTypes.Any, out mimeTypeReceivers) ||
-                    receivers.TryGetValue(defaultReceiverMediaType, out mimeTypeReceivers))
+                    receivers.TryGetValue(MediaTypes.Any, out mimeTypeReceivers))
                 {
                     try
                     {
