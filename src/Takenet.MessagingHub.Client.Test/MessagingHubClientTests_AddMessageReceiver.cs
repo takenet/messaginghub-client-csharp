@@ -2,6 +2,7 @@
 using Lime.Protocol.Client;
 using NSubstitute;
 using NUnit.Framework;
+using Shouldly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,12 +40,8 @@ namespace Takenet.MessagingHub.Client.Test
             _sessionFactory = Substitute.For<ISessionFactory>();
             _sessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
 
-            _semaphore = new SemaphoreSlim(1);
-            
             _messagingHubClient = new MessagingHubClient(clientChannelFactory, _sessionFactory, "msging.net");
         }
-
-
 
         [Test]
         public async Task WhenClientAddAMessageReceiverAndReceiveAMessageShouldBeHandledByReceiver()
@@ -53,7 +50,10 @@ namespace Takenet.MessagingHub.Client.Test
             _messagingHubClient.UsingAccount("login", "pass");
             _messagingHubClient.AddMessageReceiver(_messageReceiver);
 
-            _clientChannel.ReceiveMessageAsync(CancellationToken.None).ReturnsForAnyArgs(async (callInfo) => {
+            _semaphore = new SemaphoreSlim(1);
+
+            _clientChannel.ReceiveMessageAsync(new CancellationTokenSource().Token).ReturnsForAnyArgs(async (callInfo) =>
+            {
                 await _semaphore.WaitAsync();
                 return new Message { Content = new PlainDocument(MediaTypes.PlainText) };
             });
@@ -65,6 +65,37 @@ namespace Takenet.MessagingHub.Client.Test
 
             //Assert
             _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
+
+            _semaphore.DisposeIfDisposable();
+        }
+
+        [Test]
+        public async Task WhenClientAddAMessageReceiverBaseAndReceiveAMessageTheReceiverShouldHandleAndBeSet()
+        {
+            //Arrange
+
+            var messageReceiver = Substitute.For<MessageReceiverBase>();
+
+            _messagingHubClient.UsingAccount("login", "pass");
+            _messagingHubClient.AddMessageReceiver(messageReceiver);
+
+            _semaphore = new SemaphoreSlim(1);
+
+            _clientChannel.ReceiveMessageAsync(new CancellationTokenSource().Token).ReturnsForAnyArgs(async (_) =>
+            {
+                await _semaphore.WaitAsync().ConfigureAwait(false);
+                return new Message { Content = new PlainDocument(MediaTypes.PlainText) };
+            });
+
+            //Act
+            await _messagingHubClient.StartAsync().ConfigureAwait(false);
+
+            await Task.Delay(2000);
+
+            //Assert
+            messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
+            messageReceiver.MessageSender.ShouldNotBeNull();
+            messageReceiver.NotificationSender.ShouldNotBeNull();
 
             _semaphore.DisposeIfDisposable();
         }
