@@ -51,7 +51,7 @@ namespace Takenet.MessagingHub.Client.Test
             await _messagingHubClient.StartAsync(); 
 
             // Act
-            var x = _messagingHubClient.StopAsync();
+            await _messagingHubClient.StopAsync();
 
             // Assert
             _clientChannel.State.ShouldBe(SessionState.Finished);
@@ -80,7 +80,7 @@ namespace Takenet.MessagingHub.Client.Test
             await _messagingHubClient.StartAsync();
 
             // Act
-            var x = _messagingHubClient.StopAsync();
+            await _messagingHubClient.StopAsync();
 
             // Assert
             _clientChannel.State.ShouldBe(SessionState.Failed);

@@ -116,9 +116,8 @@ namespace Takenet.MessagingHub.Client
 
             sender = new SenderWrapper(_clientChannel);
             _cancellationTokenSource = new CancellationTokenSource();
-            _backgroundExecution = StartReceivers();
-
-            return _backgroundExecution;
+            InitializeAndStartReceivers();
+            _backgroundExecution = Task.WhenAll(_messageReceiver, _commandReceiver, _notiticationReceiver);
         }
 
         /// <summary>
@@ -150,7 +149,7 @@ namespace Takenet.MessagingHub.Client
 
         #region InternalMethods
 
-        Task StartReceivers()
+        void InitializeAndStartReceivers()
         {
             _messageReceiver = new EnvelopeProcessor<Message>(
                     _clientChannel.ReceiveMessageAsync,
@@ -169,8 +168,6 @@ namespace Takenet.MessagingHub.Client
                     GetReceiversFor,
                     sender)
                 .StartAsync(_cancellationTokenSource.Token);
-
-            return Task.WhenAll(_messageReceiver, _commandReceiver, _notiticationReceiver);
         }
 
         IList<IMessageReceiver> GetReceiversFor(Message message)

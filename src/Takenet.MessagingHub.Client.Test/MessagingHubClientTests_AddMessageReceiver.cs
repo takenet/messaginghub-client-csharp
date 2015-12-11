@@ -53,7 +53,7 @@ namespace Takenet.MessagingHub.Client.Test
             _messagingHubClient.UsingAccount("login", "pass");
             _messagingHubClient.AddMessageReceiver(_messageReceiver);
 
-            _clientChannel.ReceiveMessageAsync(new CancellationTokenSource().Token).ReturnsForAnyArgs(async (callInfo) => {
+            _clientChannel.ReceiveMessageAsync(CancellationToken.None).ReturnsForAnyArgs(async (callInfo) => {
                 await _semaphore.WaitAsync();
                 return new Message { Content = new PlainDocument(MediaTypes.PlainText) };
             });
@@ -61,7 +61,7 @@ namespace Takenet.MessagingHub.Client.Test
             //Act
             await _messagingHubClient.StartAsync();
 
-            await Task.Delay(2000);
+            await Task.Delay(3000);
 
             //Assert
             _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
