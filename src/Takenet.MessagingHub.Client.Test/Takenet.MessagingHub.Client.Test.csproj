@@ -38,6 +38,10 @@
       <HintPath>..\packages\Lime.Protocol.0.2.328\lib\net45\Lime.Protocol.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Lime.Transport.Tcp, Version=0.2.329.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Transport.Tcp.0.2.329\lib\net45\Lime.Transport.Tcp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="NSubstitute, Version=1.9.2.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
       <HintPath>..\packages\NSubstitute.1.9.2.0\lib\net45\NSubstitute.dll</HintPath>
       <Private>True</Private>
@@ -80,6 +84,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessagingHubClientTests_Close.cs" />
     <Compile Include="MessagingHubClientTests_Start.cs" />
     <Compile Include="MessagingHubClientSUT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

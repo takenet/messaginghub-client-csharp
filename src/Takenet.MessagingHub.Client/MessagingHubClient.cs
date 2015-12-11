@@ -3,11 +3,9 @@ using Lime.Protocol;
 using Lime.Protocol.Client;
 using Lime.Protocol.Network;
 using Lime.Protocol.Security;
-using Lime.Transport.Tcp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,37 +17,41 @@ namespace Takenet.MessagingHub.Client
 
         public IMessageSender MessageSender { get; private set; }
 
-        readonly Uri endpoint;
-        readonly IDictionary<MediaType, IList<IMessageReceiver>> receivers;
-        readonly TaskCompletionSource<bool> running;
+        readonly Uri _endpoint;
+        readonly IDictionary<MediaType, IList<IMessageReceiver>> _receivers;
+        readonly TaskCompletionSource<bool> _running;
 
-        string login;
-        string password;
-        string accessKey;
-        IClientChannel clientChannel;
-
-        MessagingHubClient()
+        string _login;
+        string _password;
+        string _accessKey;
+        IClientChannel _clientChannel;
+        IClientChannelFactory _clientChannelFactory;
+        ISessionFactory _sessionFactory;
+            
+        internal MessagingHubClient(IClientChannelFactory clientChannelFactory, ISessionFactory sessionFactory, string hostname)
         {
-            receivers = new Dictionary<MediaType, IList<IMessageReceiver>>();
-            running = new TaskCompletionSource<bool>();
+            _receivers = new Dictionary<MediaType, IList<IMessageReceiver>>();
+            _running = new TaskCompletionSource<bool>();
+            _clientChannelFactory = clientChannelFactory;
+            _sessionFactory = sessionFactory;
+            _endpoint = new Uri($"net.tcp://{hostname}:55321");
         }
 
-        public MessagingHubClient(string hostname) : this()
-        {
-            this.endpoint = new Uri($"net.tcp://{hostname}:55321");
-        }
+        public MessagingHubClient(string hostname) : 
+            this(new ClientChannelFactory(), new SessionFactory(), hostname)
+        { }
 
         public MessagingHubClient UsingAccount(string login, string password)
         {
-            this.login = login;
-            this.password = password;
+            this._login = login;
+            this._password = password;
             return this;
         }
 
         public MessagingHubClient UsingAccessKey(string login, string key)
         {
-            this.login = login;
-            this.accessKey = key;
+            this._login = login;
+            this._accessKey = key;
             return this;
         }
 
@@ -75,24 +77,24 @@ namespace Takenet.MessagingHub.Client
         {
             var authentication = GetAuthenticationScheme();
 
-            clientChannel = await CreateAndOpenAsync();
+            _clientChannel = await _clientChannelFactory.CreateClientChannelAsync(_endpoint);
 
-            var session = await EstablishSession(authentication);
+            var session = await _sessionFactory.CreateSessionAsync(_clientChannel, _login, authentication);
 
             if (session.State != SessionState.Established)
             {
-                throw new Exception($"Could not connect: {session.Reason.Description} (code: {session.Reason.Code})");
+                throw new LimeException(session.Reason.Code, session.Reason.Description);
             }
 
-            MessageSender = new MessageSenderWrapper(clientChannel);
-            await clientChannel.SetResourceAsync(
+            MessageSender = new MessageSenderWrapper(_clientChannel);
+            await _clientChannel.SetResourceAsync(
                 LimeUri.Parse(UriTemplates.PRESENCE),
                 new Presence { RoutingRule = RoutingRule.Identity },
                 CancellationToken.None);
 
             StartReceiving();
 
-            return running.Task;
+            return _running.Task;
         }
 
         /// <summary>
@@ -103,20 +105,20 @@ namespace Takenet.MessagingHub.Client
         {
             try
             {
-                if (clientChannel?.State == SessionState.Established)
+                if (_clientChannel?.State == SessionState.Established)
                 {
-                    await clientChannel.SendFinishingSessionAsync();
+                    await _clientChannel.SendFinishingSessionAsync();
                 }
                 else
                 {
-                    await clientChannel.Transport.CloseAsync(CancellationToken.None);
+                    await _clientChannel.Transport.CloseAsync(CancellationToken.None);
                 }
 
-                running.SetResult(true);
+                _running.SetResult(true);
             }
             catch (Exception e)
             {
-                running.SetException(e);
+                _running.SetException(e);
             }
         }
 
@@ -129,10 +131,10 @@ namespace Takenet.MessagingHub.Client
             var mediaTypeToSave = mediaType ?? defaultReceiverMediaType;
 
             IList<IMessageReceiver> mediaTypeReceivers;
-            if (!receivers.TryGetValue(mediaTypeToSave, out mediaTypeReceivers))
+            if (!_receivers.TryGetValue(mediaTypeToSave, out mediaTypeReceivers))
             {
                 mediaTypeReceivers = new List<IMessageReceiver>();
-                receivers.Add(mediaTypeToSave, mediaTypeReceivers);
+                _receivers.Add(mediaTypeToSave, mediaTypeReceivers);
             }
 
             mediaTypeReceivers.Add(receiver);
@@ -145,13 +147,13 @@ namespace Takenet.MessagingHub.Client
 
         async Task ProcessIncomingMessages()
         {
-            while (running.Task.Status == TaskStatus.Running)
+            while (_running.Task.Status == TaskStatus.Running)
             {
-                var message = await clientChannel.ReceiveMessageAsync(CancellationToken.None);
+                var message = await _clientChannel.ReceiveMessageAsync(CancellationToken.None);
                 IList<IMessageReceiver> mimeTypeReceivers = null;
-                if (receivers.TryGetValue(message.Type, out mimeTypeReceivers) ||
-                    receivers.TryGetValue(MediaTypes.Any, out mimeTypeReceivers) ||
-                    receivers.TryGetValue(defaultReceiverMediaType, out mimeTypeReceivers))
+                if (_receivers.TryGetValue(message.Type, out mimeTypeReceivers) ||
+                    _receivers.TryGetValue(MediaTypes.Any, out mimeTypeReceivers) ||
+                    _receivers.TryGetValue(defaultReceiverMediaType, out mimeTypeReceivers))
                 {
                     await Task.WhenAll(
                         mimeTypeReceivers.Select(r => CallMessageReceiver(r, message)));
@@ -169,46 +171,20 @@ namespace Takenet.MessagingHub.Client
             return receiver.ReceiveAsync(message);
         }
 
-        internal virtual async Task<IClientChannel> CreateAndOpenAsync()
-        {
-            var transport = new TcpTransport(traceWriter: new TraceWriter());
-            var sendTimeout = TimeSpan.FromSeconds(3);
-
-            using (var cancellationTokenSource = new CancellationTokenSource(sendTimeout))
-            {
-                await transport.OpenAsync(this.endpoint, cancellationTokenSource.Token);
-            }
-
-            var clientChannel = new ClientChannel(transport, sendTimeout);
-
-            return clientChannel;
-        }
-
-        internal virtual Task<Session> EstablishSession(Authentication authentication)
-        {
-            return clientChannel.EstablishSessionAsync(
-                            _ => SessionCompression.None,
-                            _ => SessionEncryption.TLS,
-                            Identity.Parse(this.login),
-                            (_, __) => authentication,
-                            Environment.MachineName,
-                            CancellationToken.None);
-        }
-
         Authentication GetAuthenticationScheme()
         {
             Authentication result = null;
 
-            if (this.password != null)
+            if (this._password != null)
             {
                 var plainAuthentication = new PlainAuthentication();
-                plainAuthentication.SetToBase64Password(this.password);
+                plainAuthentication.SetToBase64Password(this._password);
                 result = plainAuthentication;
             }
 
-            if (this.accessKey != null)
+            if (this._accessKey != null)
             {
-                var keyAuthentication = new KeyAuthentication { Key = accessKey };
+                var keyAuthentication = new KeyAuthentication { Key = _accessKey };
                 result = keyAuthentication;
             }
 

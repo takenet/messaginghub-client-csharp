@@ -1,5 +1,7 @@
 ﻿using Lime.Messaging.Resources;
 using Lime.Protocol;
+using Lime.Protocol.Client;
+using Lime.Protocol.Network;
 using NSubstitute;
 using NUnit.Framework;
 using Shouldly;
@@ -16,15 +18,28 @@ namespace Takenet.MessagingHub.Client.Test
     public class MessagingHubClientTests_Start
     {
         private MessagingHubClientSUT _SUT;
+        private IClientChannel _clientChannel;
+        private ISessionFactory _sessionFactory;
 
         [SetUp]
         public void Setup()
         {
-            _SUT = new MessagingHubClientSUT("hostname");
-            var commandSent = new Command();
-            _SUT.ClientChannel.WhenForAnyArgs(c => c.SendCommandAsync(null)).Do(c => 
-                commandSent = c.Arg<Command>());
-            _SUT.ClientChannel.ReceiveCommandAsync(Arg.Any<CancellationToken>()).Returns(c => new Command { Id = commandSent.Id, Status = CommandStatus.Success });
+            _clientChannel = Substitute.For<IClientChannel>();
+
+            var presenceCommand = new Command();
+            _clientChannel.WhenForAnyArgs(c => c.SendCommandAsync(null)).Do(c =>
+                presenceCommand = c.Arg<Command>());
+            _clientChannel.ReceiveCommandAsync(Arg.Any<CancellationToken>()).Returns(c => new Command { Id = presenceCommand.Id, Status = CommandStatus.Success });
+
+            var session = new Session { State = SessionState.Established };
+
+            var clientChannelFactory = Substitute.For<IClientChannelFactory>();
+            clientChannelFactory.CreateClientChannelAsync(null).ReturnsForAnyArgs(_clientChannel);
+
+            _sessionFactory = Substitute.For<ISessionFactory>();
+            _sessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
+
+            _SUT = new MessagingHubClientSUT(clientChannelFactory, _sessionFactory, "msging.net");
         }
 
 
@@ -33,14 +48,13 @@ namespace Takenet.MessagingHub.Client.Test
         {
             // Arrange
             _SUT.UsingAccount("login", "pass");
+            _sessionFactory.WhenForAnyArgs(s => s.CreateSessionAsync(null, null, null)).Do(s => _clientChannel.State.Returns(SessionState.Established));
 
             // Act
             var x = _SUT.StartAsync().Result;
 
             // Assert
-            _SUT.ClientChannelCreated.ShouldBe(true);
-            _SUT.ClientChannel.Received().SendCommandAsync(
-                Arg.Is<Command>(c => c.Uri.ToString().Equals(UriTemplates.PRESENCE)));
+            _clientChannel.State.ShouldBe(SessionState.Established);
         }
 
         [Test]
@@ -48,41 +62,54 @@ namespace Takenet.MessagingHub.Client.Test
         {
             // Arrange
             _SUT.UsingAccessKey("login", "key");
+            _sessionFactory.WhenForAnyArgs(s => s.CreateSessionAsync(null, null, null)).Do(s => _clientChannel.State.Returns(SessionState.Established));
 
             // Act
             var x = _SUT.StartAsync().Result;
 
             // Assert
-            _SUT.ClientChannelCreated.ShouldBe(true);
+            _clientChannel.State.ShouldBe(SessionState.Established);
         }
 
         [Test]
         public void WhenClientStartWithoutCredentialsShouldThrowException()
         {
             // Arrange
+            var session = new Session
+            {
+                State = SessionState.Failed,
+                Reason = new Reason { Code = 1, Description = "failure message" }
+            };
 
-            // Act
+            // Arrange
+            _sessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
+
+            // Act /  Assert
             Should.ThrowAsync<InvalidOperationException>(async () => await _SUT.StartAsync()).Wait();
-
-            // Assert
-            _SUT.ClientChannelCreated.ShouldBe(false);
         }
 
 
         [Test]
         public void WhenClientStartAndServerDoNotAcceptTheSessionShouldThrowException()
         {
+            var session = new Session
+            {
+                State = SessionState.Failed,
+                Reason = new Reason { Code = 1, Description = "failure message" }
+            };
+
             // Arrange
-            var reason = new Reason { Code = 1, Description = "failure message" };
-            _SUT.SetSessionResult(SessionState.Failed, reason);
+            _sessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
+
+
             _SUT.UsingAccount("login", "pass");
 
             // Act
-            var exception = Should.ThrowAsync<Exception>(async () => await _SUT.StartAsync()).Result;
+            var exception = Should.ThrowAsync<LimeException>(async () => await _SUT.StartAsync()).Result;
 
             // Assert
-            exception.Message.ShouldContain(reason.Description);
-            exception.Message.ShouldContain(reason.Code.ToString());
+            exception.Reason.Description.ShouldBe(session.Reason.Description);
+            exception.Reason.Code.ShouldBe(session.Reason.Code);
         }
 
     }

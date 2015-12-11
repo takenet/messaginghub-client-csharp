@@ -13,34 +13,9 @@ namespace Takenet.MessagingHub.Client.Test
 {
     public class MessagingHubClientSUT : MessagingHubClient
     {
-        public IClientChannel ClientChannel { get; private set; }
-        public Session Session { get; private set; }
-        public bool ClientChannelCreated { get; private set; }
-
-        public MessagingHubClientSUT(string hostname) : base(hostname)
+        internal MessagingHubClientSUT(IClientChannelFactory clientChannelFactory, ISessionFactory session, string hostname) 
+            : base(clientChannelFactory, session, hostname)
         {
-            ClientChannel = Substitute.For<IClientChannel>();
-            Session = new Session
-            {
-                State = SessionState.Established
-            };
-        }
-
-        public void SetSessionResult(SessionState state, Reason reason = null)
-        {
-            Session.State = state;
-            Session.Reason = reason;
-        }
-
-        internal override Task<IClientChannel> CreateAndOpenAsync()
-        {
-            ClientChannelCreated = true;
-            return Task.FromResult(ClientChannel);
-        }
-
-        internal override Task<Session> EstablishSession(Authentication authentication)
-        {
-            return Task.FromResult(Session);
         }
     }
 }
