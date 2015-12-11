@@ -1,10 +1,8 @@
 ﻿using Lime.Protocol;
-using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client
 {
-    public interface IMessageReceiver
+    public interface IMessageReceiver : IReceiver<Message>
     {
-        Task ReceiveAsync(Message message);
     }
 }

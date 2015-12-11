@@ -56,9 +56,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnvelopeProcessor.cs" />
     <Compile Include="ICommandReceiver.cs" />
     <Compile Include="ICommandSender.cs" />
     <Compile Include="INotificationReceiver.cs" />
+    <Compile Include="IReceiver.cs" />
     <Compile Include="ReceiverBase.cs" />
     <Compile Include="SessionFactory.cs" />
     <Compile Include="ClientChannelFactory.cs" />

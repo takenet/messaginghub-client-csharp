@@ -99,18 +99,15 @@ namespace Takenet.MessagingHub.Client
                 throw new LimeException(session.Reason.Code, session.Reason.Description);
             }
 
-            sender = new SenderWrapper(_clientChannel);
             await _clientChannel.SetResourceAsync(
                 LimeUri.Parse(UriTemplates.PRESENCE),
                 new Presence { RoutingRule = RoutingRule.Identity },
                 CancellationToken.None)
                 .ConfigureAwait(false);
 
+            sender = new SenderWrapper(_clientChannel);
             _cancellationTokenSource = new CancellationTokenSource();
-            _messageReceiver = Task.Run(() => ProcessIncomingMessages(_cancellationTokenSource.Token));
-            _commandReceiver = Task.Run(() => ProcessIncomingCommands(_cancellationTokenSource.Token));
-            _notiticationReceiver = Task.Run(() => ProcessIncomingNotifications(_cancellationTokenSource.Token));
-            _backgroundExecution = Task.WhenAll(_messageReceiver, _commandReceiver, _notiticationReceiver);
+            _backgroundExecution = StartReceivers();
 
             return _backgroundExecution;
         }
@@ -158,105 +155,50 @@ namespace Takenet.MessagingHub.Client
             mediaTypeReceivers.Add(receiver);
         }
 
-        async Task ProcessIncomingMessages(CancellationToken cancellationToken)
+        Task StartReceivers()
         {
-            while (!cancellationToken.IsCancellationRequested)
+            _messageReceiver = new EnvelopeProcessor<Message>(
+                    _clientChannel.ReceiveMessageAsync,
+                    GetReceiversFor,
+                    sender)
+                .StartAsync(_cancellationTokenSource.Token);
+
+            _commandReceiver = new EnvelopeProcessor<Command>(
+                    _clientChannel.ReceiveCommandAsync,
+                    GetReceiversFor,
+                    sender)
+                .StartAsync(_cancellationTokenSource.Token);
+
+            _notiticationReceiver = new EnvelopeProcessor<Notification>(
+                    _clientChannel.ReceiveNotificationAsync,
+                    GetReceiversFor,
+                    sender)
+                .StartAsync(_cancellationTokenSource.Token);
+
+            return Task.WhenAll(_messageReceiver, _commandReceiver, _notiticationReceiver);
+        }
+
+        IList<IMessageReceiver> GetReceiversFor(Message message)
+        {
+            IList<IMessageReceiver> mimeTypeReceivers = null;
+            var hasReceiver = _messageReceivers.TryGetValue(message.Type, out mimeTypeReceivers) ||
+                              _messageReceivers.TryGetValue(MediaTypes.Any, out mimeTypeReceivers);
+            if (!hasReceiver)
             {
-                var message = await _clientChannel.ReceiveMessageAsync(cancellationToken).ConfigureAwait(false);
-
-                //When cancelation 
-                if (message == null)
-                {
-                    continue;
-                }
-
-                IList<IMessageReceiver> mimeTypeReceivers = null;
-                var hasReceiver = _messageReceivers.TryGetValue(message.Type, out mimeTypeReceivers) ||
-                                  _messageReceivers.TryGetValue(MediaTypes.Any, out mimeTypeReceivers);
-                if (!hasReceiver)
-                {
-                    mimeTypeReceivers = _defaultMessageReceivers;
-                }
-
-                try
-                {
-                    await Task.WhenAll(
-                                mimeTypeReceivers.Select(r => CallMessageReceiver(r, message))).ConfigureAwait(false);
-                }
-                catch { }
+                mimeTypeReceivers = _defaultMessageReceivers;
             }
+
+            return mimeTypeReceivers;
         }
 
-        async Task ProcessIncomingCommands(CancellationToken cancellationToken)
+        IList<ICommandReceiver> GetReceiversFor(Command command)
         {
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                var command = await _clientChannel.ReceiveCommandAsync(cancellationToken);
-
-                if (command == null)
-                {
-                    continue;
-                }
-
-                var commandReceivers = _defaultCommandReceivers;
-                try
-                {
-                    await Task.WhenAll(
-                                commandReceivers.Select(r => CallCommandReceiver(r, command))).ConfigureAwait(false);
-                }
-                catch { }
-            }
+            return _defaultCommandReceivers;
         }
 
-        async Task ProcessIncomingNotifications(CancellationToken cancellationToken)
+        IList<INotificationReceiver> GetReceiversFor(Notification notificaiton)
         {
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                var notification = await _clientChannel.ReceiveNotificationAsync(cancellationToken);
-
-                if (notification == null)
-                {
-                    continue;
-                }
-
-                var notificationReceivers = _defaultNotificationReceivers;
-                try
-                {
-                    await Task.WhenAll(
-                                notificationReceivers.Select(r => CallNotificationReceiver(r, notification))).ConfigureAwait(false);
-                }
-                catch { }
-            }
-        }
-
-
-        Task CallMessageReceiver(IMessageReceiver receiver, Message message)
-        {
-            InjectSenders(receiver);
-            return receiver.ReceiveAsync(message);
-        }
-
-        Task CallCommandReceiver(ICommandReceiver receiver, Command command)
-        {
-            InjectSenders(receiver);
-            return receiver.ReceiveAsync(command);
-        }
-
-        Task CallNotificationReceiver(INotificationReceiver receiver, Notification notification)
-        {
-            InjectSenders(receiver);
-            return receiver.ReceiveAsync(notification);
-        }
-
-        void InjectSenders(object receiver)
-        {
-            if (receiver is ReceiverBase)
-            {
-                var receiverBase = ((ReceiverBase)receiver);
-                receiverBase.MessageSender = sender;
-                receiverBase.CommandSender = sender;
-                receiverBase.NotificationSender = sender;
-            }
+            return _defaultNotificationReceivers;
         }
 
         Authentication GetAuthenticationScheme()
