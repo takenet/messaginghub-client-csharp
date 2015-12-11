@@ -38,11 +38,30 @@ namespace Takenet.MessagingHub.Client
         {
             var notification = new Notification
             {
-                To = message.From,
                 Id = message.Id,
+                To = message.From,
                 Event = @event
             };
             return notification;
+        }
+
+        public static Command ToFailedCommandResponse(this Command command, Reason reason)
+        {
+            var responseCommand = command.ToCommandResponse(CommandStatus.Failure);
+            responseCommand.Reason = reason;
+            return responseCommand;
+        }
+
+        public static Command ToCommandResponse(this Command command, CommandStatus status)
+        {
+            var responseCommand = new Command
+            {
+                Id = command.Id,
+                To = command.From,
+                Method = command.Method,
+                Status = status
+            };
+            return responseCommand;
         }
 
         static PlainText CreatePlainTextContent(string content) => new PlainText { Text = content };

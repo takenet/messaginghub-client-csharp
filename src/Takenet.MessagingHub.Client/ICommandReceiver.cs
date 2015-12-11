@@ -2,7 +2,7 @@
 
 namespace Takenet.MessagingHub.Client
 {
-    public interface IMessageReceiver : IReceiver<Message>
+    public interface ICommandReceiver : IReceiver<Command>
     {
     }
 }

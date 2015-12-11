@@ -1,10 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Lime.Protocol;
 
 namespace Takenet.MessagingHub.Client
 {
-    internal class UnsupportedTypeMessageReceiver : MessageReceiverBase
+    internal class UnsupportedMessageReceiver : MessageReceiverBase
     {
         public override Task ReceiveAsync(Message message)
         {

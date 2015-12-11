@@ -56,6 +56,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnvelopeProcessor.cs" />
+    <Compile Include="ICommandReceiver.cs" />
+    <Compile Include="ICommandSender.cs" />
+    <Compile Include="INotificationReceiver.cs" />
+    <Compile Include="IReceiver.cs" />
+    <Compile Include="ReceiverBase.cs" />
     <Compile Include="SessionFactory.cs" />
     <Compile Include="ClientChannelFactory.cs" />
     <Compile Include="ISessionFactory.cs" />
@@ -70,7 +76,9 @@
     <Compile Include="MessagingHubClient.cs" />
     <Compile Include="MessagingHubClientExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnsupportedTypeMessageReceiver.cs" />
+    <Compile Include="UnsupportedCommandReceiver.cs" />
+    <Compile Include="BlackholeNotificationReceiver.cs" />
+    <Compile Include="UnsupportedMessageReceiver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

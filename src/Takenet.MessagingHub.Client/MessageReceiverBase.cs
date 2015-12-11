@@ -7,11 +7,8 @@ using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client
 {
-    public abstract class MessageReceiverBase : IMessageReceiver
+    public abstract class MessageReceiverBase : ReceiverBase, IMessageReceiver
     {
-        public IMessageSender MessageSender { get; internal set; }
-        public INotificationSender NotificationSender { get; internal set; }
-
         public abstract Task ReceiveAsync(Message message);
     }
 }

@@ -1,11 +1,10 @@
-﻿using Lime.Protocol;
+﻿using System.Threading.Tasks;
+using Lime.Protocol;
 using Lime.Protocol.Client;
-using System.Threading.Tasks;
-using System;
 
 namespace Takenet.MessagingHub.Client
 {
-    class SenderWrapper : IMessageSender, INotificationSender
+    class SenderWrapper : IMessageSender, ICommandSender, INotificationSender
     {
         IClientChannel clientChannel;
 
@@ -15,6 +14,8 @@ namespace Takenet.MessagingHub.Client
         }
 
         public Task SendMessageAsync(Message message) => clientChannel.SendMessageAsync(message);
+
+        public Task SendCommandAsync(Command command) => clientChannel.SendCommandAsync(command);
 
         public Task SendNotificationAsync(Notification notification) => clientChannel.SendNotificationAsync(notification);
     }
