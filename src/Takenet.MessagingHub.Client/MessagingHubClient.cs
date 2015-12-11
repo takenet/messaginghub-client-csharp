@@ -77,7 +77,16 @@ namespace Takenet.MessagingHub.Client
         /// <returns></returns>
         public MessagingHubClient AddMessageReceiver(IMessageReceiver receiver, MediaType forMimeType = null)
         {
-            AddReceiver(forMimeType, receiver);
+            var mediaTypeToSave = forMimeType ?? MediaTypes.Any;
+
+            IList<IMessageReceiver> mediaTypeReceivers;
+            if (!_messageReceivers.TryGetValue(mediaTypeToSave, out mediaTypeReceivers))
+            {
+                mediaTypeReceivers = new List<IMessageReceiver>();
+                _messageReceivers.Add(mediaTypeToSave, mediaTypeReceivers);
+            }
+
+            mediaTypeReceivers.Add(receiver);
             return this;
         }
 
@@ -140,20 +149,6 @@ namespace Takenet.MessagingHub.Client
         #endregion PublicMethods
 
         #region InternalMethods
-
-        void AddReceiver(MediaType mediaType, IMessageReceiver receiver)
-        {
-            var mediaTypeToSave = mediaType ?? MediaTypes.Any;
-
-            IList<IMessageReceiver> mediaTypeReceivers;
-            if (!_messageReceivers.TryGetValue(mediaTypeToSave, out mediaTypeReceivers))
-            {
-                mediaTypeReceivers = new List<IMessageReceiver>();
-                _messageReceivers.Add(mediaTypeToSave, mediaTypeReceivers);
-            }
-
-            mediaTypeReceivers.Add(receiver);
-        }
 
         Task StartReceivers()
         {
