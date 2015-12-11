@@ -17,7 +17,7 @@ namespace Takenet.MessagingHub.Client.Test
     [TestFixture]
     public class MessagingHubClientTests_Start
     {
-        private MessagingHubClientSUT _SUT;
+        private MessagingHubClient _messagingHubClient;
         private IClientChannel _clientChannel;
         private ISessionFactory _sessionFactory;
 
@@ -39,7 +39,7 @@ namespace Takenet.MessagingHub.Client.Test
             _sessionFactory = Substitute.For<ISessionFactory>();
             _sessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
 
-            _SUT = new MessagingHubClientSUT(clientChannelFactory, _sessionFactory, "msging.net");
+            _messagingHubClient = new MessagingHubClient(clientChannelFactory, _sessionFactory, "msging.net");
         }
 
 
@@ -47,11 +47,11 @@ namespace Takenet.MessagingHub.Client.Test
         public void WhenClientStartUsingAccountShouldConnectToServer()
         {
             // Arrange
-            _SUT.UsingAccount("login", "pass");
+            _messagingHubClient.UsingAccount("login", "pass");
             _sessionFactory.WhenForAnyArgs(s => s.CreateSessionAsync(null, null, null)).Do(s => _clientChannel.State.Returns(SessionState.Established));
 
             // Act
-            var x = _SUT.StartAsync().Result;
+            var x = _messagingHubClient.StartAsync().Result;
 
             // Assert
             _clientChannel.State.ShouldBe(SessionState.Established);
@@ -61,11 +61,11 @@ namespace Takenet.MessagingHub.Client.Test
         public void WhenClientStartUsingAccessKeyShouldConnectToServer()
         {
             // Arrange
-            _SUT.UsingAccessKey("login", "key");
+            _messagingHubClient.UsingAccessKey("login", "key");
             _sessionFactory.WhenForAnyArgs(s => s.CreateSessionAsync(null, null, null)).Do(s => _clientChannel.State.Returns(SessionState.Established));
 
             // Act
-            var x = _SUT.StartAsync().Result;
+            var x = _messagingHubClient.StartAsync().Result;
 
             // Assert
             _clientChannel.State.ShouldBe(SessionState.Established);
@@ -85,7 +85,7 @@ namespace Takenet.MessagingHub.Client.Test
             _sessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
 
             // Act /  Assert
-            Should.ThrowAsync<InvalidOperationException>(async () => await _SUT.StartAsync()).Wait();
+            Should.ThrowAsync<InvalidOperationException>(async () => await _messagingHubClient.StartAsync()).Wait();
         }
 
 
@@ -102,10 +102,10 @@ namespace Takenet.MessagingHub.Client.Test
             _sessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
 
 
-            _SUT.UsingAccount("login", "pass");
+            _messagingHubClient.UsingAccount("login", "pass");
 
             // Act
-            var exception = Should.ThrowAsync<LimeException>(async () => await _SUT.StartAsync()).Result;
+            var exception = Should.ThrowAsync<LimeException>(async () => await _messagingHubClient.StartAsync()).Result;
 
             // Assert
             exception.Reason.Description.ShouldBe(session.Reason.Description);

@@ -16,7 +16,7 @@ namespace Takenet.MessagingHub.Client.Test
 {
     public class MessagingHubClientTests_Close
     {
-        private MessagingHubClientSUT _SUT;
+        private MessagingHubClient _messagingHubClient;
         private IClientChannel _clientChannel;
         private ISessionFactory _sessionFactory;
 
@@ -39,7 +39,7 @@ namespace Takenet.MessagingHub.Client.Test
             _sessionFactory = Substitute.For<ISessionFactory>();
             _sessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
 
-            _SUT = new MessagingHubClientSUT(clientChannelFactory, _sessionFactory, "msging.net");
+            _messagingHubClient = new MessagingHubClient(clientChannelFactory, _sessionFactory, "msging.net");
         }
 
         [Test]
@@ -47,11 +47,11 @@ namespace Takenet.MessagingHub.Client.Test
         {
             //Arrange
             _clientChannel.State.Returns(SessionState.Established);
-            _SUT.UsingAccessKey("login", "key");
-            var y = _SUT.StartAsync().Result; 
+            _messagingHubClient.UsingAccessKey("login", "key");
+            var y = _messagingHubClient.StartAsync().Result; 
 
             // Act
-            var x = _SUT.StopAsync();
+            var x = _messagingHubClient.StopAsync();
 
             // Assert
             _clientChannel.State.ShouldBe(SessionState.Finished);
@@ -61,10 +61,10 @@ namespace Takenet.MessagingHub.Client.Test
         public void WhenClientIsNotConnectedAndCloseConnectionShouldThrowException()
         {
             //Arrange
-            _SUT.UsingAccessKey("login", "key");
+            _messagingHubClient.UsingAccessKey("login", "key");
             
             // Act // Asert
-            Should.ThrowAsync<InvalidOperationException>(async () => await _SUT.StopAsync()).Wait();
+            Should.ThrowAsync<InvalidOperationException>(async () => await _messagingHubClient.StopAsync()).Wait();
         }
 
         [Test]
@@ -76,11 +76,11 @@ namespace Takenet.MessagingHub.Client.Test
             var transport = Substitute.For<ITransport>();
             _clientChannel.Transport.Returns(transport);
 
-            _SUT.UsingAccessKey("login", "key");
-            var y = _SUT.StartAsync().Result;
+            _messagingHubClient.UsingAccessKey("login", "key");
+            var y = _messagingHubClient.StartAsync().Result;
 
             // Act
-            var x = _SUT.StopAsync();
+            var x = _messagingHubClient.StopAsync();
 
             // Assert
             _clientChannel.State.ShouldBe(SessionState.Failed);

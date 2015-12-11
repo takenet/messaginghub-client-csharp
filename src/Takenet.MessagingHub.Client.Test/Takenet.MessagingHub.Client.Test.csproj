@@ -86,7 +86,6 @@
   <ItemGroup>
     <Compile Include="MessagingHubClientTests_Close.cs" />
     <Compile Include="MessagingHubClientTests_Start.cs" />
-    <Compile Include="MessagingHubClientSUT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
