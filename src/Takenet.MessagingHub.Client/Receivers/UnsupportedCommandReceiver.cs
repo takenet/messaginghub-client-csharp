@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Lime.Protocol;
 
-namespace Takenet.MessagingHub.Client
+namespace Takenet.MessagingHub.Client.Receivers
 {
     internal class UnsupportedCommandReceiver : ReceiverBase, ICommandReceiver
     {

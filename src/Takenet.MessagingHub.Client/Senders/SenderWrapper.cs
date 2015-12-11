@@ -2,7 +2,7 @@
 using Lime.Protocol;
 using Lime.Protocol.Client;
 
-namespace Takenet.MessagingHub.Client
+namespace Takenet.MessagingHub.Client.Senders
 {
     class SenderWrapper : IMessageSender, ICommandSender, INotificationSender
     {

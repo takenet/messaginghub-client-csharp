@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Takenet.MessagingHub.Client
+namespace Takenet.MessagingHub.Client.Receivers
 {
     public abstract class MessageReceiverBase : ReceiverBase, IMessageReceiver
     {

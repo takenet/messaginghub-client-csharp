@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Takenet.MessagingHub.Client.Receivers;
 
 namespace Takenet.MessagingHub.Client.Test
 {
@@ -116,7 +117,7 @@ namespace Takenet.MessagingHub.Client.Test
             //Act
             await _messagingHubClient.StartAsync().ConfigureAwait(false);
 
-            await Task.Delay(2000);
+            await Task.Delay(3000);
 
             //Assert
             messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);

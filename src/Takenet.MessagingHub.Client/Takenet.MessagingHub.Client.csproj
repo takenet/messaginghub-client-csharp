@@ -57,28 +57,30 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EnvelopeProcessor.cs" />
-    <Compile Include="ICommandReceiver.cs" />
-    <Compile Include="ICommandSender.cs" />
-    <Compile Include="INotificationReceiver.cs" />
-    <Compile Include="IReceiver.cs" />
-    <Compile Include="ReceiverBase.cs" />
+    <Compile Include="Receivers\CommandReceiverBase.cs" />
+    <Compile Include="Receivers\ICommandReceiver.cs" />
+    <Compile Include="Senders\ICommandSender.cs" />
+    <Compile Include="Receivers\INotificationReceiver.cs" />
+    <Compile Include="Receivers\IReceiver.cs" />
+    <Compile Include="Receivers\NotificationReceiverBase.cs" />
+    <Compile Include="Receivers\ReceiverBase.cs" />
     <Compile Include="SessionFactory.cs" />
     <Compile Include="ClientChannelFactory.cs" />
     <Compile Include="ISessionFactory.cs" />
     <Compile Include="IClientChannelFactory.cs" />
-    <Compile Include="IMessageReceiver.cs" />
-    <Compile Include="IMessageSender.cs" />
+    <Compile Include="Receivers\IMessageReceiver.cs" />
+    <Compile Include="Senders\IMessageSender.cs" />
     <Compile Include="IMessagingHubClient.cs" />
-    <Compile Include="INotificationSender.cs" />
+    <Compile Include="Senders\INotificationSender.cs" />
     <Compile Include="MediaTypes.cs" />
-    <Compile Include="MessageReceiverBase.cs" />
-    <Compile Include="SenderWrapper.cs" />
+    <Compile Include="Receivers\MessageReceiverBase.cs" />
+    <Compile Include="Senders\SenderWrapper.cs" />
     <Compile Include="MessagingHubClient.cs" />
     <Compile Include="MessagingHubClientExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnsupportedCommandReceiver.cs" />
-    <Compile Include="BlackholeNotificationReceiver.cs" />
-    <Compile Include="UnsupportedMessageReceiver.cs" />
+    <Compile Include="Receivers\UnsupportedCommandReceiver.cs" />
+    <Compile Include="Receivers\BlackholeNotificationReceiver.cs" />
+    <Compile Include="Receivers\UnsupportedMessageReceiver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
