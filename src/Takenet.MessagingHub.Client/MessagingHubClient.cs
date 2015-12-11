@@ -53,11 +53,13 @@ namespace Takenet.MessagingHub.Client
             return this;
         }
 
+        #region PublicMethods
+
         /// <summary>
-        /// 
+        /// Add a message receiver listener to handle received messages
         /// </summary>
-        /// <param name="receiver"></param>
-        /// <param name="forMimeType">When not informed, only receives messages which no 'typed' receiver is registered</param>
+        /// <param name="receiver">Listener</param>
+        /// <param name="forMimeType">MediaType used as a filter of messages received by listener. When not informed, only receives messages which no 'typed' receiver is registered</param>
         /// <returns></returns>
         public MessagingHubClient AddMessageReceiver(IMessageReceiver receiver, MediaType forMimeType = null)
         {
@@ -93,17 +95,10 @@ namespace Takenet.MessagingHub.Client
             return running.Task;
         }
 
-        internal virtual Task<Session> EstablishSession(Authentication authentication)
-        {
-            return clientChannel.EstablishSessionAsync(
-                            _ => SessionCompression.None,
-                            _ => SessionEncryption.TLS,
-                            Identity.Parse(this.login),
-                            (_, __) => authentication,
-                            Environment.MachineName,
-                            CancellationToken.None);
-        }
-
+        /// <summary>
+        /// Close connecetion and stop to receive messages from Lime server 
+        /// </summary>
+        /// <returns>
         public async Task StopAsync()
         {
             try
@@ -123,6 +118,24 @@ namespace Takenet.MessagingHub.Client
             {
                 running.SetException(e);
             }
+        }
+
+        #endregion PublicMethods
+
+        #region InternalMethods
+
+        void AddReceiver(MediaType mediaType, IMessageReceiver receiver)
+        {
+            var mediaTypeToSave = mediaType ?? defaultReceiverMediaType;
+
+            IList<IMessageReceiver> mediaTypeReceivers;
+            if (!receivers.TryGetValue(mediaTypeToSave, out mediaTypeReceivers))
+            {
+                mediaTypeReceivers = new List<IMessageReceiver>();
+                receivers.Add(mediaTypeToSave, mediaTypeReceivers);
+            }
+
+            mediaTypeReceivers.Add(receiver);
         }
 
         void StartReceiving()
@@ -171,6 +184,17 @@ namespace Takenet.MessagingHub.Client
             return clientChannel;
         }
 
+        internal virtual Task<Session> EstablishSession(Authentication authentication)
+        {
+            return clientChannel.EstablishSessionAsync(
+                            _ => SessionCompression.None,
+                            _ => SessionEncryption.TLS,
+                            Identity.Parse(this.login),
+                            (_, __) => authentication,
+                            Environment.MachineName,
+                            CancellationToken.None);
+        }
+
         Authentication GetAuthenticationScheme()
         {
             Authentication result = null;
@@ -196,18 +220,6 @@ namespace Takenet.MessagingHub.Client
             return result;
         }
 
-        void AddReceiver(MediaType mediaType, IMessageReceiver receiver)
-        {
-            var mediaTypeToSave = mediaType ?? defaultReceiverMediaType;
-
-            IList<IMessageReceiver> mediaTypeReceivers;
-            if (!receivers.TryGetValue(mediaTypeToSave, out mediaTypeReceivers))
-            {
-                mediaTypeReceivers = new List<IMessageReceiver>();
-                receivers.Add(mediaTypeToSave, mediaTypeReceivers);
-            }
-
-            mediaTypeReceivers.Add(receiver);
-        }
+        #endregion InternalMethods
     }
 }
