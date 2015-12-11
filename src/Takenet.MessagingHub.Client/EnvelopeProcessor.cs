@@ -32,12 +32,16 @@ namespace Takenet.MessagingHub.Client
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var envelope = await producer(cancellationToken).ConfigureAwait(false);
+                T envelope;
 
-                //When cancelation 
-                if (envelope == null)
+                try
                 {
-                    continue;
+                    envelope = await producer(cancellationToken).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    if (cancellationToken.IsCancellationRequested) break;
+                    throw;
                 }
 
                 try

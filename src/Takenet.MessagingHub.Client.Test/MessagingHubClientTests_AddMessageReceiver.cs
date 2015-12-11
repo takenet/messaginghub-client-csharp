@@ -73,6 +73,32 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
+        public async Task WhenClientAddAMessageReceiverAndReceiveAMessageShouldBeHandledByReceiverWhenStopped()
+        {
+            //Arrange
+            _messagingHubClient.UsingAccount("login", "pass");
+            _messagingHubClient.AddMessageReceiver(_messageReceiver);
+
+            _semaphore = new SemaphoreSlim(1);
+
+            _clientChannel.ReceiveMessageAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (callInfo) =>
+            {
+                await _semaphore.WaitAsync(callInfo.Arg<CancellationToken>());
+                return new Message { Content = new PlainDocument(MediaTypes.PlainText) };
+            });
+
+            //Act
+            await _messagingHubClient.StartAsync();
+            
+            await _messagingHubClient.StopAsync();
+
+            //Assert
+            _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
+
+            _semaphore.DisposeIfDisposable();
+        }
+
+        [Test]
         public async Task WhenClientAddAMessageReceiverBaseAndReceiveAMessageTheReceiverShouldHandleAndBeSet()
         {
             //Arrange
