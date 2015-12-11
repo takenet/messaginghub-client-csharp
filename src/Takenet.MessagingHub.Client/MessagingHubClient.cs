@@ -16,6 +16,7 @@ namespace Takenet.MessagingHub.Client
     public class MessagingHubClient
     {
         static readonly MediaType defaultReceiverMediaType = new MediaType("null", "null");
+        static readonly string defaultDomainName = "msging.net";
 
         public IMessageSender MessageSender { get; private set; }
 
@@ -23,6 +24,7 @@ namespace Takenet.MessagingHub.Client
         readonly IDictionary<MediaType, IList<IMessageReceiver>> receivers;
         readonly TaskCompletionSource<bool> running;
 
+        string domainName;
         string login;
         string password;
         string accessKey;
@@ -34,8 +36,10 @@ namespace Takenet.MessagingHub.Client
             running = new TaskCompletionSource<bool>();
         }
 
-        public MessagingHubClient(string hostname) : this()
+        public MessagingHubClient(string hostname = null, string domainName = null) : this()
         {
+            this.domainName = domainName ?? defaultDomainName;
+            hostname = hostname ?? defaultDomainName;
             this.endpoint = new Uri($"net.tcp://{hostname}:55321");
         }
 
@@ -145,7 +149,7 @@ namespace Takenet.MessagingHub.Client
 
         async Task ProcessIncomingMessages()
         {
-            while (running.Task.Status == TaskStatus.Running)
+            while (!running.Task.IsCompleted)
             {
                 var message = await clientChannel.ReceiveMessageAsync(CancellationToken.None);
                 IList<IMessageReceiver> mimeTypeReceivers = null;
@@ -187,12 +191,12 @@ namespace Takenet.MessagingHub.Client
         internal virtual Task<Session> EstablishSession(Authentication authentication)
         {
             return clientChannel.EstablishSessionAsync(
-                            _ => SessionCompression.None,
-                            _ => SessionEncryption.TLS,
-                            Identity.Parse(this.login),
-                            (_, __) => authentication,
-                            Environment.MachineName,
-                            CancellationToken.None);
+                        _ => SessionCompression.None,
+                        _ => SessionEncryption.TLS,
+                        Identity.Parse($"{this.login}@{this.domainName}"),
+                        (_, __) => authentication,
+                        Environment.MachineName,
+                        CancellationToken.None);
         }
 
         Authentication GetAuthenticationScheme()
