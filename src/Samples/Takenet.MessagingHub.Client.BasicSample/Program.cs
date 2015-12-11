@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lime.Protocol;
+using System;
 using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client.BasicSample
@@ -21,7 +22,12 @@ namespace Takenet.MessagingHub.Client.BasicSample
             await client.StartAsync();
 
             //Send a get account command to server (Only sample)
-            //client.SendCommandAsync();
+            var command = new Command {
+                Method = CommandMethod.Get,
+                Uri = new LimeUri("/account")
+            };
+
+            await client.CommandSender.SendCommandAsync(command);
 
             Console.WriteLine("Press any key to stop");
             await WaitKeyAsync();

@@ -12,7 +12,11 @@ namespace Takenet.MessagingHub.Client
     public interface IMessagingHubClient
     {
         IMessageSender MessageSender { get; }
-        
+
+        ICommandSender CommandSender { get; }
+
+        INotificationSender NotificationSender { get; }
+
         MessagingHubClient AddMessageReceiver(IMessageReceiver receiver, MediaType forMimeType = null);
         
         Task StartAsync();

@@ -10,6 +10,5 @@ namespace Takenet.MessagingHub.Client.Receivers
         public IMessageSender MessageSender { get; internal set; }
         public ICommandSender CommandSender { get; internal set; }
         public INotificationSender NotificationSender { get; internal set; }
-
     }
 }

@@ -7,10 +7,9 @@ namespace Takenet.MessagingHub.Client
 {
     public static class MessagingHubClientExtensions
     {
-        public static Task SendMessageAsync(this IMessageSender sender, string content, string to)
-        {
-            return sender.SendMessageAsync(content, Node.Parse(to));
-        }
+        #region SenderWrapper
+
+        public static Task SendMessageAsync(this IMessageSender sender, string content, string to) => sender.SendMessageAsync(content, Node.Parse(to));
 
         public static Task SendMessageAsync(this IMessageSender sender, string content, Node to)
         {
@@ -23,6 +22,13 @@ namespace Takenet.MessagingHub.Client
         }
 
         public static Task SendMessageAsync(this IMessagingHubClient client, string content, string to) => client.MessageSender.SendMessageAsync(content, to);
+
+        public static Task SendCommandAsync(this IMessagingHubClient client, Command command) => client.CommandSender.SendCommandAsync(command);
+
+        public static Task SendNotificationAsync(this IMessagingHubClient client, Notification notification) => client.NotificationSender.SendNotificationAsync(notification);
+
+
+        #endregion SenderWrapper
 
         public static Notification ToReceivedNotification(this Message message) => message.ToNotification(Event.Received);
 

@@ -18,6 +18,7 @@ namespace Takenet.MessagingHub.Client
         static readonly string defaultDomainName = "msging.net";
 
         public IMessageSender MessageSender => sender;
+        public ICommandSender CommandSender => sender;
         public INotificationSender NotificationSender => sender;
 
         readonly Uri _endpoint;
