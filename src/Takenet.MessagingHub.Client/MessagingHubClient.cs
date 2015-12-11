@@ -16,16 +16,19 @@ namespace Takenet.MessagingHub.Client
     {
         static readonly string defaultDomainName = "msging.net";
 
-        public IMessageSender MessageSender { get; private set; }
+        public IMessageSender MessageSender => sender;
+        public INotificationSender NotificationSender => sender;
 
         readonly Uri endpoint;
         readonly IDictionary<MediaType, IList<IMessageReceiver>> receivers;
+        readonly IList<IMessageReceiver> defaultReceivers = new List<IMessageReceiver> { new UnsupportedTypeMessageReceiver() };
 
         string domainName;
         string login;
         string password;
         string accessKey;
         IClientChannel clientChannel;
+        SenderWrapper sender;
 
         CancellationTokenSource cancellationTokenSource;
         Task backgroundExecution;
@@ -88,7 +91,7 @@ namespace Takenet.MessagingHub.Client
                 throw new Exception($"Could not connect: {session.Reason.Description} (code: {session.Reason.Code})");
             }
 
-            MessageSender = new MessageSenderWrapper(clientChannel);
+            sender = new SenderWrapper(clientChannel);
             await clientChannel.SetResourceAsync(
                 LimeUri.Parse(UriTemplates.PRESENCE),
                 new Presence { RoutingRule = RoutingRule.Identity },
@@ -158,16 +161,19 @@ namespace Takenet.MessagingHub.Client
                 }
 
                 IList<IMessageReceiver> mimeTypeReceivers = null;
-                if (receivers.TryGetValue(message.Type, out mimeTypeReceivers) ||
-                    receivers.TryGetValue(MediaTypes.Any, out mimeTypeReceivers))
+                var hasReceiver = receivers.TryGetValue(message.Type, out mimeTypeReceivers) ||
+                                  receivers.TryGetValue(MediaTypes.Any, out mimeTypeReceivers);
+                if (!hasReceiver)
                 {
-                    try
-                    {
-                        await Task.WhenAll(
-                                mimeTypeReceivers.Select(r => CallMessageReceiver(r, message))).ConfigureAwait(false);
-                    }
-                    catch { }
+                    mimeTypeReceivers = defaultReceivers;
                 }
+
+                try
+                {
+                    await Task.WhenAll(
+                            mimeTypeReceivers.Select(r => CallMessageReceiver(r, message))).ConfigureAwait(false);
+                }
+                catch { }
             }
         }
 
@@ -175,7 +181,9 @@ namespace Takenet.MessagingHub.Client
         {
             if (receiver is MessageReceiverBase)
             {
-                ((MessageReceiverBase)receiver).Sender = MessageSender;
+                var receiverBase = ((MessageReceiverBase)receiver);
+                receiverBase.MessageSender = sender;
+                receiverBase.NotificationSender = sender;
             }
 
             return receiver.ReceiveAsync(message);
