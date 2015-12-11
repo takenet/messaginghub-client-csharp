@@ -13,7 +13,7 @@ namespace Takenet.MessagingHub.Client
         
         MessagingHubClient AddMessageReceiver(IMessageReceiver receiver, MediaType forMimeType = null);
         
-        Task<Task> StartAsync();
+        Task StartAsync();
 
         Task StopAsync();
     }

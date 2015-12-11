@@ -43,12 +43,12 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void WhenClientIsConnectedAndCloseConnectionShouldDisconnectFromServer()
+        public async Task WhenClientIsConnectedAndCloseConnectionShouldDisconnectFromServer()
         {
             //Arrange
             _clientChannel.State.Returns(SessionState.Established);
             _messagingHubClient.UsingAccessKey("login", "key");
-            var y = _messagingHubClient.StartAsync().Result; 
+            await _messagingHubClient.StartAsync(); 
 
             // Act
             var x = _messagingHubClient.StopAsync();
@@ -68,7 +68,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void WhenClientHasntEstablishedSessionAndCloseConnectionShouldDisconnectFromServer()
+        public async Task WhenClientHasntEstablishedSessionAndCloseConnectionShouldDisconnectFromServer()
         {
             //Arrange
             _clientChannel.State.Returns(SessionState.Failed);
@@ -77,14 +77,14 @@ namespace Takenet.MessagingHub.Client.Test
             _clientChannel.Transport.Returns(transport);
 
             _messagingHubClient.UsingAccessKey("login", "key");
-            var y = _messagingHubClient.StartAsync().Result;
+            await _messagingHubClient.StartAsync();
 
             // Act
             var x = _messagingHubClient.StopAsync();
 
             // Assert
             _clientChannel.State.ShouldBe(SessionState.Failed);
-            transport.CloseAsync(CancellationToken.None);
+            await transport.CloseAsync(CancellationToken.None);
         }
     }
 }

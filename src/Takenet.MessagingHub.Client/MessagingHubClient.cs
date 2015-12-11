@@ -45,7 +45,7 @@ namespace Takenet.MessagingHub.Client
             _domainName = domainName ?? defaultDomainName;
         }
 
-        public MessagingHubClient(string hostname = null, string domainName = null) : 
+        public MessagingHubClient(string hostname = null, string domainName = null) :
             this(new ClientChannelFactory(), new SessionFactory(), hostname, domainName)
         { }
 
@@ -81,7 +81,7 @@ namespace Takenet.MessagingHub.Client
         /// Connect and receives messages from Lime server
         /// </summary>
         /// <returns>Task representing the running state of the client (when this tasks finishes, the connection has been terminated)</returns>
-        public async Task<Task> StartAsync()
+        public async Task StartAsync()
         {
             var authentication = GetAuthenticationScheme();
 
@@ -106,8 +106,6 @@ namespace Takenet.MessagingHub.Client
             _messageReceiver = Task.Run(() => ProcessIncomingMessages(_cancellationTokenSource.Token));
             //Add all background tasks here. Ex: notification receiver
             _backgroundExecution = Task.WhenAll(_messageReceiver);
-
-            return _backgroundExecution;
         }
 
         /// <summary>
@@ -119,13 +117,13 @@ namespace Takenet.MessagingHub.Client
             if (_clientChannel == null) throw new InvalidOperationException("Is not possible call 'Stop' method before 'Start'");
 
             if (_clientChannel?.State == SessionState.Established)
-                {
-                    await _clientChannel.SendFinishingSessionAsync().ConfigureAwait(false);
-                }
-                else
-                {
-                    await _clientChannel.Transport.CloseAsync(CancellationToken.None).ConfigureAwait(false);
-                }
+            {
+                await _clientChannel.SendFinishingSessionAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                await _clientChannel.Transport.CloseAsync(CancellationToken.None).ConfigureAwait(false);
+            }
 
             if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
             {
@@ -161,9 +159,9 @@ namespace Takenet.MessagingHub.Client
 
                 //When cancelation 
                 if (message == null)
-        {
+                {
                     continue;
-        }
+                }
 
                 IList<IMessageReceiver> mimeTypeReceivers = null;
                 var hasReceiver = _receivers.TryGetValue(message.Type, out mimeTypeReceivers) ||
@@ -173,14 +171,14 @@ namespace Takenet.MessagingHub.Client
                     mimeTypeReceivers = _defaultReceivers;
                 }
 
-                    try
+                try
                 {
                     await Task.WhenAll(
                                 mimeTypeReceivers.Select(r => CallMessageReceiver(r, message))).ConfigureAwait(false);
-                    }
-                    catch { }
                 }
+                catch { }
             }
+        }
 
         Task CallMessageReceiver(IMessageReceiver receiver, Message message)
         {
@@ -218,7 +216,7 @@ namespace Takenet.MessagingHub.Client
 
             return result;
         }
-
+        
         #endregion InternalMethods
     }
 }
