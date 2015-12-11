@@ -14,21 +14,21 @@ using Takenet.MessagingHub.Client.Receivers;
 namespace Takenet.MessagingHub.Client.Test
 {
     [TestFixture]
-    class MessagingHubClientTests_AddMessageReceiver
+    class MessagingHubClientTests_AddNotificationReceiver
     {
-        public Message SomeMessage => new Message { Content = new PlainDocument(MediaTypes.PlainText) };
+        public Notification SomeNotification => new Notification { Event = Event.Accepted };
 
         private MessagingHubClient _messagingHubClient;
         private IClientChannel _clientChannel;
         private ISessionFactory _sessionFactory;
-        private IMessageReceiver _messageReceiver;
+        private INotificationReceiver _notificationReceiver;
         private TaskCompletionSource<Message> _tcsMessage;
         private SemaphoreSlim _semaphore;
 
         [SetUp]
         public void Setup()
         {
-            _messageReceiver = Substitute.For<IMessageReceiver>();
+            _notificationReceiver = Substitute.For<INotificationReceiver>();
 
             _clientChannel = Substitute.For<IClientChannel>();
             var presenceCommand = new Command();
@@ -47,18 +47,19 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
+        [Ignore]
         public async Task WhenClientAddAMessageReceiverAndReceiveAMessageShouldBeHandledByReceiver()
         {
             //Arrange
             _messagingHubClient.UsingAccount("login", "pass");
-            _messagingHubClient.AddMessageReceiver(_messageReceiver);
+            _messagingHubClient.AddNotificationReceiver(_notificationReceiver);
 
             _semaphore = new SemaphoreSlim(1);
 
-            _clientChannel.ReceiveMessageAsync(new CancellationTokenSource().Token).ReturnsForAnyArgs(async (callInfo) =>
+            _clientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (callInfo) =>
             {
                 await _semaphore.WaitAsync();
-                return SomeMessage;
+                return SomeNotification;
             });
 
             //Act
@@ -67,12 +68,13 @@ namespace Takenet.MessagingHub.Client.Test
             await Task.Delay(3000);
 
             //Assert
-            _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
+            _notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
 
             _semaphore.DisposeIfDisposable();
         }
 
         [Test]
+        [Ignore]
         public async Task WhenClientAddAMessageReceiverBaseAndReceiveAMessageTheReceiverShouldHandleAndBeSet()
         {
             //Arrange
@@ -84,10 +86,10 @@ namespace Takenet.MessagingHub.Client.Test
 
             _semaphore = new SemaphoreSlim(1);
 
-            _clientChannel.ReceiveMessageAsync(new CancellationTokenSource().Token).ReturnsForAnyArgs(async (_) =>
+            _clientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (_) =>
             {
                 await _semaphore.WaitAsync().ConfigureAwait(false);
-                return SomeMessage;
+                return SomeNotification;
             });
 
             //Act

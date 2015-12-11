@@ -84,6 +84,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessagingHubClientTests_AddCommandReceiver.cs" />
+    <Compile Include="MessagingHubClientTests_AddNotificationReceiver.cs" />
     <Compile Include="MessagingHubClientTests_AddMessageReceiver.cs" />
     <Compile Include="MessagingHubClientTests_Close.cs" />
     <Compile Include="MessagingHubClientTests_Start.cs" />
