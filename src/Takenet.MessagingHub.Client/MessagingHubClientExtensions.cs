@@ -8,12 +8,7 @@ namespace Takenet.MessagingHub.Client
     {
         public static Task SendMessageAsync(this IMessageSender sender, string content, string to)
         {
-            var message = new Message
-            {
-                To = Node.Parse(to),
-                Content = CreatePlainTextContent(content)
-            };
-            return sender.SendMessageAsync(message);
+            return sender.SendMessageAsync(content, Node.Parse(to));
         }
 
         public static Task SendMessageAsync(this IMessageSender sender, string content, Node to)
@@ -26,7 +21,7 @@ namespace Takenet.MessagingHub.Client
             return sender.SendMessageAsync(message);
         }
 
-        public static Task SendMessageAsync(this MessagingHubClient client, string content, string to) => client.MessageSender.SendMessageAsync(content, to);
+        public static Task SendMessageAsync(this IMessagingHubClient client, string content, string to) => client.MessageSender.SendMessageAsync(content, to);
 
         static PlainText CreatePlainTextContent(string content) => new PlainText { Text = content };
     }

@@ -11,33 +11,38 @@ using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client
 {
-    public class MessagingHubClient
+    public class MessagingHubClient : IMessagingHubClient
     {
-        static readonly MediaType defaultReceiverMediaType = new MediaType("null", "null");
+        static readonly string defaultDomainName = "msging.net";
 
         public IMessageSender MessageSender { get; private set; }
 
         readonly Uri _endpoint;
         readonly IDictionary<MediaType, IList<IMessageReceiver>> _receivers;
-        readonly TaskCompletionSource<bool> _running;
 
         string _login;
         string _password;
         string _accessKey;
+        string _domainName;
         IClientChannel _clientChannel;
         IClientChannelFactory _clientChannelFactory;
         ISessionFactory _sessionFactory;
-            
-        internal MessagingHubClient(IClientChannelFactory clientChannelFactory, ISessionFactory sessionFactory, string hostname)
+
+        CancellationTokenSource cancellationTokenSource;
+        Task backgroundExecution;
+        Task messageReceiver;
+
+        internal MessagingHubClient(IClientChannelFactory clientChannelFactory, ISessionFactory sessionFactory, string hostname = null, string domainName = null)
         {
             _receivers = new Dictionary<MediaType, IList<IMessageReceiver>>();
-            _running = new TaskCompletionSource<bool>();
             _clientChannelFactory = clientChannelFactory;
             _sessionFactory = sessionFactory;
             _endpoint = new Uri($"net.tcp://{hostname}:55321");
+            _domainName = domainName ?? defaultDomainName;
+            hostname = hostname ?? defaultDomainName;
         }
 
-        public MessagingHubClient(string hostname) : 
+        public MessagingHubClient(string hostname = null) : 
             this(new ClientChannelFactory(), new SessionFactory(), hostname)
         { }
 
@@ -77,9 +82,9 @@ namespace Takenet.MessagingHub.Client
         {
             var authentication = GetAuthenticationScheme();
 
-            _clientChannel = await _clientChannelFactory.CreateClientChannelAsync(_endpoint);
+            _clientChannel = await _clientChannelFactory.CreateClientChannelAsync(_endpoint).ConfigureAwait(false);
 
-            var session = await _sessionFactory.CreateSessionAsync(_clientChannel, _login, authentication);
+            var session = await _sessionFactory.CreateSessionAsync(_clientChannel, _login, authentication).ConfigureAwait(false);
 
             if (session.State != SessionState.Established)
             {
@@ -90,11 +95,15 @@ namespace Takenet.MessagingHub.Client
             await _clientChannel.SetResourceAsync(
                 LimeUri.Parse(UriTemplates.PRESENCE),
                 new Presence { RoutingRule = RoutingRule.Identity },
-                CancellationToken.None);
+                CancellationToken.None)
+                .ConfigureAwait(false);
 
-            StartReceiving();
+            cancellationTokenSource = new CancellationTokenSource();
+            messageReceiver = Task.Run(() => ProcessIncomingMessages(cancellationTokenSource.Token));
+            //Add all background tasks here. Ex: notification receiver
+            backgroundExecution = Task.WhenAll(messageReceiver);
 
-            return _running.Task;
+            return backgroundExecution;
         }
 
         /// <summary>
@@ -103,22 +112,21 @@ namespace Takenet.MessagingHub.Client
         /// <returns>
         public async Task StopAsync()
         {
-            try
-            {
-                if (_clientChannel?.State == SessionState.Established)
+
+            if (_clientChannel?.State == SessionState.Established)
                 {
-                    await _clientChannel.SendFinishingSessionAsync();
+                    await _clientChannel.SendFinishingSessionAsync().ConfigureAwait(false);
                 }
                 else
                 {
-                    await _clientChannel.Transport.CloseAsync(CancellationToken.None);
+                    await _clientChannel.Transport.CloseAsync(CancellationToken.None).ConfigureAwait(false);
                 }
 
-                _running.SetResult(true);
-            }
-            catch (Exception e)
+            if (cancellationTokenSource != null && !cancellationTokenSource.IsCancellationRequested)
             {
-                _running.SetException(e);
+                cancellationTokenSource.Cancel();
+                await backgroundExecution;
+                cancellationTokenSource.Dispose();
             }
         }
 
@@ -128,7 +136,7 @@ namespace Takenet.MessagingHub.Client
 
         void AddReceiver(MediaType mediaType, IMessageReceiver receiver)
         {
-            var mediaTypeToSave = mediaType ?? defaultReceiverMediaType;
+            var mediaTypeToSave = mediaType ?? MediaTypes.Any;
 
             IList<IMessageReceiver> mediaTypeReceivers;
             if (!_receivers.TryGetValue(mediaTypeToSave, out mediaTypeReceivers))
@@ -140,23 +148,28 @@ namespace Takenet.MessagingHub.Client
             mediaTypeReceivers.Add(receiver);
         }
 
-        void StartReceiving()
+        async Task ProcessIncomingMessages(CancellationToken cancellationToken)
         {
-            Task.Run(ProcessIncomingMessages);
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var message = await _clientChannel.ReceiveMessageAsync(cancellationToken).ConfigureAwait(false);
+
+                //When cancelation 
+                if(message == null)
+        {
+                    continue;
         }
 
-        async Task ProcessIncomingMessages()
-        {
-            while (_running.Task.Status == TaskStatus.Running)
-            {
-                var message = await _clientChannel.ReceiveMessageAsync(CancellationToken.None);
                 IList<IMessageReceiver> mimeTypeReceivers = null;
                 if (_receivers.TryGetValue(message.Type, out mimeTypeReceivers) ||
-                    _receivers.TryGetValue(MediaTypes.Any, out mimeTypeReceivers) ||
-                    _receivers.TryGetValue(defaultReceiverMediaType, out mimeTypeReceivers))
+                    _receivers.TryGetValue(MediaTypes.Any, out mimeTypeReceivers))
+                {
+                    try
                 {
                     await Task.WhenAll(
-                        mimeTypeReceivers.Select(r => CallMessageReceiver(r, message)));
+                                mimeTypeReceivers.Select(r => CallMessageReceiver(r, message))).ConfigureAwait(false);
+                    }
+                    catch { }
                 }
             }
         }
