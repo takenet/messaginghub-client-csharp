@@ -44,28 +44,28 @@ namespace Takenet.MessagingHub.Client.Test
 
 
         [Test]
-        public void WhenClientStartUsingAccountShouldConnectToServer()
+        public async Task WhenClientStartUsingAccountShouldConnectToServer()
         {
             // Arrange
             _messagingHubClient.UsingAccount("login", "pass");
             _sessionFactory.WhenForAnyArgs(s => s.CreateSessionAsync(null, null, null)).Do(s => _clientChannel.State.Returns(SessionState.Established));
 
             // Act
-            var x = _messagingHubClient.StartAsync().Result;
+            await _messagingHubClient.StartAsync();
 
             // Assert
             _clientChannel.State.ShouldBe(SessionState.Established);
         }
 
         [Test]
-        public void WhenClientStartUsingAccessKeyShouldConnectToServer()
+        public async Task WhenClientStartUsingAccessKeyShouldConnectToServer()
         {
             // Arrange
             _messagingHubClient.UsingAccessKey("login", "key");
             _sessionFactory.WhenForAnyArgs(s => s.CreateSessionAsync(null, null, null)).Do(s => _clientChannel.State.Returns(SessionState.Established));
 
             // Act
-            var x = _messagingHubClient.StartAsync().Result;
+            await _messagingHubClient.StartAsync();
 
             // Assert
             _clientChannel.State.ShouldBe(SessionState.Established);

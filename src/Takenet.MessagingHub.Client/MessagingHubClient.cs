@@ -49,7 +49,7 @@ namespace Takenet.MessagingHub.Client
             _domainName = domainName ?? defaultDomainName;
         }
 
-        public MessagingHubClient(string hostname = null, string domainName = null) :
+        public MessagingHubClient(string hostname = null, string domainName = null) : 
             this(new ClientChannelFactory(), new SessionFactory(), hostname, domainName)
         { }
 
@@ -94,7 +94,7 @@ namespace Takenet.MessagingHub.Client
         /// Connect and receives messages from Lime server
         /// </summary>
         /// <returns>Task representing the running state of the client (when this tasks finishes, the connection has been terminated)</returns>
-        public async Task<Task> StartAsync()
+        public async Task StartAsync()
         {
             var authentication = GetAuthenticationScheme();
 
@@ -130,13 +130,13 @@ namespace Takenet.MessagingHub.Client
             if (_clientChannel == null) throw new InvalidOperationException("Is not possible call 'Stop' method before 'Start'");
 
             if (_clientChannel?.State == SessionState.Established)
-            {
-                await _clientChannel.SendFinishingSessionAsync().ConfigureAwait(false);
-            }
-            else
-            {
-                await _clientChannel.Transport.CloseAsync(CancellationToken.None).ConfigureAwait(false);
-            }
+                {
+                    await _clientChannel.SendFinishingSessionAsync().ConfigureAwait(false);
+                }
+                else
+                {
+                    await _clientChannel.Transport.CloseAsync(CancellationToken.None).ConfigureAwait(false);
+                }
 
             if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
             {
@@ -175,21 +175,21 @@ namespace Takenet.MessagingHub.Client
 
         IList<IMessageReceiver> GetReceiversFor(Message message)
         {
-            IList<IMessageReceiver> mimeTypeReceivers = null;
+                IList<IMessageReceiver> mimeTypeReceivers = null;
             var hasReceiver = _messageReceivers.TryGetValue(message.Type, out mimeTypeReceivers) ||
                               _messageReceivers.TryGetValue(MediaTypes.Any, out mimeTypeReceivers);
-            if (!hasReceiver)
-            {
+                if (!hasReceiver)
+                {
                 mimeTypeReceivers = _defaultMessageReceivers;
-            }
+                }
 
             return mimeTypeReceivers;
-        }
+            }
 
         IList<ICommandReceiver> GetReceiversFor(Command command)
-        {
+            {
             return _defaultCommandReceivers;
-        }
+            }
 
         IList<INotificationReceiver> GetReceiversFor(Notification notificaiton)
         {
