@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client
 {
-    public interface IMessageReceiver
+    public interface ICommandSender
     {
-        Task ReceiveAsync(Message message);
+        Task SendCommandAsync(Command command);
     }
 }

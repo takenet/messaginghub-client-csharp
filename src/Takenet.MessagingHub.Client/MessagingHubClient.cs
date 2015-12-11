@@ -19,8 +19,10 @@ namespace Takenet.MessagingHub.Client
         public INotificationSender NotificationSender => sender;
 
         readonly Uri _endpoint;
-        readonly IDictionary<MediaType, IList<IMessageReceiver>> _receivers;
-        readonly IList<IMessageReceiver> _defaultReceivers = new List<IMessageReceiver> { new UnsupportedTypeMessageReceiver() };
+        readonly IDictionary<MediaType, IList<IMessageReceiver>> _messageReceivers;
+        readonly IList<IMessageReceiver> _defaultMessageReceivers = new List<IMessageReceiver> { new UnsupportedMessageReceiver() };
+        readonly IList<ICommandReceiver> _defaultCommandReceivers = new List<ICommandReceiver> { new UnsupportedCommandReceiver() };
+        readonly IList<INotificationReceiver> _defaultNotificationReceivers = new List<INotificationReceiver> { new BlackholeNotificationReceiver() };
 
         string _login;
         string _password;
@@ -34,10 +36,12 @@ namespace Takenet.MessagingHub.Client
         CancellationTokenSource _cancellationTokenSource;
         Task _backgroundExecution;
         Task _messageReceiver;
+        Task _commandReceiver;
+        Task _notiticationReceiver;
 
         internal MessagingHubClient(IClientChannelFactory clientChannelFactory, ISessionFactory sessionFactory, string hostname = null, string domainName = null)
         {
-            _receivers = new Dictionary<MediaType, IList<IMessageReceiver>>();
+            _messageReceivers = new Dictionary<MediaType, IList<IMessageReceiver>>();
             _clientChannelFactory = clientChannelFactory;
             _sessionFactory = sessionFactory;
             hostname = hostname ?? defaultDomainName;
@@ -45,7 +49,7 @@ namespace Takenet.MessagingHub.Client
             _domainName = domainName ?? defaultDomainName;
         }
 
-        public MessagingHubClient(string hostname = null, string domainName = null) : 
+        public MessagingHubClient(string hostname = null, string domainName = null) :
             this(new ClientChannelFactory(), new SessionFactory(), hostname, domainName)
         { }
 
@@ -104,8 +108,9 @@ namespace Takenet.MessagingHub.Client
 
             _cancellationTokenSource = new CancellationTokenSource();
             _messageReceiver = Task.Run(() => ProcessIncomingMessages(_cancellationTokenSource.Token));
-            //Add all background tasks here. Ex: notification receiver
-            _backgroundExecution = Task.WhenAll(_messageReceiver);
+            _commandReceiver = Task.Run(() => ProcessIncomingCommands(_cancellationTokenSource.Token));
+            _notiticationReceiver = Task.Run(() => ProcessIncomingNotifications(_cancellationTokenSource.Token));
+            _backgroundExecution = Task.WhenAll(_messageReceiver, _commandReceiver, _notiticationReceiver);
 
             return _backgroundExecution;
         }
@@ -119,13 +124,13 @@ namespace Takenet.MessagingHub.Client
             if (_clientChannel == null) throw new InvalidOperationException("Is not possible call 'Stop' method before 'Start'");
 
             if (_clientChannel?.State == SessionState.Established)
-                {
-                    await _clientChannel.SendFinishingSessionAsync().ConfigureAwait(false);
-                }
-                else
-                {
-                    await _clientChannel.Transport.CloseAsync(CancellationToken.None).ConfigureAwait(false);
-                }
+            {
+                await _clientChannel.SendFinishingSessionAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                await _clientChannel.Transport.CloseAsync(CancellationToken.None).ConfigureAwait(false);
+            }
 
             if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
             {
@@ -144,10 +149,10 @@ namespace Takenet.MessagingHub.Client
             var mediaTypeToSave = mediaType ?? MediaTypes.Any;
 
             IList<IMessageReceiver> mediaTypeReceivers;
-            if (!_receivers.TryGetValue(mediaTypeToSave, out mediaTypeReceivers))
+            if (!_messageReceivers.TryGetValue(mediaTypeToSave, out mediaTypeReceivers))
             {
                 mediaTypeReceivers = new List<IMessageReceiver>();
-                _receivers.Add(mediaTypeToSave, mediaTypeReceivers);
+                _messageReceivers.Add(mediaTypeToSave, mediaTypeReceivers);
             }
 
             mediaTypeReceivers.Add(receiver);
@@ -161,37 +166,97 @@ namespace Takenet.MessagingHub.Client
 
                 //When cancelation 
                 if (message == null)
-        {
-                    continue;
-        }
-
-                IList<IMessageReceiver> mimeTypeReceivers = null;
-                var hasReceiver = _receivers.TryGetValue(message.Type, out mimeTypeReceivers) ||
-                                  _receivers.TryGetValue(MediaTypes.Any, out mimeTypeReceivers);
-                if (!hasReceiver)
                 {
-                    mimeTypeReceivers = _defaultReceivers;
+                    continue;
                 }
 
-                    try
+                IList<IMessageReceiver> mimeTypeReceivers = null;
+                var hasReceiver = _messageReceivers.TryGetValue(message.Type, out mimeTypeReceivers) ||
+                                  _messageReceivers.TryGetValue(MediaTypes.Any, out mimeTypeReceivers);
+                if (!hasReceiver)
+                {
+                    mimeTypeReceivers = _defaultMessageReceivers;
+                }
+
+                try
                 {
                     await Task.WhenAll(
                                 mimeTypeReceivers.Select(r => CallMessageReceiver(r, message))).ConfigureAwait(false);
-                    }
-                    catch { }
                 }
+                catch { }
             }
+        }
+
+        async Task ProcessIncomingCommands(CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var command = await _clientChannel.ReceiveCommandAsync(cancellationToken);
+
+                if (command == null)
+                {
+                    continue;
+                }
+
+                var commandReceivers = _defaultCommandReceivers;
+                try
+                {
+                    await Task.WhenAll(
+                                commandReceivers.Select(r => CallCommandReceiver(r, command))).ConfigureAwait(false);
+                }
+                catch { }
+            }
+        }
+
+        async Task ProcessIncomingNotifications(CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var notification = await _clientChannel.ReceiveNotificationAsync(cancellationToken);
+
+                if (notification == null)
+                {
+                    continue;
+                }
+
+                var notificationReceivers = _defaultNotificationReceivers;
+                try
+                {
+                    await Task.WhenAll(
+                                notificationReceivers.Select(r => CallNotificationReceiver(r, notification))).ConfigureAwait(false);
+                }
+                catch { }
+            }
+        }
+
 
         Task CallMessageReceiver(IMessageReceiver receiver, Message message)
         {
-            if (receiver is MessageReceiverBase)
+            InjectSenders(receiver);
+            return receiver.ReceiveAsync(message);
+        }
+
+        Task CallCommandReceiver(ICommandReceiver receiver, Command command)
+        {
+            InjectSenders(receiver);
+            return receiver.ReceiveAsync(command);
+        }
+
+        Task CallNotificationReceiver(INotificationReceiver receiver, Notification notification)
+        {
+            InjectSenders(receiver);
+            return receiver.ReceiveAsync(notification);
+        }
+
+        void InjectSenders(object receiver)
+        {
+            if (receiver is ReceiverBase)
             {
-                var receiverBase = ((MessageReceiverBase)receiver);
+                var receiverBase = ((ReceiverBase)receiver);
                 receiverBase.MessageSender = sender;
+                receiverBase.CommandSender = sender;
                 receiverBase.NotificationSender = sender;
             }
-
-            return receiver.ReceiveAsync(message);
         }
 
         Authentication GetAuthenticationScheme()

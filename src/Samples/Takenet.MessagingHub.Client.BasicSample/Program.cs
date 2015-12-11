@@ -16,7 +16,7 @@ namespace Takenet.MessagingHub.Client.BasicSample
             var endingTask = Task.WhenAny(execution, WaitKeyAsync()).Result;
             if (endingTask != execution)
             {
-                client.StopAsync().Wait();
+                 client.StopAsync().Wait();
             }
         }
 
