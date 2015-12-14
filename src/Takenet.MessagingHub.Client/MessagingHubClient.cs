@@ -23,8 +23,8 @@ namespace Takenet.MessagingHub.Client
 
         readonly Uri _endpoint;
         readonly IDictionary<MediaType, IList<IMessageReceiver>> _messageReceivers;
-        readonly IDictionary<MediaType, IList<ICommandReceiver>> _commandReceivers;
-        readonly IDictionary<MediaType, IList<INotificationReceiver>> _notificationReceivers;
+        readonly IDictionary<string, IList<ICommandReceiver>> _commandReceivers;
+        readonly IDictionary<Event, IList<INotificationReceiver>> _notificationReceivers;
 
         readonly IList<IMessageReceiver> _defaultMessageReceivers = new List<IMessageReceiver> { new UnsupportedMessageReceiver() };
         readonly IList<ICommandReceiver> _defaultCommandReceivers = new List<ICommandReceiver> { new UnsupportedCommandReceiver() };
@@ -48,8 +48,8 @@ namespace Takenet.MessagingHub.Client
         internal MessagingHubClient(IClientChannelFactory clientChannelFactory, ISessionFactory sessionFactory, string hostname = null, string domainName = null)
         {
             _messageReceivers = new Dictionary<MediaType, IList<IMessageReceiver>>();
-            _commandReceivers = new Dictionary<MediaType, IList<ICommandReceiver>>();
-            _notificationReceivers = new Dictionary<MediaType, IList<INotificationReceiver>>();
+            _commandReceivers = new Dictionary<string, IList<ICommandReceiver>>();
+            _notificationReceivers = new Dictionary<Event, IList<INotificationReceiver>>();
             _clientChannelFactory = clientChannelFactory;
             _sessionFactory = sessionFactory;
             hostname = hostname ?? defaultDomainName;
@@ -99,44 +99,39 @@ namespace Takenet.MessagingHub.Client
         }
 
         /// <summary>
-        /// Add a command receiver listener to handle received commands
-        /// </summary>
-        /// <param name="receiver">Listener</param>
-        /// <param name="forMimeType">MediaType used as a filter of command received by listener. When not informed, only receives commands which no 'typed' receiver is registered</param>
-        /// <returns></returns>
-        public MessagingHubClient AddCommandReceiver(ICommandReceiver receiver, MediaType forMimeType = null)
-        {
-            var mediaTypeToSave = forMimeType ?? MediaTypes.Any;
-
-            IList<ICommandReceiver> mediaTypeReceivers;
-            if (!_commandReceivers.TryGetValue(mediaTypeToSave, out mediaTypeReceivers))
-            {
-                mediaTypeReceivers = new List<ICommandReceiver>();
-                _commandReceivers.Add(mediaTypeToSave, mediaTypeReceivers);
-            }
-
-            mediaTypeReceivers.Add(receiver);
-            return this;
-        }
-
-        /// <summary>
         /// Add a notification receiver listener to handle received notifications
         /// </summary>
         /// <param name="receiver">Listener</param>
         /// <param name="forMimeType">MediaType used as a filter of notification received by listener. When not informed, only receives notifications which no 'typed' receiver is registered</param>
         /// <returns></returns>
-        public MessagingHubClient AddNotificationReceiver(INotificationReceiver receiver, MediaType forMimeType = null)
+        public MessagingHubClient AddNotificationReceiver(INotificationReceiver receiver, Event? forEventType = null)
         {
-            var mediaTypeToSave = forMimeType ?? MediaTypes.Any;
+            IList<INotificationReceiver> eventTypeReceivers;
 
-            IList<INotificationReceiver> mediaTypeReceivers;
-            if (!_notificationReceivers.TryGetValue(mediaTypeToSave, out mediaTypeReceivers))
+            if (forEventType.HasValue)
             {
-                mediaTypeReceivers = new List<INotificationReceiver>();
-                _notificationReceivers.Add(mediaTypeToSave, mediaTypeReceivers);
-            }
+                if (!_notificationReceivers.TryGetValue(forEventType.Value, out eventTypeReceivers))
+                {
+                    eventTypeReceivers = new List<INotificationReceiver>();
+                    _notificationReceivers.Add(forEventType.Value, eventTypeReceivers);
+                }
 
-            mediaTypeReceivers.Add(receiver);
+                eventTypeReceivers.Add(receiver);
+            }
+            else
+            {
+                eventTypeReceivers = new List<INotificationReceiver>();
+                eventTypeReceivers.Add(receiver);
+
+                _notificationReceivers.Add(Event.Accepted, eventTypeReceivers);
+                _notificationReceivers.Add(Event.Authorized, eventTypeReceivers);
+                _notificationReceivers.Add(Event.Consumed, eventTypeReceivers);
+                _notificationReceivers.Add(Event.Dispatched, eventTypeReceivers);
+                _notificationReceivers.Add(Event.Failed, eventTypeReceivers);
+                _notificationReceivers.Add(Event.Received, eventTypeReceivers);
+                _notificationReceivers.Add(Event.Validated, eventTypeReceivers);
+            }
+            
             return this;
         }
 
@@ -236,8 +231,8 @@ namespace Takenet.MessagingHub.Client
         IList<ICommandReceiver> GetReceiversFor(Command command)
         {
             IList<ICommandReceiver> mimeTypeReceivers = null;
-            var hasReceiver = _commandReceivers.TryGetValue(command.Type, out mimeTypeReceivers) ||
-                              _commandReceivers.TryGetValue(MediaTypes.Any, out mimeTypeReceivers);
+            var hasReceiver = _commandReceivers.TryGetValue(command.Uri?.ToUri()?.AbsolutePath, out mimeTypeReceivers) ||
+                              _commandReceivers.TryGetValue(LimeUris.Any.ToUri().AbsolutePath, out mimeTypeReceivers);
             if (!hasReceiver)
             {
                 mimeTypeReceivers = _defaultCommandReceivers;

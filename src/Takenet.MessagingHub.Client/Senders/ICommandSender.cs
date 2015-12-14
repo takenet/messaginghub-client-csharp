@@ -5,6 +5,6 @@ namespace Takenet.MessagingHub.Client.Senders
 {
     public interface ICommandSender
     {
-        Task SendCommandAsync(Command command);
+        Task<Command> SendCommandAsync(Command command);
     }
 }
