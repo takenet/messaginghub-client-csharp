@@ -76,8 +76,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        [Ignore]
-        public async Task WhenClientAddACommandReceiverBaseAndReceiveACommandTheReceiverShouldHandleAndBeSet()
+        public void WhenClientAddACommandReceiverBaseAndReceiveACommandTheReceiverShouldHandleAndBeSet()
         {
             //Arrange
 
@@ -86,18 +85,12 @@ namespace Takenet.MessagingHub.Client.Test
             _messagingHubClient.UsingAccount("login", "pass");
             _messagingHubClient.AddCommandReceiver(commandReceiver);
 
-            _semaphore = new SemaphoreSlim(1);
-
-            _clientChannel.ReceiveCommandAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (_) =>
-            {
-                await _semaphore.WaitAsync().ConfigureAwait(false);
-                return SomeCommand;
-            });
+            _semaphore = new SemaphoreSlim(2);
 
             //Act
-            await _messagingHubClient.StartAsync().ConfigureAwait(false);
+            _messagingHubClient.StartAsync().ConfigureAwait(false);
 
-            await Task.Delay(3000);
+            Task.Delay(3000).Wait();
 
             //Assert
             commandReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
