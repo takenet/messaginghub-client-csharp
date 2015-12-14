@@ -37,7 +37,12 @@ namespace Takenet.MessagingHub.Client.Test
             _clientChannel.ReceiveCommandAsync(Arg.Any<CancellationToken>()).Returns(
                 async (c) => {
                     await _semaphore.WaitAsync().ConfigureAwait(false);
-                    return new Command { Id = presenceCommand.Id, Status = CommandStatus.Success };
+                    return 
+                        new Command {
+                            Id = presenceCommand.Id, Status = 
+                            CommandStatus.Success, Resource = 
+                            new PlainDocument(MediaTypes.PlainText)
+                        };
                 });
 
             var clientChannelFactory = Substitute.For<IClientChannelFactory>();
@@ -51,7 +56,6 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        [Ignore]
         public async Task WhenClientAddACommandReceiverAndReceiveACommandShouldBeHandledByReceiver()
         {
             //Arrange
@@ -62,11 +66,11 @@ namespace Takenet.MessagingHub.Client.Test
 
             //Act
             await _messagingHubClient.StartAsync();
-
+            
             await Task.Delay(3000);
 
             //Assert
-            await _commandReceiver.ReceivedWithAnyArgs(2).ReceiveAsync(null);
+            await _commandReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
 
             _semaphore.DisposeIfDisposable();
         }
