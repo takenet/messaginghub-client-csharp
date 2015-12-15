@@ -243,9 +243,16 @@ namespace Takenet.MessagingHub.Client
         
         IList<INotificationReceiver> GetReceiversFor(Notification notificaiton)
         {
+            IList<Func<INotificationReceiver>> eventTypeReceiversFunc = null;
+            var hasReceiver = _notificationReceivers.TryGetValue(notificaiton.Event, out eventTypeReceiversFunc);
+            if (!hasReceiver)
+            {
+                eventTypeReceiversFunc = _defaultNotificationReceivers;
+            }
+
             var notificationReceivers = new List<INotificationReceiver>();
 
-            foreach (var m in _defaultNotificationReceivers)
+            foreach (var m in eventTypeReceiversFunc)
             {
                 notificationReceivers.Add(m?.Invoke());
             }

@@ -16,11 +16,4 @@ namespace Takenet.MessagingHub.Client
 
         public static MediaType PlainText => _plainText;
     }
-
-    public static class LimeUris
-    {
-        static LimeUri _any = new LimeUri("any.uri/*");
-
-        public static LimeUri Any => _any;
-    }
 }
