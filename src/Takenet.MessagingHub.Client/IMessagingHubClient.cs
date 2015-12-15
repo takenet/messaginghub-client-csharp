@@ -19,7 +19,11 @@ namespace Takenet.MessagingHub.Client
 
         MessagingHubClient AddMessageReceiver(IMessageReceiver receiver, MediaType forMimeType = null);
 
+        MessagingHubClient AddMessageReceiver(Func<IMessageReceiver> receiverBuild, MediaType forMimeType = null);
+
         MessagingHubClient AddNotificationReceiver(INotificationReceiver receiver, Event? forEventType = null);
+
+        MessagingHubClient AddNotificationReceiver(Func<INotificationReceiver> receiverBuild, Event? forEventType = null);
 
         Task StartAsync();
 
