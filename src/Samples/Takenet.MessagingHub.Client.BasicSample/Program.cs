@@ -27,7 +27,7 @@ namespace Takenet.MessagingHub.Client.BasicSample
                 Uri = new LimeUri("/account")
             };
 
-            await client.CommandSender.SendCommandAsync(command);
+            var responseCommand = await client.CommandSender.SendCommandAsync(command);
 
             Console.WriteLine("Press any key to stop");
             await WaitKeyAsync();
