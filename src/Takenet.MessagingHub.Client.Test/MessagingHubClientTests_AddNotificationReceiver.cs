@@ -30,7 +30,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void WhenClientAddAMessageReceiverAndReceiveAMessageShouldBeHandledByReceiver()
+        public void WhenClientAddANotificationReceiverAndReceiveANotificationShouldBeHandledByReceiver()
         {
             //Arrange
             _messagingHubClient.UsingAccount("login", "pass");
@@ -54,6 +54,35 @@ namespace Takenet.MessagingHub.Client.Test
 
             _semaphore.DisposeIfDisposable();
         }
+
+        [Test]
+        public void WhenClientAddASpecificNotificationReceiverAndReceiveANotificationShouldBeHandledByReceiver()
+        {
+            //Arrange
+            _messagingHubClient.UsingAccount("login", "pass");
+            _messagingHubClient.AddNotificationReceiver(_notificationReceiver, Event.Accepted);
+
+            _semaphore = new SemaphoreSlim(1);
+
+            SomeNotification.Event = Event.Accepted;
+
+            _clientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (callInfo) =>
+            {
+                await _semaphore.WaitAsync();
+                return SomeNotification;
+            });
+
+            //Act
+            _messagingHubClient.StartAsync().Wait();
+
+            Task.Delay(5000).Wait();
+
+            //Assert
+            _notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
+
+            _semaphore.DisposeIfDisposable();
+        }
+
 
         [Test]
         public void WhenClientAddANotificationReceiverBaseAndReceiveANotificationTheReceiverShouldHandleAndBeSet()
