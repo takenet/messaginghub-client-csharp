@@ -59,6 +59,9 @@
     <Compile Include="EnvelopeProcessor.cs" />
     <Compile Include="Lime\CommandProcessor.cs" />
     <Compile Include="Lime\EnvelopeProcessor.cs" />
+    <Compile Include="Lime\CommandProcessorFactory.cs" />
+    <Compile Include="Lime\IEnvelopeProcessor.cs" />
+    <Compile Include="Lime\IEnvelopeProcessorFactory.cs" />
     <Compile Include="Receivers\CommandReceiverBase.cs" />
     <Compile Include="Receivers\ICommandReceiver.cs" />
     <Compile Include="Senders\ICommandSender.cs" />

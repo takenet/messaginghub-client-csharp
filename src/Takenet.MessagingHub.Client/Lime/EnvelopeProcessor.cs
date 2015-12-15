@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client.Lime
 {
-    internal abstract class EnvelopeProcessor<T>
+    internal abstract class EnvelopeProcessor<T> : IEnvelopeProcessor<T>
         where T: Envelope
     {
 
@@ -41,7 +41,21 @@ namespace Takenet.MessagingHub.Client.Lime
             if (envelope == null) throw new ArgumentNullException(nameof(envelope));
             if (timeout <= TimeSpan.Zero) throw new ArgumentException("Timeout value must be positive");
             
-            var taskCompletionSource = new TaskCompletionSource<T>();
+            TaskCompletionSource<T> taskCompletionSource;
+
+            if(envelope.Id == null || envelope.Id == Guid.Empty)
+            {
+                envelope.Id = Guid.NewGuid();
+            }
+            else
+            {
+                if (_activeRequests.TryGetValue(envelope.Id, out taskCompletionSource))
+                {
+                    throw new ArgumentException("There is already an active request with the envelope id");
+                }
+            }
+
+            taskCompletionSource = new TaskCompletionSource<T>();
             _activeRequests.TryAdd(envelope.Id, taskCompletionSource);
             taskCompletionSource.Task.ContinueWith(e =>
             {

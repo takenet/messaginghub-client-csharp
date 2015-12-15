@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Takenet.MessagingHub.Client.Lime;
 using Takenet.MessagingHub.Client.Receivers;
 using Takenet.MessagingHub.Client.Senders;
 
@@ -34,6 +35,8 @@ namespace Takenet.MessagingHub.Client
         string _domainName;
         IClientChannel _clientChannel;
         IClientChannelFactory _clientChannelFactory;
+        IEnvelopeProcessorFactory<Command> _envelopeProcessorFactory;
+        IEnvelopeProcessor<Command> _commandProcessor;
         ISessionFactory _sessionFactory;
         SenderWrapper sender;
 
@@ -42,19 +45,22 @@ namespace Takenet.MessagingHub.Client
         Task _messageReceiver;
         Task _notiticationReceiver;
 
-        internal MessagingHubClient(IClientChannelFactory clientChannelFactory, ISessionFactory sessionFactory, string hostname = null, string domainName = null)
+        TimeSpan _timeout;
+        internal MessagingHubClient(IClientChannelFactory clientChannelFactory, ISessionFactory sessionFactory, IEnvelopeProcessorFactory<Command> envelopeProcessorFactory, string hostname = null, string domainName = null)
         {
             _messageReceivers = new Dictionary<MediaType, IList<Func<IMessageReceiver>>>();
             _notificationReceivers = new Dictionary<Event, IList<Func<INotificationReceiver>>>();
             _clientChannelFactory = clientChannelFactory;
+            _envelopeProcessorFactory = envelopeProcessorFactory;
             _sessionFactory = sessionFactory;
             hostname = hostname ?? defaultDomainName;
             _endpoint = new Uri($"net.tcp://{hostname}:55321");
             _domainName = domainName ?? defaultDomainName;
+            _timeout = TimeSpan.FromSeconds(60);
         }
 
         public MessagingHubClient(string hostname = null, string domainName = null) :
-            this(new ClientChannelFactory(), new SessionFactory(), hostname, domainName)
+            this(new ClientChannelFactory(), new SessionFactory(), new CommandProcessorFactory(), hostname, domainName)
         { }
 
         public MessagingHubClient UsingAccount(string login, string password)
@@ -164,14 +170,17 @@ namespace Takenet.MessagingHub.Client
             {
                 throw new LimeException(session.Reason.Code, session.Reason.Description);
             }
-
+            
             await _clientChannel.SetResourceAsync(
                 LimeUri.Parse(UriTemplates.PRESENCE),
                 new Presence { RoutingRule = RoutingRule.Identity },
                 CancellationToken.None)
                 .ConfigureAwait(false);
 
-            sender = new SenderWrapper(_clientChannel);
+            _commandProcessor = _envelopeProcessorFactory.Create(_clientChannel);
+            _commandProcessor.Start();
+
+            sender = new SenderWrapper(_clientChannel, _commandProcessor, _timeout);
             _cancellationTokenSource = new CancellationTokenSource();
             InitializeAndStartReceivers();
             _backgroundExecution = Task.WhenAll(_messageReceiver, _notiticationReceiver);
@@ -184,6 +193,8 @@ namespace Takenet.MessagingHub.Client
         public async Task StopAsync()
         {
             if (_clientChannel == null) throw new InvalidOperationException("Is not possible call 'Stop' method before 'Start'");
+
+            await _commandProcessor.StopAsync();
 
             if (_clientChannel?.State == SessionState.Established)
             {

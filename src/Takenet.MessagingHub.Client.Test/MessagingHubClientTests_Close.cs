@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Takenet.MessagingHub.Client.Lime;
 
 namespace Takenet.MessagingHub.Client.Test
 {
@@ -19,6 +20,8 @@ namespace Takenet.MessagingHub.Client.Test
         private MessagingHubClient _messagingHubClient;
         private IClientChannel _clientChannel;
         private ISessionFactory _sessionFactory;
+        private IEnvelopeProcessor<Command> _commandProcessor;
+        private IEnvelopeProcessorFactory<Command> _envelopeProcessorFactory;
 
         [SetUp]
         public void Setup()
@@ -39,19 +42,23 @@ namespace Takenet.MessagingHub.Client.Test
             _sessionFactory = Substitute.For<ISessionFactory>();
             _sessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
 
-            _messagingHubClient = new MessagingHubClient(clientChannelFactory, _sessionFactory, "msging.net");
+            _commandProcessor = Substitute.For<IEnvelopeProcessor<Command>>();
+            _envelopeProcessorFactory = Substitute.For<IEnvelopeProcessorFactory<Command>>();
+            _envelopeProcessorFactory.Create(null).ReturnsForAnyArgs(_commandProcessor);
+
+            _messagingHubClient = new MessagingHubClient(clientChannelFactory, _sessionFactory, _envelopeProcessorFactory, "msging.net");
         }
 
         [Test]
-        public async Task WhenClientIsConnectedAndCloseConnectionShouldDisconnectFromServer()
+        public void WhenClientIsConnectedAndCloseConnectionShouldDisconnectFromServer()
         {
             //Arrange
             _clientChannel.State.Returns(SessionState.Established);
             _messagingHubClient.UsingAccessKey("login", "key");
-            await _messagingHubClient.StartAsync(); 
+            _messagingHubClient.StartAsync().Wait(); 
 
             // Act
-            await _messagingHubClient.StopAsync();
+            _messagingHubClient.StopAsync().Wait();
 
             // Assert
             _clientChannel.State.ShouldBe(SessionState.Finished);
@@ -68,7 +75,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public async Task WhenClientHasntEstablishedSessionAndCloseConnectionShouldDisconnectFromServer()
+        public void WhenClientHasntEstablishedSessionAndCloseConnectionShouldDisconnectFromServer()
         {
             //Arrange
             _clientChannel.State.Returns(SessionState.Failed);
@@ -77,14 +84,14 @@ namespace Takenet.MessagingHub.Client.Test
             _clientChannel.Transport.Returns(transport);
 
             _messagingHubClient.UsingAccessKey("login", "key");
-            await _messagingHubClient.StartAsync();
+            _messagingHubClient.StartAsync().Wait();
 
             // Act
-            await _messagingHubClient.StopAsync();
+            _messagingHubClient.StopAsync().Wait();
 
             // Assert
             _clientChannel.State.ShouldBe(SessionState.Failed);
-            await transport.CloseAsync(CancellationToken.None);
+            transport.CloseAsync(CancellationToken.None).Wait();
         }
     }
 }

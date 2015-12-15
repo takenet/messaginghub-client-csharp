@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Takenet.MessagingHub.Client.Lime;
 using Takenet.MessagingHub.Client.Receivers;
 
 namespace Takenet.MessagingHub.Client.Test
@@ -21,8 +22,9 @@ namespace Takenet.MessagingHub.Client.Test
         private MessagingHubClient _messagingHubClient;
         private IClientChannel _clientChannel;
         private ISessionFactory _sessionFactory;
+        private IEnvelopeProcessorFactory<Command> _envelopeProcessorFactory;
+        private IEnvelopeProcessor<Command> _commandProcessor;
         private INotificationReceiver _notificationReceiver;
-        private TaskCompletionSource<Message> _tcsMessage;
         private SemaphoreSlim _semaphore;
 
         [SetUp]
@@ -43,12 +45,16 @@ namespace Takenet.MessagingHub.Client.Test
             _sessionFactory = Substitute.For<ISessionFactory>();
             _sessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
 
-            _messagingHubClient = new MessagingHubClient(clientChannelFactory, _sessionFactory, "msging.net");
+            _commandProcessor = Substitute.For<IEnvelopeProcessor<Command>>();
+            _envelopeProcessorFactory = Substitute.For<IEnvelopeProcessorFactory<Command>>();
+            _envelopeProcessorFactory.Create(null).ReturnsForAnyArgs(_commandProcessor);
+
+            _messagingHubClient = new MessagingHubClient(clientChannelFactory, _sessionFactory, _envelopeProcessorFactory, "msging.net");
         }
 
         [Test]
         [Ignore]
-        public async Task WhenClientAddAMessageReceiverAndReceiveAMessageShouldBeHandledByReceiver()
+        public void WhenClientAddAMessageReceiverAndReceiveAMessageShouldBeHandledByReceiver()
         {
             //Arrange
             _messagingHubClient.UsingAccount("login", "pass");
@@ -63,9 +69,9 @@ namespace Takenet.MessagingHub.Client.Test
             });
 
             //Act
-            await _messagingHubClient.StartAsync();
+            _messagingHubClient.StartAsync().Wait();
 
-            await Task.Delay(3000);
+            Task.Delay(3000).Wait();
 
             //Assert
             _notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
@@ -75,7 +81,7 @@ namespace Takenet.MessagingHub.Client.Test
 
         [Test]
         [Ignore]
-        public async Task WhenClientAddAMessageReceiverBaseAndReceiveAMessageTheReceiverShouldHandleAndBeSet()
+        public void WhenClientAddAMessageReceiverBaseAndReceiveAMessageTheReceiverShouldHandleAndBeSet()
         {
             //Arrange
 
@@ -93,9 +99,9 @@ namespace Takenet.MessagingHub.Client.Test
             });
 
             //Act
-            await _messagingHubClient.StartAsync().ConfigureAwait(false);
+            _messagingHubClient.StartAsync().Wait();
 
-            await Task.Delay(3000);
+            Task.Delay(3000).Wait();
 
             //Assert
             messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);

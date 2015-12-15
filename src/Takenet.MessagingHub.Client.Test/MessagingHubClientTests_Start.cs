@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Takenet.MessagingHub.Client.Lime;
 
 namespace Takenet.MessagingHub.Client.Test
 {
@@ -20,6 +21,8 @@ namespace Takenet.MessagingHub.Client.Test
         private MessagingHubClient _messagingHubClient;
         private IClientChannel _clientChannel;
         private ISessionFactory _sessionFactory;
+        private IEnvelopeProcessorFactory<Command> _envelopeProcessorFactory;
+        private IEnvelopeProcessor<Command> _commandProcessor;
 
         [SetUp]
         public void Setup()
@@ -39,33 +42,37 @@ namespace Takenet.MessagingHub.Client.Test
             _sessionFactory = Substitute.For<ISessionFactory>();
             _sessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
 
-            _messagingHubClient = new MessagingHubClient(clientChannelFactory, _sessionFactory, "msging.net");
+            _commandProcessor = Substitute.For<IEnvelopeProcessor<Command>>();
+            _envelopeProcessorFactory = Substitute.For<IEnvelopeProcessorFactory<Command>>();
+            _envelopeProcessorFactory.Create(null).ReturnsForAnyArgs(_commandProcessor);
+
+            _messagingHubClient = new MessagingHubClient(clientChannelFactory, _sessionFactory, _envelopeProcessorFactory, "msging.net");
         }
 
 
         [Test]
-        public async Task WhenClientStartUsingAccountShouldConnectToServer()
+        public void WhenClientStartUsingAccountShouldConnectToServer()
         {
             // Arrange
             _messagingHubClient.UsingAccount("login", "pass");
             _sessionFactory.WhenForAnyArgs(s => s.CreateSessionAsync(null, null, null)).Do(s => _clientChannel.State.Returns(SessionState.Established));
 
             // Act
-            await _messagingHubClient.StartAsync();
+            _messagingHubClient.StartAsync().Wait();
 
             // Assert
             _clientChannel.State.ShouldBe(SessionState.Established);
         }
 
         [Test]
-        public async Task WhenClientStartUsingAccessKeyShouldConnectToServer()
+        public void WhenClientStartUsingAccessKeyShouldConnectToServer()
         {
             // Arrange
             _messagingHubClient.UsingAccessKey("login", "key");
             _sessionFactory.WhenForAnyArgs(s => s.CreateSessionAsync(null, null, null)).Do(s => _clientChannel.State.Returns(SessionState.Established));
 
             // Act
-            await _messagingHubClient.StartAsync();
+            _messagingHubClient.StartAsync().Wait();
 
             // Assert
             _clientChannel.State.ShouldBe(SessionState.Established);
