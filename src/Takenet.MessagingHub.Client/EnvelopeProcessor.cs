@@ -50,7 +50,10 @@ namespace Takenet.MessagingHub.Client
                     await Task.WhenAll(
                                 receivers.Select(r => CallReceiver(r, envelope))).ConfigureAwait(false);
                 }
-                catch { }
+                catch (Exception e)
+                {
+
+                }
             }
         }
 

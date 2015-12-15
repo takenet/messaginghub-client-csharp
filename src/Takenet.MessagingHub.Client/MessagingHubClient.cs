@@ -22,13 +22,11 @@ namespace Takenet.MessagingHub.Client
         public INotificationSender NotificationSender => sender;
 
         readonly Uri _endpoint;
-        readonly IDictionary<MediaType, IList<IMessageReceiver>> _messageReceivers;
-        readonly IDictionary<string, IList<ICommandReceiver>> _commandReceivers;
-        readonly IDictionary<Event, IList<INotificationReceiver>> _notificationReceivers;
+        readonly IDictionary<MediaType, IList<Func<IMessageReceiver>>> _messageReceivers;
+        readonly IDictionary<Event, IList<Func<INotificationReceiver>>> _notificationReceivers;
 
-        readonly IList<IMessageReceiver> _defaultMessageReceivers = new List<IMessageReceiver> { new UnsupportedMessageReceiver() };
-        readonly IList<ICommandReceiver> _defaultCommandReceivers = new List<ICommandReceiver> { new UnsupportedCommandReceiver() };
-        readonly IList<INotificationReceiver> _defaultNotificationReceivers = new List<INotificationReceiver> { new BlackholeNotificationReceiver() };
+        readonly IList<Func<IMessageReceiver>> _defaultMessageReceivers = new List<Func<IMessageReceiver>> { () => new UnsupportedMessageReceiver() };
+        readonly IList<Func<INotificationReceiver>> _defaultNotificationReceivers = new List<Func<INotificationReceiver>> { () => new BlackholeNotificationReceiver() };
 
         string _login;
         string _password;
@@ -42,14 +40,12 @@ namespace Takenet.MessagingHub.Client
         CancellationTokenSource _cancellationTokenSource;
         Task _backgroundExecution;
         Task _messageReceiver;
-        Task _commandReceiver;
         Task _notiticationReceiver;
 
         internal MessagingHubClient(IClientChannelFactory clientChannelFactory, ISessionFactory sessionFactory, string hostname = null, string domainName = null)
         {
-            _messageReceivers = new Dictionary<MediaType, IList<IMessageReceiver>>();
-            _commandReceivers = new Dictionary<string, IList<ICommandReceiver>>();
-            _notificationReceivers = new Dictionary<Event, IList<INotificationReceiver>>();
+            _messageReceivers = new Dictionary<MediaType, IList<Func<IMessageReceiver>>>();
+            _notificationReceivers = new Dictionary<Event, IList<Func<INotificationReceiver>>>();
             _clientChannelFactory = clientChannelFactory;
             _sessionFactory = sessionFactory;
             hostname = hostname ?? defaultDomainName;
@@ -85,17 +81,9 @@ namespace Takenet.MessagingHub.Client
         /// <returns></returns>
         public MessagingHubClient AddMessageReceiver(IMessageReceiver receiver, MediaType forMimeType = null)
         {
-            var mediaTypeToSave = forMimeType ?? MediaTypes.Any;
+            if (receiver == null) throw new ArgumentNullException(nameof(receiver));
 
-            IList<IMessageReceiver> mediaTypeReceivers;
-            if (!_messageReceivers.TryGetValue(mediaTypeToSave, out mediaTypeReceivers))
-            {
-                mediaTypeReceivers = new List<IMessageReceiver>();
-                _messageReceivers.Add(mediaTypeToSave, mediaTypeReceivers);
-            }
-
-            mediaTypeReceivers.Add(receiver);
-            return this;
+            return AddMessageReceiver(() => { return receiver; }, forMimeType);
         }
 
         /// <summary>
@@ -106,22 +94,46 @@ namespace Takenet.MessagingHub.Client
         /// <returns></returns>
         public MessagingHubClient AddNotificationReceiver(INotificationReceiver receiver, Event? forEventType = null)
         {
-            IList<INotificationReceiver> eventTypeReceivers;
+            if (receiver == null) throw new ArgumentNullException(nameof(receiver));
+
+            return AddNotificationReceiver(() => { return receiver; }, forEventType);
+        }
+
+        public MessagingHubClient AddMessageReceiver(Func<IMessageReceiver> receiverBuild, MediaType forMimeType = null)
+        {
+            if (receiverBuild == null) throw new ArgumentNullException(nameof(receiverBuild));
+
+            var mediaTypeToSave = forMimeType ?? MediaTypes.Any;
+
+            IList<Func<IMessageReceiver>> mediaTypeReceivers;
+            if (!_messageReceivers.TryGetValue(mediaTypeToSave, out mediaTypeReceivers))
+            {
+                mediaTypeReceivers = new List<Func<IMessageReceiver>>();
+                _messageReceivers.Add(mediaTypeToSave, mediaTypeReceivers);
+            }
+
+            mediaTypeReceivers.Add(receiverBuild);
+            return this;
+        }
+
+        public MessagingHubClient AddNotificationReceiver(Func<INotificationReceiver> receiverBuild, Event? forEventType = default(Event?))
+        {
+            IList<Func<INotificationReceiver>> eventTypeReceivers;
 
             if (forEventType.HasValue)
             {
                 if (!_notificationReceivers.TryGetValue(forEventType.Value, out eventTypeReceivers))
                 {
-                    eventTypeReceivers = new List<INotificationReceiver>();
+                    eventTypeReceivers = new List<Func<INotificationReceiver>>();
                     _notificationReceivers.Add(forEventType.Value, eventTypeReceivers);
                 }
 
-                eventTypeReceivers.Add(receiver);
+                eventTypeReceivers.Add(receiverBuild);
             }
             else
             {
-                eventTypeReceivers = new List<INotificationReceiver>();
-                eventTypeReceivers.Add(receiver);
+                eventTypeReceivers = new List<Func<INotificationReceiver>>();
+                eventTypeReceivers.Add(receiverBuild);
 
                 _notificationReceivers.Add(Event.Accepted, eventTypeReceivers);
                 _notificationReceivers.Add(Event.Authorized, eventTypeReceivers);
@@ -131,7 +143,7 @@ namespace Takenet.MessagingHub.Client
                 _notificationReceivers.Add(Event.Received, eventTypeReceivers);
                 _notificationReceivers.Add(Event.Validated, eventTypeReceivers);
             }
-            
+
             return this;
         }
 
@@ -162,7 +174,7 @@ namespace Takenet.MessagingHub.Client
             sender = new SenderWrapper(_clientChannel);
             _cancellationTokenSource = new CancellationTokenSource();
             InitializeAndStartReceivers();
-            _backgroundExecution = Task.WhenAll(_messageReceiver, _commandReceiver, _notiticationReceiver);
+            _backgroundExecution = Task.WhenAll(_messageReceiver, _notiticationReceiver);
         }
 
         /// <summary>
@@ -202,12 +214,6 @@ namespace Takenet.MessagingHub.Client
                     sender)
                 .StartAsync(_cancellationTokenSource.Token);
 
-            _commandReceiver = new EnvelopeProcessor<Command>(
-                    _clientChannel.ReceiveCommandAsync,
-                    GetReceiversFor,
-                    sender)
-                .StartAsync(_cancellationTokenSource.Token);
-
             _notiticationReceiver = new EnvelopeProcessor<Notification>(
                     _clientChannel.ReceiveNotificationAsync,
                     GetReceiversFor,
@@ -217,33 +223,34 @@ namespace Takenet.MessagingHub.Client
 
         IList<IMessageReceiver> GetReceiversFor(Message message)
         {
-            IList<IMessageReceiver> mimeTypeReceivers = null;
-            var hasReceiver = _messageReceivers.TryGetValue(message.Type, out mimeTypeReceivers) ||
-                              _messageReceivers.TryGetValue(MediaTypes.Any, out mimeTypeReceivers);
+            IList<Func<IMessageReceiver>> mimeTypeReceiversFunc = null;
+            var hasReceiver = _messageReceivers.TryGetValue(message.Type, out mimeTypeReceiversFunc) ||
+                              _messageReceivers.TryGetValue(MediaTypes.Any, out mimeTypeReceiversFunc);
             if (!hasReceiver)
             {
-                mimeTypeReceivers = _defaultMessageReceivers;
+                mimeTypeReceiversFunc = _defaultMessageReceivers;
+            }
+
+            var mimeTypeReceivers = new List<IMessageReceiver>();
+
+            foreach(var m in mimeTypeReceiversFunc)
+            {
+                mimeTypeReceivers.Add(m?.Invoke());
             }
 
             return mimeTypeReceivers;
         }
-
-        IList<ICommandReceiver> GetReceiversFor(Command command)
-        {
-            IList<ICommandReceiver> mimeTypeReceivers = null;
-            var hasReceiver = _commandReceivers.TryGetValue(command.Uri?.ToUri()?.AbsolutePath, out mimeTypeReceivers) ||
-                              _commandReceivers.TryGetValue(LimeUris.Any.ToUri().AbsolutePath, out mimeTypeReceivers);
-            if (!hasReceiver)
-            {
-                mimeTypeReceivers = _defaultCommandReceivers;
-            }
-
-            return mimeTypeReceivers;
-        }
-
+        
         IList<INotificationReceiver> GetReceiversFor(Notification notificaiton)
         {
-            return _defaultNotificationReceivers;
+            var notificationReceivers = new List<INotificationReceiver>();
+
+            foreach (var m in _defaultNotificationReceivers)
+            {
+                notificationReceivers.Add(m?.Invoke());
+            }
+
+            return notificationReceivers;
         }
 
         Authentication GetAuthenticationScheme()

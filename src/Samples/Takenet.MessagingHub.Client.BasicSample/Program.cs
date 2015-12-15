@@ -16,8 +16,8 @@ namespace Takenet.MessagingHub.Client.BasicSample
             var client = new MessagingHubClient()
                             .UsingAccount("andreminelli", "123456")
                             .AddMessageReceiver(new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText)
-                            //.AddCommandReceiver(new MyAccountCommandReceiver())
-                            .AddNotificationReceiver(new PrintNotificationReceiver());
+                            //Is possible use a Func to build a receiver
+                            .AddNotificationReceiver(() => new PrintNotificationReceiver());
                             
             await client.StartAsync();
 

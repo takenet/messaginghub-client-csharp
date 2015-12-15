@@ -38,7 +38,7 @@ namespace Takenet.MessagingHub.Client.Lime
 
         public virtual async Task<T> SendReceiveAsync(T envelope, TimeSpan timeout)
         {
-            if (envelope == null) throw new ArgumentNullException("Envelope");
+            if (envelope == null) throw new ArgumentNullException(nameof(envelope));
             if (timeout <= TimeSpan.Zero) throw new ArgumentException("Timeout value must be positive");
             
             var taskCompletionSource = new TaskCompletionSource<T>();
