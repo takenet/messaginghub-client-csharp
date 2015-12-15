@@ -23,7 +23,7 @@ namespace Takenet.MessagingHub.Client.Lime
         {
             _activeRequests = new ConcurrentDictionary<Guid, TaskCompletionSource<T>>();
             _cancellationTokenSource = new CancellationTokenSource();
-            _listenner = Task.Run(Listen);
+            _listenner = Task.Run(ListenAsync);
         }
 
         public async Task StopAsync()
@@ -32,10 +32,11 @@ namespace Takenet.MessagingHub.Client.Lime
             {
                 _cancellationTokenSource.Cancel();
                 await _listenner;
+                _cancellationTokenSource.Dispose();
             }
         }
 
-        public async Task<T> SendReceive(T envelope, TimeSpan timeout)
+        public virtual async Task<T> SendReceiveAsync(T envelope, TimeSpan timeout)
         {
             if (envelope == null) throw new ArgumentNullException("Envelope");
             if (timeout <= TimeSpan.Zero) throw new ArgumentException("Timeout value must be positive");
@@ -54,7 +55,7 @@ namespace Takenet.MessagingHub.Client.Lime
 
                 try
                 {
-                    await Send(envelope, cancellationTokenSource.Token);
+                    await SendAsync(envelope, cancellationTokenSource.Token);
                 }
                 catch (OperationCanceledException)
                 {
@@ -76,7 +77,7 @@ namespace Takenet.MessagingHub.Client.Lime
             }
         }
 
-        private async Task Listen()
+        private async Task ListenAsync()
         {
             while (!_cancellationTokenSource.IsCancellationRequested)
             {
@@ -84,7 +85,7 @@ namespace Takenet.MessagingHub.Client.Lime
 
                 try
                 {
-                    envelope = await Receive(_cancellationTokenSource.Token);
+                    envelope = await ReceiveAsync(_cancellationTokenSource.Token);
                 }
                 catch (OperationCanceledException)
                 {
@@ -100,7 +101,7 @@ namespace Takenet.MessagingHub.Client.Lime
             }
         }
 
-        protected abstract Task<T> Receive(CancellationToken cancellationToken);
-        protected abstract Task Send(T envelope, CancellationToken cancellationToken);
+        protected abstract Task<T> ReceiveAsync(CancellationToken cancellationToken);
+        protected abstract Task SendAsync(T envelope, CancellationToken cancellationToken);
     }
 }

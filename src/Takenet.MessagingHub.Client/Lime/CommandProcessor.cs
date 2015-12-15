@@ -18,14 +18,19 @@ namespace Takenet.MessagingHub.Client.Lime
             _clientChannel = clientChannel;
         }
 
-        protected override Task<Command> Receive(CancellationToken cancellationToken)
+        protected override Task<Command> ReceiveAsync(CancellationToken cancellationToken)
         {
             return _clientChannel.ReceiveCommandAsync(cancellationToken);
         }
 
-        protected override Task Send(Command envelope, CancellationToken cancellationToken)
+        protected override Task SendAsync(Command envelope, CancellationToken cancellationToken)
         {
             return _clientChannel.SendCommandAsync(envelope);
+        }
+
+        public override Task<Command> SendReceiveAsync(Command command, TimeSpan timeout)
+        {
+            return base.SendReceiveAsync(command, timeout);
         }
     }
 }
