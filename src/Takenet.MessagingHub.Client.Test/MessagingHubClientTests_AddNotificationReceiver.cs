@@ -30,7 +30,6 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        [Ignore]
         public void WhenClientAddAMessageReceiverAndReceiveAMessageShouldBeHandledByReceiver()
         {
             //Arrange
@@ -57,15 +56,14 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        [Ignore]
-        public void WhenClientAddAMessageReceiverBaseAndReceiveAMessageTheReceiverShouldHandleAndBeSet()
+        public void WhenClientAddANotificationReceiverBaseAndReceiveANotificationTheReceiverShouldHandleAndBeSet()
         {
             //Arrange
 
-            var messageReceiver = Substitute.For<MessageReceiverBase>();
+            var notificationReceiver = Substitute.For<NotificationReceiverBase>();
 
             _messagingHubClient.UsingAccount("login", "pass");
-            _messagingHubClient.AddMessageReceiver(messageReceiver);
+            _messagingHubClient.AddNotificationReceiver(notificationReceiver);
 
             _semaphore = new SemaphoreSlim(1);
 
@@ -81,9 +79,9 @@ namespace Takenet.MessagingHub.Client.Test
             Task.Delay(3000).Wait();
 
             //Assert
-            messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
-            messageReceiver.MessageSender.ShouldNotBeNull();
-            messageReceiver.NotificationSender.ShouldNotBeNull();
+            notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
+            notificationReceiver.MessageSender.ShouldNotBeNull();
+            notificationReceiver.NotificationSender.ShouldNotBeNull();
 
             _semaphore.DisposeIfDisposable();
         }
