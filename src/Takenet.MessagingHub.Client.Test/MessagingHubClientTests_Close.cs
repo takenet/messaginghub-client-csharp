@@ -15,44 +15,20 @@ using Takenet.MessagingHub.Client.Lime;
 
 namespace Takenet.MessagingHub.Client.Test
 {
-    public class MessagingHubClientTests_Close
+    internal class MessagingHubClientTests_Close : MessagingHubClientTestBase
     {
-        private MessagingHubClient _messagingHubClient;
-        private IClientChannel _clientChannel;
-        private ISessionFactory _sessionFactory;
-        private IEnvelopeProcessor<Command> _commandProcessor;
-        private IEnvelopeProcessorFactory<Command> _envelopeProcessorFactory;
-
         [SetUp]
-        public void Setup()
+        void Setup()
         {
-            _clientChannel = Substitute.For<IClientChannel>();
-            var presenceCommand = new Command();
-            _clientChannel.WhenForAnyArgs(c => c.SendCommandAsync(null)).Do(c =>
-                presenceCommand = c.Arg<Command>());
-            _clientChannel.ReceiveCommandAsync(Arg.Any<CancellationToken>()).Returns(c => new Command { Id = presenceCommand.Id, Status = CommandStatus.Success });
-
-            _clientChannel.WhenForAnyArgs(c => c.SendFinishingSessionAsync()).Do(c => _clientChannel.State.Returns(SessionState.Finished));
-
-            var session = new Session { State = SessionState.Established };
-
-            var clientChannelFactory = Substitute.For<IClientChannelFactory>();
-            clientChannelFactory.CreateClientChannelAsync(null).ReturnsForAnyArgs(_clientChannel);
-
-            _sessionFactory = Substitute.For<ISessionFactory>();
-            _sessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
-
-            _commandProcessor = Substitute.For<IEnvelopeProcessor<Command>>();
-            _envelopeProcessorFactory = Substitute.For<IEnvelopeProcessorFactory<Command>>();
-            _envelopeProcessorFactory.Create(null).ReturnsForAnyArgs(_commandProcessor);
-
-            _messagingHubClient = new MessagingHubClient(clientChannelFactory, _sessionFactory, _envelopeProcessorFactory, "msging.net");
+            base.Setup();
         }
 
         [Test]
         public void WhenClientIsConnectedAndCloseConnectionShouldDisconnectFromServer()
         {
             //Arrange
+            _clientChannel.WhenForAnyArgs(c => c.SendFinishingSessionAsync()).Do(c => _clientChannel.State.Returns(SessionState.Finished));
+
             _clientChannel.State.Returns(SessionState.Established);
             _messagingHubClient.UsingAccessKey("login", "key");
             _messagingHubClient.StartAsync().Wait(); 

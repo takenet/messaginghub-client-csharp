@@ -15,41 +15,18 @@ using Takenet.MessagingHub.Client.Receivers;
 namespace Takenet.MessagingHub.Client.Test
 {
     [TestFixture]
-    class MessagingHubClientTests_AddNotificationReceiver
+    class MessagingHubClientTests_AddNotificationReceiver : MessagingHubClientTestBase
     {
         public Notification SomeNotification => new Notification { Event = Event.Accepted };
 
-        private MessagingHubClient _messagingHubClient;
-        private IClientChannel _clientChannel;
-        private ISessionFactory _sessionFactory;
-        private IEnvelopeProcessorFactory<Command> _envelopeProcessorFactory;
-        private IEnvelopeProcessor<Command> _commandProcessor;
-        private INotificationReceiver _notificationReceiver;
-        private SemaphoreSlim _semaphore;
+        INotificationReceiver _notificationReceiver;
+        SemaphoreSlim _semaphore;
 
         [SetUp]
-        public void Setup()
+        void Setup()
         {
+            base.Setup();
             _notificationReceiver = Substitute.For<INotificationReceiver>();
-
-            _clientChannel = Substitute.For<IClientChannel>();
-            var presenceCommand = new Command();
-            _clientChannel.WhenForAnyArgs(c => c.SendCommandAsync(null)).Do(c =>
-                presenceCommand = c.Arg<Command>());
-            _clientChannel.ReceiveCommandAsync(Arg.Any<CancellationToken>()).Returns(c => new Command { Id = presenceCommand.Id, Status = CommandStatus.Success });
-
-            var clientChannelFactory = Substitute.For<IClientChannelFactory>();
-            clientChannelFactory.CreateClientChannelAsync(null).ReturnsForAnyArgs(_clientChannel);
-
-            var session = new Session { State = SessionState.Established };
-            _sessionFactory = Substitute.For<ISessionFactory>();
-            _sessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
-
-            _commandProcessor = Substitute.For<IEnvelopeProcessor<Command>>();
-            _envelopeProcessorFactory = Substitute.For<IEnvelopeProcessorFactory<Command>>();
-            _envelopeProcessorFactory.Create(null).ReturnsForAnyArgs(_commandProcessor);
-
-            _messagingHubClient = new MessagingHubClient(clientChannelFactory, _sessionFactory, _envelopeProcessorFactory, "msging.net");
         }
 
         [Test]
