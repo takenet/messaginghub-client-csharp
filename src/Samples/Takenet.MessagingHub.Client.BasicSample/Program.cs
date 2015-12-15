@@ -1,5 +1,7 @@
-﻿using Lime.Protocol;
+﻿using Lime.Messaging.Resources;
+using Lime.Protocol;
 using System;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client.BasicSample
@@ -28,10 +30,25 @@ namespace Takenet.MessagingHub.Client.BasicSample
             };
 
             var responseCommand = await client.CommandSender.SendCommandAsync(command);
+            var account = (Account)responseCommand.Resource;
 
+            Console.WriteLine(GetAccountString(account));
             Console.WriteLine("Press any key to stop");
             await WaitKeyAsync();
             await client.StopAsync();
+        }
+
+        static string GetAccountString(Account account)
+        {
+            var builder = new StringBuilder();
+            
+            builder.AppendLine($"{nameof(account.FullName)}:{account.FullName}");
+            builder.AppendLine($"{nameof(account.Email)}:{account.Email}");
+            builder.AppendLine($"{nameof(account.PhoneNumber)}:{account.PhoneNumber}");
+            builder.AppendLine($"{nameof(account.City)}:{account.City}");
+            builder.AppendLine($"{nameof(account.Address)}:{account.Address}");
+
+            return builder.ToString();
         }
 
         static Task<char> WaitKeyAsync()
