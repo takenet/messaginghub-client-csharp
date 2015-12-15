@@ -23,7 +23,7 @@ namespace Takenet.MessagingHub.Client.Test
         SemaphoreSlim _semaphore;
 
         [SetUp]
-        void Setup()
+        protected override void Setup()
         {
             base.Setup();
             _notificationReceiver = Substitute.For<INotificationReceiver>();

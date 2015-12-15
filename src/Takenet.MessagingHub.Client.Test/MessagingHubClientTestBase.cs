@@ -20,7 +20,7 @@ namespace Takenet.MessagingHub.Client.Test
         protected IEnvelopeProcessorFactory<Command> _envelopeProcessorFactory;
         protected IEnvelopeProcessor<Command> _commandProcessor;
 
-        public virtual void Setup()
+        protected virtual void Setup()
         {
             _clientChannel = Substitute.For<IClientChannel>();
 

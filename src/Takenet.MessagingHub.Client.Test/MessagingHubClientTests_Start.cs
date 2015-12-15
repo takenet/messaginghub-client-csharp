@@ -19,7 +19,7 @@ namespace Takenet.MessagingHub.Client.Test
     internal class MessagingHubClientTests_Start : MessagingHubClientTestBase
     {
         [SetUp]
-        void Setup()
+        protected override void Setup()
         {
             base.Setup();
         }

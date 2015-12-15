@@ -18,7 +18,7 @@ namespace Takenet.MessagingHub.Client.Test
     internal class MessagingHubClientTests_Close : MessagingHubClientTestBase
     {
         [SetUp]
-        void Setup()
+        protected override void Setup()
         {
             base.Setup();
         }
