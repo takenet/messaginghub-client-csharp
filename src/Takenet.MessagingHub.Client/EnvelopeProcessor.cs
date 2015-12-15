@@ -50,9 +50,9 @@ namespace Takenet.MessagingHub.Client
                     await Task.WhenAll(
                                 receivers.Select(r => CallReceiver(r, envelope))).ConfigureAwait(false);
                 }
-                catch (Exception e)
+                catch
                 {
-
+                    //TODO: Create a ILogger interface to notify about errors on EnvelopeProcessor.
                 }
             }
         }
