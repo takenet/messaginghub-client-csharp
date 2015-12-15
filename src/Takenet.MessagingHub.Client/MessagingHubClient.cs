@@ -18,9 +18,9 @@ namespace Takenet.MessagingHub.Client
     {
         static readonly string defaultDomainName = "msging.net";
 
-        public IMessageSender MessageSender => sender;
-        public ICommandSender CommandSender => sender;
-        public INotificationSender NotificationSender => sender;
+        public IMessageSender MessageSender => ReturnSenderWithExist();
+        public ICommandSender CommandSender => ReturnSenderWithExist();
+        public INotificationSender NotificationSender => ReturnSenderWithExist();
 
         readonly Uri _endpoint;
         readonly IDictionary<MediaType, IList<Func<IMessageReceiver>>> _messageReceivers;
@@ -38,7 +38,7 @@ namespace Takenet.MessagingHub.Client
         IEnvelopeProcessorFactory<Command> _envelopeProcessorFactory;
         IEnvelopeProcessor<Command> _commandProcessor;
         ISessionFactory _sessionFactory;
-        SenderWrapper sender;
+        SenderWrapper _sender;
 
         CancellationTokenSource _cancellationTokenSource;
         Task _backgroundExecution;
@@ -60,7 +60,7 @@ namespace Takenet.MessagingHub.Client
         }
 
         public MessagingHubClient(string hostname = null, string domainName = null) :
-            this(new ClientChannelFactory(), new SessionFactory(), new CommandProcessorFactory(), hostname, domainName)
+                    this(new ClientChannelFactory(), new SessionFactory(), new CommandProcessorFactory(), hostname, domainName)
         { }
 
         public MessagingHubClient UsingAccount(string login, string password)
@@ -170,7 +170,7 @@ namespace Takenet.MessagingHub.Client
             {
                 throw new LimeException(session.Reason.Code, session.Reason.Description);
             }
-            
+
             await _clientChannel.SetResourceAsync(
                 LimeUri.Parse(UriTemplates.PRESENCE),
                 new Presence { RoutingRule = RoutingRule.Identity },
@@ -180,7 +180,7 @@ namespace Takenet.MessagingHub.Client
             _commandProcessor = _envelopeProcessorFactory.Create(_clientChannel);
             _commandProcessor.Start();
 
-            sender = new SenderWrapper(_clientChannel, _commandProcessor, _timeout);
+            _sender = new SenderWrapper(_clientChannel, _commandProcessor, _timeout);
             _cancellationTokenSource = new CancellationTokenSource();
             InitializeAndStartReceivers();
             _backgroundExecution = Task.WhenAll(_messageReceiver, _notiticationReceiver);
@@ -222,13 +222,13 @@ namespace Takenet.MessagingHub.Client
             _messageReceiver = new EnvelopeProcessor<Message>(
                     _clientChannel.ReceiveMessageAsync,
                     GetReceiversFor,
-                    sender)
+                    _sender)
                 .StartAsync(_cancellationTokenSource.Token);
 
             _notiticationReceiver = new EnvelopeProcessor<Notification>(
                     _clientChannel.ReceiveNotificationAsync,
                     GetReceiversFor,
-                    sender)
+                    _sender)
                 .StartAsync(_cancellationTokenSource.Token);
         }
 
@@ -244,14 +244,14 @@ namespace Takenet.MessagingHub.Client
 
             var mimeTypeReceivers = new List<IMessageReceiver>();
 
-            foreach(var m in mimeTypeReceiversFunc)
+            foreach (var m in mimeTypeReceiversFunc)
             {
                 mimeTypeReceivers.Add(m?.Invoke());
             }
 
             return mimeTypeReceivers;
         }
-        
+
         IList<INotificationReceiver> GetReceiversFor(Notification notificaiton)
         {
             IList<Func<INotificationReceiver>> eventTypeReceiversFunc = null;
@@ -294,6 +294,16 @@ namespace Takenet.MessagingHub.Client
             }
 
             return result;
+        }
+
+        SenderWrapper ReturnSenderWithExist()
+        {
+            if(_sender != null)
+            {
+                return _sender;
+            }
+
+            throw new InvalidOperationException("Client must be started to execute this operation.");
         }
 
         #endregion InternalMethods

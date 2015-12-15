@@ -15,7 +15,7 @@ using Takenet.MessagingHub.Client.Receivers;
 namespace Takenet.MessagingHub.Client.Test
 {
     [TestFixture]
-    class MessagingHubClientTests_AddCommandReceiver : MessagingHubClientTestBase
+    class MessagingHubClientTests_SendCommand : MessagingHubClientTestBase
     {
         public Command SomeCommand => new Command { Resource = new PlainDocument(MediaTypes.PlainText) };
         
@@ -25,12 +25,13 @@ namespace Takenet.MessagingHub.Client.Test
         [SetUp]
         protected override void Setup()
         {
+            base.Setup();
             _commandReceiver = Substitute.For<ICommandReceiver>();
         }
 
         [Test]
         [Ignore]
-        public void WhenClientAddACommandReceiverAndReceiveACommandShouldBeHandledByReceiver()
+        public void WhenClientSendACommandShouldReceiveACommandResponse()
         {
             //Arrange
             _messagingHubClient.UsingAccount("login", "pass");
@@ -50,29 +51,13 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        [Ignore]
-        public void WhenClientAddACommandReceiverBaseAndReceiveACommandTheReceiverShouldHandleAndBeSet()
+        public void WhenClientTrySendACommandBeforeStartClientShowThrowAException()
         {
             //Arrange
-
-            var commandReceiver = Substitute.For<CommandReceiverBase>();
-
             _messagingHubClient.UsingAccount("login", "pass");
-            //_messagingHubClient.AddCommandReceiver(commandReceiver);
 
-            _semaphore = new SemaphoreSlim(2);
-
-            //Act
-            _messagingHubClient.StartAsync().ConfigureAwait(false);
-
-            Task.Delay(3000).Wait();
-
-            //Assert
-            commandReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
-            commandReceiver.MessageSender.ShouldNotBeNull();
-            commandReceiver.NotificationSender.ShouldNotBeNull();
-
-            _semaphore.DisposeIfDisposable();
+            //Act / Assert
+            Should.ThrowAsync<InvalidOperationException>(async () => await _messagingHubClient.SendCommandAsync(Arg.Any<Command>()).ConfigureAwait(false)).Wait();
         }
     }
 }

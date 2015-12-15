@@ -111,6 +111,7 @@ namespace Takenet.MessagingHub.Client.Test
             notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
             notificationReceiver.MessageSender.ShouldNotBeNull();
             notificationReceiver.NotificationSender.ShouldNotBeNull();
+            notificationReceiver.CommandSender.ShouldNotBeNull();
 
             _semaphore.DisposeIfDisposable();
         }
