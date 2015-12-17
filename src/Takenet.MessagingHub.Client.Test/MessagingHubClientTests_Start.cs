@@ -17,7 +17,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void WhenClientStartUsingAccountShouldConnectToServer()
+        public void Start_UsingAccount_Should_Succeed()
         {
             // Arrange
             MessagingHubClient.UsingAccount("login", "pass");
@@ -31,7 +31,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void WhenClientStartUsingAccessKeyShouldConnectToServer()
+        public void Start_UsingAccessKey_Should_Succeed()
         {
             // Arrange
             MessagingHubClient.UsingAccessKey("login", "key");
@@ -45,7 +45,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void WhenClientStartWithoutCredentialsShouldThrowException()
+        public void Start_Without_Credential_Should_Throw_Exception()
         {
             // Arrange
             var session = new Session
@@ -63,7 +63,7 @@ namespace Takenet.MessagingHub.Client.Test
 
 
         [Test]
-        public void WhenClientStartAndServerDoNotAcceptTheSessionShouldThrowException()
+        public void Start_With_SessionFailed_Should_Throw_Exception()
         {
             var session = new Session
             {

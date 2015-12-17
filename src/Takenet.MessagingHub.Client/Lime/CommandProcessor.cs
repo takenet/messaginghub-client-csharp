@@ -61,7 +61,7 @@ namespace Takenet.MessagingHub.Client.Lime
 
             taskCompletionSource = new TaskCompletionSource<Command>();
             _activeRequests.TryAdd(envelope.Id, taskCompletionSource);
-            await taskCompletionSource.Task.ContinueWith(e =>
+            var continueWith = taskCompletionSource.Task.ContinueWith(e =>
             {
                 TaskCompletionSource<Command> result;
                 _activeRequests.TryRemove(envelope.Id, out result);
@@ -84,7 +84,9 @@ namespace Takenet.MessagingHub.Client.Lime
                 
                 try
                 {
-                    return await taskCompletionSource.Task;
+                    var result = await taskCompletionSource.Task;
+                    await continueWith;
+                    return result;
                 }
                 catch (OperationCanceledException)
                 {

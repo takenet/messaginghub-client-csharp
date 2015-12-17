@@ -23,7 +23,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void WhenClientAddANotificationReceiverAndReceiveANotificationShouldBeHandledByReceiver()
+        public void Add_NotificationReceiver_And_Process_Notification_With_Success()
         {
             //Arrange
             MessagingHubClient.UsingAccount("login", "pass");
@@ -49,7 +49,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void WhenClientAddASpecificNotificationReceiverAndReceiveANotificationShouldBeHandledByReceiver()
+        public void Add_Specific_NotificationReceiver_And_Process_Notification_With_Success()
         {
             //Arrange
             MessagingHubClient.UsingAccount("login", "pass");
@@ -78,7 +78,7 @@ namespace Takenet.MessagingHub.Client.Test
 
 
         [Test]
-        public void WhenClientAddANotificationReceiverBaseAndReceiveANotificationTheReceiverShouldHandleAndBeSet()
+        public void Add_Base_NotificationReceiver_And_Process_Notification_With_Success()
         {
             //Arrange
 

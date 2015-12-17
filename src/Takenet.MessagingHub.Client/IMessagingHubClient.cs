@@ -12,24 +12,6 @@ namespace Takenet.MessagingHub.Client
     public interface IMessagingHubClient : ICommandSender, IMessageSender, INotificationSender
     {
         /// <summary>
-        /// Sends a command
-        /// </summary>
-        /// <returns>Task representing the send operation</returns>
-        Task<Command> SendCommandAsync(Command command);
-
-        /// <summary>
-        /// Sends a message
-        /// </summary>
-        /// <returns>Task representing the send operation</returns>
-        Task SendMessageAsync(Message message);
-
-        /// <summary>
-        /// Sends a notification
-        /// </summary>
-        /// <returns>Task representing the send operation</returns>
-        Task SendNotificationAsync(Notification notification);
-
-        /// <summary>
         /// Configure the client to authenticate with Message Hub with a login and password
         /// </summary>
         /// <param name="login">Login</param>

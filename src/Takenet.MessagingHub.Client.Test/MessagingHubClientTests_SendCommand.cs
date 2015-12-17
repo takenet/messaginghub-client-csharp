@@ -16,7 +16,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void WhenClientSendACommandShouldReceiveACommandResponse()
+        public void Send_Command_And_Receive_Response_With_Success()
         {
             //Arrange
             MessagingHubClient.UsingAccount("login", "pass");
@@ -43,7 +43,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void WhenClientTrySendACommandBeforeStartClientShowThrowAException()
+        public void Send_Command_Without_Start_Should_Throw_Exception()
         {
             //Arrange
             MessagingHubClient.UsingAccount("login", "pass");

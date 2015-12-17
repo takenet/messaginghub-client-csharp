@@ -17,7 +17,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void WhenClientIsConnectedAndCloseConnectionShouldDisconnectFromServer()
+        public void Start_Then_Stop_Should_Finish_Session_With_Success()
         {
             //Arrange
             ClientChannel.WhenForAnyArgs(c => c.SendFinishingSessionAsync()).Do(c => ClientChannel.State.Returns(SessionState.Finished));
@@ -34,7 +34,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void WhenClientIsNotConnectedAndCloseConnectionShouldThrowException()
+        public void Stop_Without_Start_Should_Throw_Exception()
         {
             //Arrange
             MessagingHubClient.UsingAccessKey("login", "key");
@@ -44,7 +44,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void WhenClientHasntEstablishedSessionAndCloseConnectionShouldDisconnectFromServer()
+        public void Start_With_Session_Failed_Should_Stop_With_Success()
         {
             //Arrange
             ClientChannel.State.Returns(SessionState.Failed);

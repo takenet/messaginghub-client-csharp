@@ -23,7 +23,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void WhenClientAddAMessageReceiverAndReceiveAMessageShouldBeHandledByReceiver()
+        public void Add_MessageReceiver_And_Process_Message_With_Success()
         {
             //Arrange
             MessagingHubClient.UsingAccount("login", "pass");
@@ -49,7 +49,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void WhenClientAddAMessageReceiverAndReceiveAMessageShouldBeHandledByReceiverWhenStopped()
+        public void Add_MessageReceiver_Process_Message_And_Stop_With_Success()
         {
             //Arrange
             MessagingHubClient.UsingAccount("login", "pass");
@@ -77,7 +77,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void WhenClientAddAMessageReceiverBaseAndReceiveAMessageTheReceiverShouldHandleAndBeSet()
+        public void Add_Base_MessageReceiver_And_Process_Message_With_Success()
         {
             //Arrange
 
