@@ -1,26 +1,19 @@
 ﻿using Lime.Protocol;
-using Lime.Protocol.Client;
 using NSubstitute;
 using NUnit.Framework;
 using Shouldly;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Takenet.MessagingHub.Client.Lime;
 using Takenet.MessagingHub.Client.Receivers;
 
 namespace Takenet.MessagingHub.Client.Test
 {
     [TestFixture]
-    class MessagingHubClientTests_AddNotificationReceiver : MessagingHubClientTestBase
+    internal class MessagingHubClientTests_AddNotificationReceiver : MessagingHubClientTestBase
     {
-        public Notification SomeNotification => new Notification { Event = Event.Accepted };
-
-        INotificationReceiver _notificationReceiver;
-        SemaphoreSlim _semaphore;
+        private Notification SomeNotification => new Notification { Event = Event.Accepted };
+        private INotificationReceiver _notificationReceiver;
+        private SemaphoreSlim _semaphore;
 
         [SetUp]
         protected override void Setup()
@@ -33,19 +26,19 @@ namespace Takenet.MessagingHub.Client.Test
         public void WhenClientAddANotificationReceiverAndReceiveANotificationShouldBeHandledByReceiver()
         {
             //Arrange
-            _messagingHubClient.UsingAccount("login", "pass");
-            _messagingHubClient.AddNotificationReceiver(_notificationReceiver);
+            MessagingHubClient.UsingAccount("login", "pass");
+            MessagingHubClient.AddNotificationReceiver(_notificationReceiver);
 
             _semaphore = new SemaphoreSlim(1);
 
-            _clientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (callInfo) =>
+            ClientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (callInfo) =>
             {
                 await _semaphore.WaitAsync();
                 return SomeNotification;
             });
 
             //Act
-            _messagingHubClient.StartAsync().Wait();
+            MessagingHubClient.StartAsync().Wait();
 
             Task.Delay(3000).Wait();
 
@@ -59,21 +52,21 @@ namespace Takenet.MessagingHub.Client.Test
         public void WhenClientAddASpecificNotificationReceiverAndReceiveANotificationShouldBeHandledByReceiver()
         {
             //Arrange
-            _messagingHubClient.UsingAccount("login", "pass");
-            _messagingHubClient.AddNotificationReceiver(_notificationReceiver, Event.Accepted);
+            MessagingHubClient.UsingAccount("login", "pass");
+            MessagingHubClient.AddNotificationReceiver(_notificationReceiver, Event.Accepted);
 
             _semaphore = new SemaphoreSlim(1);
 
             SomeNotification.Event = Event.Accepted;
 
-            _clientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (callInfo) =>
+            ClientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (callInfo) =>
             {
                 await _semaphore.WaitAsync();
                 return SomeNotification;
             });
 
             //Act
-            _messagingHubClient.StartAsync().Wait();
+            MessagingHubClient.StartAsync().Wait();
 
             Task.Delay(5000).Wait();
 
@@ -91,19 +84,19 @@ namespace Takenet.MessagingHub.Client.Test
 
             var notificationReceiver = Substitute.For<NotificationReceiverBase>();
 
-            _messagingHubClient.UsingAccount("login", "pass");
-            _messagingHubClient.AddNotificationReceiver(notificationReceiver);
+            MessagingHubClient.UsingAccount("login", "pass");
+            MessagingHubClient.AddNotificationReceiver(notificationReceiver);
 
             _semaphore = new SemaphoreSlim(1);
 
-            _clientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (_) =>
+            ClientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (_) =>
             {
                 await _semaphore.WaitAsync().ConfigureAwait(false);
                 return SomeNotification;
             });
 
             //Act
-            _messagingHubClient.StartAsync().Wait();
+            MessagingHubClient.StartAsync().Wait();
 
             Task.Delay(3000).Wait();
 

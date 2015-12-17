@@ -16,48 +16,52 @@ namespace Takenet.MessagingHub.Client
 {
     public class MessagingHubClient : IMessagingHubClient
     {
-        static readonly string defaultDomainName = "msging.net";
+        private const string DefaultDomainName = "msging.net";
 
         public IMessageSender MessageSender => ReturnSenderWithExist();
         public ICommandSender CommandSender => ReturnSenderWithExist();
         public INotificationSender NotificationSender => ReturnSenderWithExist();
 
-        readonly Uri _endpoint;
-        readonly IDictionary<MediaType, IList<Func<IMessageReceiver>>> _messageReceivers;
-        readonly IDictionary<Event, IList<Func<INotificationReceiver>>> _notificationReceivers;
+        private readonly Uri _endpoint;
+        private readonly IDictionary<MediaType, IList<Func<IMessageReceiver>>> _messageReceivers;
+        private readonly IDictionary<Event, IList<Func<INotificationReceiver>>> _notificationReceivers;
 
-        readonly IList<Func<IMessageReceiver>> _defaultMessageReceivers = new List<Func<IMessageReceiver>> { () => new UnsupportedMessageReceiver() };
-        readonly IList<Func<INotificationReceiver>> _defaultNotificationReceivers = new List<Func<INotificationReceiver>> { () => new BlackholeNotificationReceiver() };
+        private readonly IList<Func<IMessageReceiver>> _defaultMessageReceivers = new List<Func<IMessageReceiver>> { () => new UnsupportedMessageReceiver() };
+        private readonly IList<Func<INotificationReceiver>> _defaultNotificationReceivers = new List<Func<INotificationReceiver>> { () => new BlackholeNotificationReceiver() };
 
-        string _login;
-        string _password;
-        string _accessKey;
-        string _domainName;
-        IClientChannel _clientChannel;
-        IClientChannelFactory _clientChannelFactory;
-        IEnvelopeProcessorFactory<Command> _envelopeProcessorFactory;
-        IEnvelopeProcessor<Command> _commandProcessor;
-        ISessionFactory _sessionFactory;
-        SenderWrapper _sender;
+        private string _login;
+        private string _password;
+        private string _accessKey;
+        private readonly string _domainName;
 
-        CancellationTokenSource _cancellationTokenSource;
-        Task _backgroundExecution;
-        Task _messageReceiver;
-        Task _notiticationReceiver;
+        private IClientChannel _clientChannel;
+        private IEnvelopeProcessor<Command> _commandProcessor;
+        private ISenderWrapper _sender;
+        private readonly IClientChannelFactory _clientChannelFactory;
+        private readonly ISessionFactory _sessionFactory;
+        private readonly IEnvelopeProcessorFactory<Command> _envelopeProcessorFactory;
 
-        TimeSpan _timeout;
-        internal MessagingHubClient(IClientChannelFactory clientChannelFactory, ISessionFactory sessionFactory, IEnvelopeProcessorFactory<Command> envelopeProcessorFactory, string hostname = null, string domainName = null)
+        private CancellationTokenSource _cancellationTokenSource;
+        private Task _backgroundExecution;
+        private Task _messageReceiverTask;
+        private Task _notiticationReceiverTask;
+        private readonly TimeSpan _timeout;
+
+
+        internal MessagingHubClient(IClientChannelFactory clientChannelFactory, ISessionFactory sessionFactory,
+            IEnvelopeProcessorFactory<Command> envelopeProcessorFactory, string hostname = null, string domainName = null)
         {
             _messageReceivers = new Dictionary<MediaType, IList<Func<IMessageReceiver>>>();
             _notificationReceivers = new Dictionary<Event, IList<Func<INotificationReceiver>>>();
             _clientChannelFactory = clientChannelFactory;
             _envelopeProcessorFactory = envelopeProcessorFactory;
             _sessionFactory = sessionFactory;
-            hostname = hostname ?? defaultDomainName;
+            hostname = hostname ?? DefaultDomainName;
             _endpoint = new Uri($"net.tcp://{hostname}:55321");
-            _domainName = domainName ?? defaultDomainName;
+            _domainName = domainName ?? DefaultDomainName;
             _timeout = TimeSpan.FromSeconds(60);
         }
+
 
         public MessagingHubClient(string hostname = null, string domainName = null) :
                     this(new ClientChannelFactory(), new SessionFactory(), new CommandProcessorFactory(), hostname, domainName)
@@ -65,44 +69,30 @@ namespace Takenet.MessagingHub.Client
 
         public MessagingHubClient UsingAccount(string login, string password)
         {
-            this._login = login;
-            this._password = password;
+            _login = login;
+            _password = password;
             return this;
         }
 
         public MessagingHubClient UsingAccessKey(string login, string key)
         {
-            this._login = login;
-            this._accessKey = key;
+            _login = login;
+            _accessKey = key;
             return this;
         }
 
-        #region PublicMethods
-
-        /// <summary>
-        /// Add a message receiver listener to handle received messages
-        /// </summary>
-        /// <param name="receiver">Listener</param>
-        /// <param name="forMimeType">MediaType used as a filter of messages received by listener. When not informed, only receives messages which no 'typed' receiver is registered</param>
-        /// <returns></returns>
         public MessagingHubClient AddMessageReceiver(IMessageReceiver receiver, MediaType forMimeType = null)
         {
             if (receiver == null) throw new ArgumentNullException(nameof(receiver));
 
-            return AddMessageReceiver(() => { return receiver; }, forMimeType);
+            return AddMessageReceiver(() => receiver, forMimeType);
         }
 
-        /// <summary>
-        /// Add a notification receiver listener to handle received notifications
-        /// </summary>
-        /// <param name="receiver">Listener</param>
-        /// <param name="forMimeType">MediaType used as a filter of notification received by listener. When not informed, only receives notifications which no 'typed' receiver is registered</param>
-        /// <returns></returns>
         public MessagingHubClient AddNotificationReceiver(INotificationReceiver receiver, Event? forEventType = null)
         {
             if (receiver == null) throw new ArgumentNullException(nameof(receiver));
 
-            return AddNotificationReceiver(() => { return receiver; }, forEventType);
+            return AddNotificationReceiver(() => receiver, forEventType);
         }
 
         public MessagingHubClient AddMessageReceiver(Func<IMessageReceiver> receiverBuild, MediaType forMimeType = null)
@@ -138,8 +128,7 @@ namespace Takenet.MessagingHub.Client
             }
             else
             {
-                eventTypeReceivers = new List<Func<INotificationReceiver>>();
-                eventTypeReceivers.Add(receiverBuild);
+                eventTypeReceivers = new List<Func<INotificationReceiver>> { receiverBuild };
 
                 _notificationReceivers.Add(Event.Accepted, eventTypeReceivers);
                 _notificationReceivers.Add(Event.Authorized, eventTypeReceivers);
@@ -153,43 +142,23 @@ namespace Takenet.MessagingHub.Client
             return this;
         }
 
-        /// <summary>
-        /// Connect and receives messages from Lime server
-        /// </summary>
-        /// <returns>Task representing the running state of the client (when this tasks finishes, the connection has been terminated)</returns>
         public async Task StartAsync()
         {
-            var authentication = GetAuthenticationScheme();
+            await InstanciateClientChannelAsync();
 
-            _clientChannel = await _clientChannelFactory.CreateClientChannelAsync(_endpoint).ConfigureAwait(false);
+            await StablishSessionAsync();
 
-            var identity = Identity.Parse($"{_login}@{_domainName}");
-            var session = await _sessionFactory.CreateSessionAsync(_clientChannel, identity, authentication).ConfigureAwait(false);
+            await SetPresenceAsync().ConfigureAwait(false);
 
-            if (session.State != SessionState.Established)
-            {
-                throw new LimeException(session.Reason.Code, session.Reason.Description);
-            }
+            StartCommandProcessor();
 
-            await _clientChannel.SetResourceAsync(
-                LimeUri.Parse(UriTemplates.PRESENCE),
-                new Presence { RoutingRule = RoutingRule.Identity },
-                CancellationToken.None)
-                .ConfigureAwait(false);
+            InstanciateSender();
 
-            _commandProcessor = _envelopeProcessorFactory.Create(_clientChannel);
-            _commandProcessor.Start();
+            InstanciateGlobalCancellationTokenSource();
 
-            _sender = new SenderWrapper(_clientChannel, _commandProcessor, _timeout);
-            _cancellationTokenSource = new CancellationTokenSource();
             InitializeAndStartReceivers();
-            _backgroundExecution = Task.WhenAll(_messageReceiver, _notiticationReceiver);
         }
 
-        /// <summary>
-        /// Close connecetion and stop to receive messages from Lime server 
-        /// </summary>
-        /// <returns>
         public async Task StopAsync()
         {
             if (_clientChannel == null) throw new InvalidOperationException("Is not possible call 'Stop' method before 'Start'");
@@ -213,99 +182,118 @@ namespace Takenet.MessagingHub.Client
             }
         }
 
-        #endregion PublicMethods
 
-        #region InternalMethods
-
-        void InitializeAndStartReceivers()
+        private void InstanciateGlobalCancellationTokenSource()
         {
-            _messageReceiver = new EnvelopeProcessor<Message>(
-                    _clientChannel.ReceiveMessageAsync,
-                    GetReceiversFor,
-                    _sender)
-                .StartAsync(_cancellationTokenSource.Token);
-
-            _notiticationReceiver = new EnvelopeProcessor<Notification>(
-                    _clientChannel.ReceiveNotificationAsync,
-                    GetReceiversFor,
-                    _sender)
-                .StartAsync(_cancellationTokenSource.Token);
+            _cancellationTokenSource = new CancellationTokenSource();
         }
 
-        IList<IMessageReceiver> GetReceiversFor(Message message)
+        private void InstanciateSender()
         {
-            IList<Func<IMessageReceiver>> mimeTypeReceiversFunc = null;
+            _sender = new SenderWrapper(_clientChannel, _commandProcessor, _timeout);
+        }
+
+        private void StartCommandProcessor()
+        {
+            _commandProcessor = _envelopeProcessorFactory.Create(_clientChannel);
+            _commandProcessor.Start();
+        }
+
+        private async Task InstanciateClientChannelAsync()
+        {
+            _clientChannel = await _clientChannelFactory.CreateClientChannelAsync(_endpoint).ConfigureAwait(false);
+        }
+
+        private async Task StablishSessionAsync()
+        {
+            var authentication = GetAuthenticationScheme();
+            var identity = Identity.Parse($"{_login}@{_domainName}");
+            var session = await _sessionFactory.CreateSessionAsync(_clientChannel, identity, authentication).ConfigureAwait(false);
+
+            if (session.State != SessionState.Established)
+            {
+                throw new LimeException(session.Reason.Code, session.Reason.Description);
+            }
+        }
+
+        private async Task SetPresenceAsync()
+        {
+            await _clientChannel.SetResourceAsync(
+                LimeUri.Parse(UriTemplates.PRESENCE),
+                new Presence { RoutingRule = RoutingRule.Identity },
+                CancellationToken.None);
+        }
+
+        private void InitializeAndStartReceivers()
+        {
+            _messageReceiverTask = EnvelopeDispatcher.StartAsync(
+                    _clientChannel.ReceiveMessageAsync,
+                    _sender,
+                    GetReceiversFor,
+                    _cancellationTokenSource.Token);
+
+            _notiticationReceiverTask = EnvelopeDispatcher.StartAsync(
+                    _clientChannel.ReceiveNotificationAsync,
+                    _sender,
+                    GetReceiversFor,
+                    _cancellationTokenSource.Token
+                    );
+
+            _backgroundExecution = Task.WhenAll(_messageReceiverTask, _notiticationReceiverTask);
+        }
+
+        private IEnumerable<IMessageReceiver> GetReceiversFor(Message message)
+        {
+            IList<Func<IMessageReceiver>> mimeTypeReceiversFunc;
+
             var hasReceiver = _messageReceivers.TryGetValue(message.Type, out mimeTypeReceiversFunc) ||
                               _messageReceivers.TryGetValue(MediaTypes.Any, out mimeTypeReceiversFunc);
+
             if (!hasReceiver)
-            {
                 mimeTypeReceiversFunc = _defaultMessageReceivers;
-            }
 
-            var mimeTypeReceivers = new List<IMessageReceiver>();
-
-            foreach (var m in mimeTypeReceiversFunc)
-            {
-                mimeTypeReceivers.Add(m?.Invoke());
-            }
-
-            return mimeTypeReceivers;
+            return mimeTypeReceiversFunc.Select(m => m?.Invoke()).ToList();
         }
 
-        IList<INotificationReceiver> GetReceiversFor(Notification notificaiton)
+        private IEnumerable<INotificationReceiver> GetReceiversFor(Notification notificaiton)
         {
-            IList<Func<INotificationReceiver>> eventTypeReceiversFunc = null;
+            IList<Func<INotificationReceiver>> eventTypeReceiversFunc;
             var hasReceiver = _notificationReceivers.TryGetValue(notificaiton.Event, out eventTypeReceiversFunc);
             if (!hasReceiver)
-            {
                 eventTypeReceiversFunc = _defaultNotificationReceivers;
-            }
 
-            var notificationReceivers = new List<INotificationReceiver>();
-
-            foreach (var m in eventTypeReceiversFunc)
-            {
-                notificationReceivers.Add(m?.Invoke());
-            }
-
-            return notificationReceivers;
+            return eventTypeReceiversFunc.Select(m => m?.Invoke()).ToList();
         }
 
-        Authentication GetAuthenticationScheme()
+        private Authentication GetAuthenticationScheme()
         {
             Authentication result = null;
 
-            if (this._password != null)
+            if (_password != null)
             {
                 var plainAuthentication = new PlainAuthentication();
-                plainAuthentication.SetToBase64Password(this._password);
+                plainAuthentication.SetToBase64Password(_password);
                 result = plainAuthentication;
             }
 
-            if (this._accessKey != null)
+            if (_accessKey != null)
             {
                 var keyAuthentication = new KeyAuthentication { Key = _accessKey };
                 result = keyAuthentication;
             }
 
             if (result == null)
-            {
                 throw new InvalidOperationException($"A password (method {nameof(UsingAccount)}) or accessKey (method {nameof(UsingAccessKey)}) should be informed");
-            }
 
             return result;
         }
 
-        SenderWrapper ReturnSenderWithExist()
+        private ISenderWrapper ReturnSenderWithExist()
         {
-            if(_sender != null)
-            {
+            if (_sender != null)
                 return _sender;
-            }
 
             throw new InvalidOperationException("Client must be started to execute this operation.");
         }
-
-        #endregion InternalMethods
     }
 }

@@ -6,11 +6,11 @@ using Takenet.MessagingHub.Client.Lime;
 
 namespace Takenet.MessagingHub.Client.Senders
 {
-    class SenderWrapper : IMessageSender, ICommandSender, INotificationSender
+    internal class SenderWrapper : ISenderWrapper
     {
-        IClientChannel _clientChannel;
-        IEnvelopeProcessor<Command> _commandProcessor;
-        TimeSpan _timeout;
+        private readonly IClientChannel _clientChannel;
+        private readonly IEnvelopeProcessor<Command> _commandProcessor;
+        private readonly TimeSpan _timeout;
 
         public SenderWrapper(IClientChannel clientChannel, IEnvelopeProcessor<Command> commandProcessor, TimeSpan timeout)
         {

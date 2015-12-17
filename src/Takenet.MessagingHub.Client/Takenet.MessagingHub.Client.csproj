@@ -56,7 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EnvelopeProcessor.cs" />
+    <Compile Include="EnvelopeDispatcher.cs" />
     <Compile Include="Lime\CommandProcessor.cs" />
     <Compile Include="Lime\EnvelopeProcessor.cs" />
     <Compile Include="Lime\CommandProcessorFactory.cs" />
@@ -69,6 +69,7 @@
     <Compile Include="Receivers\IReceiver.cs" />
     <Compile Include="Receivers\NotificationReceiverBase.cs" />
     <Compile Include="Receivers\ReceiverBase.cs" />
+    <Compile Include="Senders\ISenderWrapper.cs" />
     <Compile Include="SessionFactory.cs" />
     <Compile Include="ClientChannelFactory.cs" />
     <Compile Include="ISessionFactory.cs" />

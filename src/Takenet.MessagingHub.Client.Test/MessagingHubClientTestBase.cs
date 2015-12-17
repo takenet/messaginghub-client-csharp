@@ -1,47 +1,79 @@
 ﻿using Lime.Protocol;
 using Lime.Protocol.Client;
 using NSubstitute;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Takenet.MessagingHub.Client.Lime;
 
 namespace Takenet.MessagingHub.Client.Test
 {
     internal class MessagingHubClientTestBase
     {
-        protected MessagingHubClient _messagingHubClient;
-        protected IClientChannel _clientChannel;
-        protected ISessionFactory _sessionFactory;
-        protected IEnvelopeProcessorFactory<Command> _envelopeProcessorFactory;
-        protected IEnvelopeProcessor<Command> _commandProcessor;
+        protected IMessagingHubClient MessagingHubClient;
+        protected IClientChannel ClientChannel;
+        protected ISessionFactory SessionFactory;
+        protected IClientChannelFactory ClientChannelFactory;
+        protected IEnvelopeProcessorFactory<Command> EnvelopeProcessorFactory;
+        protected IEnvelopeProcessor<Command> CommandProcessor;
 
         protected virtual void Setup()
         {
-            _clientChannel = Substitute.For<IClientChannel>();
+            SubstituteClientChannel();
 
+            SubstituteSetPresence();
+
+            SubstituteSessionFabrication();
+
+            SubstituteCommandProcessor();
+
+            SubstituteEnvelopeProcessorFabrication();
+
+            SubstituteClientChannelFabrication();
+
+            InstanciateActualMessageHubClient();
+        }
+
+        private void InstanciateActualMessageHubClient()
+        {
+            MessagingHubClient = new MessagingHubClient(ClientChannelFactory, SessionFactory, EnvelopeProcessorFactory);
+        }
+
+        private void SubstituteClientChannelFabrication()
+        {
+            ClientChannelFactory = Substitute.For<IClientChannelFactory>();
+            ClientChannelFactory.CreateClientChannelAsync(null).ReturnsForAnyArgs(ClientChannel);
+        }
+
+        private void SubstituteEnvelopeProcessorFabrication()
+        {
+            EnvelopeProcessorFactory = Substitute.For<IEnvelopeProcessorFactory<Command>>();
+            EnvelopeProcessorFactory.Create(null).ReturnsForAnyArgs(CommandProcessor);
+        }
+
+        private void SubstituteCommandProcessor()
+        {
+            CommandProcessor = Substitute.For<IEnvelopeProcessor<Command>>();
+        }
+
+        private void SubstituteSessionFabrication()
+        {
+            var session = new Session {State = SessionState.Established};
+
+            SessionFactory = Substitute.For<ISessionFactory>();
+            SessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
+        }
+
+        private void SubstituteClientChannel()
+        {
+            ClientChannel = Substitute.For<IClientChannel>();
+        }
+
+        private void SubstituteSetPresence()
+        {
             var presenceCommand = new Command();
-            _clientChannel.WhenForAnyArgs(c => c.SendCommandAsync(null)).Do(c =>
+            ClientChannel.WhenForAnyArgs(c => c.SendCommandAsync(null)).Do(c =>
                 presenceCommand = c.Arg<Command>());
-            _clientChannel.ReceiveCommandAsync(Arg.Any<CancellationToken>()).Returns(c => new Command { Id = presenceCommand.Id, Status = CommandStatus.Success });
-
-            var session = new Session { State = SessionState.Established };
-
-            var clientChannelFactory = Substitute.For<IClientChannelFactory>();
-            clientChannelFactory.CreateClientChannelAsync(null).ReturnsForAnyArgs(_clientChannel);
-
-            _sessionFactory = Substitute.For<ISessionFactory>();
-            _sessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
-
-            _commandProcessor = Substitute.For<IEnvelopeProcessor<Command>>();
-            _envelopeProcessorFactory = Substitute.For<IEnvelopeProcessorFactory<Command>>();
-            _envelopeProcessorFactory.Create(null).ReturnsForAnyArgs(_commandProcessor);
-
-            _messagingHubClient = new MessagingHubClient(clientChannelFactory, _sessionFactory, _envelopeProcessorFactory, "msging.net");
+            ClientChannel.ReceiveCommandAsync(Arg.Any<CancellationToken>())
+                .Returns(c => new Command {Id = presenceCommand.Id, Status = CommandStatus.Success});
         }
     }
 }

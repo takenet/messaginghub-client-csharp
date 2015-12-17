@@ -1,17 +1,9 @@
-﻿using Lime.Messaging.Resources;
-using Lime.Protocol;
-using Lime.Protocol.Client;
+﻿using Lime.Protocol;
 using Lime.Protocol.Network;
 using NSubstitute;
 using NUnit.Framework;
 using Shouldly;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Takenet.MessagingHub.Client.Lime;
 
 namespace Takenet.MessagingHub.Client.Test
 {
@@ -28,28 +20,28 @@ namespace Takenet.MessagingHub.Client.Test
         public void WhenClientStartUsingAccountShouldConnectToServer()
         {
             // Arrange
-            _messagingHubClient.UsingAccount("login", "pass");
-            _sessionFactory.WhenForAnyArgs(s => s.CreateSessionAsync(null, null, null)).Do(s => _clientChannel.State.Returns(SessionState.Established));
+            MessagingHubClient.UsingAccount("login", "pass");
+            SessionFactory.WhenForAnyArgs(s => s.CreateSessionAsync(null, null, null)).Do(s => ClientChannel.State.Returns(SessionState.Established));
 
             // Act
-            _messagingHubClient.StartAsync().Wait();
+            MessagingHubClient.StartAsync().Wait();
 
             // Assert
-            _clientChannel.State.ShouldBe(SessionState.Established);
+            ClientChannel.State.ShouldBe(SessionState.Established);
         }
 
         [Test]
         public void WhenClientStartUsingAccessKeyShouldConnectToServer()
         {
             // Arrange
-            _messagingHubClient.UsingAccessKey("login", "key");
-            _sessionFactory.WhenForAnyArgs(s => s.CreateSessionAsync(null, null, null)).Do(s => _clientChannel.State.Returns(SessionState.Established));
+            MessagingHubClient.UsingAccessKey("login", "key");
+            SessionFactory.WhenForAnyArgs(s => s.CreateSessionAsync(null, null, null)).Do(s => ClientChannel.State.Returns(SessionState.Established));
 
             // Act
-            _messagingHubClient.StartAsync().Wait();
+            MessagingHubClient.StartAsync().Wait();
 
             // Assert
-            _clientChannel.State.ShouldBe(SessionState.Established);
+            ClientChannel.State.ShouldBe(SessionState.Established);
         }
 
         [Test]
@@ -63,10 +55,10 @@ namespace Takenet.MessagingHub.Client.Test
             };
 
             // Arrange
-            _sessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
+            SessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
 
             // Act /  Assert
-            Should.ThrowAsync<InvalidOperationException>(async () => await _messagingHubClient.StartAsync()).Wait();
+            Should.ThrowAsync<InvalidOperationException>(async () => await MessagingHubClient.StartAsync()).Wait();
         }
 
 
@@ -80,13 +72,13 @@ namespace Takenet.MessagingHub.Client.Test
             };
 
             // Arrange
-            _sessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
+            SessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
 
 
-            _messagingHubClient.UsingAccount("login", "pass");
+            MessagingHubClient.UsingAccount("login", "pass");
 
             // Act
-            var exception = Should.ThrowAsync<LimeException>(async () => await _messagingHubClient.StartAsync()).Result;
+            var exception = Should.ThrowAsync<LimeException>(async () => await MessagingHubClient.StartAsync()).Result;
 
             // Assert
             exception.Reason.Description.ShouldBe(session.Reason.Description);

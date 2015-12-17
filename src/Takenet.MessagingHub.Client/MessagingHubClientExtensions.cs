@@ -7,8 +7,6 @@ namespace Takenet.MessagingHub.Client
 {
     public static class MessagingHubClientExtensions
     {
-        #region SenderWrapper
-
         public static Task SendMessageAsync(this IMessageSender sender, string content, string to) => sender.SendMessageAsync(content, Node.Parse(to));
 
         public static Task SendMessageAsync(this IMessageSender sender, string content, Node to)
@@ -27,8 +25,6 @@ namespace Takenet.MessagingHub.Client
 
         public static Task SendNotificationAsync(this IMessagingHubClient client, Notification notification) => client.NotificationSender.SendNotificationAsync(notification);
 
-
-        #endregion SenderWrapper
 
         public static Notification ToReceivedNotification(this Message message) => message.ToNotification(Event.Received);
 
@@ -52,6 +48,7 @@ namespace Takenet.MessagingHub.Client
             return notification;
         }
 
+
         public static Command ToFailedCommandResponse(this Command command, Reason reason)
         {
             var responseCommand = command.ToCommandResponse(CommandStatus.Failure);
@@ -71,6 +68,6 @@ namespace Takenet.MessagingHub.Client
             return responseCommand;
         }
 
-        static PlainText CreatePlainTextContent(string content) => new PlainText { Text = content };
+        public static PlainText CreatePlainTextContent(string content) => new PlainText { Text = content };
     }
 }

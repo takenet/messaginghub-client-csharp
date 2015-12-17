@@ -1,16 +1,17 @@
 ﻿using Lime.Protocol;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client.Lime
 {
-    interface IEnvelopeProcessor<T> where T : Envelope
+    /// <summary>
+    /// Received an envelope from a producer and forwards them to a set of receivers
+    /// </summary>
+    /// <typeparam name="TEnvelope">Envelope type</typeparam>
+    interface IEnvelopeProcessor<TEnvelope> where TEnvelope : Envelope
     {
         void Start();
         Task StopAsync();
-        Task<T> SendReceiveAsync(T envelope, TimeSpan timeout);
+        Task<TEnvelope> SendReceiveAsync(TEnvelope envelope, TimeSpan timeout);
     }
 }
