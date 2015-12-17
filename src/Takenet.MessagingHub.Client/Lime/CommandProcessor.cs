@@ -61,38 +61,23 @@ namespace Takenet.MessagingHub.Client.Lime
 
             taskCompletionSource = new TaskCompletionSource<Command>();
             _activeRequests.TryAdd(envelope.Id, taskCompletionSource);
-            var continueWith = taskCompletionSource.Task.ContinueWith(e =>
-            {
-                TaskCompletionSource<Command> result;
-                _activeRequests.TryRemove(envelope.Id, out result);
-            });
             
             using (var cancellationTokenSource = new CancellationTokenSource(timeout))
             {
-                cancellationTokenSource.Token.Register(() => taskCompletionSource.TrySetCanceled());
-
                 try
                 {
+                    cancellationTokenSource.Token.Register(() => taskCompletionSource.TrySetCanceled());
                     await SendAsync(envelope);
+                    return await taskCompletionSource.Task;
                 }
                 catch (OperationCanceledException)
                 {
-                    TaskCompletionSource<Command> result;
-                    _activeRequests.TryRemove(envelope.Id, out result);
-                    throw new TimeoutException("Timeout expired sending the envelope");
+                    throw new TimeoutException("Timeout expired");
                 }
-                
-                try
-                {
-                    var result = await taskCompletionSource.Task;
-                    await continueWith;
-                    return result;
-                }
-                catch (OperationCanceledException)
+                finally
                 {
                     TaskCompletionSource<Command> result;
                     _activeRequests.TryRemove(envelope.Id, out result);
-                    throw new TimeoutException("Timeout expired waiting for response envelope");
                 }
             }
         }
