@@ -3,46 +3,43 @@ using NSubstitute;
 using NUnit.Framework;
 using Shouldly;
 using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Takenet.MessagingHub.Client.Receivers;
 
 namespace Takenet.MessagingHub.Client.Test
 {
     [TestFixture]
     internal class MessagingHubClientTests_SendCommand : MessagingHubClientTestBase
     {
-        private Command SomeCommand => new Command { Resource = new PlainDocument(MediaTypes.PlainText) };
-
-        private ICommandReceiver _commandReceiver;
-        private SemaphoreSlim _semaphore;
-
         [SetUp]
         protected override void Setup()
         {
             base.Setup();
-            _commandReceiver = Substitute.For<ICommandReceiver>();
         }
 
         [Test]
-        [Ignore]
         public void WhenClientSendACommandShouldReceiveACommandResponse()
         {
             //Arrange
             MessagingHubClient.UsingAccount("login", "pass");
-            //MessagingHubClient.AddCommandReceiver(_commandReceiver);
+            var commandId = Guid.NewGuid();
 
-            _semaphore = new SemaphoreSlim(2);
+            var commandResponse = new Command()
+            {
+                Id = commandId,
+                Status = CommandStatus.Success,
+            };
+            
+            CommandProcessor.SendAsync(null, TimeSpan.Zero).ReturnsForAnyArgs(commandResponse);
 
             //Act
             MessagingHubClient.StartAsync().Wait();
             
-            Task.Delay(3000).Wait();
+            var result = MessagingHubClient.SendCommandAsync(new Command() { Id = commandId }).Result;
 
             //Assert
-            _commandReceiver.ReceivedWithAnyArgs().ReceiveAsync(null).Wait();
-
-            _semaphore.DisposeIfDisposable();
+            CommandProcessor.ReceivedWithAnyArgs().SendAsync(null,TimeSpan.Zero).Wait();
+            result.ShouldNotBeNull();
+            result.Status.ShouldBe(CommandStatus.Success);
+            result.Id.ShouldBe(commandId);
         }
 
         [Test]
