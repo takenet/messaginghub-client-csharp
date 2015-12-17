@@ -56,42 +56,50 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Contracts\EnvelopeSenders\IEnvelopeSender.cs" />
     <Compile Include="EnvelopeDispatcher.cs" />
-    <Compile Include="Lime\CommandProcessor.cs" />
-    <Compile Include="Lime\EnvelopeProcessor.cs" />
-    <Compile Include="Lime\CommandProcessorFactory.cs" />
-    <Compile Include="Lime\IEnvelopeProcessor.cs" />
-    <Compile Include="Lime\IEnvelopeProcessorFactory.cs" />
-    <Compile Include="Receivers\CommandReceiverBase.cs" />
-    <Compile Include="Receivers\ICommandReceiver.cs" />
-    <Compile Include="Senders\ICommandSender.cs" />
-    <Compile Include="Receivers\INotificationReceiver.cs" />
-    <Compile Include="Receivers\IEnvelopeReceiver.cs" />
-    <Compile Include="Receivers\NotificationReceiverBase.cs" />
-    <Compile Include="Receivers\EnvelopeReceiverBase.cs" />
-    <Compile Include="Senders\ISenderWrapper.cs" />
+    <Compile Include="Infrastructure\EnvelopeProcessors\NotificationProcessorFactory.cs" />
+    <Compile Include="Infrastructure\EnvelopeProcessors\NotificationProcessor.cs" />
+    <Compile Include="Infrastructure\EnvelopeProcessors\MessageProcessor.cs" />
+    <Compile Include="Infrastructure\EnvelopeProcessors\CommandProcessor.cs" />
+    <Compile Include="Infrastructure\EnvelopeProcessors\MessageProcessorFactory.cs" />
+    <Compile Include="Infrastructure\EnvelopeProcessors\EnvelopeProcessor.cs" />
+    <Compile Include="Infrastructure\EnvelopeProcessors\CommandProcessorFactory.cs" />
+    <Compile Include="Contracts\EnvelopeProcessors\IEnvelopeProcessor.cs" />
+    <Compile Include="Contracts\Factories\IEnvelopeProcessorFactory.cs" />
+    <Compile Include="Infrastructure\EnvelopeReceivers\CommandReceiverBase.cs" />
+    <Compile Include="Contracts\EnvelopeReceivers\ICommandReceiver.cs" />
+    <Compile Include="Contracts\EnvelopeSenders\ICommandSender.cs" />
+    <Compile Include="Contracts\EnvelopeReceivers\INotificationReceiver.cs" />
+    <Compile Include="Contracts\EnvelopeReceivers\IEnvelopeReceiver.cs" />
+    <Compile Include="Infrastructure\EnvelopeReceivers\NotificationReceiverBase.cs" />
+    <Compile Include="Infrastructure\EnvelopeReceivers\EnvelopeReceiverBase.cs" />
+    <Compile Include="Infrastructure\EnvelopeSenders\NotificationSender.cs" />
+    <Compile Include="Infrastructure\EnvelopeSenders\MessageSender.cs" />
+    <Compile Include="Infrastructure\EnvelopeSenders\EnvelopeSenderBase.cs" />
     <Compile Include="SessionFactory.cs" />
     <Compile Include="ClientChannelFactory.cs" />
-    <Compile Include="ISessionFactory.cs" />
-    <Compile Include="IClientChannelFactory.cs" />
-    <Compile Include="Receivers\IMessageReceiver.cs" />
-    <Compile Include="Senders\IMessageSender.cs" />
+    <Compile Include="Contracts\Factories\ISessionFactory.cs" />
+    <Compile Include="Contracts\Factories\IClientChannelFactory.cs" />
+    <Compile Include="Contracts\EnvelopeReceivers\IMessageReceiver.cs" />
+    <Compile Include="Contracts\EnvelopeSenders\IMessageSender.cs" />
     <Compile Include="IMessagingHubClient.cs" />
-    <Compile Include="Senders\INotificationSender.cs" />
+    <Compile Include="Contracts\EnvelopeSenders\INotificationSender.cs" />
     <Compile Include="MediaTypes.cs" />
-    <Compile Include="Receivers\MessageReceiverBase.cs" />
-    <Compile Include="Senders\SenderWrapper.cs" />
+    <Compile Include="Infrastructure\EnvelopeReceivers\MessageReceiverBase.cs" />
+    <Compile Include="Infrastructure\EnvelopeSenders\CommandSender.cs" />
     <Compile Include="MessagingHubClient.cs" />
     <Compile Include="MessagingHubClientExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Receivers\UnsupportedCommandReceiver.cs" />
-    <Compile Include="Receivers\BlackholeNotificationReceiver.cs" />
-    <Compile Include="Receivers\UnsupportedMessageReceiver.cs" />
+    <Compile Include="Infrastructure\EnvelopeReceivers\UnsupportedCommandReceiver.cs" />
+    <Compile Include="Infrastructure\EnvelopeReceivers\BlackholeNotificationReceiver.cs" />
+    <Compile Include="Infrastructure\EnvelopeReceivers\UnsupportedMessageReceiver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Takenet.MessagingHub.Client.nuspec" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

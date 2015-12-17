@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client.BasicSample
 {
-    class Program
+    internal class Program
     {
         static void Main(string[] args)
         {
@@ -29,7 +29,7 @@ namespace Takenet.MessagingHub.Client.BasicSample
                 Uri = new LimeUri("/account")
             };
 
-            var responseCommand = await client.CommandSender.SendCommandAsync(command);
+            var responseCommand = await client.SendCommandAsync(command);
             var account = (Account)responseCommand.Resource;
 
             Console.WriteLine(GetAccountString(account));

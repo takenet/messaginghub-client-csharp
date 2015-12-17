@@ -10,7 +10,7 @@ namespace Takenet.MessagingHub.Client.Receivers
     {
         public override Task ReceiveAsync(Message message)
         {
-            return NotificationSender.SendNotificationAsync(
+            return NotificationSender.SendAsync(
                 message.ToFailedNotification(
                     new Reason
                     {

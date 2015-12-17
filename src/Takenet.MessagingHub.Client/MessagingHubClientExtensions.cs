@@ -16,14 +16,14 @@ namespace Takenet.MessagingHub.Client
                 To = to,
                 Content = CreatePlainTextContent(content)
             };
-            return sender.SendMessageAsync(message);
+            return sender.SendAsync(message);
         }
 
-        public static Task SendMessageAsync(this IMessagingHubClient client, string content, string to) => client.MessageSender.SendMessageAsync(content, to);
+        public static Task SendMessageAsync(this IMessagingHubClient client, string content, string to) => client.SendMessageAsync(content, to);
 
-        public static Task SendCommandAsync(this IMessagingHubClient client, Command command) => client.CommandSender.SendCommandAsync(command);
+        public static Task SendCommandAsync(this IMessagingHubClient client, Command command) => client.SendCommandAsync(command);
 
-        public static Task SendNotificationAsync(this IMessagingHubClient client, Notification notification) => client.NotificationSender.SendNotificationAsync(notification);
+        public static Task SendNotificationAsync(this IMessagingHubClient client, Notification notification) => client.SendNotificationAsync(notification);
 
 
         public static Notification ToReceivedNotification(this Message message) => message.ToNotification(Event.Received);

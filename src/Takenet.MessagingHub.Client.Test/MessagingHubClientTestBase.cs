@@ -12,8 +12,12 @@ namespace Takenet.MessagingHub.Client.Test
         protected IClientChannel ClientChannel;
         protected ISessionFactory SessionFactory;
         protected IClientChannelFactory ClientChannelFactory;
-        protected IEnvelopeProcessorFactory<Command> EnvelopeProcessorFactory;
+        protected IEnvelopeProcessorFactory<Command> CommandProcessorFactory;
+        protected IEnvelopeProcessorFactory<Message> MessageProcessorFactory;
+        protected IEnvelopeProcessorFactory<Notification> NotificationProcessorFactory;
         protected IEnvelopeProcessor<Command> CommandProcessor;
+        protected IEnvelopeProcessor<Message> MessageProcessor;
+        protected IEnvelopeProcessor<Notification> NotificationProcessor;
 
         protected virtual void Setup()
         {
@@ -23,7 +27,7 @@ namespace Takenet.MessagingHub.Client.Test
 
             SubstituteSessionFabrication();
 
-            SubstituteCommandProcessor();
+            SubstituteEnvelopeProcessor();
 
             SubstituteEnvelopeProcessorFabrication();
 
@@ -34,7 +38,7 @@ namespace Takenet.MessagingHub.Client.Test
 
         private void InstanciateActualMessageHubClient()
         {
-            MessagingHubClient = new MessagingHubClient(ClientChannelFactory, SessionFactory, EnvelopeProcessorFactory);
+            MessagingHubClient = new MessagingHubClient(ClientChannelFactory, SessionFactory, CommandProcessorFactory, MessageProcessorFactory, NotificationProcessorFactory);
         }
 
         private void SubstituteClientChannelFabrication()
@@ -45,13 +49,21 @@ namespace Takenet.MessagingHub.Client.Test
 
         private void SubstituteEnvelopeProcessorFabrication()
         {
-            EnvelopeProcessorFactory = Substitute.For<IEnvelopeProcessorFactory<Command>>();
-            EnvelopeProcessorFactory.Create(null).ReturnsForAnyArgs(CommandProcessor);
+            CommandProcessorFactory = Substitute.For<IEnvelopeProcessorFactory<Command>>();
+            CommandProcessorFactory.Create(null).ReturnsForAnyArgs(CommandProcessor);
+
+            MessageProcessorFactory = Substitute.For<IEnvelopeProcessorFactory<Message>>();
+            MessageProcessorFactory.Create(null).ReturnsForAnyArgs(MessageProcessor);
+
+            NotificationProcessorFactory = Substitute.For<IEnvelopeProcessorFactory<Notification>>();
+            NotificationProcessorFactory.Create(null).ReturnsForAnyArgs(NotificationProcessor);
         }
 
-        private void SubstituteCommandProcessor()
+        private void SubstituteEnvelopeProcessor()
         {
             CommandProcessor = Substitute.For<IEnvelopeProcessor<Command>>();
+            MessageProcessor = Substitute.For<IEnvelopeProcessor<Message>>();
+            NotificationProcessor = Substitute.For<IEnvelopeProcessor<Notification>>();
         }
 
         private void SubstituteSessionFabrication()

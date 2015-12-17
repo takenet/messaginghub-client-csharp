@@ -12,19 +12,22 @@ namespace Takenet.MessagingHub.Client
     public interface IMessagingHubClient
     {
         /// <summary>
-        /// Proxy used to send messages to the Messaging Hub
+        /// Sends a command
         /// </summary>
-        IMessageSender MessageSender { get; }
+        /// <returns>Task representing the send operation</returns>
+        Task<Command> SendCommandAsync(Command command);
 
         /// <summary>
-        /// Proxy used to send commands to the Messaging Hub
+        /// Sends a message
         /// </summary>
-        ICommandSender CommandSender { get; }
+        /// <returns>Task representing the send operation</returns>
+        Task<Message> SendMessageAsync(Message message);
 
         /// <summary>
-        /// Proxy used to send notifications to the Messaging Hub
+        /// Sends a notification
         /// </summary>
-        INotificationSender NotificationSender { get; }
+        /// <returns>Task representing the send operation</returns>
+        Task<Notification> SendNotificationAsync(Notification notification);
 
         /// <summary>
         /// Configure the client to authenticate with Message Hub with a login and password

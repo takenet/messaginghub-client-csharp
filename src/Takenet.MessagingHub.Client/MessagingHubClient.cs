@@ -18,10 +18,6 @@ namespace Takenet.MessagingHub.Client
     {
         private const string DefaultDomainName = "msging.net";
 
-        public IMessageSender MessageSender => ReturnSenderWithExist();
-        public ICommandSender CommandSender => ReturnSenderWithExist();
-        public INotificationSender NotificationSender => ReturnSenderWithExist();
-
         private readonly Uri _endpoint;
         private readonly IDictionary<MediaType, IList<Func<IMessageReceiver>>> _messageReceivers;
         private readonly IDictionary<Event, IList<Func<INotificationReceiver>>> _notificationReceivers;
@@ -35,11 +31,21 @@ namespace Takenet.MessagingHub.Client
         private readonly string _domainName;
 
         private IClientChannel _clientChannel;
+
         private IEnvelopeProcessor<Command> _commandProcessor;
-        private ISenderWrapper _sender;
+        private IEnvelopeProcessor<Message> _messageProcessor;
+        private IEnvelopeProcessor<Notification> _notificationProcessor;
+
+        private CommandSender _commandSender;
+        private MessageSender _messageSender;
+        private NotificationSender _notificationSender;
+
         private readonly IClientChannelFactory _clientChannelFactory;
         private readonly ISessionFactory _sessionFactory;
-        private readonly IEnvelopeProcessorFactory<Command> _envelopeProcessorFactory;
+
+        private readonly IEnvelopeProcessorFactory<Command> _commandProcessorFactory;
+        private readonly IEnvelopeProcessorFactory<Message> _messageProcessorFactory;
+        private readonly IEnvelopeProcessorFactory<Notification> _notificationProcessorFactory;
 
         private CancellationTokenSource _cancellationTokenSource;
         private Task _backgroundExecution;
@@ -49,12 +55,14 @@ namespace Takenet.MessagingHub.Client
 
 
         internal MessagingHubClient(IClientChannelFactory clientChannelFactory, ISessionFactory sessionFactory,
-            IEnvelopeProcessorFactory<Command> envelopeProcessorFactory, string hostname = null, string domainName = null)
+            IEnvelopeProcessorFactory<Command> commandProcessorFactory, IEnvelopeProcessorFactory<Message> messageProcessorFactory, IEnvelopeProcessorFactory<Notification> notificationProcessorFactory, string hostname = null, string domainName = null)
         {
             _messageReceivers = new Dictionary<MediaType, IList<Func<IMessageReceiver>>>();
             _notificationReceivers = new Dictionary<Event, IList<Func<INotificationReceiver>>>();
             _clientChannelFactory = clientChannelFactory;
-            _envelopeProcessorFactory = envelopeProcessorFactory;
+            _commandProcessorFactory = commandProcessorFactory;
+            _messageProcessorFactory = messageProcessorFactory;
+            _notificationProcessorFactory = notificationProcessorFactory;
             _sessionFactory = sessionFactory;
             hostname = hostname ?? DefaultDomainName;
             _endpoint = new Uri($"net.tcp://{hostname}:55321");
@@ -64,7 +72,7 @@ namespace Takenet.MessagingHub.Client
 
 
         public MessagingHubClient(string hostname = null, string domainName = null) :
-                    this(new ClientChannelFactory(), new SessionFactory(), new CommandProcessorFactory(), hostname, domainName)
+                    this(new ClientChannelFactory(), new SessionFactory(), new CommandProcessorFactory(), new MessageProcessorFactory(), new NotificationProcessorFactory(), hostname, domainName)
         { }
 
         public MessagingHubClient UsingAccount(string login, string password)
@@ -142,6 +150,27 @@ namespace Takenet.MessagingHub.Client
             return this;
         }
 
+        public async Task<Command> SendCommandAsync(Command command)
+        {
+            if (_commandSender == null) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
+
+            return await _commandSender.SendAsync(command);
+        }
+
+        public async Task<Message> SendMessageAsync(Message message)
+        {
+            if (_messageSender == null) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
+
+            return await _messageSender.SendAsync(message);
+        }
+
+        public async Task<Notification> SendNotificationAsync(Notification notification)
+        {
+            if (_notificationSender == null) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
+
+            return await _notificationSender.SendAsync(notification);
+        }
+
         public async Task StartAsync()
         {
             await InstanciateClientChannelAsync();
@@ -150,9 +179,9 @@ namespace Takenet.MessagingHub.Client
 
             await SetPresenceAsync().ConfigureAwait(false);
 
-            StartCommandProcessor();
+            StartEnvelopeProcessors();
 
-            InstanciateSender();
+            InstanciateSenders();
 
             InstanciateGlobalCancellationTokenSource();
 
@@ -188,15 +217,24 @@ namespace Takenet.MessagingHub.Client
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
-        private void InstanciateSender()
+        private void InstanciateSenders()
         {
-            _sender = new SenderWrapper(_clientChannel, _commandProcessor, _timeout);
+            _commandSender = new CommandSender(_commandProcessor, _timeout);
+            _messageSender = new MessageSender(_messageProcessor, _timeout);
+            _notificationSender = new NotificationSender(_notificationProcessor, _timeout);
         }
 
-        private void StartCommandProcessor()
+
+        private void StartEnvelopeProcessors()
         {
-            _commandProcessor = _envelopeProcessorFactory.Create(_clientChannel);
+            _commandProcessor = _commandProcessorFactory.Create(_clientChannel);
             _commandProcessor.StartReceiving();
+
+            _messageProcessor = _messageProcessorFactory.Create(_clientChannel);
+            _messageProcessor.StartReceiving();
+
+            _notificationProcessor = _notificationProcessorFactory.Create(_clientChannel);
+            _notificationProcessor.StartReceiving();
         }
 
         private async Task InstanciateClientChannelAsync()
@@ -228,13 +266,13 @@ namespace Takenet.MessagingHub.Client
         {
             _messageReceiverTask = EnvelopeDispatcher.StartAsync(
                     _clientChannel.ReceiveMessageAsync,
-                    _sender,
+                    _commandSender, _messageSender, _notificationSender,
                     GetReceiversFor,
                     _cancellationTokenSource.Token);
 
             _notiticationReceiverTask = EnvelopeDispatcher.StartAsync(
                     _clientChannel.ReceiveNotificationAsync,
-                    _sender,
+                    _commandSender, _messageSender, _notificationSender,
                     GetReceiversFor,
                     _cancellationTokenSource.Token
                     );
@@ -286,14 +324,6 @@ namespace Takenet.MessagingHub.Client
                 throw new InvalidOperationException($"A password (method {nameof(UsingAccount)}) or accessKey (method {nameof(UsingAccessKey)}) should be informed");
 
             return result;
-        }
-
-        private ISenderWrapper ReturnSenderWithExist()
-        {
-            if (_sender != null)
-                return _sender;
-
-            throw new InvalidOperationException("Client must be started to execute this operation.");
         }
     }
 }

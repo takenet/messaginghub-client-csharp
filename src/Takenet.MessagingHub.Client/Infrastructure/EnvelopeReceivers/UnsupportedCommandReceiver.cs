@@ -16,7 +16,7 @@ namespace Takenet.MessagingHub.Client.Receivers
                     Code = ReasonCodes.COMMAND_NOT_ALLOWED,
                     Description = "This command is not allowed"
                 });
-            return CommandSender.SendCommandAsync(responseCommand);
+            return CommandSender.SendAsync(responseCommand);
         }
     }
 }
