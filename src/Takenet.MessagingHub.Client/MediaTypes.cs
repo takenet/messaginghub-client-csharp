@@ -1,19 +1,20 @@
 ﻿using Lime.Protocol;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client
 {
+    /// <summary>
+    /// Represent common media types
+    /// </summary>
     public static class MediaTypes
     {
-        static MediaType _any = new MediaType("*", "*");
-        static MediaType _plainText = new MediaType(MediaType.DiscreteTypes.Text, MediaType.SubTypes.Plain);
+        /// <summary>
+        /// Represents any media type
+        /// </summary>
+        public static MediaType Any { get; } = new MediaType("*", "*");
 
-        public static MediaType Any => _any;
-
-        public static MediaType PlainText => _plainText;
+        /// <summary>
+        /// Represents media type 'text/plain'
+        /// </summary>
+        public static MediaType PlainText { get; } = new MediaType(MediaType.DiscreteTypes.Text, MediaType.SubTypes.Plain);
     }
 }

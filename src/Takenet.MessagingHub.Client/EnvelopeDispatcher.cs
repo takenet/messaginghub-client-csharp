@@ -14,15 +14,24 @@ namespace Takenet.MessagingHub.Client
     /// </summary>
     internal static class EnvelopeDispatcher
     {
+        /// <summary>
+        /// Starts a new task that will receive envelopes from a producer function and dispatch them to a set of receivers
+        /// </summary>
+        /// <typeparam name="TEnvelope">Envelope type</typeparam>
+        /// <param name="producer">Producer function</param>
+        /// <param name="sender">Sender passed to the receivers to eventually respond to the received envelopes</param>
+        /// <param name="receiverFor">Function that return the receivers for the given envelope</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns></returns>
         public static Task StartAsync<TEnvelope>(Func<CancellationToken, Task<TEnvelope>> producer, ISenderWrapper sender,
-            Func<TEnvelope, IEnumerable<IReceiver<TEnvelope>>> receiverFor, CancellationToken cancellationToken)
+            Func<TEnvelope, IEnumerable<IEnvelopeReceiver<TEnvelope>>> receiverFor, CancellationToken cancellationToken)
             where TEnvelope : Envelope
         {
             return Task.Run(() => Process(producer, sender, receiverFor, cancellationToken), cancellationToken);
         }
 
         private static async Task Process<TEnvelope>(Func<CancellationToken, Task<TEnvelope>> producer, ISenderWrapper sender, 
-            Func<TEnvelope, IEnumerable<IReceiver<TEnvelope>>> receiverFor, CancellationToken cancellationToken)
+            Func<TEnvelope, IEnumerable<IEnvelopeReceiver<TEnvelope>>> receiverFor, CancellationToken cancellationToken)
             where TEnvelope : Envelope
         {
             while (!cancellationToken.IsCancellationRequested)
@@ -53,19 +62,19 @@ namespace Takenet.MessagingHub.Client
             }
         }
 
-        private static Task CallReceiver<TEnvelope>(ISenderWrapper sender, IReceiver<TEnvelope> receiver, TEnvelope envelope)
+        private static Task CallReceiver<TEnvelope>(ISenderWrapper sender, IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope)
             where TEnvelope : Envelope
         {
-            InjectSenders(sender, receiver);
-            return receiver.ReceiveAsync(envelope);
+            InjectSenders(sender, envelopeReceiver);
+            return envelopeReceiver.ReceiveAsync(envelope);
         }
 
         private static void InjectSenders(ISenderWrapper sender, object receiver)
         {
-            if (!(receiver is ReceiverBase))
+            if (!(receiver is EnvelopeReceiverBase))
                 return;
 
-            var receiverBase = ((ReceiverBase)receiver);
+            var receiverBase = ((EnvelopeReceiverBase)receiver);
             receiverBase.MessageSender = sender;
             receiverBase.CommandSender = sender;
             receiverBase.NotificationSender = sender;

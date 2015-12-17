@@ -6,24 +6,25 @@ using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client.Lime
 {
-    internal abstract class EnvelopeProcessor<T> : IEnvelopeProcessor<T>
-        where T: Envelope
+    /// <summary>
+    /// Base class for envelope processors
+    /// </summary>
+    /// <typeparam name="TEnvelope">Envelope type</typeparam>
+    internal abstract class EnvelopeProcessor<TEnvelope> : IEnvelopeProcessor<TEnvelope>
+        where TEnvelope: Envelope
     {
-
-        protected ConcurrentDictionary<Guid, TaskCompletionSource<T>> _activeRequests;
+        private ConcurrentDictionary<Guid, TaskCompletionSource<TEnvelope>> _activeRequests;
         private Task _listenner;
         private CancellationTokenSource _cancellationTokenSource;
 
-        public EnvelopeProcessor() { }
-
-        public void Start()
+        public void StartReceiving()
         {
-            _activeRequests = new ConcurrentDictionary<Guid, TaskCompletionSource<T>>();
+            _activeRequests = new ConcurrentDictionary<Guid, TaskCompletionSource<TEnvelope>>();
             _cancellationTokenSource = new CancellationTokenSource();
-            _listenner = Task.Run(ListenAsync);
+            _listenner = Task.Run(ListenForEnvelopesAsync);
         }
 
-        public async Task StopAsync()
+        public async Task StopReceivingAsync()
         {
             if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
             {
@@ -33,14 +34,14 @@ namespace Takenet.MessagingHub.Client.Lime
             }
         }
 
-        public virtual async Task<T> SendReceiveAsync(T envelope, TimeSpan timeout)
+        public virtual async Task<TEnvelope> SendAsync(TEnvelope envelope, TimeSpan timeout)
         {
             if (envelope == null) throw new ArgumentNullException(nameof(envelope));
             if (timeout <= TimeSpan.Zero) throw new ArgumentException("Timeout value must be positive");
             
-            TaskCompletionSource<T> taskCompletionSource;
+            TaskCompletionSource<TEnvelope> taskCompletionSource;
 
-            if(envelope.Id == null || envelope.Id == Guid.Empty)
+            if (envelope.Id == Guid.Empty)
             {
                 envelope.Id = Guid.NewGuid();
             }
@@ -52,11 +53,11 @@ namespace Takenet.MessagingHub.Client.Lime
                 }
             }
 
-            taskCompletionSource = new TaskCompletionSource<T>();
+            taskCompletionSource = new TaskCompletionSource<TEnvelope>();
             _activeRequests.TryAdd(envelope.Id, taskCompletionSource);
-            taskCompletionSource.Task.ContinueWith(e =>
+            await taskCompletionSource.Task.ContinueWith(e =>
             {
-                TaskCompletionSource<T> result;
+                TaskCompletionSource<TEnvelope> result;
                 _activeRequests.TryRemove(envelope.Id, out result);
             });
             
@@ -70,7 +71,7 @@ namespace Takenet.MessagingHub.Client.Lime
                 }
                 catch (OperationCanceledException)
                 {
-                    TaskCompletionSource<T> result;
+                    TaskCompletionSource<TEnvelope> result;
                     _activeRequests.TryRemove(envelope.Id, out result);
                     throw new TimeoutException("Timeout expired sending the envelope");
                 }
@@ -81,18 +82,18 @@ namespace Takenet.MessagingHub.Client.Lime
                 }
                 catch (OperationCanceledException)
                 {
-                    TaskCompletionSource<T> result;
+                    TaskCompletionSource<TEnvelope> result;
                     _activeRequests.TryRemove(envelope.Id, out result);
                     throw new TimeoutException("Timeout expired waiting for response envelope");
                 }
             }
         }
 
-        private async Task ListenAsync()
+        private async Task ListenForEnvelopesAsync()
         {
             while (!_cancellationTokenSource.IsCancellationRequested)
             {
-                T envelope;
+                TEnvelope envelope;
 
                 try
                 {
@@ -100,11 +101,13 @@ namespace Takenet.MessagingHub.Client.Lime
                 }
                 catch (OperationCanceledException)
                 {
-                    if (_cancellationTokenSource.IsCancellationRequested) break;
+                    if (_cancellationTokenSource.IsCancellationRequested)
+                        break;
+
                     throw;
                 }
 
-                TaskCompletionSource<T> taskCompletionSource;
+                TaskCompletionSource<TEnvelope> taskCompletionSource;
                 if (_activeRequests.TryGetValue(envelope.Id, out taskCompletionSource))
                 {
                     taskCompletionSource.TrySetResult(envelope);
@@ -112,7 +115,19 @@ namespace Takenet.MessagingHub.Client.Lime
             }
         }
 
-        protected abstract Task<T> ReceiveAsync(CancellationToken cancellationToken);
-        protected abstract Task SendAsync(T envelope, CancellationToken cancellationToken);
+        /// <summary>
+        /// Receives an envelope
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns></returns>
+        protected abstract Task<TEnvelope> ReceiveAsync(CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Sends an envelope
+        /// </summary>
+        /// <param name="envelope">Envelope</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns></returns>
+        protected abstract Task SendAsync(TEnvelope envelope, CancellationToken cancellationToken);
     }
 }

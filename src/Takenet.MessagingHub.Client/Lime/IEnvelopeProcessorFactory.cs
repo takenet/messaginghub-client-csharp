@@ -1,15 +1,19 @@
 ﻿using Lime.Protocol;
 using Lime.Protocol.Client;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client.Lime
 {
-    internal interface IEnvelopeProcessorFactory<T> where T : Envelope
+    /// <summary>
+    /// Factory for envelope processors
+    /// </summary>
+    /// <typeparam name="TEnvelope">Envelope type</typeparam>
+    internal interface IEnvelopeProcessorFactory<TEnvelope> where TEnvelope : Envelope
     {
-        IEnvelopeProcessor<T> Create(IClientChannel clientChannel);
+        /// <summary>
+        /// Creates an envelope processor
+        /// </summary>
+        /// <param name="clientChannel">Client channel used to send and receive the envelopes</param>
+        /// <returns></returns>
+        IEnvelopeProcessor<TEnvelope> Create(IClientChannel clientChannel);
     }
 }

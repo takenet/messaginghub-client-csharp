@@ -21,7 +21,7 @@ namespace Takenet.MessagingHub.Client.Senders
 
         public Task SendMessageAsync(Message message) => _clientChannel.SendMessageAsync(message);
 
-        public Task<Command> SendCommandAsync(Command command) => _commandProcessor.SendReceiveAsync(command, _timeout);
+        public Task<Command> SendCommandAsync(Command command) => _commandProcessor.SendAsync(command, _timeout);
 
         public Task SendNotificationAsync(Notification notification) => _clientChannel.SendNotificationAsync(notification);
     }

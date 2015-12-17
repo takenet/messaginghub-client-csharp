@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
@@ -9,9 +6,12 @@ using Lime.Protocol.Client;
 
 namespace Takenet.MessagingHub.Client.Lime
 {
+    /// <summary>
+    /// Send and receive commands
+    /// </summary>
     internal class CommandProcessor : EnvelopeProcessor<Command>
     {
-        IClientChannel _clientChannel;
+        private readonly IClientChannel _clientChannel;
 
         public CommandProcessor(IClientChannel clientChannel)
         {
@@ -28,9 +28,9 @@ namespace Takenet.MessagingHub.Client.Lime
             return _clientChannel.SendCommandAsync(envelope);
         }
 
-        public override Task<Command> SendReceiveAsync(Command command, TimeSpan timeout)
+        public override Task<Command> SendAsync(Command command, TimeSpan timeout)
         {
-            return base.SendReceiveAsync(command, timeout);
+            return base.SendAsync(command, timeout);
         }
     }
 }

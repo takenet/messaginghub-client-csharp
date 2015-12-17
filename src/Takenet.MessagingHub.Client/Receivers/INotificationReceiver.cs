@@ -2,7 +2,7 @@
 
 namespace Takenet.MessagingHub.Client.Receivers
 {
-    public interface INotificationReceiver : IReceiver<Notification>
+    public interface INotificationReceiver : IEnvelopeReceiver<Notification>
     {
     }
 }

@@ -5,13 +5,28 @@ using System.Threading.Tasks;
 namespace Takenet.MessagingHub.Client.Lime
 {
     /// <summary>
-    /// Received an envelope from a producer and forwards them to a set of receivers
+    /// Send or receive envelopes of a given type
     /// </summary>
     /// <typeparam name="TEnvelope">Envelope type</typeparam>
     interface IEnvelopeProcessor<TEnvelope> where TEnvelope : Envelope
     {
-        void Start();
-        Task StopAsync();
-        Task<TEnvelope> SendReceiveAsync(TEnvelope envelope, TimeSpan timeout);
+        /// <summary>
+        /// Starts listening for envelopes
+        /// </summary>
+        void StartReceiving();
+        
+        /// <summary>
+        /// Start a task to listening
+        /// </summary>
+        /// <returns>A task representing the stop operation</returns>
+        Task StopReceivingAsync();
+
+        /// <summary>
+        /// Send an envelope
+        /// </summary>
+        /// <param name="envelope">Envelope</param>
+        /// <param name="timeout">Send operation timeout</param>
+        /// <returns></returns>
+        Task<TEnvelope> SendAsync(TEnvelope envelope, TimeSpan timeout);
     }
 }

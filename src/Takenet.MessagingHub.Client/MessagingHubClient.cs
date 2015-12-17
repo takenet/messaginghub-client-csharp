@@ -81,18 +81,18 @@ namespace Takenet.MessagingHub.Client
             return this;
         }
 
-        public MessagingHubClient AddMessageReceiver(IMessageReceiver receiver, MediaType forMimeType = null)
+        public MessagingHubClient AddMessageReceiver(IMessageReceiver envelopeReceiver, MediaType forMimeType = null)
         {
-            if (receiver == null) throw new ArgumentNullException(nameof(receiver));
+            if (envelopeReceiver == null) throw new ArgumentNullException(nameof(envelopeReceiver));
 
-            return AddMessageReceiver(() => receiver, forMimeType);
+            return AddMessageReceiver(() => envelopeReceiver, forMimeType);
         }
 
-        public MessagingHubClient AddNotificationReceiver(INotificationReceiver receiver, Event? forEventType = null)
+        public MessagingHubClient AddNotificationReceiver(INotificationReceiver envelopeReceiver, Event? forEventType = null)
         {
-            if (receiver == null) throw new ArgumentNullException(nameof(receiver));
+            if (envelopeReceiver == null) throw new ArgumentNullException(nameof(envelopeReceiver));
 
-            return AddNotificationReceiver(() => receiver, forEventType);
+            return AddNotificationReceiver(() => envelopeReceiver, forEventType);
         }
 
         public MessagingHubClient AddMessageReceiver(Func<IMessageReceiver> receiverBuild, MediaType forMimeType = null)
@@ -163,7 +163,7 @@ namespace Takenet.MessagingHub.Client
         {
             if (_clientChannel == null) throw new InvalidOperationException("Is not possible call 'Stop' method before 'Start'");
 
-            await _commandProcessor.StopAsync();
+            await _commandProcessor.StopReceivingAsync();
 
             if (_clientChannel?.State == SessionState.Established)
             {
@@ -196,7 +196,7 @@ namespace Takenet.MessagingHub.Client
         private void StartCommandProcessor()
         {
             _commandProcessor = _envelopeProcessorFactory.Create(_clientChannel);
-            _commandProcessor.Start();
+            _commandProcessor.StartReceiving();
         }
 
         private async Task InstanciateClientChannelAsync()

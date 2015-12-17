@@ -1,10 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Lime.Protocol;
 
 namespace Takenet.MessagingHub.Client.Receivers
 {
-    internal class UnsupportedCommandReceiver : ReceiverBase, ICommandReceiver
+    /// <summary>
+    /// Command receiver that automatically respond to any command as an unsupported command
+    /// </summary>
+    internal class UnsupportedCommandReceiver : EnvelopeReceiverBase, ICommandReceiver
     {
         public Task ReceiveAsync(Command command)
         {

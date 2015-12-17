@@ -3,9 +3,12 @@
 namespace Takenet.MessagingHub.Client.Receivers
 {
     /// <summary>
-    /// Base class offering Senders (automaticly injected by MessagingHubClient)
+    /// Base envelope receiver
     /// </summary>
-    public abstract class ReceiverBase
+    /// <remarks>
+    /// Senders are automatically injected by MessagingHubClient
+    /// </remarks>
+    public abstract class EnvelopeReceiverBase
     {
         public IMessageSender MessageSender { get; internal set; }
         public ICommandSender CommandSender { get; internal set; }

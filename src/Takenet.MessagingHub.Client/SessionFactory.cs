@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Lime.Protocol.Client;
-using Lime.Protocol.Network;
 using System.Threading;
-using Lime.Transport.Tcp;
 using Lime.Protocol;
 using Lime.Protocol.Security;
 

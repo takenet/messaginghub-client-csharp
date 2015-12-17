@@ -66,9 +66,9 @@
     <Compile Include="Receivers\ICommandReceiver.cs" />
     <Compile Include="Senders\ICommandSender.cs" />
     <Compile Include="Receivers\INotificationReceiver.cs" />
-    <Compile Include="Receivers\IReceiver.cs" />
+    <Compile Include="Receivers\IEnvelopeReceiver.cs" />
     <Compile Include="Receivers\NotificationReceiverBase.cs" />
-    <Compile Include="Receivers\ReceiverBase.cs" />
+    <Compile Include="Receivers\EnvelopeReceiverBase.cs" />
     <Compile Include="Senders\ISenderWrapper.cs" />
     <Compile Include="SessionFactory.cs" />
     <Compile Include="ClientChannelFactory.cs" />
