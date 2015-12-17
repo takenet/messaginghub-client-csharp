@@ -56,25 +56,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Senders\IEnvelopeSender.cs" />
     <Compile Include="EnvelopeDispatcher.cs" />
-    <Compile Include="Lime\NotificationProcessorFactory.cs" />
-    <Compile Include="Lime\NotificationProcessor.cs" />
-    <Compile Include="Lime\MessageProcessor.cs" />
     <Compile Include="Lime\CommandProcessor.cs" />
-    <Compile Include="Lime\MessageProcessorFactory.cs" />
-    <Compile Include="Lime\EnvelopeProcessor.cs" />
     <Compile Include="Lime\CommandProcessorFactory.cs" />
-    <Compile Include="Lime\IEnvelopeProcessor.cs" />
-    <Compile Include="Lime\IEnvelopeProcessorFactory.cs" />
+    <Compile Include="Lime\ICommandProcessor.cs" />
+    <Compile Include="Lime\ICommandProcessorFactory.cs" />
     <Compile Include="Senders\ICommandSender.cs" />
     <Compile Include="Receivers\INotificationReceiver.cs" />
     <Compile Include="Receivers\IEnvelopeReceiver.cs" />
     <Compile Include="Receivers\NotificationReceiverBase.cs" />
     <Compile Include="Receivers\EnvelopeReceiverBase.cs" />
-    <Compile Include="Senders\NotificationSender.cs" />
-    <Compile Include="Senders\MessageSender.cs" />
-    <Compile Include="Senders\EnvelopeSenderBase.cs" />
     <Compile Include="SessionFactory.cs" />
     <Compile Include="ClientChannelFactory.cs" />
     <Compile Include="ISessionFactory.cs" />
@@ -85,7 +76,6 @@
     <Compile Include="Senders\INotificationSender.cs" />
     <Compile Include="MediaTypes.cs" />
     <Compile Include="Receivers\MessageReceiverBase.cs" />
-    <Compile Include="Senders\CommandSender.cs" />
     <Compile Include="MessagingHubClient.cs" />
     <Compile Include="MessagingHubClientExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

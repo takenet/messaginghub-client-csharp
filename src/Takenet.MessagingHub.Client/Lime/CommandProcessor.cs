@@ -1,36 +1,134 @@
-﻿using System;
+﻿using Lime.Protocol;
+using System;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using Lime.Protocol;
 using Lime.Protocol.Client;
 
 namespace Takenet.MessagingHub.Client.Lime
 {
     /// <summary>
-    /// Send and receive commands
+    /// Process the sending of commands
     /// </summary>
-    internal class CommandProcessor : EnvelopeProcessor<Command>
+    internal class CommandProcessor : ICommandProcessor
     {
         private readonly IClientChannel _clientChannel;
+
+        private ConcurrentDictionary<Guid, TaskCompletionSource<Command>> _activeRequests;
+        private Task _listenner;
+        private CancellationTokenSource _cancellationTokenSource;
 
         public CommandProcessor(IClientChannel clientChannel)
         {
             _clientChannel = clientChannel;
         }
 
-        protected override Task<Command> ReceiveAsync(CancellationToken cancellationToken)
+        public void StartReceiving()
+        {
+            _activeRequests = new ConcurrentDictionary<Guid, TaskCompletionSource<Command>>();
+            _cancellationTokenSource = new CancellationTokenSource();
+            _listenner = Task.Run(ListenForEnvelopesAsync);
+        }
+
+        public async Task StopReceivingAsync()
+        {
+            if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
+            {
+                _cancellationTokenSource.Cancel();
+                await _listenner;
+                _cancellationTokenSource.Dispose();
+            }
+        }
+
+        public async Task<Command> SendAsync(Command envelope, TimeSpan timeout)
+        {
+            if (envelope == null) throw new ArgumentNullException(nameof(envelope));
+            if (timeout <= TimeSpan.Zero) throw new ArgumentException("Timeout value must be positive");
+            
+            TaskCompletionSource<Command> taskCompletionSource;
+
+            if (envelope.Id == Guid.Empty)
+            {
+                envelope.Id = Guid.NewGuid();
+            }
+            else
+            {
+                if (_activeRequests.TryGetValue(envelope.Id, out taskCompletionSource))
+                {
+                    throw new ArgumentException("There is already an active request with the envelope id");
+                }
+            }
+
+            taskCompletionSource = new TaskCompletionSource<Command>();
+            _activeRequests.TryAdd(envelope.Id, taskCompletionSource);
+            await taskCompletionSource.Task.ContinueWith(e =>
+            {
+                TaskCompletionSource<Command> result;
+                _activeRequests.TryRemove(envelope.Id, out result);
+            });
+            
+            using (var cancellationTokenSource = new CancellationTokenSource(timeout))
+            {
+                cancellationTokenSource.Token.Register(() => taskCompletionSource.TrySetCanceled());
+
+                try
+                {
+                    await SendAsync(envelope);
+                }
+                catch (OperationCanceledException)
+                {
+                    TaskCompletionSource<Command> result;
+                    _activeRequests.TryRemove(envelope.Id, out result);
+                    throw new TimeoutException("Timeout expired sending the envelope");
+                }
+                
+                try
+                {
+                    return await taskCompletionSource.Task;
+                }
+                catch (OperationCanceledException)
+                {
+                    TaskCompletionSource<Command> result;
+                    _activeRequests.TryRemove(envelope.Id, out result);
+                    throw new TimeoutException("Timeout expired waiting for response envelope");
+                }
+            }
+        }
+
+        private async Task ListenForEnvelopesAsync()
+        {
+            while (!_cancellationTokenSource.IsCancellationRequested)
+            {
+                Command command;
+
+                try
+                {
+                    command = await ReceiveAsync(_cancellationTokenSource.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    if (_cancellationTokenSource.IsCancellationRequested)
+                        break;
+
+                    throw;
+                }
+
+                TaskCompletionSource<Command> taskCompletionSource;
+                if (_activeRequests.TryGetValue(command.Id, out taskCompletionSource))
+                {
+                    taskCompletionSource.TrySetResult(command);
+                }
+            }
+        }
+
+        private Task<Command> ReceiveAsync(CancellationToken cancellationToken)
         {
             return _clientChannel.ReceiveCommandAsync(cancellationToken);
         }
 
-        protected override Task SendAsync(Command envelope, CancellationToken cancellationToken)
+        private Task SendAsync(Command command)
         {
-            return _clientChannel.SendCommandAsync(envelope);
-        }
-
-        public override Task<Command> SendAsync(Command command, TimeSpan timeout)
-        {
-            return base.SendAsync(command, timeout);
+            return _clientChannel.SendCommandAsync(command);
         }
     }
 }

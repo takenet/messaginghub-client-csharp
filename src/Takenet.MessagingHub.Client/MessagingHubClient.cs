@@ -32,20 +32,12 @@ namespace Takenet.MessagingHub.Client
 
         private IClientChannel _clientChannel;
 
-        private IEnvelopeProcessor<Command> _commandProcessor;
-        private IEnvelopeProcessor<Message> _messageProcessor;
-        private IEnvelopeProcessor<Notification> _notificationProcessor;
-
-        private CommandSender _commandSender;
-        private MessageSender _messageSender;
-        private NotificationSender _notificationSender;
+        private ICommandProcessor _commandProcessor;
 
         private readonly IClientChannelFactory _clientChannelFactory;
         private readonly ISessionFactory _sessionFactory;
 
-        private readonly IEnvelopeProcessorFactory<Command> _commandProcessorFactory;
-        private readonly IEnvelopeProcessorFactory<Message> _messageProcessorFactory;
-        private readonly IEnvelopeProcessorFactory<Notification> _notificationProcessorFactory;
+        private readonly ICommandProcessorFactory _commandProcessorFactory;
 
         private CancellationTokenSource _cancellationTokenSource;
         private Task _backgroundExecution;
@@ -55,14 +47,12 @@ namespace Takenet.MessagingHub.Client
 
 
         internal MessagingHubClient(IClientChannelFactory clientChannelFactory, ISessionFactory sessionFactory,
-            IEnvelopeProcessorFactory<Command> commandProcessorFactory, IEnvelopeProcessorFactory<Message> messageProcessorFactory, IEnvelopeProcessorFactory<Notification> notificationProcessorFactory, string hostname = null, string domainName = null)
+            ICommandProcessorFactory commandProcessorFactory, string hostname = null, string domainName = null)
         {
             _messageReceivers = new Dictionary<MediaType, IList<Func<IMessageReceiver>>>();
             _notificationReceivers = new Dictionary<Event, IList<Func<INotificationReceiver>>>();
             _clientChannelFactory = clientChannelFactory;
             _commandProcessorFactory = commandProcessorFactory;
-            _messageProcessorFactory = messageProcessorFactory;
-            _notificationProcessorFactory = notificationProcessorFactory;
             _sessionFactory = sessionFactory;
             hostname = hostname ?? DefaultDomainName;
             _endpoint = new Uri($"net.tcp://{hostname}:55321");
@@ -72,7 +62,7 @@ namespace Takenet.MessagingHub.Client
 
 
         public MessagingHubClient(string hostname = null, string domainName = null) :
-                    this(new ClientChannelFactory(), new SessionFactory(), new CommandProcessorFactory(), new MessageProcessorFactory(), new NotificationProcessorFactory(), hostname, domainName)
+            this(new ClientChannelFactory(), new SessionFactory(), new CommandProcessorFactory(), hostname, domainName)
         { }
 
         public MessagingHubClient UsingAccount(string login, string password)
@@ -152,23 +142,24 @@ namespace Takenet.MessagingHub.Client
 
         public async Task<Command> SendCommandAsync(Command command)
         {
-            if (_commandSender == null) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
+            if (_clientChannel == null) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
+            if (_commandProcessor == null) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
 
-            return await _commandSender.SendAsync(command);
+            return await _commandProcessor.SendAsync(command, _timeout);
         }
 
-        public async Task<Message> SendMessageAsync(Message message)
+        public async Task SendMessageAsync(Message message)
         {
-            if (_messageSender == null) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
+            if (_clientChannel == null) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
 
-            return await _messageSender.SendAsync(message);
+            await _clientChannel.SendAsync(message);
         }
 
-        public async Task<Notification> SendNotificationAsync(Notification notification)
+        public async Task SendNotificationAsync(Notification notification)
         {
-            if (_notificationSender == null) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
+            if (_clientChannel == null) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
 
-            return await _notificationSender.SendAsync(notification);
+            await _clientChannel.SendAsync(notification);
         }
 
         public async Task StartAsync()
@@ -180,8 +171,6 @@ namespace Takenet.MessagingHub.Client
             await SetPresenceAsync().ConfigureAwait(false);
 
             StartEnvelopeProcessors();
-
-            InstanciateSenders();
 
             InstanciateGlobalCancellationTokenSource();
 
@@ -217,24 +206,10 @@ namespace Takenet.MessagingHub.Client
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
-        private void InstanciateSenders()
-        {
-            _commandSender = new CommandSender(_commandProcessor, _timeout);
-            _messageSender = new MessageSender(_messageProcessor, _timeout);
-            _notificationSender = new NotificationSender(_notificationProcessor, _timeout);
-        }
-
-
         private void StartEnvelopeProcessors()
         {
             _commandProcessor = _commandProcessorFactory.Create(_clientChannel);
             _commandProcessor.StartReceiving();
-
-            _messageProcessor = _messageProcessorFactory.Create(_clientChannel);
-            _messageProcessor.StartReceiving();
-
-            _notificationProcessor = _notificationProcessorFactory.Create(_clientChannel);
-            _notificationProcessor.StartReceiving();
         }
 
         private async Task InstanciateClientChannelAsync()
@@ -266,13 +241,13 @@ namespace Takenet.MessagingHub.Client
         {
             _messageReceiverTask = EnvelopeDispatcher.StartAsync(
                     _clientChannel.ReceiveMessageAsync,
-                    _commandSender, _messageSender, _notificationSender,
+                    this, this, this,
                     GetReceiversFor,
                     _cancellationTokenSource.Token);
 
             _notiticationReceiverTask = EnvelopeDispatcher.StartAsync(
                     _clientChannel.ReceiveNotificationAsync,
-                    _commandSender, _messageSender, _notificationSender,
+                    this, this, this,
                     GetReceiversFor,
                     _cancellationTokenSource.Token
                     );

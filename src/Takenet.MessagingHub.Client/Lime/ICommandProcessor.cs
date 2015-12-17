@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 namespace Takenet.MessagingHub.Client.Lime
 {
     /// <summary>
-    /// Send or receive envelopes of a given type
+    /// Sends a command and waits for its response
     /// </summary>
-    /// <typeparam name="TEnvelope">Envelope type</typeparam>
-    interface IEnvelopeProcessor<TEnvelope> where TEnvelope : Envelope
+    interface ICommandProcessor
     {
         /// <summary>
         /// Starts listening for envelopes
@@ -22,11 +21,11 @@ namespace Takenet.MessagingHub.Client.Lime
         Task StopReceivingAsync();
 
         /// <summary>
-        /// Send an envelope
+        /// Send a command and wait for its response
         /// </summary>
-        /// <param name="envelope">Envelope</param>
+        /// <param name="command">Command</param>
         /// <param name="timeout">Send operation timeout</param>
-        /// <returns></returns>
-        Task<TEnvelope> SendAsync(TEnvelope envelope, TimeSpan timeout);
+        /// <returns>A task representing the stop operation</returns>
+        Task<Command> SendAsync(Command command, TimeSpan timeout);
     }
 }

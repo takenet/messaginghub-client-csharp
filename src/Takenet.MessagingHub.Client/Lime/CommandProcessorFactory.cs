@@ -1,11 +1,10 @@
-﻿using Lime.Protocol;
-using Lime.Protocol.Client;
+﻿using Lime.Protocol.Client;
 
 namespace Takenet.MessagingHub.Client.Lime
 {
-    internal class CommandProcessorFactory : IEnvelopeProcessorFactory<Command>
+    internal class CommandProcessorFactory : ICommandProcessorFactory
     {
-        public IEnvelopeProcessor<Command> Create(IClientChannel clientChannel)
+        public ICommandProcessor Create(IClientChannel clientChannel)
         {
             return new CommandProcessor(clientChannel);
         }

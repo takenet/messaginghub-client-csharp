@@ -7,7 +7,8 @@ namespace Takenet.MessagingHub.Client.Senders
     /// <summary>
     /// Proxy used to send commands to the Messaging Hub
     /// </summary>
-    public interface ICommandSender : IEnvelopeSender<Command>
+    public interface ICommandSender
     {
+        Task<Command> SendCommandAsync(Command command);
     }
 }

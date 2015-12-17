@@ -19,7 +19,9 @@ namespace Takenet.MessagingHub.Client
         /// </summary>
         /// <typeparam name="TEnvelope">Envelope type</typeparam>
         /// <param name="producer">Producer function</param>
-        /// <param name="sender">Sender passed to the receivers to eventually respond to the received envelopes</param>
+        /// <param name="commandSender">Sender passed to the receivers to eventually respond to the received envelopes</param>
+        /// <param name="messageSender">Sender passed to the receivers to eventually respond to the received envelopes</param>
+        /// <param name="notificationSender">Sender passed to the receivers to eventually respond to the received envelopes</param>
         /// <param name="receiverFor">Function that return the receivers for the given envelope</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns></returns>
