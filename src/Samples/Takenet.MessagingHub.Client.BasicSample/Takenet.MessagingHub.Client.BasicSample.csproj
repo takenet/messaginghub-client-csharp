@@ -55,7 +55,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyAccountCommandReceiver.cs" />
     <Compile Include="PlainTextMessageReceiver.cs" />
     <Compile Include="PrintNotificationReceiver.cs" />
     <Compile Include="Program.cs" />
