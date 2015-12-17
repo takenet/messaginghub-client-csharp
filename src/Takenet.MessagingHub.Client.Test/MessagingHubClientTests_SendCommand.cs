@@ -20,7 +20,7 @@ namespace Takenet.MessagingHub.Client.Test
         public Command SomeCommand => new Command { Resource = new PlainDocument(MediaTypes.PlainText) };
         
         private ICommandReceiver _commandReceiver;
-        private SemaphoreSlim _semaphore;
+        
 
         [SetUp]
         protected override void Setup()
@@ -30,24 +30,30 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        [Ignore]
         public void WhenClientSendACommandShouldReceiveACommandResponse()
         {
             //Arrange
             _messagingHubClient.UsingAccount("login", "pass");
-            //_messagingHubClient.AddCommandReceiver(_commandReceiver);
+            var commandId = Guid.NewGuid();
 
-            _semaphore = new SemaphoreSlim(2);
+            var commandResponse = new Command()
+            {
+                Id = commandId,
+                Status = CommandStatus.Success,
+            };
+            
+            _commandProcessor.SendReceiveAsync(null, TimeSpan.Zero).ReturnsForAnyArgs(commandResponse);
 
             //Act
             _messagingHubClient.StartAsync().Wait();
-            
-            Task.Delay(3000).Wait();
+
+            var result = _messagingHubClient.CommandSender.SendCommandAsync(new Command() { Id = commandId }).Result;
 
             //Assert
-            _commandReceiver.ReceivedWithAnyArgs().ReceiveAsync(null).Wait();
-
-            _semaphore.DisposeIfDisposable();
+            _commandProcessor.ReceivedWithAnyArgs().SendReceiveAsync(null,TimeSpan.Zero).Wait();
+            result.ShouldNotBeNull();
+            result.Status.ShouldBe(CommandStatus.Success);
+            result.Id.ShouldBe(commandId);
         }
 
         [Test]
