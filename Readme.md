@@ -27,7 +27,7 @@ public class PlainTextMessageReceiver : MessageReceiverBase
     }
 }
 
-client..AddMessageReceiver(messageReceiver: new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText)
+client.AddMessageReceiver(messageReceiver: new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText)
 ```
 
 ## Subscribing to receive a notification:
