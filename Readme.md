@@ -3,7 +3,7 @@
 
 **Work is in progress**
 
-MessagingHub.Client is a simple client for the [Messaging Hub](http://msging.net/) uses a fluent interface to send and receive messages, commands and notifications.
+MessagingHub.Client is a simple client for the [Messaging Hub](http://msging.net/) that uses a fluent interface to send and receive messages, commands and notifications.
 
 ## Instantiating a client:
 
