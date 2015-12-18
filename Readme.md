@@ -1,37 +1,82 @@
+
+# Messaging Hub Client
+
 **Work is in progress**
 
-Simple [Messaging Hub](http://msging.net/) client with a fluent-style construction.
+MessagingHub.Client is a simple client for the [Messaging Hub](http://msging.net/) uses a fluent interface to send and receive messages, commands and notifications.
 
-All you need is:
+## Instantiating a client:
 
-```c#
-var client = new MessagingHubClient("server.msging.net")
-                .UsingAccount("myaccount", "mypassword")
-                .AddReceiver(new DefaultMessageReceiver());
+```CSharp
+const string login = "guest";
+const string password = "guest";
 
-var executionTask = await client.StartAsync();
+var client = new MessagingHubClient() // Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
+                .UsingAccount(login, password);
 ```
-    
-And `DefaultMessageReceiver` class could be as simple as:
 
-```c#
-class DefaultMessageReceiver : MessageReceiverBase
+## Subscribing to receive a plain text message:
+
+```CSharp 
+public class PlainTextMessageReceiver : MessageReceiverBase
 {
-    public async override Task ReceiveAsync(Message message)
+    public override async Task ReceiveAsync(Message message)
     {
-        Trace.WriteLine(message.Content.ToString());
-        await Sender.SendMessageAsync("Thanks for you message", message.From);
+        Console.WriteLine(message.Content.ToString());
+        await MessageSender.SendMessageAsync("Thanks for your message!", message.From);
     }
 }
+
+client..AddMessageReceiver(messageReceiver: new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText)
 ```
 
-To send a message, after starting the client, just call:
+## Subscribing to receive a notification:
 
-```c#
-await client.MessageSender.SendMessageAsync("Hello, world", to: "user");
+```CSharp 
+public class PrintNotificationReceiver : NotificationReceiverBase
+{
+    public override Task ReceiveAsync(Notification notification)
+    {
+        Console.WriteLine("Notification of {0} event received. Reason: {1}", notification.Event, notification.Reason);
+        return Task.FromResult(0);
+    }
+}
+
+client.AddNotificationReceiver(receiverBuilder: () => new PrintNotificationReceiver());
 ```
 
-Or even simpler (by means of an included extension method):
-```c#
+
+## Starting the client:
+
+```CSharp 
+// AFTER registered the reveivers, the client MUST be started
+await client.StartAsync();
+
+```
+
+## Sending a command and accessing its response:
+
+```CSharp 
+var command = new Command {
+    Method = CommandMethod.Get,
+    Uri = new LimeUri("/account")
+};
+
+var responseCommand = await client.SendCommandAsync(command);
+
+var account = (Account)responseCommand.Resource;
+
+Console.WriteLine(account.Email);
+```
+
+## Publishing a message:
+
+```CSharp 
 await client.SendMessageAsync("Hello, world", to: "user");
+```
+
+## Disconnecting:
+
+```CSharp 
+await client.StopAsync();
 ```
