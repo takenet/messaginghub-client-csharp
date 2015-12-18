@@ -27,26 +27,6 @@ namespace Takenet.MessagingHub.Client
     }
 
     /// <summary>
-    /// Extension methods for <see cref="ICommandSender"/>
-    /// </summary>
-    public static class CommandSenderExtensions
-    {
-        public static Task SendCommandAsync(this ICommandSender sender, Command command)
-            => sender.SendCommandAsync(command);
-    }
-
-    /// <summary>
-    /// Extension methods for <see cref="INotificationSender"/>
-    /// </summary>
-    public static class NotificationSenderExtensions
-    {
-
-        public static Task SendNotificationAsync(this INotificationSender sender, Notification notification)
-            => sender.SendNotificationAsync(notification);
-    }
-
-
-    /// <summary>
     /// Extension methods for <see cref="Message"/>
     /// </summary>
     public static class MessageExtensions

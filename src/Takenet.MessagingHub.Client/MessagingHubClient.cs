@@ -19,6 +19,8 @@ namespace Takenet.MessagingHub.Client
     /// </summary>
     public class MessagingHubClient : IMessagingHubClient
     {
+        public bool Started { get; private set; }
+
         private readonly Uri _endpoint;
         private readonly IDictionary<MediaType, IList<Func<IMessageReceiver>>> _messageReceivers;
         private readonly IDictionary<Event, IList<Func<INotificationReceiver>>> _notificationReceivers;
@@ -67,6 +69,8 @@ namespace Takenet.MessagingHub.Client
 
         public MessagingHubClient UsingAccount(string login, string password)
         {
+            if (Started) throw new InvalidOperationException("Client already started!");
+
             _login = login;
             _password = password;
             return this;
@@ -74,6 +78,8 @@ namespace Takenet.MessagingHub.Client
 
         public MessagingHubClient UsingAccessKey(string login, string key)
         {
+            if (Started) throw new InvalidOperationException("Client already started!");
+
             _login = login;
             _accessKey = key;
             return this;
@@ -97,6 +103,8 @@ namespace Takenet.MessagingHub.Client
         {
             if (receiverBuilder == null) throw new ArgumentNullException(nameof(receiverBuilder));
 
+            if (Started) throw new InvalidOperationException("Cannot add a receiver after the client has been started!");
+
             var mediaTypeToSave = forMimeType ?? MediaTypes.Any;
 
             IList<Func<IMessageReceiver>> mediaTypeReceivers;
@@ -112,6 +120,8 @@ namespace Takenet.MessagingHub.Client
 
         public MessagingHubClient AddNotificationReceiver(Func<INotificationReceiver> receiverBuilder, Event? forEventType = default(Event?))
         {
+            if (Started) throw new InvalidOperationException("Cannot add a receiver after the client has been started!");
+
             IList<Func<INotificationReceiver>> eventTypeReceivers;
 
             if (forEventType.HasValue)
@@ -142,22 +152,21 @@ namespace Takenet.MessagingHub.Client
 
         public async Task<Command> SendCommandAsync(Command command)
         {
-            if (_clientChannel == null) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
-            if (_commandProcessor == null) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
+            if (!Started) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
 
             return await _commandProcessor.SendAsync(command, _timeout);
         }
 
         public async Task SendMessageAsync(Message message)
         {
-            if (_clientChannel == null) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
+            if (!Started) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
 
             await _clientChannel.SendAsync(message);
         }
 
         public async Task SendNotificationAsync(Notification notification)
         {
-            if (_clientChannel == null) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
+            if (!Started) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
 
             await _clientChannel.SendAsync(notification);
         }
@@ -175,11 +184,13 @@ namespace Takenet.MessagingHub.Client
             InstantiateGlobalCancellationTokenSource();
 
             InitializeAndStartReceivers();
+
+            Started = true;
         }
 
         public async Task StopAsync()
         {
-            if (_clientChannel == null) throw new InvalidOperationException("Is not possible call 'Stop' method before 'Start'");
+            if (!Started) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
 
             await _commandProcessor.StopReceivingAsync();
 
@@ -198,8 +209,9 @@ namespace Takenet.MessagingHub.Client
                 await _backgroundExecution;
                 _cancellationTokenSource.Dispose();
             }
-        }
 
+            Started = false;
+        }
 
         private void InstantiateGlobalCancellationTokenSource()
         {

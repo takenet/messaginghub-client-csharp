@@ -12,6 +12,11 @@ namespace Takenet.MessagingHub.Client
     public interface IMessagingHubClient : ICommandSender, IMessageSender, INotificationSender
     {
         /// <summary>
+        /// Indicates if the client is already started
+        /// </summary>
+        bool Started { get; }
+
+        /// <summary>
         /// Configure the client to authenticate with Messaging Hub with a login and password
         /// </summary>
         /// <param name="login">Login</param>
