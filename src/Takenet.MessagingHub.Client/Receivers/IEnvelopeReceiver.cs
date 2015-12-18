@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace Takenet.MessagingHub.Client.Receivers
 {
     /// <summary>
-    /// Proxy used to receive envelopes from Messaging Hub
+    /// Receive envelopes from Messaging Hub
     /// </summary>
     /// <typeparam name="TEnvelope"></typeparam>
     public interface IEnvelopeReceiver<in TEnvelope>

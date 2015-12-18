@@ -12,7 +12,7 @@ namespace Takenet.MessagingHub.Client
     public interface IMessagingHubClient : ICommandSender, IMessageSender, INotificationSender
     {
         /// <summary>
-        /// Configure the client to authenticate with Message Hub with a login and password
+        /// Configure the client to authenticate with Messaging Hub with a login and password
         /// </summary>
         /// <param name="login">Login</param>
         /// <param name="password">Password</param>
@@ -21,7 +21,7 @@ namespace Takenet.MessagingHub.Client
         MessagingHubClient UsingAccount(string login, string password);
 
         /// <summary>
-        /// Configure the client to authenticate with Message Hub with a login and access key
+        /// Configure the client to authenticate with Messaging Hub with a login and access key
         /// </summary>
         /// <param name="login">Login</param>
         /// <param name="key">Access key</param>
@@ -32,34 +32,34 @@ namespace Takenet.MessagingHub.Client
         /// <summary>
         /// Add a message receiver listener to handle received messages
         /// </summary>
-        /// <param name="envelopeReceiver">Listener</param>
+        /// <param name="messageReceiver">Listener</param>
         /// <param name="forMimeType">MediaType used as a filter of messages received by listener. When not informed, only receives messages which no 'typed' receiver is registered</param>
         /// <returns></returns>
-        MessagingHubClient AddMessageReceiver(IMessageReceiver envelopeReceiver, MediaType forMimeType = null);
+        MessagingHubClient AddMessageReceiver(IMessageReceiver messageReceiver, MediaType forMimeType = null);
 
         /// <summary>
         /// Add a message receiver listener to handle received messages
         /// </summary>
-        /// <param name="receiverBuild">A function used to build the notification listener</param>
+        /// <param name="receiverBuilder">A function used to build the notification listener</param>
         /// <param name="forMimeType">MediaType used as a filter of messages received by listener. When not informed, only receives messages which no 'typed' receiver is registered</param>
         /// <returns></returns>
-        MessagingHubClient AddMessageReceiver(Func<IMessageReceiver> receiverBuild, MediaType forMimeType = null);
+        MessagingHubClient AddMessageReceiver(Func<IMessageReceiver> receiverBuilder, MediaType forMimeType = null);
 
         /// <summary>
         /// Add a notification receiver listener to handle received notifications
         /// </summary>
-        /// <param name="envelopeReceiver">Listener</param>
+        /// <param name="notificationReceiver">Listener</param>
         /// <param name="forEventType">EventType used as a filter of notification received by listener.</param>
         /// <returns></returns>
-        MessagingHubClient AddNotificationReceiver(INotificationReceiver envelopeReceiver, Event? forEventType = null);
+        MessagingHubClient AddNotificationReceiver(INotificationReceiver notificationReceiver, Event? forEventType = null);
 
         /// <summary>
         /// Add a notification receiver listener to handle received notifications
         /// </summary>
-        /// <param name="receiverBuild">A function used to build the notification listener</param>
+        /// <param name="receiverBuilder">A function used to build the notification listener</param>
         /// <param name="forEventType">EventType used as a filter of notification received by listener.</param>
         /// <returns></returns>
-        MessagingHubClient AddNotificationReceiver(Func<INotificationReceiver> receiverBuild, Event? forEventType = null);
+        MessagingHubClient AddNotificationReceiver(Func<INotificationReceiver> receiverBuilder, Event? forEventType = null);
 
         /// <summary>
         /// Connect and receives messages from Lime server

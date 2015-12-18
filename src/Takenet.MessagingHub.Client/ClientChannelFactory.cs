@@ -7,6 +7,9 @@ using Lime.Transport.Tcp;
 
 namespace Takenet.MessagingHub.Client
 {
+    /// <summary>
+    /// Implementation for <see cref="IClientChannelFactory"/>
+    /// </summary>
     internal class ClientChannelFactory : IClientChannelFactory
     {
         public async Task<IClientChannel> CreateClientChannelAsync(Uri endpoint)

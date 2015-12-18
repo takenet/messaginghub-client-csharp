@@ -5,9 +5,13 @@ using Takenet.MessagingHub.Client.Senders;
 
 namespace Takenet.MessagingHub.Client
 {
-    public static class MessagingHubClientExtensions
+    /// <summary>
+    /// Extension methods for <see cref="IMessageSender"/>
+    /// </summary>
+    public static class MessageSenderExtensions
     {
-        public static Task SendMessageAsync(this IMessageSender sender, string content, string to) => sender.SendMessageAsync(content, Node.Parse(to));
+        public static Task SendMessageAsync(this IMessageSender sender, string content, string to)
+            => sender.SendMessageAsync(content, Node.Parse(to));
 
         public static Task SendMessageAsync(this IMessageSender sender, string content, Node to)
         {
@@ -19,16 +23,40 @@ namespace Takenet.MessagingHub.Client
             return sender.SendMessageAsync(message);
         }
 
-        public static Task SendMessageAsync(this IMessagingHubClient client, string content, string to) => client.SendMessageAsync(content, to);
+        private static PlainText CreatePlainTextContent(string content) => new PlainText { Text = content };
+    }
 
-        public static Task SendCommandAsync(this IMessagingHubClient client, Command command) => client.SendCommandAsync(command);
+    /// <summary>
+    /// Extension methods for <see cref="ICommandSender"/>
+    /// </summary>
+    public static class CommandSenderExtensions
+    {
+        public static Task SendCommandAsync(this ICommandSender sender, Command command)
+            => sender.SendCommandAsync(command);
+    }
 
-        public static Task SendNotificationAsync(this IMessagingHubClient client, Notification notification) => client.SendNotificationAsync(notification);
+    /// <summary>
+    /// Extension methods for <see cref="INotificationSender"/>
+    /// </summary>
+    public static class NotificationSenderExtensions
+    {
+
+        public static Task SendNotificationAsync(this INotificationSender sender, Notification notification)
+            => sender.SendNotificationAsync(notification);
+    }
 
 
-        public static Notification ToReceivedNotification(this Message message) => message.ToNotification(Event.Received);
+    /// <summary>
+    /// Extension methods for <see cref="Message"/>
+    /// </summary>
+    public static class MessageExtensions
+    {
 
-        public static Notification ToConsumedNotification(this Message message) => message.ToNotification(Event.Consumed);
+        public static Notification ToReceivedNotification(this Message message)
+            => message.ToNotification(Event.Received);
+
+        public static Notification ToConsumedNotification(this Message message)
+            => message.ToNotification(Event.Consumed);
 
         public static Notification ToFailedNotification(this Message message, Reason reason)
         {
@@ -47,7 +75,13 @@ namespace Takenet.MessagingHub.Client
             };
             return notification;
         }
+    }
 
+    /// <summary>
+    /// Extension methods for <see cref="Command"/>
+    /// </summary>
+    public static class CommandExtensions
+    {
 
         public static Command ToFailedCommandResponse(this Command command, Reason reason)
         {
@@ -67,7 +101,5 @@ namespace Takenet.MessagingHub.Client
             };
             return responseCommand;
         }
-
-        public static PlainText CreatePlainTextContent(string content) => new PlainText { Text = content };
     }
 }

@@ -7,8 +7,8 @@
     <ProjectGuid>{056825AC-0EFC-4F2F-A1B4-AF8A721C1609}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Takenet.MessagingHub.Client.BasicSample</RootNamespace>
-    <AssemblyName>Takenet.MessagingHub.Client.BasicSample</AssemblyName>
+    <RootNamespace>Takenet.MessagingHub.Client.Playground</RootNamespace>
+    <AssemblyName>Takenet.MessagingHub.Client.Playground</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -65,7 +65,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Takenet.MessagingHub.Client\Takenet.MessagingHub.Client.csproj">
+    <ProjectReference Include="..\Takenet.MessagingHub.Client\Takenet.MessagingHub.Client.csproj">
       <Project>{628f8ee4-956a-49ce-b9d6-bd5f6800fe6f}</Project>
       <Name>Takenet.MessagingHub.Client</Name>
     </ProjectReference>

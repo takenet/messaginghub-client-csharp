@@ -8,7 +8,7 @@ using Lime.Protocol.Client;
 namespace Takenet.MessagingHub.Client.Lime
 {
     /// <summary>
-    /// Process the sending of commands
+    /// Implementation for <see cref="ICommandProcessor"/>
     /// </summary>
     internal class CommandProcessor : ICommandProcessor
     {

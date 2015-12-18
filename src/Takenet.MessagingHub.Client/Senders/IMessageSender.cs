@@ -1,14 +1,19 @@
 ﻿using System.Threading.Tasks;
 using Lime.Protocol;
-using Takenet.MessagingHub.Client.Receivers;
 
 namespace Takenet.MessagingHub.Client.Senders
 {
     /// <summary>
-    /// Proxy used to send messages to the Messaging Hub
+    /// Send messages to the Messaging Hub
     /// </summary>
     public interface IMessageSender
     {
+        /// <summary>
+        /// Send a message through the Messaging Hub
+        /// </summary>
+        /// <param name="message">Message to be sent</param>
+        /// <returns>A task representing the sending operation</returns>
+
         Task SendMessageAsync(Message message);
     }
 }

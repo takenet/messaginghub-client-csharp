@@ -14,10 +14,11 @@ using Takenet.MessagingHub.Client.Senders;
 
 namespace Takenet.MessagingHub.Client
 {
+    /// <summary>
+    /// Implementation for <see cref="IMessagingHubClient"/>
+    /// </summary>
     public class MessagingHubClient : IMessagingHubClient
     {
-        private const string DefaultDomainName = "msging.net";
-
         private readonly Uri _endpoint;
         private readonly IDictionary<MediaType, IList<Func<IMessageReceiver>>> _messageReceivers;
         private readonly IDictionary<Event, IList<Func<INotificationReceiver>>> _notificationReceivers;
@@ -47,21 +48,20 @@ namespace Takenet.MessagingHub.Client
 
 
         internal MessagingHubClient(IClientChannelFactory clientChannelFactory, ISessionFactory sessionFactory,
-            ICommandProcessorFactory commandProcessorFactory, string hostname = null, string domainName = null)
+            ICommandProcessorFactory commandProcessorFactory, string hostName, string domainName)
         {
             _messageReceivers = new Dictionary<MediaType, IList<Func<IMessageReceiver>>>();
             _notificationReceivers = new Dictionary<Event, IList<Func<INotificationReceiver>>>();
             _clientChannelFactory = clientChannelFactory;
             _commandProcessorFactory = commandProcessorFactory;
             _sessionFactory = sessionFactory;
-            hostname = hostname ?? DefaultDomainName;
-            _endpoint = new Uri($"net.tcp://{hostname}:55321");
-            _domainName = domainName ?? DefaultDomainName;
+            _domainName = domainName;
+            _endpoint = new Uri($"net.tcp://{hostName}:55321");
             _timeout = TimeSpan.FromSeconds(60);
         }
 
 
-        public MessagingHubClient(string hostname = null, string domainName = null) :
+        public MessagingHubClient(string hostname = "msging.net", string domainName = "msging.net") :
             this(new ClientChannelFactory(), new SessionFactory(), new CommandProcessorFactory(), hostname, domainName)
         { }
 
@@ -79,23 +79,23 @@ namespace Takenet.MessagingHub.Client
             return this;
         }
 
-        public MessagingHubClient AddMessageReceiver(IMessageReceiver envelopeReceiver, MediaType forMimeType = null)
+        public MessagingHubClient AddMessageReceiver(IMessageReceiver messageReceiver, MediaType forMimeType = null)
         {
-            if (envelopeReceiver == null) throw new ArgumentNullException(nameof(envelopeReceiver));
+            if (messageReceiver == null) throw new ArgumentNullException(nameof(messageReceiver));
 
-            return AddMessageReceiver(() => envelopeReceiver, forMimeType);
+            return AddMessageReceiver(() => messageReceiver, forMimeType);
         }
 
-        public MessagingHubClient AddNotificationReceiver(INotificationReceiver envelopeReceiver, Event? forEventType = null)
+        public MessagingHubClient AddNotificationReceiver(INotificationReceiver notificationReceiver, Event? forEventType = null)
         {
-            if (envelopeReceiver == null) throw new ArgumentNullException(nameof(envelopeReceiver));
+            if (notificationReceiver == null) throw new ArgumentNullException(nameof(notificationReceiver));
 
-            return AddNotificationReceiver(() => envelopeReceiver, forEventType);
+            return AddNotificationReceiver(() => notificationReceiver, forEventType);
         }
 
-        public MessagingHubClient AddMessageReceiver(Func<IMessageReceiver> receiverBuild, MediaType forMimeType = null)
+        public MessagingHubClient AddMessageReceiver(Func<IMessageReceiver> receiverBuilder, MediaType forMimeType = null)
         {
-            if (receiverBuild == null) throw new ArgumentNullException(nameof(receiverBuild));
+            if (receiverBuilder == null) throw new ArgumentNullException(nameof(receiverBuilder));
 
             var mediaTypeToSave = forMimeType ?? MediaTypes.Any;
 
@@ -106,11 +106,11 @@ namespace Takenet.MessagingHub.Client
                 _messageReceivers.Add(mediaTypeToSave, mediaTypeReceivers);
             }
 
-            mediaTypeReceivers.Add(receiverBuild);
+            mediaTypeReceivers.Add(receiverBuilder);
             return this;
         }
 
-        public MessagingHubClient AddNotificationReceiver(Func<INotificationReceiver> receiverBuild, Event? forEventType = default(Event?))
+        public MessagingHubClient AddNotificationReceiver(Func<INotificationReceiver> receiverBuilder, Event? forEventType = default(Event?))
         {
             IList<Func<INotificationReceiver>> eventTypeReceivers;
 
@@ -122,11 +122,11 @@ namespace Takenet.MessagingHub.Client
                     _notificationReceivers.Add(forEventType.Value, eventTypeReceivers);
                 }
 
-                eventTypeReceivers.Add(receiverBuild);
+                eventTypeReceivers.Add(receiverBuilder);
             }
             else
             {
-                eventTypeReceivers = new List<Func<INotificationReceiver>> { receiverBuild };
+                eventTypeReceivers = new List<Func<INotificationReceiver>> { receiverBuilder };
 
                 _notificationReceivers.Add(Event.Accepted, eventTypeReceivers);
                 _notificationReceivers.Add(Event.Authorized, eventTypeReceivers);
@@ -164,7 +164,7 @@ namespace Takenet.MessagingHub.Client
 
         public async Task StartAsync()
         {
-            await InstanciateClientChannelAsync();
+            await InstantiateClientChannelAsync();
 
             await StablishSessionAsync();
 
@@ -172,7 +172,7 @@ namespace Takenet.MessagingHub.Client
 
             StartEnvelopeProcessors();
 
-            InstanciateGlobalCancellationTokenSource();
+            InstantiateGlobalCancellationTokenSource();
 
             InitializeAndStartReceivers();
         }
@@ -201,7 +201,7 @@ namespace Takenet.MessagingHub.Client
         }
 
 
-        private void InstanciateGlobalCancellationTokenSource()
+        private void InstantiateGlobalCancellationTokenSource()
         {
             _cancellationTokenSource = new CancellationTokenSource();
         }
@@ -212,7 +212,7 @@ namespace Takenet.MessagingHub.Client
             _commandProcessor.StartReceiving();
         }
 
-        private async Task InstanciateClientChannelAsync()
+        private async Task InstantiateClientChannelAsync()
         {
             _clientChannel = await _clientChannelFactory.CreateClientChannelAsync(_endpoint).ConfigureAwait(false);
         }

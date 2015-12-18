@@ -14,7 +14,10 @@ namespace Takenet.MessagingHub.Client.Test
         protected IClientChannelFactory ClientChannelFactory;
         protected ICommandProcessorFactory CommandProcessorFactory;
         protected ICommandProcessor CommandProcessor;
-        
+        private const string hostName = "msging.net";
+        private const string domainName = "msging.net";
+
+
         protected virtual void Setup()
         {
             SubstituteClientChannel();
@@ -29,12 +32,12 @@ namespace Takenet.MessagingHub.Client.Test
 
             SubstituteClientChannelFabrication();
 
-            InstanciateActualMessageHubClient();
+            InstantiateActualMessageHubClient();
         }
 
-        private void InstanciateActualMessageHubClient()
+        private void InstantiateActualMessageHubClient()
         {
-            MessagingHubClient = new MessagingHubClient(ClientChannelFactory, SessionFactory, CommandProcessorFactory);
+            MessagingHubClient = new MessagingHubClient(ClientChannelFactory, SessionFactory, CommandProcessorFactory, hostName, domainName);
         }
 
         private void SubstituteClientChannelFabrication()
