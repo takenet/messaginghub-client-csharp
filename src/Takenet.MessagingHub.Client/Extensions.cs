@@ -56,30 +56,4 @@ namespace Takenet.MessagingHub.Client
             return notification;
         }
     }
-
-    /// <summary>
-    /// Extension methods for <see cref="Command"/>
-    /// </summary>
-    public static class CommandExtensions
-    {
-
-        public static Command ToFailedCommandResponse(this Command command, Reason reason)
-        {
-            var responseCommand = command.ToCommandResponse(CommandStatus.Failure);
-            responseCommand.Reason = reason;
-            return responseCommand;
-        }
-
-        public static Command ToCommandResponse(this Command command, CommandStatus status)
-        {
-            var responseCommand = new Command
-            {
-                Id = command.Id,
-                To = command.From,
-                Method = command.Method,
-                Status = status
-            };
-            return responseCommand;
-        }
-    }
 }
