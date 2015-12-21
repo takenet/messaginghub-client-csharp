@@ -1,20 +1,23 @@
-<p>&lt;h1&gt;Commands&lt;/h1&gt;</p>
+<h1>
+<a id="user-content-commands" class="anchor" href="#commands" aria-hidden="true"><span class="octicon octicon-link"></span></a>Commands</h1>
 
-<p>&lt;p&gt;The client allow you to send commands through the Messaging Hub. But it is not possible to receive commands.&lt;/p&gt;</p>
+<p>The client allow you to send commands through the Messaging Hub. But it is not possible to receive commands.</p>
 
-<p>&lt;h2&gt;Sending Commands&lt;/h2&gt;</p>
+<h2>
+<a id="user-content-sending-commands" class="anchor" href="#sending-commands" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sending Commands</h2>
 
-<p>&lt;p&gt;To send a command, you can use the following method:&lt;/p&gt;</p>
+<p>To send a command, you can use the following method:</p>
 
-<p>&lt;pre&gt;&lt;code&gt;
+<pre><code>
 var command = new Command {
     Method = CommandMethod.Get,
-    Uri = new LimeUri(&quot;/account&quot;)
-};</p>
+    Uri = new LimeUri("/account")
+};
 
-<p>var response = await client.SendCommandAsync(command);
-&lt;/code&gt;&lt;/pre&gt;</p>
+var response = await client.SendCommandAsync(command);
+</code></pre>
 
-<p>&lt;p&gt;Unlike the messages and notifications, when you send a command, you receive a response when the task completes. This response will contain information about the result of the execution of the command you have sent.&lt;/p&gt;</p>
+<p>Unlike the messages and notifications, when you send a command, you receive a response when the task completes. This response will contain information about the result of the execution of the command you have sent.</p>
 
-<p>&lt;p&gt;&lt;a href=&quot;./index.html&quot;&gt;Back to the Index&lt;/a&gt;&lt;/p&gt;</p>
+<p><a href="./index.html">Back to the Index</a></p>
+

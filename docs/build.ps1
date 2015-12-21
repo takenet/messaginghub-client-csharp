@@ -11,7 +11,8 @@ For ($i = 0; $i -lt $markdownFiles.Length; $i++) {
     }
     $htmlFile = [System.IO.Path]::Combine($htmlFolder, "$fileName.html")
     
-    & md2html $markdownFile > $htmlFile 
+    # Using to generate html https://www.npmjs.com/package/markdown-to-html
+    & github-markdown $markdownFile > $htmlFile 
     
     (Get-Content $htmlFile) -replace '.md', '.html' | Set-Content $htmlFile
 }

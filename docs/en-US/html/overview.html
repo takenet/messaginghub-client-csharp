@@ -1,4 +1,5 @@
-<h1>Overview</h1>
+<h1>
+<a id="user-content-overview" class="anchor" href="#overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overview</h1>
 
 <p>The Messaging Hub Client was designed to make it easy to work with the lime protocol client to exchange messages, commands and notifications among the applications and services connected through the Messaging Hub.</p>
 
@@ -6,34 +7,38 @@
 
 <p>The source code is available on <a href="https://github.com/takenet">GitHub</a> and can be used for reference and also for community contribution. If you want to improve the client, fork the project and send us a pull request.</p>
 
-<h2>Working with the Messaging Hub Client</h2>
+<h2>
+<a id="user-content-working-with-the-messaging-hub-client" class="anchor" href="#working-with-the-messaging-hub-client" aria-hidden="true"><span class="octicon octicon-link"></span></a>Working with the Messaging Hub Client</h2>
 
 <p>The following operations are supported:</p>
 
-<ul><li><p>Receive messages through the Messaging Hub;</p></li><li><p>Send messages through the Messaging Hub;</p></li><li><p>Receive notifications through the Messaging Hub;</p></li><li><p>Send notifications through the Messaging Hub;</p></li><li><p>Send commands through the Messaging Hub;</p></li></ul>
+<ul>
+<li><p>Receive messages through the Messaging Hub;</p></li>
+<li><p>Send messages through the Messaging Hub;</p></li>
+<li><p>Receive notifications through the Messaging Hub;</p></li>
+<li><p>Send notifications through the Messaging Hub;</p></li>
+<li><p>Send commands through the Messaging Hub;</p></li>
+</ul>
 
 <p>For receiving envelopes (messages or notifications) the client requests that the developer register receiver agents that will filter the received data and execute the desired action over it, like the example below:</p>
 
-<p><code></code>`CSharp 
-public class PlainTextMessageReceiver : MessageReceiverBase
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">PlainTextMessageReceiver</span> : <span class="pl-k">MessageReceiverBase</span>
 {
-    public override async Task ReceiveAsync(Message message)
+    <span class="pl-k">public</span> <span class="pl-k">override</span> <span class="pl-k">async</span> Task <span class="pl-en">ReceiveAsync</span>(<span class="pl-k">Message</span> <span class="pl-smi">message</span>)
     {
-        // Do something with the received message
+        <span class="pl-c">// Do something with the received message</span>
     }
-}</p>
+}
 
-<p>// Register a receiver for messages of the <code>media type</code> &#39;text/plain&#39;
-client.AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
-<code></code>`</p>
+<span class="pl-c">// Register a receiver for messages of the `media type` 'text/plain'</span>
+client.AddMessageReceiver(<span class="pl-k">new</span> PlainTextMessageReceiver(), MediaTypes.PlainText)</pre></div>
 
 <p>For sending operations, the client provides Send methods that can be invoked directly, like the example below:</p>
 
-<p><code>CSharp
-// Send a plain text message to the &#39;user@msging.net&#39; 
-await client.SendMessageAsync(&quot;Hello, world&quot;, to: &quot;user&quot;);
-</code></p>
+<div class="highlight highlight-source-cs"><pre><span class="pl-c">// Send a plain text message to the 'user@msging.net' </span>
+<span class="pl-k">await</span> client.SendMessageAsync(<span class="pl-s"><span class="pl-pds">"</span>Hello, world<span class="pl-pds">"</span></span>, to: <span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>);</pre></div>
 
 <p>For more information about specific usage, see the detailed documentation for <a href="./client-configuration.html">Client Configuration</a>, <a href="./messages.html">Messages</a>, <a href="./notifications.html">Notifications</a> and <a href="./commands.html">Commands</a>.</p>
 
 <p><a href="./index.html">Back to the Index</a></p>
+

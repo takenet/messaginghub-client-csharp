@@ -1,20 +1,21 @@
-<h1>Comandos</h1>
+<h1>
+<a id="user-content-comandos" class="anchor" href="#comandos" aria-hidden="true"><span class="octicon octicon-link"></span></a>Comandos</h1>
 
 <p>O cliente permite que voc+¬ envie comandos atrav+¬s do Messaging Hub. No entanto n+úo +¬ poss+¡vel receber comandos. </p>
 
-<h2>Enviando comandos</h2>
+<h2>
+<a id="user-content-enviando-comandos" class="anchor" href="#enviando-comandos" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enviando comandos</h2>
 
 <p>Para enviar um comando, voc+¬ pode usar o seguinte m+¬todo:</p>
 
-<p><code></code>`CSharp 
-var command = new Command {
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">var</span> command = <span class="pl-k">new</span> Command {
     Method = CommandMethod.Get,
-    Uri = new LimeUri(&quot;/account&quot;)
-};</p>
+    Uri = <span class="pl-k">new</span> LimeUri(<span class="pl-s"><span class="pl-pds">"</span>/account<span class="pl-pds">"</span></span>)
+};
 
-<p>var response = await client.SendCommandAsync(command);
-<code></code>`</p>
+<span class="pl-k">var</span> response = <span class="pl-k">await</span> client.SendCommandAsync(command);</pre></div>
 
 <p>Diferentemente de mensagens e notifica+º+¦es, quando voc+¬ envia um comando, voc+¬ recebe uma resposta quando a tarefa +¬ conclu+¡da. Essa resposta cont+¬m informa+º+¦es a respeito do resultado da execu+º+úo do comando enviado.</p>
 
 <p><a href="./index.html">Retornar ao +ìndice</a></p>
+

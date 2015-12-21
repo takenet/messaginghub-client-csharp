@@ -1,79 +1,88 @@
-<p>&lt;h1&gt;Getting Started&lt;/h1&gt;</p>
+<h1>
+<a id="user-content-getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting Started</h1>
 
-<p>&lt;p&gt;This getting started guide will show you how to use the basic functionalities of the Messaging Hub Client &lt;/p&gt;</p>
+<p>This getting started guide will show you how to use the basic functionalities of the Messaging Hub Client </p>
 
-<p>&lt;h2&gt;Instantiating a client:&lt;/h2&gt;</p>
+<h2>
+<a id="user-content-instantiating-a-client" class="anchor" href="#instantiating-a-client" aria-hidden="true"><span class="octicon octicon-link"></span></a>Instantiating a client:</h2>
 
-<p>&lt;pre&gt;&lt;code&gt;
-const string login = &quot;guest&quot;;
-const string password = &quot;guest&quot;;</p>
+<pre><code>
+const string login = "guest";
+const string password = "guest";
 
-<p>var client = new MessagingHubClient() // Since host name and domain name are not informed, the default value, &#39;msging.net&#39;, will be used for both parameters
+var client = new MessagingHubClient() // Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
                 .UsingAccount(login, password);
-&lt;/code&gt;&lt;/pre&gt;</p>
+</code></pre>
 
-<p>&lt;h2&gt;Subscribing to receive a plain text message:&lt;/h2&gt;</p>
+<h2>
+<a id="user-content-subscribing-to-receive-a-plain-text-message" class="anchor" href="#subscribing-to-receive-a-plain-text-message" aria-hidden="true"><span class="octicon octicon-link"></span></a>Subscribing to receive a plain text message:</h2>
 
-<p>&lt;pre&gt;&lt;code&gt;
+<pre><code>
 public class PlainTextMessageReceiver : MessageReceiverBase
 {
     public override async Task ReceiveAsync(Message message)
     {
         Console.WriteLine(message.Content.ToString());
-        await MessageSender.SendMessageAsync(&quot;Thanks for your message!&quot;, message.From);
+        await MessageSender.SendMessageAsync("Thanks for your message!", message.From);
     }
-}</p>
+}
 
-<p>client.AddMessageReceiver(messageReceiver: new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText);
-&lt;/code&gt;&lt;/pre&gt;</p>
+client.AddMessageReceiver(messageReceiver: new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText);
+</code></pre>
 
-<p>&lt;h2&gt;Subscribing to receive a notification:&lt;/h2&gt;</p>
+<h2>
+<a id="user-content-subscribing-to-receive-a-notification" class="anchor" href="#subscribing-to-receive-a-notification" aria-hidden="true"><span class="octicon octicon-link"></span></a>Subscribing to receive a notification:</h2>
 
-<p>&lt;pre&gt;&lt;code&gt;
+<pre><code>
 public class PrintNotificationReceiver : NotificationReceiverBase
 {
     public override Task ReceiveAsync(Notification notification)
     {
-        Console.WriteLine(&quot;Notification of {0} event received. Reason: {1}&quot;, notification.Event, notification.Reason);
+        Console.WriteLine("Notification of {0} event received. Reason: {1}", notification.Event, notification.Reason);
         return Task.FromResult(0);
     }
-}</p>
+}
 
-<p>client.AddNotificationReceiver(receiverBuilder: () =&gt; new PrintNotificationReceiver());
-&lt;/code&gt;&lt;/pre&gt;</p>
+client.AddNotificationReceiver(receiverBuilder: () =&gt; new PrintNotificationReceiver());
+</code></pre>
 
-<p>&lt;h2&gt;Starting the client:&lt;/h2&gt;</p>
+<h2>
+<a id="user-content-starting-the-client" class="anchor" href="#starting-the-client" aria-hidden="true"><span class="octicon octicon-link"></span></a>Starting the client:</h2>
 
-<p>&lt;pre&gt;&lt;code&gt;
+<pre><code>
 // AFTER registered the reveivers, the client MUST be started
 await client.StartAsync();
-&lt;/code&gt;&lt;/pre&gt;</p>
+</code></pre>
 
-<p>&lt;h2&gt;Sending a command and accessing its response:&lt;/h2&gt;</p>
+<h2>
+<a id="user-content-sending-a-command-and-accessing-its-response" class="anchor" href="#sending-a-command-and-accessing-its-response" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sending a command and accessing its response:</h2>
 
-<p>&lt;pre&gt;&lt;code&gt;
+<pre><code>
 var command = new Command {
     Method = CommandMethod.Get,
-    Uri = new LimeUri(&quot;/account&quot;)
-};</p>
+    Uri = new LimeUri("/account")
+};
 
-<p>var responseCommand = await client.SendCommandAsync(command);</p>
+var responseCommand = await client.SendCommandAsync(command);
 
-<p>var account = (Account)responseCommand.Resource;</p>
+var account = (Account)responseCommand.Resource;
 
-<p>Console.WriteLine(account.Email);
-&lt;/code&gt;&lt;/pre&gt;</p>
+Console.WriteLine(account.Email);
+</code></pre>
 
-<p>&lt;h2&gt;Publishing a message:&lt;/h2&gt;</p>
+<h2>
+<a id="user-content-publishing-a-message" class="anchor" href="#publishing-a-message" aria-hidden="true"><span class="octicon octicon-link"></span></a>Publishing a message:</h2>
 
-<p>&lt;pre&gt;&lt;code&gt;
-await client.SendMessageAsync(&quot;Hello, world&quot;, to: &quot;user&quot;);
-&lt;/code&gt;&lt;/pre&gt;</p>
+<pre><code>
+await client.SendMessageAsync("Hello, world", to: "user");
+</code></pre>
 
-<p>&lt;h2&gt;Disconnecting:&lt;/h2&gt;</p>
+<h2>
+<a id="user-content-disconnecting" class="anchor" href="#disconnecting" aria-hidden="true"><span class="octicon octicon-link"></span></a>Disconnecting:</h2>
 
-<p>&lt;pre&gt;&lt;code&gt;
+<pre><code>
 await client.StopAsync();
-&lt;/code&gt;&lt;/pre&gt;</p>
+</code></pre>
 
-<p>&lt;p&gt;&lt;a href=&quot;./index.html&quot;&gt;Back to the Index&lt;/a&gt;&lt;/p&gt;</p>
+<p><a href="./index.html">Back to the Index</a></p>
+
