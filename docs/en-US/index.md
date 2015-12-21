@@ -5,5 +5,5 @@ MessagingHub.Client is a simple client for the [Messaging Hub](https://messaging
 
 ## Table of Contents
 
-- [Getting Started](./getting-started.html)
+- [Getting Started](./getting-started.md)
 - 
