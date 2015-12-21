@@ -1,4 +1,39 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<title>500 Internal Server Error</title>
-<h1>Internal Server Error</h1>
-<p>The server encountered an internal error and was unable to complete your request.  Either the server is overloaded or there is an error in the application.</p>
+<h1>Vis+úo Geral</h1>
+
+<p>O cliente do Messaging Hub foi desenvolvido para tornar mais f+ícil o trabalho com o cliente do protocolo lime para troca de mensanges, comandos e notifica+º+¦es entre as aplica+º+¦es e servi+ºos conectadas pelo Messaging Hub.</p>
+
+<p>O cliente est+í dispon+¡vel em m+¦ltiplas linguagens de programa+º+¦es, como <a href="https://github.com/takenet/messaginghub-client-csharp">C#</a>, <a href="https://github.com/takenet/messaginghub-client-java">Java</a> and <a href="https://github.com/takenet/messaginghub-client-js">Javascript</a>, e usa a mesma sem+óntica em todas elas.</p>
+
+<p>Os c+¦digos fonte est+úo dispon+¡veis no <a href="https://github.com/takenet">GitHub</a> e podem ser usados para refer+¬ncia e tamb+¬m para contribui+º+úo da comunidade. Se voc+¬ deseja melhorar o cliente, fork o projeto e nos envie um pool request.</p>
+
+<h2>Trabalhando com o cliente do Messaging Hub</h2>
+
+<p>As seguintes opera+º+¦es s+úo suportados:</p>
+
+<ul><li><p>Receber mensagens atrav+¬s do Messaging Hub;</p></li><li><p>Enviar  mensagens atrav+¬s do Messaging Hub;</p></li><li><p>Receber notifica+º+¦es atrav+¬s do Messaging Hub;</p></li><li><p>Enviar notifica+º+¦es atrav+¬s do Messaging Hub;</p></li><li><p>Enviar comandos atrav+¬s do Messaging Hub;</p></li></ul>
+
+<p>Para reveber envelopes (mensagens e notifica+º+¦es) o cliente requer que o desenvolvedor registre agentes receptores que ir+úo filtrar os dados recebidos e executar a a+º+úo desejada sobre eles, como no exemplo a seguir:</p>
+
+<p><code></code>`CSharp 
+public class PlainTextMessageReceiver : MessageReceiverBase
+{
+    public override async Task ReceiveAsync(Message message)
+    {
+        // Faz algo com a mensagem recebida
+    }
+}</p>
+
+<p>// Registra um receptor para receber mensagens com <code>media type</code> &#39;text/plain&#39;
+client.AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
+<code></code>`</p>
+
+<p>Para opera+º+¦es de envio, o cliente prov+¬ m+¬todos Send que podem ser invocados diretamente, como no exemplo a seguir:</p>
+
+<p><code>CSharp
+// Envia uma mensagem de texto para &#39;user@msging.net&#39; 
+await client.SendMessageAsync(&quot;Ol+í, mundo&quot;, to: &quot;user&quot;);
+</code></p>
+
+<p>Para mais informa+º+¦es espec+¡ficas de uso, veja a documenta+º+úo detalheada para <a href="./client-configuration.html">Configura+º+úo do Cliente</a>, <a href="./messages.html">Mensagens</a>, <a href="./notifications.html">Notifica+º+¦es</a> e <a href="./commands.html">Comandos</a>.</p>
+
+<p><a href="./index.html">Retornar ao +ìndice</a></p>

@@ -1,12 +1,12 @@
-# Messages
+<h1>Messages</h1>
 
-The client allow you to send and receive messages through the Messaging Hub.
+<p>The client allow you to send and receive messages through the Messaging Hub.</p>
 
-## Receiving Messages
+<h2>Receiving Messages</h2>
 
-To receive a message, register a receiver like so:
+<p>To receive a message, register a receiver like so:</p>
 
-```CSharp 
+<pre><code>
 public class MyMessageReceiver : MessageReceiverBase
 {
     public override async Task ReceiveAsync(Message message)
@@ -17,25 +17,25 @@ public class MyMessageReceiver : MessageReceiverBase
 }
 
 client.AddMessageReceiver(new MyMessageReceiver(), MediaTypes.PlainText);
-```
+</code></pre>
 
-It is also possible to pass a factory method to construct the receiver:
+<p>It is also possible to pass a factory method to construct the receiver:</p>
 
-```CSharp 
+<pre><code>
 client.AddMessageReceiver(() => new MyMessageReceiver(), MediaTypes.PlainText);
-```
+</code></pre>
 
-And you can specify a `media type` to filter your messages
+<p>And you can specify a <code>media type</code> to filter your messages</p>
 
-```CSharp 
+<pre><code>
 client.AddMessageReceiver(() => new MyMessageReceiver(), new MediaType(MediaType.DiscreteTypes.Application, MediaType.SubTypes.JSON));
-```
+</code></pre>
 
-## Sending Messages
+<h2>Sending Messages</h2>
 
-To send a message, you can use the following method:
+<p>To send a message, you can use the following method:</p>
 
-```CSharp 
+<pre><code>
 var message = new Message
 {
     To = Node.Parse("user"),
@@ -43,14 +43,14 @@ var message = new Message
 };
 
 await client.SendMessageAsync(message);
-```
+</code></pre>
 
-Or you can use these extension methods to construct and send your message:
+<p>Or you can use these extension methods to construct and send your message:</p>
 
-```CSharp 
+<pre><code>
 await client.SendMessageAsync("Message Text", to: "user");
 
 await client.SendMessageAsync("Message Text", Node.Parse("user"));
-```
+</code></pre>
 
-[Back to the Index](./index.md)
+<p><a href="./index.md">Back to the Index</a></p>

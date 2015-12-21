@@ -1,4 +1,79 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<title>500 Internal Server Error</title>
-<h1>Internal Server Error</h1>
-<p>The server encountered an internal error and was unable to complete your request.  Either the server is overloaded or there is an error in the application.</p>
+<h1>Como come+ºar?</h1>
+
+<p>Este guia de como come+ºar ir+í apresentar a voc+¬ o uso das funcionalidades b+ísicas do cliente do Messaging Hub </p>
+
+<h2>Instanciando o cliente:</h2>
+
+<p><code></code>`CSharp
+const string login = &quot;guest&quot;;
+const string password = &quot;guest&quot;;</p>
+
+<p>var client = new MessagingHubClient() // Uma vez que o nome do host e do dom+¡nio n+úo foram informados, o valor padr+úo, &#39;msging.net&#39;, ser+í utilizado para ambos os par+ómetros
+                .UsingAccount(login, password);
+<code></code>`</p>
+
+<h2>Se inscrevendo para receber uma mensagem de texto:</h2>
+
+<p><code></code>`CSharp 
+public class PlainTextMessageReceiver : MessageReceiverBase
+{
+    public override async Task ReceiveAsync(Message message)
+    {
+        Console.WriteLine(message.Content.ToString());
+        await MessageSender.SendMessageAsync(&quot;Obrigado por sua mensagem!&quot;, message.From);
+    }
+}</p>
+
+<p>client.AddMessageReceiver(messageReceiver: new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText);
+<code></code>`</p>
+
+<h2>Se inscrevendo para receber uma notifica+º+úo:</h2>
+
+<p><code></code>`CSharp 
+public class PrintNotificationReceiver : NotificationReceiverBase
+{
+    public override Task ReceiveAsync(Notification notification)
+    {
+        Console.WriteLine(&quot;Notifica+º+úo do evento {0} recebida. Motivo: {1}&quot;, notification.Event, notification.Reason);
+        return Task.FromResult(0);
+    }
+}</p>
+
+<p>client.AddNotificationReceiver(receiverBuilder: () =&gt; new PrintNotificationReceiver());
+<code></code>`</p>
+
+<h2>Iniciando o cliente:</h2>
+
+<p><code>CSharp 
+// AP+ôS registrados os receptores, o cliente DEVE ser iniciado
+await client.StartAsync();
+</code></p>
+
+<h2>Enviando um comando e acessando sua resposta:</h2>
+
+<p><code></code>`CSharp 
+var command = new Command {
+    Method = CommandMethod.Get,
+    Uri = new LimeUri(&quot;/account&quot;)
+};</p>
+
+<p>var responseCommand = await client.SendCommandAsync(command);</p>
+
+<p>var account = (Account)responseCommand.Resource;</p>
+
+<p>Console.WriteLine(account.Email);
+<code></code>`</p>
+
+<h2>Publicando uma mensagem:</h2>
+
+<p><code>CSharp 
+await client.SendMessageAsync(&quot;Ol+í, mundo&quot;, to: &quot;user&quot;);
+</code></p>
+
+<h2>Desconectando:</h2>
+
+<p><code>CSharp 
+await client.StopAsync();
+</code></p>
+
+<p><a href="./index.html">Retornar ao +ìndice</a></p>

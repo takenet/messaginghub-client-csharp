@@ -1,4 +1,33 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<title>500 Internal Server Error</title>
-<h1>Internal Server Error</h1>
-<p>The server encountered an internal error and was unable to complete your request.  Either the server is overloaded or there is an error in the application.</p>
+<h1>Configura+º+úo do Cliente</h1>
+
+<p>O cliente do Messaging Hub foi projetado para ser simples e f+ícil de usar, deste modo poucas configura+º+¦es est+úo dispon+¡veis.</p>
+
+<p>Para se conectar ao Messaging Hub, o host padr+úo, <code>&quot;msging.net&quot;</code> e o dom+¡nio padr+úo, tamb+¬m <code>&quot;msging.net&quot;</code>, s+úo usados por padr+úo. Caso queira especificar outro host ou dom+¡nio, voc+¬ pode passa-los no construtor do cliente, como exibido abaixo:  </p>
+
+<p><code>CSharp
+var client = new MessagingHubClient(&quot;meuhost.com&quot;, &quot;meudominio.com&quot;)
+</code></p>
+
+<p>Al+¬m do nome do host e do dom+¡nio, uma autentica+º+úo +¬ obrigat+¦ria. Essa autentica+º+úo pode ser na forma de um login e senha, ou na forma de um login e uma chave de acesso, sendo o m+¬todo da chave de acesso preferencial.</p>
+
+<p>Usando login e senha:
+<code></code>`CSharp
+const string login = &quot;user&quot;;
+const string password = &quot;password&quot;;</p>
+
+<p>// Uma vez que o nome do host e a senha n+úo foram informados, os valores padr+¦es ser+úo usados.
+var client = new MessagingHubClient()
+                .UsingAccount(login, password);
+<code></code>`</p>
+
+<p>Usando login e chave de acesso:
+<code></code>`CSharp
+const string login = &quot;user&quot;;
+const string accessKey = &quot;key&quot;;</p>
+
+<p>// Uma vez que o nome do host e a senha n+úo foram informados, os valores padr+¦es ser+úo usados.
+var client = new MessagingHubClient()
+                .UsingAccessKey(login, accessKey);
+<code></code>`</p>
+
+<p><a href="./index.html">Retornar ao +ìndice</a></p>

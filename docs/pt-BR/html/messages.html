@@ -1,4 +1,56 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<title>500 Internal Server Error</title>
-<h1>Internal Server Error</h1>
-<p>The server encountered an internal error and was unable to complete your request.  Either the server is overloaded or there is an error in the application.</p>
+<h1>Mensagens</h1>
+
+<p>O cliente permite que voc+¬ envie e receba mensagens atrav+¬s do Messaging Hub.</p>
+
+<h2>Recebendo Mensagens</h2>
+
+<p>Para receber uma mensagem, registre um receptor da seguinte forma:</p>
+
+<p><code></code>`CSharp 
+public class MyMessageReceiver : MessageReceiverBase
+{
+    public override async Task ReceiveAsync(Message message)
+    {
+        // Escreve o conte+¦do da mensagem no console
+        Console.WriteLine(message.Content.ToString());
+    }
+}</p>
+
+<p>client.AddMessageReceiver(new MyMessageReceiver(), MediaTypes.PlainText);
+<code></code>`</p>
+
+<p>Tamb+¬m +¬ poss+¡vel passar um factory method para construir o receptor:</p>
+
+<p><code>CSharp 
+client.AddMessageReceiver(() =&gt; new MyMessageReceiver(), MediaTypes.PlainText);
+</code></p>
+
+<p>E voc+¬ pode especificar um media type para filtrar suas mensagens</p>
+
+<p><code>CSharp 
+client.AddMessageReceiver(() =&gt; new MyMessageReceiver(), new MediaType(MediaType.DiscreteTypes.Application, MediaType.SubTypes.JSON));
+</code></p>
+
+<h2>Enviando Mensagens</h2>
+
+<p>Para enviar uma mensagem, voc+¬ pode usar o seguinte m+¬todo:</p>
+
+<p><code></code>`CSharp 
+var message = new Message
+{
+    To = Node.Parse(&quot;user&quot;),
+    Content = &quot;Texto da Mensagem&quot;
+};</p>
+
+<p>await client.SendMessageAsync(message);
+<code></code>`</p>
+
+<p>Ou voc+¬ pode usar um destes m+¬todos de extens+úo para construir e enviar sua mensagem:</p>
+
+<p><code></code>`CSharp 
+await client.SendMessageAsync(&quot;Texto da Mensagem&quot;, to: &quot;user&quot;);</p>
+
+<p>await client.SendMessageAsync(&quot;Texto da Mensagem&quot;, Node.Parse(&quot;user&quot;));
+<code></code>`</p>
+
+<p><a href="./index.html">Retornar ao +ìndice</a></p>

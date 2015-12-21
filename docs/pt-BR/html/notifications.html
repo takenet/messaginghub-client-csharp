@@ -1,4 +1,60 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<title>500 Internal Server Error</title>
-<h1>Internal Server Error</h1>
-<p>The server encountered an internal error and was unable to complete your request.  Either the server is overloaded or there is an error in the application.</p>
+<h1>Notifica+º+¦es</h1>
+
+<p>O cliente permite que voc+¬ envie e receba notifica+º+¦es atrav+¬s do Messaging Hub.</p>
+
+<h2>Recebendo Notifica+º+¦es</h2>
+
+<p>Para receber uma notifica+º+úo, registre um receptor da seguinte forma:</p>
+
+<p><code></code>`CSharp 
+public class MyNotificationReceiver : NotificationReceiverBase
+{
+    public override async Task ReceiveAsync(Notification notification)
+    {
+        // Escreve a notifica+º+úo recebida no console
+        Console.WriteLine(notification.ToString());
+    }
+}</p>
+
+<p>client.AddNotificationReceiver(new MyNotificationReceiver());
+<code></code>`</p>
+
+<p>Tamb+¬m +¬ poss+¡vel passar um factory method para construir o receptor:</p>
+
+<p><code>CSharp 
+client.AddNotificationReceiver(() =&gt; new MyNotificationReceiver());
+</code></p>
+
+<p>E voc+¬ pode especificar um <code>event type</code> para filtrar suas mensagens</p>
+
+<p><code>CSharp 
+client.AddNotificationReceiver(() =&gt; new MyNotificationReceiver(), Event.Received);
+</code></p>
+
+<h2>Enviando Notifica+º+¦es</h2>
+
+<p>Para enviar uma notifica+º+úo, voc+¬ pode usar o seguinte m+¬todo:</p>
+
+<p><code></code>`CSharp 
+var notification = new Notification
+{
+    To = Node.Parse(&quot;user&quot;),
+    Event = Event.Received
+};</p>
+
+<p>await client.SendNotificationAsync(notification);
+<code></code>`</p>
+
+<p>Ou voc+¬ pode usar um destes m+¬todos de extens+úo para construir e enviar sua notifica+º+úo:</p>
+
+<p><code></code>`CSharp 
+await client.SendNotificationAsync(message.ToReceivedNotification());</p>
+
+<p>await client.SendNotificationAsync(message.ToConsumedNotification());</p>
+
+<p>await client.SendNotificationAsync(message.ToFailedNotification());</p>
+
+<p>await client.SendNotificationAsync(message.ToNotification(Event.Received));
+<code></code>`</p>
+
+<p><a href="./index.html">Retornar ao +ìndice</a></p>

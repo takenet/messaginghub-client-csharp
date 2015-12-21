@@ -11,7 +11,7 @@ For ($i = 0; $i -lt $markdownFiles.Length; $i++) {
     }
     $htmlFile = [System.IO.Path]::Combine($htmlFolder, "$fileName.html")
     
-    & grip --title="Messaging Hub Client" --export $markdownFile $htmlFile
+    & md2html $markdownFile > $htmlFile 
     
     (Get-Content $htmlFile) -replace '.md', '.html' | Set-Content $htmlFile
 }
