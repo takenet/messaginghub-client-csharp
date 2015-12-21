@@ -54,14 +54,15 @@
 
 <div class="highlight highlight-source-cs"><pre><span class="pl-k">var</span> client = <span class="pl-k">new</span> MessagingHubClient(<span class="pl-s"><span class="pl-pds">"</span>mycustomhost.com<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>mycust.htmlomain.com<span class="pl-pds">"</span></span>)</pre></div>
 
-<p>Despite the host name and domain, an authentication is mandatory. This authentication can be in a form of a login and password, of in a form of a login and access key, being the access key method the preferred one.</p>
+<p>Besides the host name and domain, an authentication is mandatory. This authentication can be in a form of a login and password, or in a form of a login and access key, being the access key method the preferred one.</p>
 
 <p>Using a login and password:</p>
 
 <div class="highlight highlight-source-cs"><pre><span class="pl-k">const</span> <span class="pl-k">string</span> login = <span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>;
 <span class="pl-k">const</span> <span class="pl-k">string</span> password = <span class="pl-s"><span class="pl-pds">"</span>password<span class="pl-pds">"</span></span>;
 
-<span class="pl-k">var</span> client = <span class="pl-k">new</span> MessagingHubClient() <span class="pl-c">// Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters</span>
+<span class="pl-c">// Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters</span>
+<span class="pl-k">var</span> client = <span class="pl-k">new</span> MessagingHubClient()
                 .UsingAccount(login, password);</pre></div>
 
 <p>Using a login and access key:</p>
@@ -69,7 +70,8 @@
 <div class="highlight highlight-source-cs"><pre><span class="pl-k">const</span> <span class="pl-k">string</span> login = <span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>;
 <span class="pl-k">const</span> <span class="pl-k">string</span> accessKey = <span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>;
 
-<span class="pl-k">var</span> client = <span class="pl-k">new</span> MessagingHubClient() <span class="pl-c">// Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters</span>
+<span class="pl-c">// Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters</span>
+<span class="pl-k">var</span> client = <span class="pl-k">new</span> MessagingHubClient()
                 .UsingAccessKey(login, accessKey);</pre></div>
 
 <p><a href="./index.html">Back to the Index</a></p>

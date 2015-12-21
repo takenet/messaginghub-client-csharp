@@ -25,7 +25,7 @@ It is also possible to pass a factory method to construct the receiver:
 client.AddMessageReceiver(() => new MyMessageReceiver(), MediaTypes.PlainText);
 ```
 
-And you can specify a media type to filter your messages
+And you can specify a `media type` to filter your messages
 
 ```CSharp 
 client.AddMessageReceiver(() => new MyMessageReceiver(), new MediaType(MediaType.DiscreteTypes.Application, MediaType.SubTypes.JSON));

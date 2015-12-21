@@ -1,18 +1,18 @@
-# Getting Started
+# Como começar?
 
-This getting started guide will show you how to use the basic functionalities of the Messaging Hub Client 
+Este guia de como começar irá apresentar a você o uso das funcionalidades básicas do cliente do Messaging Hub 
 
-## Instantiating a client:
+## Instanciando o cliente:
 
 ```CSharp
 const string login = "guest";
 const string password = "guest";
 
-var client = new MessagingHubClient() // Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
+var client = new MessagingHubClient() // Uma vez que o nome do host e do domínio não foram informados, o valor padrão, 'msging.net', será utilizado para ambos os parâmetros
                 .UsingAccount(login, password);
 ```
 
-## Subscribing to receive a plain text message:
+## Se inscrevendo para receber uma mensagem de texto:
 
 ```CSharp 
 public class PlainTextMessageReceiver : MessageReceiverBase
@@ -20,21 +20,21 @@ public class PlainTextMessageReceiver : MessageReceiverBase
     public override async Task ReceiveAsync(Message message)
     {
         Console.WriteLine(message.Content.ToString());
-        await MessageSender.SendMessageAsync("Thanks for your message!", message.From);
+        await MessageSender.SendMessageAsync("Obrigado por sua mensagem!", message.From);
     }
 }
 
 client.AddMessageReceiver(messageReceiver: new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText);
 ```
 
-## Subscribing to receive a notification:
+## Se inscrevendo para receber uma notificação:
 
 ```CSharp 
 public class PrintNotificationReceiver : NotificationReceiverBase
 {
     public override Task ReceiveAsync(Notification notification)
     {
-        Console.WriteLine("Notification of {0} event received. Reason: {1}", notification.Event, notification.Reason);
+        Console.WriteLine("Notificação do evento {0} recebida. Motivo: {1}", notification.Event, notification.Reason);
         return Task.FromResult(0);
     }
 }
@@ -43,14 +43,14 @@ client.AddNotificationReceiver(receiverBuilder: () => new PrintNotificationRecei
 ```
 
 
-## Starting the client:
+## Iniciando o cliente:
 
 ```CSharp 
-// AFTER registered the reveivers, the client MUST be started
+// APÓS registrados os receptores, o cliente DEVE ser iniciado
 await client.StartAsync();
 ```
 
-## Sending a command and accessing its response:
+## Enviando um comando e acessando sua resposta:
 
 ```CSharp 
 var command = new Command {
@@ -65,16 +65,16 @@ var account = (Account)responseCommand.Resource;
 Console.WriteLine(account.Email);
 ```
 
-## Publishing a message:
+## Publicando uma mensagem:
 
 ```CSharp 
-await client.SendMessageAsync("Hello, world", to: "user");
+await client.SendMessageAsync("Olá, mundo", to: "user");
 ```
 
-## Disconnecting:
+## Desconectando:
 
 ```CSharp 
 await client.StopAsync();
 ```
 
-[Back to the Index](./index.md)
+[Retornar ao Índice](./index.md)

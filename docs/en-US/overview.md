@@ -31,7 +31,7 @@ public class PlainTextMessageReceiver : MessageReceiverBase
     }
 }
 
-// Register a receiver for messages of the media type 'text/plain'
+// Register a receiver for messages of the `media type` 'text/plain'
 client.AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
 ```
 

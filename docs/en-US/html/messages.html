@@ -70,7 +70,7 @@ client.AddMessageReceiver(<span class="pl-k">new</span> MyMessageReceiver(), Med
 
 <div class="highlight highlight-source-cs"><pre>client.AddMessageReceiver(() =&gt; <span class="pl-k">new</span> MyMessageReceiver(), MediaTypes.PlainText);</pre></div>
 
-<p>And you can specify a media type to filter your messages</p>
+<p>And you can specify a <code>media type</code> to filter your messages</p>
 
 <div class="highlight highlight-source-cs"><pre>client.AddMessageReceiver(() =&gt; <span class="pl-k">new</span> MyMessageReceiver(), <span class="pl-k">new</span> MediaType(MediaType.DiscreteTypes.Application, MediaType.SubTypes.JSON));</pre></div>
 
