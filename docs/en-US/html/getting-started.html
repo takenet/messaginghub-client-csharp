@@ -46,11 +46,6 @@
               
               <div id="grip-content" class="markdown-body entry-content">
                 <h1>
-<a id="user-content-messaging-hub-client" class="anchor" href="#messaging-hub-client" aria-hidden="true"><span class="octicon octicon-link"></span></a>Messaging Hub Client</h1>
-
-<p>MessagingHub.Client is a simple client for the <a href="https://messaginghub.io/">Messaging Hub</a> that uses a fluent interface to send and receive messages, commands and notifications.</p>
-
-<h1>
 <a id="user-content-getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting Started</h1>
 
 <p>This getting started guide will show you how to use the basic functionalities of the Messaging Hub Client </p>
@@ -76,7 +71,7 @@
     }
 }
 
-client.AddMessageReceiver(messageReceiver: <span class="pl-k">new</span> PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText)</pre></div>
+client.AddMessageReceiver(messageReceiver: <span class="pl-k">new</span> PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText);</pre></div>
 
 <h2>
 <a id="user-content-subscribing-to-receive-a-notification" class="anchor" href="#subscribing-to-receive-a-notification" aria-hidden="true"><span class="octicon octicon-link"></span></a>Subscribing to receive a notification:</h2>
@@ -122,6 +117,8 @@ Console.WriteLine(account.Email);</pre></div>
 <a id="user-content-disconnecting" class="anchor" href="#disconnecting" aria-hidden="true"><span class="octicon octicon-link"></span></a>Disconnecting:</h2>
 
 <div class="highlight highlight-source-cs"><pre><span class="pl-k">await</span> client.StopAsync();</pre></div>
+
+<p><a href="./index.html">Back to the Index</a></p>
 
               </div>
             </div>

@@ -46,15 +46,58 @@
               
               <div id="grip-content" class="markdown-body entry-content">
                 <h1>
-<a id="user-content-messaging-hub-client-documentation" class="anchor" href="#messaging-hub-client-documentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Messaging Hub Client Documentation</h1>
+<a id="user-content-notifications" class="anchor" href="#notifications" aria-hidden="true"><span class="octicon octicon-link"></span></a>Notifications</h1>
 
-<p>This folder contains documentation files for the <a href="https://github.com/takenet/messaginghub-client-csharp">Messaging Hub Client</a>.</p>
+<p>The client allow you to send and receive notifications through the Messaging Hub.</p>
 
-<p>This docs are written in markdown and converted to html using <a href="https://github.com/joeyespo/grip">grip</a>.</p>
+<h2>
+<a id="user-content-receiving-notifications" class="anchor" href="#receiving-notifications" aria-hidden="true"><span class="octicon octicon-link"></span></a>Receiving Notifications</h2>
 
-<p>Follow its <a href="https://github.com/joeyespo/grip">instructions</a> to edit this docs and generate the html pages.</p>
+<p>To receive a notification, register a receiver like so:</p>
 
-<p><a href="./index.html">Go to the Index</a></p>
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">MyNotificationReceiver</span> : <span class="pl-k">NotificationReceiverBase</span>
+{
+    <span class="pl-k">public</span> <span class="pl-k">override</span> <span class="pl-k">async</span> Task <span class="pl-en">ReceiveAsync</span>(<span class="pl-k">Notification</span> <span class="pl-smi">notification</span>)
+    {
+        <span class="pl-c">// Write the received notification to the console</span>
+        Console.WriteLine(notification.ToString());
+    }
+}
+
+client.AddNotificationReceiver(<span class="pl-k">new</span> MyNotificationReceiver());</pre></div>
+
+<p>It is also possible to pass a factory method to construct the receiver:</p>
+
+<div class="highlight highlight-source-cs"><pre>client.AddNotificationReceiver(() =&gt; <span class="pl-k">new</span> MyNotificationReceiver());</pre></div>
+
+<p>And you can specify an event type to filter your notifications</p>
+
+<div class="highlight highlight-source-cs"><pre>client.AddNotificationReceiver(() =&gt; <span class="pl-k">new</span> MyNotificationReceiver(), Event.Received);</pre></div>
+
+<h2>
+<a id="user-content-sending-notifications" class="anchor" href="#sending-notifications" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sending Notifications</h2>
+
+<p>To send a notification, you can use the following method:</p>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">var</span> notification = <span class="pl-k">new</span> Notification
+{
+    To = Node.Parse(<span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>),
+    Event = Event.Received
+};
+
+<span class="pl-k">await</span> client.SendNotificationAsync(notification);</pre></div>
+
+<p>Or you can use these extension methods to construct and send your notification:</p>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">await</span> client.SendNotificationAsync(message.ToReceivedNotification());
+
+<span class="pl-k">await</span> client.SendNotificationAsync(message.ToConsumedNotification());
+
+<span class="pl-k">await</span> client.SendNotificationAsync(message.ToFailedNotification());
+
+<span class="pl-k">await</span> client.SendNotificationAsync(message.ToNotification(Event.Received));</pre></div>
+
+<p><a href="./index.html">Back to the Index</a></p>
 
               </div>
             </div>

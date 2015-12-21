@@ -1,8 +1,3 @@
-
-# Messaging Hub Client
-
-MessagingHub.Client is a simple client for the [Messaging Hub](https://messaginghub.io/) that uses a fluent interface to send and receive messages, commands and notifications.
-
 # Getting Started
 
 This getting started guide will show you how to use the basic functionalities of the Messaging Hub Client 
@@ -29,7 +24,7 @@ public class PlainTextMessageReceiver : MessageReceiverBase
     }
 }
 
-client.AddMessageReceiver(messageReceiver: new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText)
+client.AddMessageReceiver(messageReceiver: new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText);
 ```
 
 ## Subscribing to receive a notification:
@@ -82,3 +77,5 @@ await client.SendMessageAsync("Hello, world", to: "user");
 ```CSharp 
 await client.StopAsync();
 ```
+
+[Back to the Index](./index.md)

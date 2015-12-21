@@ -46,15 +46,33 @@
               
               <div id="grip-content" class="markdown-body entry-content">
                 <h1>
-<a id="user-content-messaging-hub-client-documentation" class="anchor" href="#messaging-hub-client-documentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Messaging Hub Client Documentation</h1>
+<a id="user-content-client-configuration" class="anchor" href="#client-configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Client Configuration</h1>
 
-<p>This folder contains documentation files for the <a href="https://github.com/takenet/messaginghub-client-csharp">Messaging Hub Client</a>.</p>
+<p>The Messaging Hub client is designed to be simple and easy to use, this way few configuration options are available.</p>
 
-<p>This docs are written in markdown and converted to html using <a href="https://github.com/joeyespo/grip">grip</a>.</p>
+<p>To connect to the Messaging Hub, the default host, <code>"msging.net"</code> and default domain, also <code>"msging.net"</code>, are used by default. If you want to specify another host name or domain, you can pass them in the constructor of the client, as shown below:</p>
 
-<p>Follow its <a href="https://github.com/joeyespo/grip">instructions</a> to edit this docs and generate the html pages.</p>
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">var</span> client = <span class="pl-k">new</span> MessagingHubClient(<span class="pl-s"><span class="pl-pds">"</span>mycustomhost.com<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>mycust.htmlomain.com<span class="pl-pds">"</span></span>)</pre></div>
 
-<p><a href="./index.html">Go to the Index</a></p>
+<p>Despite the host name and domain, an authentication is mandatory. This authentication can be in a form of a login and password, of in a form of a login and access key, being the access key method the preferred one.</p>
+
+<p>Using a login and password:</p>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">const</span> <span class="pl-k">string</span> login = <span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>;
+<span class="pl-k">const</span> <span class="pl-k">string</span> password = <span class="pl-s"><span class="pl-pds">"</span>password<span class="pl-pds">"</span></span>;
+
+<span class="pl-k">var</span> client = <span class="pl-k">new</span> MessagingHubClient() <span class="pl-c">// Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters</span>
+                .UsingAccount(login, password);</pre></div>
+
+<p>Using a login and access key:</p>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">const</span> <span class="pl-k">string</span> login = <span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>;
+<span class="pl-k">const</span> <span class="pl-k">string</span> accessKey = <span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>;
+
+<span class="pl-k">var</span> client = <span class="pl-k">new</span> MessagingHubClient() <span class="pl-c">// Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters</span>
+                .UsingAccessKey(login, accessKey);</pre></div>
+
+<p><a href="./index.html">Back to the Index</a></p>
 
               </div>
             </div>

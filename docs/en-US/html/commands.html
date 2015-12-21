@@ -46,15 +46,25 @@
               
               <div id="grip-content" class="markdown-body entry-content">
                 <h1>
-<a id="user-content-messaging-hub-client-documentation" class="anchor" href="#messaging-hub-client-documentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Messaging Hub Client Documentation</h1>
+<a id="user-content-commands" class="anchor" href="#commands" aria-hidden="true"><span class="octicon octicon-link"></span></a>Commands</h1>
 
-<p>This folder contains documentation files for the <a href="https://github.com/takenet/messaginghub-client-csharp">Messaging Hub Client</a>.</p>
+<p>The client allow you to send commands through the Messaging Hub. But it is not possible to receive commands.</p>
 
-<p>This docs are written in markdown and converted to html using <a href="https://github.com/joeyespo/grip">grip</a>.</p>
+<h2>
+<a id="user-content-sending-commands" class="anchor" href="#sending-commands" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sending Commands</h2>
 
-<p>Follow its <a href="https://github.com/joeyespo/grip">instructions</a> to edit this docs and generate the html pages.</p>
+<p>To send a command, you can use the following method:</p>
 
-<p><a href="./index.html">Go to the Index</a></p>
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">var</span> command = <span class="pl-k">new</span> Command {
+    Method = CommandMethod.Get,
+    Uri = <span class="pl-k">new</span> LimeUri(<span class="pl-s"><span class="pl-pds">"</span>/account<span class="pl-pds">"</span></span>)
+};
+
+<span class="pl-k">var</span> response = <span class="pl-k">await</span> client.SendCommandAsync(command);</pre></div>
+
+<p>Unlike the messages and notifications, when you send a command, you receive a response when the task completes. This response will contain information about the result of the execution of the specific command you have sent.</p>
+
+<p><a href="./index.html">Back to the Index</a></p>
 
               </div>
             </div>
