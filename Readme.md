@@ -7,15 +7,13 @@ MessagingHub.Client is a simple client for the [Messaging Hub](https://messaging
 
 To get started with the Messaging Hub Client, see the [Getting Started](http://messaging-hub-client.readthedocs.org/en/latest/getting-started/) page.
 
-### English Documentation
+## Documentation 
 
-[http://messaging-hub-client.readthedocs.org](http://messaging-hub-client.readthedocs.org)
+**English**: [http://messaging-hub-client.readthedocs.org](http://messaging-hub-client.readthedocs.org)
 
-### Brasilian Portuguese Documentation
+**Brasilian Portuguese**: [http://cliente-do-messaging-hub.readthedocs.org](http://cliente-do-messaging-hub.readthedocs.org)
 
-[http://cliente-do-messaging-hub.readthedocs.org](http://cliente-do-messaging-hub.readthedocs.org)
-
-## About the Documentation
+### About the Documentation
 
 The documentation for this project is provided by the [Read The Docs](http://readthedocs.org) site.
 
