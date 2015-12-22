@@ -1,10 +1,10 @@
-# Comandos
+# Commands
 
-O cliente permite que você envie comandos através do Messaging Hub. No entanto não é possível receber comandos. 
+The client allow you to send commands through the Messaging Hub. But it is not possible to receive commands.
 
-## Enviando comandos
+## Sending Commands
 
-Para enviar um comando, você pode usar o seguinte método:
+To send a command, you can use the following method:
 
 ```CSharp 
 var command = new Command {
@@ -15,6 +15,6 @@ var command = new Command {
 var response = await client.SendCommandAsync(command);
 ```
 
-Diferentemente de mensagens e notificações, quando você envia um comando, você recebe uma resposta quando a tarefa é concluída. Essa resposta contém informações a respeito do resultado da execução do comando enviado.
+Unlike the messages and notifications, when you send a command, you receive a response when the task completes. This response will contain information about the result of the execution of the command you have sent.
 
-[Retornar ao Índice](./index.md)
+[Back to the Index](./index.md)

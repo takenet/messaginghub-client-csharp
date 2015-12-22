@@ -1,51 +1,51 @@
-# Cliente do Messaging Hub
+# Messaging Hub Client
 
-MessagingHub.Client é um cliente simples para o [Messaging Hub](https://messaginghub.io/) que usa uma interface fluente para enviar e receber mensagens, comandos e notificações.
+MessagingHub.Client is a simple client for the [Messaging Hub](https://messaginghub.io/) that uses a fluent interface to send and receive messages, commands and notifications.
 
-# Introdução
+# Introduction
 
-O cliente do Messaging Hub foi desenvolvido para tornar mais fácil o trabalho com o cliente do protocolo lime para troca de mensanges, comandos e notificações entre as aplicações e serviços conectadas pelo Messaging Hub.
+The Messaging Hub Client was designed to make it easy to work with the lime protocol client to exchange messages, commands and notifications among the applications and services connected through the Messaging Hub.
 
-O cliente está disponível em múltiplas linguagens de programações, como [C#](https://github.com/takenet/messaginghub-client-csharp), [Java](https://github.com/takenet/messaginghub-client-java) and [Javascript](https://github.com/takenet/messaginghub-client-js), e usa a mesma semântica em todas elas.
+The client is available in multiple programming languages, like [C#](https://github.com/takenet/messaginghub-client-csharp), [Java](https://github.com/takenet/messaginghub-client-java) and [Javascript](https://github.com/takenet/messaginghub-client-js), and uses the same semantics in all of them.
 
-Os códigos fonte estão disponíveis no [GitHub](https://github.com/takenet) e podem ser usados para referência e também para contribuição da comunidade. Se você deseja melhorar o cliente, fork o projeto e nos envie um pool request.
+The source code is available on [GitHub](https://github.com/takenet) and can be used for reference and also for community contribution. If you want to improve the client, fork the project and send us a pull request.
 
-## Trabalhando com o cliente do Messaging Hub
+## Working with the Messaging Hub Client
 
-As seguintes operações são suportados:
+The following operations are supported:
 
-- Receber mensagens através do Messaging Hub;
+- Receive messages through the Messaging Hub;
 
-- Enviar  mensagens através do Messaging Hub;
+- Send messages through the Messaging Hub;
 
-- Receber notificações através do Messaging Hub;
+- Receive notifications through the Messaging Hub;
 
-- Enviar notificações através do Messaging Hub;
+- Send notifications through the Messaging Hub;
 
-- Enviar comandos através do Messaging Hub;
+- Send commands through the Messaging Hub;
 
-Para reveber envelopes (mensagens e notificações) o cliente requer que o desenvolvedor registre agentes receptores que irão filtrar os dados recebidos e executar a ação desejada sobre eles, como no exemplo a seguir:
+For receiving envelopes (messages or notifications) the client requests that the developer register receiver agents that will filter the received data and execute the desired action over it, like the example below:
 
 ```CSharp 
 public class PlainTextMessageReceiver : MessageReceiverBase
 {
     public override async Task ReceiveAsync(Message message)
     {
-        // Faz algo com a mensagem recebida
+        // Do something with the received message
     }
 }
 
-// Registra um receptor para receber mensagens com `media type` 'text/plain'
+// Register a receiver for messages of the `media type` 'text/plain'
 client.AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
 ```
 
-Para operações de envio, o cliente provê métodos Send que podem ser invocados diretamente, como no exemplo a seguir:
+For sending operations, the client provides Send methods that can be invoked directly, like the example below:
 
 ```CSharp
-// Envia uma mensagem de texto para 'user@msging.net' 
-await client.SendMessageAsync("Olá, mundo", to: "user");
+// Send a plain text message to the 'user@msging.net' 
+await client.SendMessageAsync("Hello, world", to: "user");
 ```
 
-Para mais informações específicas de uso, veja a documentação detalheada para [Como Começar?](./getting-started.md), [Configuração do Cliente](./client-configuration.md), [Mensagens](./messages.md), [Notificações](./notifications.md) e [Comandos](./commands.md).
+For more information about specific usage, see the detailed documentation for [Getting Started](./getting-started.md) [Client Configuration](./client-configuration.md), [Messages](./messages.md), [Notifications](./notifications.md) and [Commands](./commands.md).
 
-[Retornar ao Índice](./index.md)
+[Back to the Index](./index.md)

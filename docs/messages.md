@@ -1,17 +1,17 @@
-# Mensagens
+# Messages
 
-O cliente permite que você envie e receba mensagens através do Messaging Hub.
+The client allow you to send and receive messages through the Messaging Hub.
 
-## Recebendo Mensagens
+## Receiving Messages
 
-Para receber uma mensagem, registre um receptor da seguinte forma:
+To receive a message, register a receiver like so:
 
 ```CSharp 
 public class MyMessageReceiver : MessageReceiverBase
 {
     public override async Task ReceiveAsync(Message message)
     {
-        // Escreve o conteúdo da mensagem no console
+        // Write the received message to the console
         Console.WriteLine(message.Content.ToString());
     }
 }
@@ -19,38 +19,38 @@ public class MyMessageReceiver : MessageReceiverBase
 client.AddMessageReceiver(new MyMessageReceiver(), MediaTypes.PlainText);
 ```
 
-Também é possível passar um factory method para construir o receptor:
+It is also possible to pass a factory method to construct the receiver:
 
 ```CSharp 
 client.AddMessageReceiver(() => new MyMessageReceiver(), MediaTypes.PlainText);
 ```
 
-E você pode especificar um media type para filtrar suas mensagens
+And you can specify a `media type` to filter your messages
 
 ```CSharp 
 client.AddMessageReceiver(() => new MyMessageReceiver(), new MediaType(MediaType.DiscreteTypes.Application, MediaType.SubTypes.JSON));
 ```
 
-## Enviando Mensagens
+## Sending Messages
 
-Para enviar uma mensagem, você pode usar o seguinte método:
+To send a message, you can use the following method:
 
 ```CSharp 
 var message = new Message
 {
     To = Node.Parse("user"),
-    Content = "Texto da Mensagem"
+    Content = "Message Text"
 };
 
 await client.SendMessageAsync(message);
 ```
 
-Ou você pode usar um destes métodos de extensão para construir e enviar sua mensagem:
+Or you can use these extension methods to construct and send your message:
 
 ```CSharp 
-await client.SendMessageAsync("Texto da Mensagem", to: "user");
+await client.SendMessageAsync("Message Text", to: "user");
 
-await client.SendMessageAsync("Texto da Mensagem", Node.Parse("user"));
+await client.SendMessageAsync("Message Text", Node.Parse("user"));
 ```
 
-[Retornar ao Índice](./index.md)
+[Back to the Index](./index.md)

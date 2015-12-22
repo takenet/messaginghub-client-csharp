@@ -1,33 +1,33 @@
-# Configuração do Cliente
+# Client Configuration
 
-O cliente do Messaging Hub foi projetado para ser simples e fácil de usar, deste modo poucas configurações estão disponíveis.
+The Messaging Hub client is designed to be simple and easy to use, this way few configuration options are available.
 
-Para se conectar ao Messaging Hub, o host padrão, `"msging.net"` e o domínio padrão, também `"msging.net"`, são usados por padrão. Caso queira especificar outro host ou domínio, você pode passa-los no construtor do cliente, como exibido abaixo:  
+To connect to the Messaging Hub, the default host, `"msging.net"` and default domain, also `"msging.net"`, are used by default. If you want to specify another host name or domain, you can pass them in the constructor of the client, as shown below:
 
 ```CSharp
-var client = new MessagingHubClient("meuhost.com", "meudominio.com")
+var client = new MessagingHubClient("mycustomhost.com", "mycustomdomain.com")
 ```
 
-Além do nome do host e do domínio, uma autenticação é obrigatória. Essa autenticação pode ser na forma de um login e senha, ou na forma de um login e uma chave de acesso, sendo o método da chave de acesso preferencial.
+Besides the host name and domain, an authentication is mandatory. This authentication can be in a form of a login and password, or in a form of a login and access key, being the access key method the preferred one.
 
-Usando login e senha:
+Using a login and password:
 ```CSharp
 const string login = "user";
 const string password = "password";
 
-// Uma vez que o nome do host e a senha não foram informados, os valores padrões serão usados.
+// Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
 var client = new MessagingHubClient()
                 .UsingAccount(login, password);
 ```
 
-Usando login e chave de acesso:
+Using a login and access key:
 ```CSharp
 const string login = "user";
 const string accessKey = "key";
 
-// Uma vez que o nome do host e a senha não foram informados, os valores padrões serão usados.
+// Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
 var client = new MessagingHubClient()
                 .UsingAccessKey(login, accessKey);
 ```
 
-[Retornar ao Índice](./index.md)
+[Back to the Index](./index.md)

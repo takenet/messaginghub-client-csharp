@@ -1,17 +1,17 @@
-# Notificações
+# Notifications
 
-O cliente permite que você envie e receba notificações através do Messaging Hub.
+The client allow you to send and receive notifications through the Messaging Hub.
 
-## Recebendo Notificações
+## Receiving Notifications
 
-Para receber uma notificação, registre um receptor da seguinte forma:
+To receive a notification, register a receiver like so:
 
 ```CSharp 
 public class MyNotificationReceiver : NotificationReceiverBase
 {
     public override async Task ReceiveAsync(Notification notification)
     {
-        // Escreve a notificação recebida no console
+        // Write the received notification to the console
         Console.WriteLine(notification.ToString());
     }
 }
@@ -19,21 +19,21 @@ public class MyNotificationReceiver : NotificationReceiverBase
 client.AddNotificationReceiver(new MyNotificationReceiver());
 ```
 
-Também é possível passar um factory method para construir o receptor:
+It is also possible to pass a factory method to construct the receiver:
 
 ```CSharp 
 client.AddNotificationReceiver(() => new MyNotificationReceiver());
 ```
 
-E você pode especificar um `event type` para filtrar suas mensagens
+And you can specify an event type to filter your notifications
 
 ```CSharp 
 client.AddNotificationReceiver(() => new MyNotificationReceiver(), Event.Received);
 ```
 
-## Enviando Notificações
+## Sending Notifications
 
-Para enviar uma notificação, você pode usar o seguinte método:
+To send a notification, you can use the following method:
 
 ```CSharp 
 var notification = new Notification
@@ -45,7 +45,7 @@ var notification = new Notification
 await client.SendNotificationAsync(notification);
 ```
 
-Ou você pode usar um destes métodos de extensão para construir e enviar sua notificação:
+Or you can use these extension methods to construct and send your notification:
 
 ```CSharp 
 await client.SendNotificationAsync(message.ToReceivedNotification());
@@ -57,4 +57,4 @@ await client.SendNotificationAsync(message.ToFailedNotification());
 await client.SendNotificationAsync(message.ToNotification(Event.Received));
 ```
 
-[Retornar ao Índice](./index.md)
+[Back to the Index](./index.md)

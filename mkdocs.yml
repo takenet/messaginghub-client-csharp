@@ -1,8 +1,8 @@
 site_name: Messaging Hub Client
 pages:
-- Índice: index.md
-- Como Começar?: getting-started.md
-- Configurações do Cliente: client-configuration.md
-- Comandos: commands.md
-- Mensagens: messages.md
-- Notificações: notifications.md
+- Index: index.md
+- Getting Started: getting-started.md
+- Client Configuration: client-configuration.md
+- Commands: commands.md
+- Messages: messages.md
+- Notifications: notifications.md
