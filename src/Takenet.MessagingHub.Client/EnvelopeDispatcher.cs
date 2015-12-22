@@ -25,7 +25,7 @@ namespace Takenet.MessagingHub.Client
         /// <param name="receiverFor">Function that return the receivers for the given envelope</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns></returns>
-        public static Task StartAsync<TEnvelope>(Func<CancellationToken, Task<TEnvelope>> producer, 
+        public static Task StartAsync<TEnvelope>(Func<CancellationToken, Task<TEnvelope>> producer,
             ICommandSender commandSender, IMessageSender messageSender, INotificationSender notificationSender,
             Func<TEnvelope, IEnumerable<IEnvelopeReceiver<TEnvelope>>> receiverFor, CancellationToken cancellationToken)
             where TEnvelope : Envelope
@@ -53,15 +53,16 @@ namespace Takenet.MessagingHub.Client
 
                     throw;
                 }
-
+                
                 try
                 {
                     var receivers = receiverFor(envelope);
                     await Task.WhenAll(receivers.Select(r => CallReceiver(commandSender, messageSender, notificationSender, r, envelope))).ConfigureAwait(false);
                 }
-                catch
+                catch(Exception e)
                 {
                     //TODO: Create a ILogger interface to notify about errors on EnvelopeProcessor.
+                    var message = e.Message;
                 }
             }
         }

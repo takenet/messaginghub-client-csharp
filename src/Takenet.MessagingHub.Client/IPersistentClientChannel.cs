@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client
 {
-    public interface IPersistentClientChannel : IClientChannel
+    internal interface IPersistentClientChannel : IClientChannel
     {
         Task StartAsync();
 

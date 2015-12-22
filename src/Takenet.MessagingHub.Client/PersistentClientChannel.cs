@@ -56,14 +56,19 @@ namespace Takenet.MessagingHub.Client
                 _cancellationTokenSource.Dispose();
             }
 
+            await _watchConnectionTask;
+
+            using (var cancellationTokenSource = new CancellationTokenSource(_sendTimeout))
+            {
+                await Disconnect(cancellationTokenSource.Token);
+            }
+
             if (_connectionSemaphore != null)
             {
                 _connectionSemaphore.Dispose();
             }
-
-            await _watchConnectionTask;
         }
-        
+
         public override Task<Message> ReceiveMessageAsync(CancellationToken cancellationToken)
         {
             return ReceiveAsync(cancellationToken, base.ReceiveMessageAsync);
@@ -103,8 +108,8 @@ namespace Takenet.MessagingHub.Client
 
             return await func(cancellationToken).ConfigureAwait(false);
         }
-        
-        private async Task SendAsync<T>(T envelope, Func<T,Task> func)
+
+        private async Task SendAsync<T>(T envelope, Func<T, Task> func)
         {
             if (!_isConnected)
             {
@@ -126,7 +131,15 @@ namespace Takenet.MessagingHub.Client
                     await EstabilishSessionAsync(cancellationToken).ConfigureAwait(false);
                 }
 
-                await Task.Delay(_watchConnectionDelay, cancellationToken).ConfigureAwait(false);
+                try
+                {
+                    await Task.Delay(_watchConnectionDelay, cancellationToken).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    if (cancellationToken.IsCancellationRequested) continue;
+                    throw;
+                }
             }
         }
 
@@ -134,17 +147,38 @@ namespace Takenet.MessagingHub.Client
         {
             try
             {
-                await _connectionSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
-
                 if (_isConnected)
                 {
                     return;
                 }
 
-                while (!_isConnected)
+                try
                 {
-                    await Connect(cancellationToken).ConfigureAwait(false);
-                    await Task.Delay(_reconnectDelay, cancellationToken).ConfigureAwait(false);
+                    await _connectionSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    if (cancellationToken.IsCancellationRequested) return;
+                    throw;
+                }
+                
+                while (!_isConnected && !cancellationToken.IsCancellationRequested)
+                {
+                    try
+                    {
+                        await Connect(cancellationToken).ConfigureAwait(false);
+                    }
+                    catch { }
+
+                    try
+                    {
+                        await Task.Delay(_reconnectDelay, cancellationToken).ConfigureAwait(false);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        if (cancellationToken.IsCancellationRequested) continue;
+                        throw;
+                    }
                 }
             }
             finally
@@ -165,5 +199,17 @@ namespace Takenet.MessagingHub.Client
             await _sessionFactory.CreateSessionAsync(this, _identity, _authentication).ConfigureAwait(false);
         }
 
+        private async Task Disconnect(CancellationToken cancellationToken)
+        {
+            if (_isConnected)
+            {
+                await SendFinishingSessionAsync();
+            }
+
+            if (Transport.IsConnected)
+            {
+                await Transport.CloseAsync(cancellationToken);
+            }
+        }
     }
 }

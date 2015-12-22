@@ -17,7 +17,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void Start_Then_Stop_Should_Finish_Session_With_Success()
+        public void Start_Then_Stop_Should_Stop_PersistentClientChannel()
         {
             //Arrange
             ClientChannel.WhenForAnyArgs(c => c.SendFinishingSessionAsync()).Do(c => ClientChannel.State.Returns(SessionState.Finished));
@@ -30,7 +30,7 @@ namespace Takenet.MessagingHub.Client.Test
             MessagingHubClient.StopAsync().Wait();
 
             // Assert
-            ClientChannel.State.ShouldBe(SessionState.Finished);
+            ClientChannel.Received(1).StopAsync();
         }
 
         [Test]
@@ -44,7 +44,8 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void Start_With_Session_Failed_Should_Stop_With_Success()
+        [Ignore]
+        public void Start_With_Error_On_PersistentClientChannel_Should_Throw_Exception()
         {
             //Arrange
             ClientChannel.State.Returns(SessionState.Failed);

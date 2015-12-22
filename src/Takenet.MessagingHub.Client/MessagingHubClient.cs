@@ -33,7 +33,7 @@ namespace Takenet.MessagingHub.Client
         private string _accessKey;
         private readonly string _domainName;
 
-        private IClientChannel _clientChannel;
+        private IPersistentClientChannel _clientChannel;
 
         private ICommandProcessor _commandProcessor;
 
@@ -175,7 +175,7 @@ namespace Takenet.MessagingHub.Client
         {
             await InstantiateClientChannelAsync();
 
-            await StablishSessionAsync();
+            await _clientChannel.StartAsync();
 
             await SetPresenceAsync().ConfigureAwait(false);
 
@@ -193,22 +193,15 @@ namespace Takenet.MessagingHub.Client
             if (!Started) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
 
             await _commandProcessor.StopReceivingAsync();
-
-            if (_clientChannel?.State == SessionState.Established)
-            {
-                await _clientChannel.SendFinishingSessionAsync().ConfigureAwait(false);
-            }
-            else
-            {
-                await _clientChannel.Transport.CloseAsync(CancellationToken.None).ConfigureAwait(false);
-            }
-
+            
             if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
             {
                 _cancellationTokenSource.Cancel();
                 await _backgroundExecution;
                 _cancellationTokenSource.Dispose();
             }
+
+            await _clientChannel.StopAsync();
 
             Started = false;
         }
@@ -226,21 +219,12 @@ namespace Takenet.MessagingHub.Client
 
         private async Task InstantiateClientChannelAsync()
         {
-            _clientChannel = await _clientChannelFactory.CreateClientChannelAsync(_endpoint).ConfigureAwait(false);
-        }
-
-        private async Task StablishSessionAsync()
-        {
             var authentication = GetAuthenticationScheme();
             var identity = Identity.Parse($"{_login}@{_domainName}");
-            var session = await _sessionFactory.CreateSessionAsync(_clientChannel, identity, authentication).ConfigureAwait(false);
 
-            if (session.State != SessionState.Established)
-            {
-                throw new LimeException(session.Reason.Code, session.Reason.Description);
-            }
+            _clientChannel = await _clientChannelFactory.CreatePersistentClientChannelAsync(_endpoint, _timeout, identity, authentication, _sessionFactory).ConfigureAwait(false);
         }
-
+        
         private async Task SetPresenceAsync()
         {
             await _clientChannel.SetResourceAsync(

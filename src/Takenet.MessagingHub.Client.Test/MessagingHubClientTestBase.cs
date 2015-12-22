@@ -1,7 +1,9 @@
 ﻿using Lime.Protocol;
 using Lime.Protocol.Client;
 using NSubstitute;
+using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Takenet.MessagingHub.Client.Lime;
 
 namespace Takenet.MessagingHub.Client.Test
@@ -9,7 +11,7 @@ namespace Takenet.MessagingHub.Client.Test
     internal class MessagingHubClientTestBase
     {
         protected IMessagingHubClient MessagingHubClient;
-        protected IClientChannel ClientChannel;
+        protected IPersistentClientChannel ClientChannel;
         protected ISessionFactory SessionFactory;
         protected IClientChannelFactory ClientChannelFactory;
         protected ICommandProcessorFactory CommandProcessorFactory;
@@ -43,7 +45,7 @@ namespace Takenet.MessagingHub.Client.Test
         private void SubstituteClientChannelFabrication()
         {
             ClientChannelFactory = Substitute.For<IClientChannelFactory>();
-            ClientChannelFactory.CreateClientChannelAsync(null).ReturnsForAnyArgs(ClientChannel);
+            ClientChannelFactory.CreatePersistentClientChannelAsync(null,TimeSpan.Zero,null,null, null).ReturnsForAnyArgs(ClientChannel);
         }
 
         private void SubstituteEnvelopeProcessorFabrication()
@@ -67,7 +69,25 @@ namespace Takenet.MessagingHub.Client.Test
 
         private void SubstituteClientChannel()
         {
-            ClientChannel = Substitute.For<IClientChannel>();
+            ClientChannel = Substitute.For<IPersistentClientChannel>();
+
+            ClientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>())
+                .ReturnsForAnyArgs(p =>
+                {
+                    var taskCompletionSource = new TaskCompletionSource<Notification>();
+                    var token = p.Arg<CancellationToken>();
+                    token.Register(() => taskCompletionSource.TrySetCanceled());
+                    return taskCompletionSource.Task;
+                });
+
+            ClientChannel.ReceiveMessageAsync(Arg.Any<CancellationToken>())
+                .ReturnsForAnyArgs(p =>
+                {
+                    var taskCompletionSource = new TaskCompletionSource<Message>();
+                    var token = p.Arg<CancellationToken>();
+                    token.Register(() => taskCompletionSource.TrySetCanceled());
+                    return taskCompletionSource.Task;
+                });
         }
 
         private void SubstituteSetPresence()

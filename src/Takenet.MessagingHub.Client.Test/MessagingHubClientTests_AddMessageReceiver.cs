@@ -1,4 +1,5 @@
 ﻿using Lime.Protocol;
+using Lime.Protocol.Client;
 using NSubstitute;
 using NUnit.Framework;
 using Shouldly;
@@ -62,7 +63,7 @@ namespace Takenet.MessagingHub.Client.Test
                 await _semaphore.WaitAsync(callInfo.Arg<CancellationToken>());
                 return new Message { Content = new PlainDocument(MediaTypes.PlainText) };
             });
-
+            
             //Act
             MessagingHubClient.StartAsync().Wait();
             
