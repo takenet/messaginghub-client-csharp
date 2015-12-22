@@ -65,13 +65,13 @@ var account = (Account)responseCommand.Resource;
 Console.WriteLine(account.Email);
 ```
 
-## Publishing a message:
+## Publishing a message
 
 ```CSharp 
 await client.SendMessageAsync("Hello, world", to: "user");
 ```
 
-## Disconnecting:
+## Disconnecting
 
 ```CSharp 
 await client.StopAsync();

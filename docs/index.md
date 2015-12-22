@@ -46,6 +46,6 @@ For sending operations, the client provides Send methods that can be invoked dir
 await client.SendMessageAsync("Hello, world", to: "user");
 ```
 
-For more information about specific usage, see the detailed documentation for [Getting Started](./getting-started.md) [Client Configuration](./client-configuration.md), [Messages](./messages.md), [Notifications](./notifications.md) and [Commands](./commands.md).
+For more information about specific usage, see the detailed documentation for [Getting Started](./getting-started.md), [Client Configuration](./client-configuration.md), [Messages](./messages.md), [Notifications](./notifications.md) and [Commands](./commands.md).
 
 [Back to the Index](./index.md)
