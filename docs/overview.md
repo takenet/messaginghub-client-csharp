@@ -1,3 +1,7 @@
+# Cliente do Messaging Hub
+
+MessagingHub.Client é um cliente simples para o [Messaging Hub](https://messaginghub.io/) que usa uma interface fluente para enviar e receber mensagens, comandos e notificações.
+
 # Visão Geral
 
 O cliente do Messaging Hub foi desenvolvido para tornar mais fácil o trabalho com o cliente do protocolo lime para troca de mensanges, comandos e notificações entre as aplicações e serviços conectadas pelo Messaging Hub.

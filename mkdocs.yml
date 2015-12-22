@@ -1,9 +1,8 @@
-site_name: My Docs
+site_name: Messaging Hub Client
 pages:
-- Home: index.md
-- Overview: overview.md
-- Getting Starter: getting-started.md
-- Commands: commands.md
-- Messages: messages.md
-- Notifications: notifications.md
-- Client Configuration: client-configuration.md
+- Visão Geral: overview.md
+- Configurações do Cliente: client-configuration.md
+- Como Começar?: getting-started.md
+- Comandos: commands.md
+- Mensagens: messages.md
+- Notificações: notifications.md
