@@ -1,0 +1,31 @@
+<h1>
+<a id="user-content-configura+º+úo-do-cliente" class="anchor" href="#configura%C3%A7%C3%A3o-do-cliente" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configura+º+úo do Cliente</h1>
+
+<p>O cliente do Messaging Hub foi projetado para ser simples e f+ícil de usar, deste modo poucas configura+º+¦es est+úo dispon+¡veis.</p>
+
+<p>Para se conectar ao Messaging Hub, o host padr+úo, <code>"msging.net"</code> e o dom+¡nio padr+úo, tamb+¬m <code>"msging.net"</code>, s+úo usados por padr+úo. Caso queira especificar outro host ou dom+¡nio, voc+¬ pode passa-los no construtor do cliente, como exibido abaixo:  </p>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">var</span> client = <span class="pl-k">new</span> MessagingHubClient(<span class="pl-s"><span class="pl-pds">"</span>meuhost.com<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>meudominio.com<span class="pl-pds">"</span></span>)</pre></div>
+
+<p>Al+¬m do nome do host e do dom+¡nio, uma autentica+º+úo +¬ obrigat+¦ria. Essa autentica+º+úo pode ser na forma de um login e senha, ou na forma de um login e uma chave de acesso, sendo o m+¬todo da chave de acesso preferencial.</p>
+
+<p>Usando login e senha:</p>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">const</span> <span class="pl-k">string</span> login = <span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>;
+<span class="pl-k">const</span> <span class="pl-k">string</span> password = <span class="pl-s"><span class="pl-pds">"</span>password<span class="pl-pds">"</span></span>;
+
+<span class="pl-c">// Uma vez que o nome do host e a senha n+úo foram informados, os valores padr+¦es ser+úo usados.</span>
+<span class="pl-k">var</span> client = <span class="pl-k">new</span> MessagingHubClient()
+                .UsingAccount(login, password);</pre></div>
+
+<p>Usando login e chave de acesso:</p>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">const</span> <span class="pl-k">string</span> login = <span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>;
+<span class="pl-k">const</span> <span class="pl-k">string</span> accessKey = <span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>;
+
+<span class="pl-c">// Uma vez que o nome do host e a senha n+úo foram informados, os valores padr+¦es ser+úo usados.</span>
+<span class="pl-k">var</span> client = <span class="pl-k">new</span> MessagingHubClient()
+                .UsingAccessKey(login, accessKey);</pre></div>
+
+<p><a href="./index.html">Retornar ao +ìndice</a></p>
+

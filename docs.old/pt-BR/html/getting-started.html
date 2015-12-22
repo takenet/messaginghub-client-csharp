@@ -1,0 +1,74 @@
+<h1>
+<a id="user-content-como-come+ºar" class="anchor" href="#como-come%C3%A7ar" aria-hidden="true"><span class="octicon octicon-link"></span></a>Como come+ºar?</h1>
+
+<p>Este guia de como come+ºar ir+í apresentar a voc+¬ o uso das funcionalidades b+ísicas do cliente do Messaging Hub </p>
+
+<h2>
+<a id="user-content-instanciando-o-cliente" class="anchor" href="#instanciando-o-cliente" aria-hidden="true"><span class="octicon octicon-link"></span></a>Instanciando o cliente:</h2>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">const</span> <span class="pl-k">string</span> login = <span class="pl-s"><span class="pl-pds">"</span>guest<span class="pl-pds">"</span></span>;
+<span class="pl-k">const</span> <span class="pl-k">string</span> password = <span class="pl-s"><span class="pl-pds">"</span>guest<span class="pl-pds">"</span></span>;
+
+<span class="pl-k">var</span> client = <span class="pl-k">new</span> MessagingHubClient() <span class="pl-c">// Uma vez que o nome do host e do dom+¡nio n+úo foram informados, o valor padr+úo, 'msging.net', ser+í utilizado para ambos os par+ómetros</span>
+                .UsingAccount(login, password);</pre></div>
+
+<h2>
+<a id="user-content-se-inscrevendo-para-receber-uma-mensagem-de-texto" class="anchor" href="#se-inscrevendo-para-receber-uma-mensagem-de-texto" aria-hidden="true"><span class="octicon octicon-link"></span></a>Se inscrevendo para receber uma mensagem de texto:</h2>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">PlainTextMessageReceiver</span> : <span class="pl-k">MessageReceiverBase</span>
+{
+    <span class="pl-k">public</span> <span class="pl-k">override</span> <span class="pl-k">async</span> Task <span class="pl-en">ReceiveAsync</span>(<span class="pl-k">Message</span> <span class="pl-smi">message</span>)
+    {
+        Console.WriteLine(message.Content.ToString());
+        <span class="pl-k">await</span> MessageSender.SendMessageAsync(<span class="pl-s"><span class="pl-pds">"</span>Obrigado por sua mensagem!<span class="pl-pds">"</span></span>, message.From);
+    }
+}
+
+client.AddMessageReceiver(messageReceiver: <span class="pl-k">new</span> PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText);</pre></div>
+
+<h2>
+<a id="user-content-se-inscrevendo-para-receber-uma-notifica+º+úo" class="anchor" href="#se-inscrevendo-para-receber-uma-notifica%C3%A7%C3%A3o" aria-hidden="true"><span class="octicon octicon-link"></span></a>Se inscrevendo para receber uma notifica+º+úo:</h2>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">PrintNotificationReceiver</span> : <span class="pl-k">NotificationReceiverBase</span>
+{
+    <span class="pl-k">public</span> <span class="pl-k">override</span> Task <span class="pl-en">ReceiveAsync</span>(<span class="pl-k">Notification</span> <span class="pl-smi">notification</span>)
+    {
+        Console.WriteLine(<span class="pl-s"><span class="pl-pds">"</span>Notifica+º+úo do evento {0} recebida. Motivo: {1}<span class="pl-pds">"</span></span>, notification.Event, notification.Reason);
+        <span class="pl-k">return</span> Task.FromResult(<span class="pl-c1">0</span>);
+    }
+}
+
+client.AddNotificationReceiver(receiverBuilder: () =&gt; <span class="pl-k">new</span> PrintNotificationReceiver());</pre></div>
+
+<h2>
+<a id="user-content-iniciando-o-cliente" class="anchor" href="#iniciando-o-cliente" aria-hidden="true"><span class="octicon octicon-link"></span></a>Iniciando o cliente:</h2>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-c">// AP+ôS registrados os receptores, o cliente DEVE ser iniciado</span>
+<span class="pl-k">await</span> client.StartAsync();</pre></div>
+
+<h2>
+<a id="user-content-enviando-um-comando-e-acessando-sua-resposta" class="anchor" href="#enviando-um-comando-e-acessando-sua-resposta" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enviando um comando e acessando sua resposta:</h2>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">var</span> command = <span class="pl-k">new</span> Command {
+    Method = CommandMethod.Get,
+    Uri = <span class="pl-k">new</span> LimeUri(<span class="pl-s"><span class="pl-pds">"</span>/account<span class="pl-pds">"</span></span>)
+};
+
+<span class="pl-k">var</span> responseCommand = <span class="pl-k">await</span> client.SendCommandAsync(command);
+
+<span class="pl-k">var</span> account = (Account)responseCommand.Resource;
+
+Console.WriteLine(account.Email);</pre></div>
+
+<h2>
+<a id="user-content-publicando-uma-mensagem" class="anchor" href="#publicando-uma-mensagem" aria-hidden="true"><span class="octicon octicon-link"></span></a>Publicando uma mensagem:</h2>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">await</span> client.SendMessageAsync(<span class="pl-s"><span class="pl-pds">"</span>Ol+í, mundo<span class="pl-pds">"</span></span>, to: <span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>);</pre></div>
+
+<h2>
+<a id="user-content-desconectando" class="anchor" href="#desconectando" aria-hidden="true"><span class="octicon octicon-link"></span></a>Desconectando:</h2>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">await</span> client.StopAsync();</pre></div>
+
+<p><a href="./index.html">Retornar ao +ìndice</a></p>
+

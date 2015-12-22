@@ -1,0 +1,50 @@
+<h1>
+<a id="user-content-mensagens" class="anchor" href="#mensagens" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mensagens</h1>
+
+<p>O cliente permite que voc+¬ envie e receba mensagens atrav+¬s do Messaging Hub.</p>
+
+<h2>
+<a id="user-content-recebendo-mensagens" class="anchor" href="#recebendo-mensagens" aria-hidden="true"><span class="octicon octicon-link"></span></a>Recebendo Mensagens</h2>
+
+<p>Para receber uma mensagem, registre um receptor da seguinte forma:</p>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">MyMessageReceiver</span> : <span class="pl-k">MessageReceiverBase</span>
+{
+    <span class="pl-k">public</span> <span class="pl-k">override</span> <span class="pl-k">async</span> Task <span class="pl-en">ReceiveAsync</span>(<span class="pl-k">Message</span> <span class="pl-smi">message</span>)
+    {
+        <span class="pl-c">// Escreve o conte+¦do da mensagem no console</span>
+        Console.WriteLine(message.Content.ToString());
+    }
+}
+
+client.AddMessageReceiver(<span class="pl-k">new</span> MyMessageReceiver(), MediaTypes.PlainText);</pre></div>
+
+<p>Tamb+¬m +¬ poss+¡vel passar um factory method para construir o receptor:</p>
+
+<div class="highlight highlight-source-cs"><pre>client.AddMessageReceiver(() =&gt; <span class="pl-k">new</span> MyMessageReceiver(), MediaTypes.PlainText);</pre></div>
+
+<p>E voc+¬ pode especificar um media type para filtrar suas mensagens</p>
+
+<div class="highlight highlight-source-cs"><pre>client.AddMessageReceiver(() =&gt; <span class="pl-k">new</span> MyMessageReceiver(), <span class="pl-k">new</span> MediaType(MediaType.DiscreteTypes.Application, MediaType.SubTypes.JSON));</pre></div>
+
+<h2>
+<a id="user-content-enviando-mensagens" class="anchor" href="#enviando-mensagens" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enviando Mensagens</h2>
+
+<p>Para enviar uma mensagem, voc+¬ pode usar o seguinte m+¬todo:</p>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">var</span> message = <span class="pl-k">new</span> Message
+{
+    To = Node.Parse(<span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>),
+    Content = <span class="pl-s"><span class="pl-pds">"</span>Texto da Mensagem<span class="pl-pds">"</span></span>
+};
+
+<span class="pl-k">await</span> client.SendMessageAsync(message);</pre></div>
+
+<p>Ou voc+¬ pode usar um destes m+¬todos de extens+úo para construir e enviar sua mensagem:</p>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">await</span> client.SendMessageAsync(<span class="pl-s"><span class="pl-pds">"</span>Texto da Mensagem<span class="pl-pds">"</span></span>, to: <span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>);
+
+<span class="pl-k">await</span> client.SendMessageAsync(<span class="pl-s"><span class="pl-pds">"</span>Texto da Mensagem<span class="pl-pds">"</span></span>, Node.Parse(<span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>));</pre></div>
+
+<p><a href="./index.html">Retornar ao +ìndice</a></p>
+
