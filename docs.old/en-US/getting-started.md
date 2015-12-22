@@ -1,20 +1,20 @@
-<h1>Getting Started</h1>
+# Getting Started
 
-<p>This getting started guide will show you how to use the basic functionalities of the Messaging Hub Client </p>
+This getting started guide will show you how to use the basic functionalities of the Messaging Hub Client 
 
-<h2>Instantiating a client:</h2>
+## Instantiating a client:
 
-<pre><code>
+```CSharp
 const string login = "guest";
 const string password = "guest";
 
 var client = new MessagingHubClient() // Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
                 .UsingAccount(login, password);
-</code></pre>
+```
 
-<h2>Subscribing to receive a plain text message:</h2>
+## Subscribing to receive a plain text message:
 
-<pre><code>
+```CSharp 
 public class PlainTextMessageReceiver : MessageReceiverBase
 {
     public override async Task ReceiveAsync(Message message)
@@ -25,11 +25,11 @@ public class PlainTextMessageReceiver : MessageReceiverBase
 }
 
 client.AddMessageReceiver(messageReceiver: new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText);
-</code></pre>
+```
 
-<h2>Subscribing to receive a notification:</h2>
+## Subscribing to receive a notification:
 
-<pre><code>
+```CSharp 
 public class PrintNotificationReceiver : NotificationReceiverBase
 {
     public override Task ReceiveAsync(Notification notification)
@@ -40,18 +40,19 @@ public class PrintNotificationReceiver : NotificationReceiverBase
 }
 
 client.AddNotificationReceiver(receiverBuilder: () => new PrintNotificationReceiver());
-</code></pre>
+```
 
-<h2>Starting the client:</h2>
 
-<pre><code>
+## Starting the client:
+
+```CSharp 
 // AFTER registered the reveivers, the client MUST be started
 await client.StartAsync();
-</code></pre>
+```
 
-<h2>Sending a command and accessing its response:</h2>
+## Sending a command and accessing its response:
 
-<pre><code>
+```CSharp 
 var command = new Command {
     Method = CommandMethod.Get,
     Uri = new LimeUri("/account")
@@ -62,18 +63,18 @@ var responseCommand = await client.SendCommandAsync(command);
 var account = (Account)responseCommand.Resource;
 
 Console.WriteLine(account.Email);
-</code></pre>
+```
 
-<h2>Publishing a message:</h2>
+## Publishing a message:
 
-<pre><code>
+```CSharp 
 await client.SendMessageAsync("Hello, world", to: "user");
-</code></pre>
+```
 
-<h2>Disconnecting:</h2>
+## Disconnecting:
 
-<pre><code>
+```CSharp 
 await client.StopAsync();
-</code></pre>
+```
 
-<p><a href="./index.md">Back to the Index</a></p>
+[Back to the Index](./index.md)

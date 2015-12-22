@@ -1,35 +1,33 @@
-<h1>Client Configuration</h1>
+# Client Configuration
 
-<p>The Messaging Hub client is designed to be simple and easy to use, this way few configuration options are available.</p>
+The Messaging Hub client is designed to be simple and easy to use, this way few configuration options are available.
 
-<p>To connect to the Messaging Hub, the default host, <code>"msging.net"</code> and default domain, also <code>"msging.net"</code>, are used by default. If you want to specify another host name or domain, you can pass them in the constructor of the client, as shown below:</p>
+To connect to the Messaging Hub, the default host, `"msging.net"` and default domain, also `"msging.net"`, are used by default. If you want to specify another host name or domain, you can pass them in the constructor of the client, as shown below:
 
-<pre><code>
+```CSharp
 var client = new MessagingHubClient("mycustomhost.com", "mycustomdomain.com")
-</code></pre>
+```
 
-<p>Besides the host name and domain, an authentication is mandatory. This authentication can be in a form of a login and password, or in a form of a login and access key, being the access key method the preferred one.</p>
+Besides the host name and domain, an authentication is mandatory. This authentication can be in a form of a login and password, or in a form of a login and access key, being the access key method the preferred one.
 
-<p>Using a login and password:</p>
-
-<pre><code>
+Using a login and password:
+```CSharp
 const string login = "user";
 const string password = "password";
 
 // Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
 var client = new MessagingHubClient()
                 .UsingAccount(login, password);
-</code></pre>
+```
 
-<p>Using a login and access key:</p>
-
-<pre><code>
+Using a login and access key:
+```CSharp
 const string login = "user";
 const string accessKey = "key";
 
 // Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
 var client = new MessagingHubClient()
                 .UsingAccessKey(login, accessKey);
-</code></pre>
+```
 
-<p><a href="./index.md">Back to the Index</a></p>
+[Back to the Index](./index.md)

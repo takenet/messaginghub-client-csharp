@@ -1,12 +1,12 @@
-<h1>Messages</h1>
+# Messages
 
-<p>The client allow you to send and receive messages through the Messaging Hub.</p>
+The client allow you to send and receive messages through the Messaging Hub.
 
-<h2>Receiving Messages</h2>
+## Receiving Messages
 
-<p>To receive a message, register a receiver like so:</p>
+To receive a message, register a receiver like so:
 
-<pre><code>
+```CSharp 
 public class MyMessageReceiver : MessageReceiverBase
 {
     public override async Task ReceiveAsync(Message message)
@@ -17,25 +17,25 @@ public class MyMessageReceiver : MessageReceiverBase
 }
 
 client.AddMessageReceiver(new MyMessageReceiver(), MediaTypes.PlainText);
-</code></pre>
+```
 
-<p>It is also possible to pass a factory method to construct the receiver:</p>
+It is also possible to pass a factory method to construct the receiver:
 
-<pre><code>
+```CSharp 
 client.AddMessageReceiver(() => new MyMessageReceiver(), MediaTypes.PlainText);
-</code></pre>
+```
 
-<p>And you can specify a <code>media type</code> to filter your messages</p>
+And you can specify a `media type` to filter your messages
 
-<pre><code>
+```CSharp 
 client.AddMessageReceiver(() => new MyMessageReceiver(), new MediaType(MediaType.DiscreteTypes.Application, MediaType.SubTypes.JSON));
-</code></pre>
+```
 
-<h2>Sending Messages</h2>
+## Sending Messages
 
-<p>To send a message, you can use the following method:</p>
+To send a message, you can use the following method:
 
-<pre><code>
+```CSharp 
 var message = new Message
 {
     To = Node.Parse("user"),
@@ -43,14 +43,14 @@ var message = new Message
 };
 
 await client.SendMessageAsync(message);
-</code></pre>
+```
 
-<p>Or you can use these extension methods to construct and send your message:</p>
+Or you can use these extension methods to construct and send your message:
 
-<pre><code>
+```CSharp 
 await client.SendMessageAsync("Message Text", to: "user");
 
 await client.SendMessageAsync("Message Text", Node.Parse("user"));
-</code></pre>
+```
 
-<p><a href="./index.md">Back to the Index</a></p>
+[Back to the Index](./index.md)
