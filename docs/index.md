@@ -2,7 +2,7 @@
 
 MessagingHub.Client é um cliente simples para o [Messaging Hub](https://messaginghub.io/) que usa uma interface fluente para enviar e receber mensagens, comandos e notificações.
 
-# Visão Geral
+# Introdução
 
 O cliente do Messaging Hub foi desenvolvido para tornar mais fácil o trabalho com o cliente do protocolo lime para troca de mensanges, comandos e notificações entre as aplicações e serviços conectadas pelo Messaging Hub.
 
@@ -46,6 +46,6 @@ Para operações de envio, o cliente provê métodos Send que podem ser invocado
 await client.SendMessageAsync("Olá, mundo", to: "user");
 ```
 
-Para mais informações específicas de uso, veja a documentação detalheada para [Configuração do Cliente](./client-configuration.md), [Mensagens](./messages.md), [Notificações](./notifications.md) e [Comandos](./commands.md).
+Para mais informações específicas de uso, veja a documentação detalheada para [Como Começar?](./getting-started.md), [Configuração do Cliente](./client-configuration.md), [Mensagens](./messages.md), [Notificações](./notifications.md) e [Comandos](./commands.md).
 
 [Retornar ao Índice](./index.md)
