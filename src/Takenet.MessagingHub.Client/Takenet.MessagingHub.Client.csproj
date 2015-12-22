@@ -57,10 +57,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EnvelopeDispatcher.cs" />
+    <Compile Include="IPersistentClientChannel.cs" />
     <Compile Include="Lime\CommandProcessor.cs" />
     <Compile Include="Lime\CommandProcessorFactory.cs" />
     <Compile Include="Lime\ICommandProcessor.cs" />
     <Compile Include="Lime\ICommandProcessorFactory.cs" />
+    <Compile Include="PersistentClientChannel.cs" />
     <Compile Include="Senders\ICommandSender.cs" />
     <Compile Include="Receivers\INotificationReceiver.cs" />
     <Compile Include="Receivers\IEnvelopeReceiver.cs" />
