@@ -11,7 +11,7 @@ To get started with the Messaging Hub Client, see the [Getting Started](http://m
 
 **English**: [http://messaging-hub-client.readthedocs.org](http://messaging-hub-client.readthedocs.org)
 
-**Brasilian Portuguese**: [http://cliente-do-messaging-hub.readthedocs.org](http://cliente-do-messaging-hub.readthedocs.org)
+**Brazilian Portuguese**: [http://cliente-do-messaging-hub.readthedocs.org](http://cliente-do-messaging-hub.readthedocs.org)
 
 ### About the Documentation
 
