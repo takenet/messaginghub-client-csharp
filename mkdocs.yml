@@ -1,0 +1,9 @@
+site_name: My Docs
+pages:
+- Home: index.md
+- Overview: overview.md
+- Getting Starter: getting-started.md
+- Commands: commands.md
+- Messages: messages.md
+- Notifications: notifications.md
+- Client Configuration: client-configuration.md
