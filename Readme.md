@@ -13,6 +13,8 @@ The documentation for this project is provided by the [Read The Docs](http://rea
 
 Documentation files exists only in the rtd-en and rtd-pt branches. To edit the documentation, checkout these branches.
 
+Click [here](./docs.html) to access the complete documentation.
+
 ## License
 
 [Apache License](https://github.com/takenet/messaginghub-client-csharp/blob/master/LICENSE) 
