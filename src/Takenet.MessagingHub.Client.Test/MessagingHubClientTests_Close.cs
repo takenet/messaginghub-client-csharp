@@ -20,9 +20,6 @@ namespace Takenet.MessagingHub.Client.Test
         public void Start_Then_Stop_Should_Stop_PersistentClientChannel()
         {
             //Arrange
-            ClientChannel.WhenForAnyArgs(c => c.SendFinishingSessionAsync()).Do(c => ClientChannel.State.Returns(SessionState.Finished));
-
-            ClientChannel.State.Returns(SessionState.Established);
             MessagingHubClient.UsingAccessKey("login", "key");
             MessagingHubClient.StartAsync().Wait(); 
 
