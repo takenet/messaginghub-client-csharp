@@ -4,7 +4,9 @@ using Lime.Protocol.Network;
 using Lime.Protocol.Security;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -101,12 +103,32 @@ namespace Takenet.MessagingHub.Client
 
         private async Task<T> ReceiveAsync<T>(CancellationToken cancellationToken, Func<CancellationToken, Task<T>> func)
         {
-            if (!_isConnected)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                await EstabilishSessionAsync(cancellationToken).ConfigureAwait(false);
+                if (!_isConnected)
+                {
+                    await EstabilishSessionAsync(cancellationToken).ConfigureAwait(false);
+                }
+
+                try
+                {
+                    return await func(cancellationToken).ConfigureAwait(false);
+                }
+                catch (LimeException)
+                {
+                    if (_isConnected) throw;
+                }
+                catch (SocketException)
+                {
+                    if (_isConnected) throw;
+                }
+                catch (IOException)
+                {
+                    if (_isConnected) throw;
+                }
             }
 
-            return await func(cancellationToken).ConfigureAwait(false);
+            throw new OperationCanceledException();
         }
 
         private async Task SendAsync<T>(T envelope, Func<T, Task> func)
