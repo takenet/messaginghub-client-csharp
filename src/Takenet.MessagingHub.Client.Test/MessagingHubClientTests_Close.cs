@@ -44,24 +44,15 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        [Ignore]
         public void Start_With_Error_On_PersistentClientChannel_Should_Throw_Exception()
         {
             //Arrange
-            ClientChannel.State.Returns(SessionState.Failed);
-
-            var transport = Substitute.For<ITransport>();
-            ClientChannel.Transport.Returns(transport);
+            ClientChannel.StartAsync().Returns(System.Threading.Tasks.Task.Run(() => { throw new LimeException(1,"Error"); }));
 
             MessagingHubClient.UsingAccessKey("login", "key");
-            MessagingHubClient.StartAsync().Wait();
 
-            // Act
-            MessagingHubClient.StopAsync().Wait();
-
-            // Assert
-            ClientChannel.State.ShouldBe(SessionState.Failed);
-            transport.CloseAsync(CancellationToken.None).Wait();
+            // Act / Assert
+            Should.ThrowAsync<LimeException>(async () => await MessagingHubClient.StartAsync());
         }
     }
 }

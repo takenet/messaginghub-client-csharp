@@ -45,7 +45,7 @@ namespace Takenet.MessagingHub.Client.Test
         private void SubstituteClientChannelFabrication()
         {
             ClientChannelFactory = Substitute.For<IClientChannelFactory>();
-            ClientChannelFactory.CreatePersistentClientChannelAsync(null,TimeSpan.Zero,null,null, null).ReturnsForAnyArgs(ClientChannel);
+            ClientChannelFactory.CreatePersistentClientChannelAsync(null, TimeSpan.Zero, null, null, null).ReturnsForAnyArgs(ClientChannel);
         }
 
         private void SubstituteEnvelopeProcessorFabrication()
@@ -61,7 +61,7 @@ namespace Takenet.MessagingHub.Client.Test
 
         private void SubstituteSessionFabrication()
         {
-            var session = new Session {State = SessionState.Established};
+            var session = new Session { State = SessionState.Established };
 
             SessionFactory = Substitute.For<ISessionFactory>();
             SessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
@@ -71,7 +71,8 @@ namespace Takenet.MessagingHub.Client.Test
         {
             ClientChannel = Substitute.For<IPersistentClientChannel>();
 
-            ClientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>())
+
+            ClientChannel.ReceiveNotificationAsync(CancellationToken.None)
                 .ReturnsForAnyArgs(p =>
                 {
                     var taskCompletionSource = new TaskCompletionSource<Notification>();
@@ -80,7 +81,7 @@ namespace Takenet.MessagingHub.Client.Test
                     return taskCompletionSource.Task;
                 });
 
-            ClientChannel.ReceiveMessageAsync(Arg.Any<CancellationToken>())
+            ClientChannel.ReceiveMessageAsync(CancellationToken.None)
                 .ReturnsForAnyArgs(p =>
                 {
                     var taskCompletionSource = new TaskCompletionSource<Message>();
@@ -88,6 +89,7 @@ namespace Takenet.MessagingHub.Client.Test
                     token.Register(() => taskCompletionSource.TrySetCanceled());
                     return taskCompletionSource.Task;
                 });
+
         }
 
         private void SubstituteSetPresence()
@@ -96,7 +98,7 @@ namespace Takenet.MessagingHub.Client.Test
             ClientChannel.WhenForAnyArgs(c => c.SendCommandAsync(null)).Do(c =>
                 presenceCommand = c.Arg<Command>());
             ClientChannel.ReceiveCommandAsync(Arg.Any<CancellationToken>())
-                .Returns(c => new Command {Id = presenceCommand.Id, Status = CommandStatus.Success});
+                .Returns(c => new Command { Id = presenceCommand.Id, Status = CommandStatus.Success });
         }
     }
 }

@@ -17,7 +17,6 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        [Ignore]
         public void Start_UsingAccount_Should_Succeed()
         {
             // Arrange
@@ -31,7 +30,6 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        [Ignore]
         public void Start_UsingAccessKey_Should_Succeed()
         {
             // Arrange
@@ -60,31 +58,5 @@ namespace Takenet.MessagingHub.Client.Test
             // Act /  Assert
             Should.ThrowAsync<InvalidOperationException>(async () => await MessagingHubClient.StartAsync()).Wait();
         }
-
-
-        [Test]
-        [Ignore]
-        public void Start_With_SessionFailed_Should_Throw_Exception()
-        {
-            var session = new Session
-            {
-                State = SessionState.Failed,
-                Reason = new Reason { Code = 1, Description = "failure message" }
-            };
-
-            // Arrange
-            SessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
-
-
-            MessagingHubClient.UsingAccount("login", "pass");
-
-            // Act
-            var exception = Should.ThrowAsync<LimeException>(async () => await MessagingHubClient.StartAsync()).Result;
-
-            // Assert
-            exception.Reason.Description.ShouldBe(session.Reason.Description);
-            exception.Reason.Code.ShouldBe(session.Reason.Code);
-        }
-
     }
 }
