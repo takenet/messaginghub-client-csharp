@@ -5,14 +5,18 @@ MessagingHub.Client is a simple client for the [Messaging Hub](https://messaging
 
 ## Getting Started
 
-To get started with the Messaging Hub Client, see the [Getting Started](http://messaging-hub-client.readthedocs.org/en/latest/getting-started/) page.
+To get started with the Messaging Hub Client, see the [Getting Started](http://takenet.github.io/messaginghub-client-csharp/en/getting-started) page.
 
-## About the Documentation
+## Documentation 
 
-The documentation for this project is provided by the [Read The Docs](http://readthedocs.org) site.
+The full documentation can be found at [http://takenet.github.io/messaginghub-client-csharp](http://takenet.github.io/messaginghub-client-csharp).
 
-Documentation files exists only in the rtd-en and rtd-pt branches. To edit the documentation, checkout these branches.
+### About the Documentation
+
+The documentation for this project is provided by [GitHub Pages](http://pages.github.io).
+
+Documentation files exist only in the gh-pages branch.
 
 ## License
 
-[Apache License](https://github.com/takenet/messaginghub-client-csharp/blob/master/LICENSE) 
+[Apache 2.0 License](https://github.com/takenet/messaginghub-client-csharp/blob/master/LICENSE) 
