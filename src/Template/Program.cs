@@ -25,6 +25,8 @@ namespace Template
 
         private static async Task Init()
         {
+            // Go to http://console.messaginghub.io to register your application and get your access key
+
             const string login = "yourApplicationName";
             const string accessKey = "yourAccessKey";
 
