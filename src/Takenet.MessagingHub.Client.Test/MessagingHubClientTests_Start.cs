@@ -4,6 +4,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Shouldly;
 using System;
+using System.Threading;
 
 namespace Takenet.MessagingHub.Client.Test
 {
@@ -45,16 +46,6 @@ namespace Takenet.MessagingHub.Client.Test
         [Test]
         public void Start_Without_Credential_Should_Throw_Exception()
         {
-            // Arrange
-            var session = new Session
-            {
-                State = SessionState.Failed,
-                Reason = new Reason { Code = 1, Description = "failure message" }
-            };
-
-            // Arrange
-            SessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
-
             // Act /  Assert
             Should.ThrowAsync<InvalidOperationException>(async () => await MessagingHubClient.StartAsync()).Wait();
         }

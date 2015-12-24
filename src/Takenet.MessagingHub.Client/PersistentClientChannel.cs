@@ -15,39 +15,41 @@ namespace Takenet.MessagingHub.Client
 {
     internal class PersistentClientChannel : ClientChannel, IPersistentClientChannel
     {
-        private bool _isConnected => Transport.IsConnected && State == SessionState.Established;
-
-        private Identity _identity;
-        private Authentication _authentication;
-        private ISessionFactory _sessionFactory;
+        private bool _isSessionEstablished => _limeSessionProvider.IsSessionEstablished(this);
+        
         private SemaphoreSlim _connectionSemaphore;
         private TimeSpan _sendTimeout;
-        private Uri _endPoint;
         private Task _watchConnectionTask;
         private CancellationTokenSource _cancellationTokenSource;
+        private ILimeSessionProvider _limeSessionProvider;
+
+        public Session Session { get; private set; }
 
         private static TimeSpan _watchConnectionDelay => TimeSpan.FromSeconds(2);
         private static TimeSpan _reconnectDelay => TimeSpan.FromSeconds(2);
 
-        internal PersistentClientChannel(ITransport transport, TimeSpan sendTimeout, Uri endPoint, Identity identity, Authentication authentication, ISessionFactory sessionFactory, int buffersLimit = 5, bool fillEnvelopeRecipients = false, bool autoReplyPings = true, bool autoNotifyReceipt = false, TimeSpan? remotePingInterval = default(TimeSpan?), TimeSpan? remoteIdleTimeout = default(TimeSpan?))
+        internal PersistentClientChannel(ITransport transport, TimeSpan sendTimeout, ILimeSessionProvider limeSessionProvider, int buffersLimit = 5, bool fillEnvelopeRecipients = false, bool autoReplyPings = true, bool autoNotifyReceipt = false, TimeSpan? remotePingInterval = default(TimeSpan?), TimeSpan? remoteIdleTimeout = default(TimeSpan?))
             : base(transport, sendTimeout, buffersLimit, fillEnvelopeRecipients, autoReplyPings, autoNotifyReceipt, remotePingInterval, remoteIdleTimeout)
         {
-            _identity = identity;
-            _authentication = authentication;
-            _sessionFactory = sessionFactory;
             _sendTimeout = sendTimeout;
-            _endPoint = endPoint;
+            _limeSessionProvider = limeSessionProvider;
         }
-
+        
         public async Task StartAsync()
         {
             _connectionSemaphore = new SemaphoreSlim(1);
             using (var cancellationTokenSource = new CancellationTokenSource(_sendTimeout))
             {
-                await Connect(cancellationTokenSource.Token).ConfigureAwait(false);
+                await EstablishSession(cancellationTokenSource.Token).ConfigureAwait(false);
             }
+
+            if (!_isSessionEstablished)
+            {
+                throw new Exception("Could not establish session");
+            }
+
             _cancellationTokenSource = new CancellationTokenSource();
-            _watchConnectionTask = Task.Run(() => WatchConnection(_cancellationTokenSource.Token));
+            _watchConnectionTask = Task.Run(() => WatchSession(_cancellationTokenSource.Token));
         }
 
         public async Task StopAsync()
@@ -62,7 +64,7 @@ namespace Takenet.MessagingHub.Client
 
             using (var cancellationTokenSource = new CancellationTokenSource(_sendTimeout))
             {
-                await Disconnect(cancellationTokenSource.Token);
+                await EndSession(cancellationTokenSource.Token);
             }
 
             if (_connectionSemaphore != null)
@@ -105,9 +107,9 @@ namespace Takenet.MessagingHub.Client
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                if (!_isConnected)
+                if (!_isSessionEstablished)
                 {
-                    await EstabilishSessionAsync(cancellationToken).ConfigureAwait(false);
+                    await WaitToEstablishSessionAsync(cancellationToken).ConfigureAwait(false);
                 }
 
                 try
@@ -116,15 +118,15 @@ namespace Takenet.MessagingHub.Client
                 }
                 catch (LimeException)
                 {
-                    if (_isConnected) throw;
+                    if (_isSessionEstablished) throw;
                 }
                 catch (SocketException)
                 {
-                    if (_isConnected) throw;
+                    if (_isSessionEstablished) throw;
                 }
                 catch (IOException)
                 {
-                    if (_isConnected) throw;
+                    if (_isSessionEstablished) throw;
                 }
             }
 
@@ -133,24 +135,29 @@ namespace Takenet.MessagingHub.Client
 
         private async Task SendAsync<T>(T envelope, Func<T, Task> func)
         {
-            if (!_isConnected)
+            if (!_isSessionEstablished)
             {
                 using (var cancellationTokenSource = new CancellationTokenSource(_sendTimeout))
                 {
-                    await EstabilishSessionAsync(cancellationTokenSource.Token).ConfigureAwait(false);
+                    await WaitToEstablishSessionAsync(cancellationTokenSource.Token).ConfigureAwait(false);
+
+                    if (cancellationTokenSource.IsCancellationRequested)
+                    {
+                        throw new OperationCanceledException();
+                    }
                 }
             }
 
             await func(envelope).ConfigureAwait(false);
         }
 
-        private async Task WatchConnection(CancellationToken cancellationToken)
+        private async Task WatchSession(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                if (!_isConnected)
+                if (!_isSessionEstablished)
                 {
-                    await EstabilishSessionAsync(cancellationToken).ConfigureAwait(false);
+                    await WaitToEstablishSessionAsync(cancellationToken).ConfigureAwait(false);
                 }
 
                 try
@@ -165,11 +172,11 @@ namespace Takenet.MessagingHub.Client
             }
         }
 
-        private async Task EstabilishSessionAsync(CancellationToken cancellationToken)
+        private async Task WaitToEstablishSessionAsync(CancellationToken cancellationToken)
         {
             try
             {
-                if (_isConnected)
+                if (_isSessionEstablished)
                 {
                     return;
                 }
@@ -184,13 +191,18 @@ namespace Takenet.MessagingHub.Client
                     throw;
                 }
                 
-                while (!_isConnected && !cancellationToken.IsCancellationRequested)
+                while (!_isSessionEstablished && !cancellationToken.IsCancellationRequested)
                 {
                     try
                     {
-                        await Connect(cancellationToken).ConfigureAwait(false);
+                        await EstablishSession(cancellationToken).ConfigureAwait(false);
                     }
                     catch { }
+
+                    if (_isSessionEstablished)
+                    {
+                        break;
+                    }
 
                     try
                     {
@@ -202,6 +214,11 @@ namespace Takenet.MessagingHub.Client
                         throw;
                     }
                 }
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException();
+                }
             }
             finally
             {
@@ -209,29 +226,16 @@ namespace Takenet.MessagingHub.Client
             }
         }
 
-        private async Task Connect(CancellationToken cancellationToken)
+        private async Task EstablishSession(CancellationToken cancellationToken)
         {
-            if (_isConnected)
-            {
-                return;
-            }
-
-            await Transport.OpenAsync(_endPoint, cancellationToken).ConfigureAwait(false);
-
-            await _sessionFactory.CreateSessionAsync(this, _identity, _authentication).ConfigureAwait(false);
+            var session = await _limeSessionProvider.EstablishSessionAsync(this, cancellationToken);
+            State = session.State;
+            Session = session;
         }
 
-        private async Task Disconnect(CancellationToken cancellationToken)
+        private Task EndSession(CancellationToken cancellationToken)
         {
-            if (_isConnected)
-            {
-                await SendFinishingSessionAsync();
-            }
-
-            if (Transport.IsConnected)
-            {
-                await Transport.CloseAsync(cancellationToken);
-            }
+            return _limeSessionProvider.FinishSessionAsync(this, cancellationToken);
         }
     }
 }

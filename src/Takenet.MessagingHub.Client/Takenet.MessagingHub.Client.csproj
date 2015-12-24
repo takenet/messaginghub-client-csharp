@@ -57,7 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EnvelopeDispatcher.cs" />
+    <Compile Include="ILimeSessionProvider.cs" />
     <Compile Include="IPersistentClientChannel.cs" />
+    <Compile Include="LimeSessionProvider.cs" />
     <Compile Include="Lime\CommandProcessor.cs" />
     <Compile Include="Lime\CommandProcessorFactory.cs" />
     <Compile Include="Lime\ICommandProcessor.cs" />
@@ -68,9 +70,7 @@
     <Compile Include="Receivers\IEnvelopeReceiver.cs" />
     <Compile Include="Receivers\NotificationReceiverBase.cs" />
     <Compile Include="Receivers\EnvelopeReceiverBase.cs" />
-    <Compile Include="SessionFactory.cs" />
     <Compile Include="ClientChannelFactory.cs" />
-    <Compile Include="ISessionFactory.cs" />
     <Compile Include="IClientChannelFactory.cs" />
     <Compile Include="Receivers\IMessageReceiver.cs" />
     <Compile Include="Senders\IMessageSender.cs" />

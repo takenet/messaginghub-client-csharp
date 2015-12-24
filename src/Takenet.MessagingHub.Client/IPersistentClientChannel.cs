@@ -1,4 +1,5 @@
-﻿using Lime.Protocol.Client;
+﻿using Lime.Protocol;
+using Lime.Protocol.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,7 @@ namespace Takenet.MessagingHub.Client
         Task StartAsync();
 
         Task StopAsync();
+
+        Session Session { get; }
     }
 }

@@ -85,11 +85,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MessagingHubClientTestBase.cs" />
-    <Compile Include="MessagingHubClientTests_SendCommand.cs" />
-    <Compile Include="MessagingHubClientTests_AddNotificationReceiver.cs" />
     <Compile Include="MessagingHubClientTests_AddMessageReceiver.cs" />
+    <Compile Include="MessagingHubClientTests_AddNotificationReceiver.cs" />
     <Compile Include="MessagingHubClientTests_Close.cs" />
+    <Compile Include="MessagingHubClientTests_SendCommand.cs" />
     <Compile Include="MessagingHubClientTests_Start.cs" />
+    <Compile Include="PersistentClientChannel_Base.cs" />
+    <Compile Include="PersistentClientChannel_Receive.cs" />
+    <Compile Include="PersistentClientChannel_Send.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -106,6 +109,7 @@
       <Name>Takenet.MessagingHub.Client</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
