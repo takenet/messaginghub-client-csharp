@@ -18,6 +18,7 @@ namespace Template
             public override async Task ReceiveAsync(Message message)
             {
                 // Text messages sent to your application will be received here
+                Console.WriteLine($"Message received from {message.From} at {DateTime.Now}: {message.Content}!");
                 await MessageSender.SendMessageAsync("It works!", message.From);
             }
         }
