@@ -38,8 +38,6 @@ namespace Takenet.MessagingHub.Client
         private ICommandProcessor _commandProcessor;
 
         private readonly IClientChannelFactory _clientChannelFactory;
-        private readonly ISessionFactory _sessionFactory;
-
         private readonly ICommandProcessorFactory _commandProcessorFactory;
 
         private CancellationTokenSource _cancellationTokenSource;
@@ -49,14 +47,13 @@ namespace Takenet.MessagingHub.Client
         private readonly TimeSpan _timeout;
 
 
-        internal MessagingHubClient(IClientChannelFactory clientChannelFactory, ISessionFactory sessionFactory,
+        internal MessagingHubClient(IClientChannelFactory clientChannelFactory, 
             ICommandProcessorFactory commandProcessorFactory, string hostName, string domainName)
         {
             _messageReceivers = new Dictionary<MediaType, IList<Func<IMessageReceiver>>>();
             _notificationReceivers = new Dictionary<Event, IList<Func<INotificationReceiver>>>();
             _clientChannelFactory = clientChannelFactory;
             _commandProcessorFactory = commandProcessorFactory;
-            _sessionFactory = sessionFactory;
             _domainName = domainName;
             _endpoint = new Uri($"net.tcp://{hostName}:55321");
             _timeout = TimeSpan.FromSeconds(60);
@@ -64,7 +61,7 @@ namespace Takenet.MessagingHub.Client
 
 
         public MessagingHubClient(string hostname = "msging.net", string domainName = "msging.net") :
-            this(new ClientChannelFactory(), new SessionFactory(), new CommandProcessorFactory(), hostname, domainName)
+            this(new ClientChannelFactory(), new CommandProcessorFactory(), hostname, domainName)
         { }
 
         public MessagingHubClient UsingAccount(string login, string password)
@@ -222,7 +219,7 @@ namespace Takenet.MessagingHub.Client
             var authentication = GetAuthenticationScheme();
             var identity = Identity.Parse($"{_login}@{_domainName}");
 
-            _clientChannel = await _clientChannelFactory.CreatePersistentClientChannelAsync(_endpoint, _timeout, identity, authentication, _sessionFactory).ConfigureAwait(false);
+            _clientChannel = await _clientChannelFactory.CreatePersistentClientChannelAsync(_endpoint, _timeout, identity, authentication).ConfigureAwait(false);
         }
         
         private async Task SetPresenceAsync()

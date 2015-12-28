@@ -12,7 +12,6 @@ namespace Takenet.MessagingHub.Client.Test
     {
         protected IMessagingHubClient MessagingHubClient;
         protected IPersistentClientChannel ClientChannel;
-        protected ISessionFactory SessionFactory;
         protected IClientChannelFactory ClientChannelFactory;
         protected ICommandProcessorFactory CommandProcessorFactory;
         protected ICommandProcessor CommandProcessor;
@@ -25,9 +24,7 @@ namespace Takenet.MessagingHub.Client.Test
             SubstituteClientChannel();
 
             SubstituteSetPresence();
-
-            SubstituteSessionFabrication();
-
+            
             SubstituteEnvelopeProcessor();
 
             SubstituteEnvelopeProcessorFabrication();
@@ -39,13 +36,13 @@ namespace Takenet.MessagingHub.Client.Test
 
         private void InstantiateActualMessageHubClient()
         {
-            MessagingHubClient = new MessagingHubClient(ClientChannelFactory, SessionFactory, CommandProcessorFactory, hostName, domainName);
+            MessagingHubClient = new MessagingHubClient(ClientChannelFactory, CommandProcessorFactory, hostName, domainName);
         }
 
         private void SubstituteClientChannelFabrication()
         {
             ClientChannelFactory = Substitute.For<IClientChannelFactory>();
-            ClientChannelFactory.CreatePersistentClientChannelAsync(null, TimeSpan.Zero, null, null, null).ReturnsForAnyArgs(ClientChannel);
+            ClientChannelFactory.CreatePersistentClientChannelAsync(null, TimeSpan.Zero, null, null).ReturnsForAnyArgs(ClientChannel);
         }
 
         private void SubstituteEnvelopeProcessorFabrication()
@@ -58,15 +55,7 @@ namespace Takenet.MessagingHub.Client.Test
         {
             CommandProcessor = Substitute.For<ICommandProcessor>();
         }
-
-        private void SubstituteSessionFabrication()
-        {
-            var session = new Session { State = SessionState.Established };
-
-            SessionFactory = Substitute.For<ISessionFactory>();
-            SessionFactory.CreateSessionAsync(null, null, null).ReturnsForAnyArgs(session);
-        }
-
+        
         private void SubstituteClientChannel()
         {
             ClientChannel = Substitute.For<IPersistentClientChannel>();

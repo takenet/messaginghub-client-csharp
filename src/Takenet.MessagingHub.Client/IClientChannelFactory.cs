@@ -11,6 +11,6 @@ namespace Takenet.MessagingHub.Client
     /// </summary>
     internal interface IClientChannelFactory
     {
-        Task<IPersistentClientChannel> CreatePersistentClientChannelAsync(Uri endpoint, TimeSpan sendTimeout, Identity identity, Authentication authentication, ISessionFactory sessionFactory);
+        Task<IPersistentClientChannel> CreatePersistentClientChannelAsync(Uri endpoint, TimeSpan sendTimeout, Identity identity, Authentication authentication);
     }
 }
