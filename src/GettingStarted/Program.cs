@@ -22,12 +22,12 @@ namespace GettingStarted
             public override async Task ReceiveAsync(Message message)
             {
                 // Text messages sent to your application will be received here
-                Console.WriteLine($"Message received from {message.From} at {DateTime.Now}: {message.Content}!");
+                Console.WriteLine($"Message received from {message.From} at {DateTime.Now}:");
+                Console.WriteLine(message.Content);
                 if (message.From.Name != Login)
                     await MessageSender.SendMessageAsync("It works!", message.From);
             }
         }
-
 
         private static async Task Init()
         {

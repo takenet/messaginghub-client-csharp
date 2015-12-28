@@ -232,7 +232,7 @@ namespace Takenet.MessagingHub.Client
         {
             await _clientChannel.SetResourceAsync(
                 LimeUri.Parse(UriTemplates.PRESENCE),
-                new Presence { RoutingRule = RoutingRule.Identity },
+                new Presence { Status = PresenceStatus.Available, RoutingRule = RoutingRule.Identity },
                 _cancellationTokenSource.Token);
         }
 
