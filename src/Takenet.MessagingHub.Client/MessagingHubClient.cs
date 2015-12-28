@@ -196,13 +196,7 @@ namespace Takenet.MessagingHub.Client
             if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
             {
                 _cancellationTokenSource.Cancel();
-                try
-                {
-                    await _backgroundExecution.ConfigureAwait(false);
-                }
-                catch (TaskCanceledException)
-                {
-                }
+                await _backgroundExecution.ConfigureAwait(false);
                 _cancellationTokenSource.Dispose();
             }
             await _clientChannel.StopAsync().ConfigureAwait(false);

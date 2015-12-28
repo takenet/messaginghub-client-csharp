@@ -1,13 +1,9 @@
 ﻿using Lime.Protocol;
 using Lime.Protocol.Client;
 using Lime.Protocol.Network;
-using Lime.Protocol.Security;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,15 +14,15 @@ namespace Takenet.MessagingHub.Client
         private bool _isSessionEstablished => _limeSessionProvider.IsSessionEstablished(this);
         
         private SemaphoreSlim _connectionSemaphore;
-        private TimeSpan _sendTimeout;
+        private readonly TimeSpan _sendTimeout;
         private Task _watchConnectionTask;
         private CancellationTokenSource _cancellationTokenSource;
-        private ILimeSessionProvider _limeSessionProvider;
+        private readonly ILimeSessionProvider _limeSessionProvider;
 
         public Session Session { get; private set; }
 
-        private static TimeSpan _watchConnectionDelay => TimeSpan.FromSeconds(2);
-        private static TimeSpan _reconnectDelay => TimeSpan.FromSeconds(2);
+        private static TimeSpan WatchConnectionDelay => TimeSpan.FromSeconds(2);
+        private static TimeSpan ReconnectDelay => TimeSpan.FromSeconds(2);
 
         internal PersistentClientChannel(ITransport transport, TimeSpan sendTimeout, ILimeSessionProvider limeSessionProvider, int buffersLimit = 5, bool fillEnvelopeRecipients = false, bool autoReplyPings = true, bool autoNotifyReceipt = false, TimeSpan? remotePingInterval = default(TimeSpan?), TimeSpan? remoteIdleTimeout = default(TimeSpan?))
             : base(transport, sendTimeout, buffersLimit, fillEnvelopeRecipients, autoReplyPings, autoNotifyReceipt, remotePingInterval, remoteIdleTimeout)
@@ -162,7 +158,7 @@ namespace Takenet.MessagingHub.Client
 
                 try
                 {
-                    await Task.Delay(_watchConnectionDelay, cancellationToken).ConfigureAwait(false);
+                    await Task.Delay(WatchConnectionDelay, cancellationToken).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException)
                 {
@@ -206,7 +202,7 @@ namespace Takenet.MessagingHub.Client
 
                     try
                     {
-                        await Task.Delay(_reconnectDelay, cancellationToken).ConfigureAwait(false);
+                        await Task.Delay(ReconnectDelay, cancellationToken).ConfigureAwait(false);
                     }
                     catch (OperationCanceledException)
                     {
