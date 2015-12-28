@@ -66,7 +66,9 @@ namespace Takenet.MessagingHub.Client.Test
             
             //Act
             MessagingHubClient.StartAsync().Wait();
-            
+
+            Task.Delay(3000).Wait();
+
             MessagingHubClient.StopAsync().Wait();
 
             Task.Delay(3000).Wait();

@@ -12,9 +12,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\Readme.md = ..\Readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.Playground", "Takenet.MessagingHub.Client.Playground\Takenet.MessagingHub.Client.Playground.csproj", "{056825AC-0EFC-4F2F-A1B4-AF8A721C1609}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template", "Template\Template.csproj", "{40E759E2-1C30-4F6C-8548-02BB0A8917C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "Playground\Playground.csproj", "{056825AC-0EFC-4F2F-A1B4-AF8A721C1609}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GettingStarted", "GettingStarted\GettingStarted.csproj", "{C5FCEBDF-1F93-4A8E-8BE0-494B00D49665}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,14 +32,18 @@ Global
 		{29853B17-4DFC-4617-B84A-C532F88667B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29853B17-4DFC-4617-B84A-C532F88667B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29853B17-4DFC-4617-B84A-C532F88667B5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{056825AC-0EFC-4F2F-A1B4-AF8A721C1609}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{056825AC-0EFC-4F2F-A1B4-AF8A721C1609}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{056825AC-0EFC-4F2F-A1B4-AF8A721C1609}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{056825AC-0EFC-4F2F-A1B4-AF8A721C1609}.Release|Any CPU.Build.0 = Release|Any CPU
 		{40E759E2-1C30-4F6C-8548-02BB0A8917C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{40E759E2-1C30-4F6C-8548-02BB0A8917C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40E759E2-1C30-4F6C-8548-02BB0A8917C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40E759E2-1C30-4F6C-8548-02BB0A8917C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{056825AC-0EFC-4F2F-A1B4-AF8A721C1609}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{056825AC-0EFC-4F2F-A1B4-AF8A721C1609}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{056825AC-0EFC-4F2F-A1B4-AF8A721C1609}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{056825AC-0EFC-4F2F-A1B4-AF8A721C1609}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5FCEBDF-1F93-4A8E-8BE0-494B00D49665}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5FCEBDF-1F93-4A8E-8BE0-494B00D49665}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5FCEBDF-1F93-4A8E-8BE0-494B00D49665}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5FCEBDF-1F93-4A8E-8BE0-494B00D49665}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
