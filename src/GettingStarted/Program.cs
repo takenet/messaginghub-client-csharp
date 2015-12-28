@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Lime.Messaging.Resources;
 using Lime.Protocol;
 using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Receivers;
@@ -23,8 +22,11 @@ namespace GettingStarted
             public override async Task ReceiveAsync(Message message)
             {
                 // Text messages sent to your application will be received here
-                Console.WriteLine($"Message received from {message.From} at {DateTime.Now}:");
-                Console.WriteLine(message.Content);
+                Console.WriteLine($"MESSAGE RECEIVED");
+                Console.WriteLine($"From: {message.From}");
+                Console.WriteLine($"At: {DateTime.Now}");
+                Console.WriteLine($"With: \"{message.Content}\"");
+                Console.WriteLine();
                 if (message.From.Name != Login)
                     await MessageSender.SendMessageAsync("It works!", message.From);
             }
