@@ -7,8 +7,8 @@
     <ProjectGuid>{056825AC-0EFC-4F2F-A1B4-AF8A721C1609}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Takenet.MessagingHub.Client.Playground</RootNamespace>
-    <AssemblyName>Takenet.MessagingHub.Client.Playground</AssemblyName>
+    <RootNamespace>Playground</RootNamespace>
+    <AssemblyName>Playground</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

@@ -4,7 +4,7 @@ using Lime.Protocol;
 using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Receivers;
 
-namespace Template
+namespace GettingStarted
 {
     internal static class Program
     {
@@ -14,8 +14,8 @@ namespace Template
         }
 
         // Go to http://console.messaginghub.io to register your application and get your access key
-        private const string Login = "yourApplicationName";
-        private const string AccessKey = "yourAccessKey";
+        private const string Login = "GettingStarted";
+        private const string AccessKey = "cjZSZWl5";
 
         private class MessageReceiver : MessageReceiverBase
         {
@@ -33,7 +33,7 @@ namespace Template
         {
             // Instantiates a MessageHubClient using its fluent API
             // Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
-            var client = new MessagingHubClient()
+            var client = new MessagingHubClient() 
                             .UsingAccessKey(Login, AccessKey)
                             .AddMessageReceiver(new MessageReceiver(), MediaTypes.PlainText);
 

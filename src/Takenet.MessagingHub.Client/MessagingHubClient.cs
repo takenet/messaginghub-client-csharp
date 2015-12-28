@@ -154,28 +154,28 @@ namespace Takenet.MessagingHub.Client
         {
             if (!Started) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
 
-            return await _commandProcessor.SendAsync(command, _timeout);
+            return await _commandProcessor.SendAsync(command, _timeout).ConfigureAwait(false);
         }
 
         public async Task SendMessageAsync(Message message)
         {
             if (!Started) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
 
-            await _clientChannel.SendAsync(message);
+            await _clientChannel.SendAsync(message).ConfigureAwait(false);
         }
 
         public async Task SendNotificationAsync(Notification notification)
         {
             if (!Started) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
 
-            await _clientChannel.SendAsync(notification);
+            await _clientChannel.SendAsync(notification).ConfigureAwait(false);
         }
 
         public async Task StartAsync()
         {
-            await InstantiateClientChannelAsync();
+            await InstantiateClientChannelAsync().ConfigureAwait(false);
 
-            await _clientChannel.StartAsync();
+            await _clientChannel.StartAsync().ConfigureAwait(false);
 
             await SetPresenceAsync().ConfigureAwait(false);
 
@@ -192,16 +192,16 @@ namespace Takenet.MessagingHub.Client
         {
             if (!Started) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
 
-            await _commandProcessor.StopReceivingAsync();
-            
+            await _commandProcessor.StopReceivingAsync().ConfigureAwait(false);
+
             if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
             {
                 _cancellationTokenSource.Cancel();
-                await _backgroundExecution;
+                await _backgroundExecution.ConfigureAwait(false);
                 _cancellationTokenSource.Dispose();
             }
 
-            await _clientChannel.StopAsync();
+            await _clientChannel.StopAsync().ConfigureAwait(false);
 
             Started = false;
         }
@@ -230,7 +230,7 @@ namespace Takenet.MessagingHub.Client
             await _clientChannel.SetResourceAsync(
                 LimeUri.Parse(UriTemplates.PRESENCE),
                 new Presence { RoutingRule = RoutingRule.Identity },
-                CancellationToken.None);
+                _cancellationTokenSource.Token);
         }
 
         private void InitializeAndStartReceivers()
