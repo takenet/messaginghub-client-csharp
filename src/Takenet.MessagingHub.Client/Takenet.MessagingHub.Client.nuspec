@@ -16,6 +16,7 @@
       <dependency id="Lime.Protocol" />
       <dependency id="Lime.Transport.Tcp" />
       <dependency id="Lime.Messaging" />
+      <dependency id="Lime.Protocol.Serialization.Newtonsoft" />     
     </dependencies>
   </metadata>
   <files>

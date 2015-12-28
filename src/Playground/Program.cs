@@ -19,11 +19,35 @@ namespace Takenet.MessagingHub.Client.Playground
             const string password = "123456";
 
             // Instantiates a MessageHubClient using its fluent API
-            var client = new MessagingHubClient() // Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
-                            .UsingAccount(login, password)
-                            .AddMessageReceiver(messageReceiver: new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText)
-                            .AddNotificationReceiver(receiverBuilder: () => new PrintNotificationReceiver());
-                            
+            var client =
+                new MessagingHubClient()
+                    // Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
+                    .UsingAccount(login, password)
+                    .AddMessageReceiver(messageReceiver: new PlainTextMessageReceiver(),
+                        forMimeType: MediaTypes.PlainText)
+                    .AddNotificationReceiver(receiverBuilder: () => new PrintNotificationReceiver())
+                    .BuildTextMessageReceiver()
+                        .ForSyntax(":LDWord(help,wtf,ajuda,comofaz)")
+                            .Return(() => "Welcome to the calculator! Try send me some math operations, like 'sum 1 and 2' or '3 times 4' and I'll try help you :)")
+                        .ForSyntaxes(
+                            "operation+:Word(sum) a:Integer :Word?(and) b:Integer",
+                            "a:Integer :Word(plus,more) b:Integer")
+                                .Return<int, int, string>((a, b) => $"The sum result is {a + b}")
+                        .ForSyntaxes(
+                            "operation+:Word(subtract,sub) b:Integer :Word(from) a:Integer",
+                            "a:Integer :Word(minus) b:Integer")
+                                .Return<int, int, string>((a, b) => $"The subtraction result is {a - b}")
+                        .ForSyntaxes(
+                            "operation+:Word(multiply,mul) a:Integer :Word?(and,by) b:Integer",
+                            "a:Integer :Word(times) b:Integer")
+                                .Return<int, int, string>((a, b) => $"The multiplication result is {a * b}")
+                        .ForSyntaxes(
+                            "operation+:Word(multiply,mul) a:Integer :Word?(and,by) b:Integer",
+                            "a:Integer :Word(times) b:Integer")
+                                .Return<int, int, string>((a, b) => $"The multiplication result is {a * b}")                        
+                    .BuildAndAddMessageReceiver();
+                                
+
             // Starts the client
             await client.StartAsync();
 
