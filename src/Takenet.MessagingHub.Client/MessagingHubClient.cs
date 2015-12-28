@@ -47,7 +47,7 @@ namespace Takenet.MessagingHub.Client
         private readonly TimeSpan _timeout;
 
 
-        internal MessagingHubClient(IClientChannelFactory clientChannelFactory, 
+        internal MessagingHubClient(IClientChannelFactory clientChannelFactory,
             ICommandProcessorFactory commandProcessorFactory, string hostName, string domainName)
         {
             _messageReceivers = new Dictionary<MediaType, IList<Func<IMessageReceiver>>>();
@@ -187,19 +187,25 @@ namespace Takenet.MessagingHub.Client
 
         public async Task StopAsync()
         {
-            if (!Started) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
+            if (!Started)
+                throw new InvalidOperationException(
+                    "Client must be started before to proceed with this operation!");
 
             await _commandProcessor.StopReceivingAsync().ConfigureAwait(false);
 
             if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
             {
                 _cancellationTokenSource.Cancel();
-                await _backgroundExecution.ConfigureAwait(false);
+                try
+                {
+                    await _backgroundExecution.ConfigureAwait(false);
+                }
+                catch (TaskCanceledException)
+                {
+                }
                 _cancellationTokenSource.Dispose();
             }
-
             await _clientChannel.StopAsync().ConfigureAwait(false);
-
             Started = false;
         }
 
@@ -221,7 +227,7 @@ namespace Takenet.MessagingHub.Client
 
             _clientChannel = await _clientChannelFactory.CreatePersistentClientChannelAsync(_endpoint, _timeout, identity, authentication).ConfigureAwait(false);
         }
-        
+
         private async Task SetPresenceAsync()
         {
             await _clientChannel.SetResourceAsync(
