@@ -107,11 +107,6 @@ namespace Takenet.MessagingHub.Client
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                if (!_isSessionEstablished)
-                {
-                    await WaitToEstablishSessionAsync(cancellationToken).ConfigureAwait(false);
-                }
-
                 try
                 {
                     return await func(cancellationToken).ConfigureAwait(false);
@@ -127,6 +122,11 @@ namespace Takenet.MessagingHub.Client
                 catch (IOException)
                 {
                     if (_isSessionEstablished) throw;
+                }
+
+                if (!_isSessionEstablished)
+                {
+                    await WaitToEstablishSessionAsync(cancellationToken).ConfigureAwait(false);
                 }
             }
 
