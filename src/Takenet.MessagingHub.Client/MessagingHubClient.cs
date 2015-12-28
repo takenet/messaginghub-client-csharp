@@ -170,6 +170,8 @@ namespace Takenet.MessagingHub.Client
 
         public async Task StartAsync()
         {
+            InstantiateGlobalCancellationTokenSource();
+
             await InstantiateClientChannelAsync().ConfigureAwait(false);
 
             await _clientChannel.StartAsync().ConfigureAwait(false);
@@ -177,8 +179,6 @@ namespace Takenet.MessagingHub.Client
             await SetPresenceAsync().ConfigureAwait(false);
 
             StartEnvelopeProcessors();
-
-            InstantiateGlobalCancellationTokenSource();
 
             InitializeAndStartReceivers();
 
