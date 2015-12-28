@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Lime.Messaging.Resources;
 using Lime.Protocol;
 using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Receivers;
