@@ -30,24 +30,28 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lime.Messaging, Version=0.2.328.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Messaging.0.2.328\lib\net45\Lime.Messaging.dll</HintPath>
+    <Reference Include="Lime.Messaging, Version=0.2.333.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Messaging.0.2.333\lib\net45\Lime.Messaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Protocol, Version=0.2.328.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Protocol.0.2.328\lib\net45\Lime.Protocol.dll</HintPath>
+    <Reference Include="Lime.Protocol, Version=0.2.333.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Protocol.0.2.333\lib\net45\Lime.Protocol.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Lime.Protocol.Serialization.Newtonsoft, Version=0.2.333.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lime.Protocol.Serialization.Newtonsoft.0.2.333\lib\net45\Lime.Protocol.Serialization.Newtonsoft.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Transport.Tcp, Version=0.2.329.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Transport.Tcp.0.2.329\lib\net45\Lime.Transport.Tcp.dll</HintPath>
+    <Reference Include="Lime.Transport.Tcp, Version=0.2.333.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Transport.Tcp.0.2.333\lib\net45\Lime.Transport.Tcp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
