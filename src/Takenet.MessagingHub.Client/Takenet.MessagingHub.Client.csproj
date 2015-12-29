@@ -28,6 +28,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Takenet.MessagingHub.Client.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Lime.Messaging, Version=0.2.333.0, Culture=neutral, processorArchitecture=MSIL">

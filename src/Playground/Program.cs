@@ -26,7 +26,7 @@ namespace Takenet.MessagingHub.Client.Playground
                     .AddMessageReceiver(messageReceiver: new PlainTextMessageReceiver(),
                         forMimeType: MediaTypes.PlainText)
                     .AddNotificationReceiver(receiverBuilder: () => new PrintNotificationReceiver())
-                    .BuildTextMessageReceiver()
+                    .NewTextMessageReceiverBuilder()
                         .ForSyntax(":LDWord(help,wtf,ajuda,comofaz)")
                             .Return(() => "Welcome to the calculator! Try send me some math operations, like 'sum 1 and 2' or '3 times 4' and I'll try help you :)")
                         .ForSyntaxes(

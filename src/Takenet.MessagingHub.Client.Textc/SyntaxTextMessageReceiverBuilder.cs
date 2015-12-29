@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Takenet.Text;
-using Takenet.Text.Csdl;
-using Takenet.Text.Processors;
+using Takenet.Textc;
+using Takenet.Textc.Processors;
 
-namespace Takenet.MessagingHub.Client.Text
+namespace Takenet.MessagingHub.Client.Textc
 {
     public sealed class SyntaxTextMessageReceiverBuilder
     {

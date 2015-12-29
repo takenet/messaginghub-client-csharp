@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Takenet.MessagingHub.Client.Receivers;
-using Takenet.Text;
-using Takenet.Text.Csdl;
-using Takenet.Text.Processors;
+using Takenet.Textc;
+using Takenet.Textc.Csdl;
+using Takenet.Textc.Processors;
 
-namespace Takenet.MessagingHub.Client.Text
+namespace Takenet.MessagingHub.Client.Textc
 {
     public sealed class TextMessageReceiverBuilder
     {

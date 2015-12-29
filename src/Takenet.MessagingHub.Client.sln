@@ -18,7 +18,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "Playground\Pl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GettingStarted", "GettingStarted\GettingStarted.csproj", "{C5FCEBDF-1F93-4A8E-8BE0-494B00D49665}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.Text", "Takenet.MessagingHub.Client.Text\Takenet.MessagingHub.Client.Text.csproj", "{1492F9E8-EAA1-42AB-9AC7-0F0B711FB343}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.Textc", "Takenet.MessagingHub.Client.Textc\Takenet.MessagingHub.Client.Textc.csproj", "{1492F9E8-EAA1-42AB-9AC7-0F0B711FB343}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

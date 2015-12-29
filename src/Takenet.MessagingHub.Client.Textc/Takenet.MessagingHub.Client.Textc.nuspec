@@ -1,26 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
-    <id>Takenet.MessagingHub.Client</id>
+    <id>Takenet.MessagingHub.Client.Textc</id>
     <version>$version$</version>
-    <title>Messaging Hub client SDK</title>
+    <title>Messaging Hub Textc extensions</title>
     <authors>takenet</authors>
     <owners>takenet</owners>
     <projectUrl>https://github.com/takenet/messaginghub-client-csharp</projectUrl>
     <licenseUrl>https://raw.githubusercontent.com/takenet/messaginghub-client-csharp/master/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>The C# SDK for the Messaging Hub portal</description>
+    <description>Textc extensions for the Messaging Hub SDK</description>
     <copyright>Copyright ©  2015 Curupira S/A</copyright>
-    <tags>lime messaginghub</tags>
+    <tags>lime messaginghub textc</tags>
     <dependencies>
-      <dependency id="Lime.Protocol" />
-      <dependency id="Lime.Transport.Tcp" />
-      <dependency id="Lime.Messaging" />
-      <dependency id="Lime.Protocol.Serialization.Newtonsoft" />     
+      <dependency id="Takenet.MessagingHub.Client" version="0.1.103" />
+      <dependency id="Takenet.Textc" version="0.1.5" />
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\Takenet.MessagingHub.Client.dll" target="lib\net45\Takenet.MessagingHub.Client.dll" />
-    <file src="bin\Release\Takenet.MessagingHub.Client.xml" target="lib\net45\Takenet.MessagingHub.Client.xml" />
+    <file src="bin\Release\Takenet.MessagingHub.Client.Textc.dll" target="lib\net45\Takenet.MessagingHub.Client.Textc.dll" />
+    <file src="bin\Release\Takenet.MessagingHub.Client.Textc.xml" target="lib\net45\Takenet.MessagingHub.Client.Textc.xml" />
   </files>
 </package>
