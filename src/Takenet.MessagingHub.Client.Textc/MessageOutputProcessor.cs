@@ -18,8 +18,8 @@ namespace Takenet.MessagingHub.Client.Textc
         public Task ProcessOutputAsync(object output, IRequestContext context)
         {
             var to =
-                (context.GetVariable(TextMessageReceiver.PP_VARIABLE_NAME) ??
-                 context.GetVariable(TextMessageReceiver.FROM_VARIABLE_NAME)) as Node;
+                (context.GetVariable(TextcMessageReceiver.PP_VARIABLE_NAME) ??
+                 context.GetVariable(TextcMessageReceiver.FROM_VARIABLE_NAME)) as Node;
 
             if (to == null)
             {

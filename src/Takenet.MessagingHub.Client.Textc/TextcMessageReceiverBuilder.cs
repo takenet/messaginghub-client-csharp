@@ -10,21 +10,23 @@ using Takenet.Textc.Processors;
 
 namespace Takenet.MessagingHub.Client.Textc
 {
-    public sealed class TextMessageReceiverBuilder
+    public sealed class TextcMessageReceiverBuilder
     {
         private readonly MessagingHubClient _client;
         
         internal readonly List<ICommandProcessor> CommandProcessors;
         internal readonly IOutputProcessor MessageOutputProcessor;
 
+        private TimeSpan _contextValidity;
         private Func<Message, MessageReceiverBase, Task> _matchNotFoundHandler;
 
-        public TextMessageReceiverBuilder(MessagingHubClient client)
+        public TextcMessageReceiverBuilder(MessagingHubClient client)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             _client = client;
             CommandProcessors = new List<ICommandProcessor>();
             MessageOutputProcessor = new MessageOutputProcessor(client);
+            _contextValidity = TimeSpan.FromMinutes(5);
         }
 
         public SyntaxTextMessageReceiverBuilder ForSyntax(string syntaxPattern)
@@ -48,27 +50,33 @@ namespace Takenet.MessagingHub.Client.Textc
         }
 
 
-        public TextMessageReceiverBuilder WithMatchNotFoundMessage(string matchNotFoundMessage)
+        public TextcMessageReceiverBuilder WithMatchNotFoundMessage(string matchNotFoundMessage)
         {
             return WithMatchNotFoundHandler(
                 (message, receiver) =>
                     receiver.MessageSender.SendMessageAsync(matchNotFoundMessage, message.Pp ?? message.From));
         }
 
-        public TextMessageReceiverBuilder WithMatchNotFoundHandler(Func<Message, MessageReceiverBase, Task> matchNotFoundHandler)
+        public TextcMessageReceiverBuilder WithMatchNotFoundHandler(Func<Message, MessageReceiverBase, Task> matchNotFoundHandler)
         {
             _matchNotFoundHandler = matchNotFoundHandler;
             return this;
         }
-        
-        public TextMessageReceiver Build()
+
+        public TextcMessageReceiverBuilder WithContextValidityOf(TimeSpan contextValidity)
+        {
+            _contextValidity = contextValidity;
+            return this;
+        }
+
+        public TextcMessageReceiver Build()
         {
             var textProcessor = new TextProcessor();
             foreach (var commandProcessor in CommandProcessors)
             {
                 textProcessor.AddCommandProcessor(commandProcessor);
             }
-            return new TextMessageReceiver(textProcessor, _matchNotFoundHandler);
+            return new TextcMessageReceiver(textProcessor, new ContextProvider(_contextValidity), _matchNotFoundHandler);
         }
         
         public MessagingHubClient BuildAndAddMessageReceiver()

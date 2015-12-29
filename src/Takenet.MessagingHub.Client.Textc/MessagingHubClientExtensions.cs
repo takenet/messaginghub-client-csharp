@@ -6,9 +6,9 @@ namespace Takenet.MessagingHub.Client
 {
     public static class MessagingHubClientExtensions
     {
-        public static TextMessageReceiverBuilder NewTextMessageReceiverBuilder(this MessagingHubClient client)
+        public static TextcMessageReceiverBuilder NewTextMessageReceiverBuilder(this MessagingHubClient client)
         {
-            return new TextMessageReceiverBuilder(client);
+            return new TextcMessageReceiverBuilder(client);
         }
     }
 }
