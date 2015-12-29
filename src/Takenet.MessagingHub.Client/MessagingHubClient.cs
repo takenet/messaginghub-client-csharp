@@ -96,9 +96,9 @@ namespace Takenet.MessagingHub.Client
             return AddNotificationReceiver(() => notificationReceiver, forEventType);
         }
 
-        public MessagingHubClient AddMessageReceiver(Func<IMessageReceiver> receiverBuilder, MediaType forMimeType = null)
+        public MessagingHubClient AddMessageReceiver(Func<IMessageReceiver> receiverFactory, MediaType forMimeType = null)
         {
-            if (receiverBuilder == null) throw new ArgumentNullException(nameof(receiverBuilder));
+            if (receiverFactory == null) throw new ArgumentNullException(nameof(receiverFactory));
 
             if (Started) throw new InvalidOperationException("Cannot add a receiver after the client has been started!");
 
@@ -111,11 +111,11 @@ namespace Takenet.MessagingHub.Client
                 _messageReceivers.Add(mediaTypeToSave, mediaTypeReceivers);
             }
 
-            mediaTypeReceivers.Add(receiverBuilder);
+            mediaTypeReceivers.Add(receiverFactory);
             return this;
         }
 
-        public MessagingHubClient AddNotificationReceiver(Func<INotificationReceiver> receiverBuilder, Event? forEventType = default(Event?))
+        public MessagingHubClient AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Event? forEventType = default(Event?))
         {
             if (Started) throw new InvalidOperationException("Cannot add a receiver after the client has been started!");
 
@@ -129,11 +129,11 @@ namespace Takenet.MessagingHub.Client
                     _notificationReceivers.Add(forEventType.Value, eventTypeReceivers);
                 }
 
-                eventTypeReceivers.Add(receiverBuilder);
+                eventTypeReceivers.Add(receiverFactory);
             }
             else
             {
-                eventTypeReceivers = new List<Func<INotificationReceiver>> { receiverBuilder };
+                eventTypeReceivers = new List<Func<INotificationReceiver>> { receiverFactory };
 
                 _notificationReceivers.Add(Event.Accepted, eventTypeReceivers);
                 _notificationReceivers.Add(Event.Authorized, eventTypeReceivers);

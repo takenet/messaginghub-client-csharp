@@ -45,10 +45,10 @@ namespace Takenet.MessagingHub.Client
         /// <summary>
         /// Add a message receiver listener to handle received messages
         /// </summary>
-        /// <param name="receiverBuilder">A function used to build the notification listener</param>
+        /// <param name="receiverFactory">A function used to build the notification listener</param>
         /// <param name="forMimeType">MediaType used as a filter of messages received by listener. When not informed, only receives messages which no 'typed' receiver is registered</param>
         /// <returns></returns>
-        MessagingHubClient AddMessageReceiver(Func<IMessageReceiver> receiverBuilder, MediaType forMimeType = null);
+        MessagingHubClient AddMessageReceiver(Func<IMessageReceiver> receiverFactory, MediaType forMimeType = null);
 
         /// <summary>
         /// Add a notification receiver listener to handle received notifications
@@ -61,10 +61,10 @@ namespace Takenet.MessagingHub.Client
         /// <summary>
         /// Add a notification receiver listener to handle received notifications
         /// </summary>
-        /// <param name="receiverBuilder">A function used to build the notification listener</param>
+        /// <param name="receiverFactory">A function used to build the notification listener</param>
         /// <param name="forEventType">EventType used as a filter of notification received by listener.</param>
         /// <returns></returns>
-        MessagingHubClient AddNotificationReceiver(Func<INotificationReceiver> receiverBuilder, Event? forEventType = null);
+        MessagingHubClient AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Event? forEventType = null);
 
         /// <summary>
         /// Connect and receives messages from Lime server
