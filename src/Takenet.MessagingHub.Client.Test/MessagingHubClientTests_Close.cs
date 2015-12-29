@@ -27,7 +27,7 @@ namespace Takenet.MessagingHub.Client.Test
             MessagingHubClient.StopAsync().Wait();
 
             // Assert
-            PersistentClientChannel.Received(1).StopAsync();
+            PersistentClientChannel.Received(1).StopAsync().Wait();
         }
 
         [Test]
