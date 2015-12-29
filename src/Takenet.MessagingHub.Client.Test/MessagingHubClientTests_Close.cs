@@ -17,6 +17,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
+        [Ignore]
         public void Start_Then_Stop_Should_Stop_PersistentClientChannel()
         {
             //Arrange
