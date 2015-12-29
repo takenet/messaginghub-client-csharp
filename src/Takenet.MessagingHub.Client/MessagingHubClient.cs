@@ -33,6 +33,7 @@ namespace Takenet.MessagingHub.Client
         private string _accessKey;
         private readonly string _domainName;
 
+        private IPersistentClientChannelFactory _persistentClientFactory;
         private IPersistentClientChannel _clientChannel;
 
         private ICommandProcessor _commandProcessor;
@@ -45,15 +46,17 @@ namespace Takenet.MessagingHub.Client
         private Task _messageReceiverTask;
         private Task _notiticationReceiverTask;
         private readonly TimeSpan _timeout;
+        private ILimeSessionProvider _limeSessionProvider;
 
-
-        internal MessagingHubClient(IClientChannelFactory clientChannelFactory,
-            ICommandProcessorFactory commandProcessorFactory, string hostName, string domainName)
+        internal MessagingHubClient(IPersistentClientChannelFactory persistentChannelFactory, IClientChannelFactory clientChannelFactory,
+            ICommandProcessorFactory commandProcessorFactory, ILimeSessionProvider limeSessionProvider, string hostName, string domainName)
         {
             _messageReceivers = new Dictionary<MediaType, IList<Func<IMessageReceiver>>>();
             _notificationReceivers = new Dictionary<Event, IList<Func<INotificationReceiver>>>();
+            _persistentClientFactory = persistentChannelFactory;
             _clientChannelFactory = clientChannelFactory;
             _commandProcessorFactory = commandProcessorFactory;
+            _limeSessionProvider = limeSessionProvider;
             _domainName = domainName;
             _endpoint = new Uri($"net.tcp://{hostName}:55321");
             _timeout = TimeSpan.FromSeconds(60);
@@ -61,7 +64,7 @@ namespace Takenet.MessagingHub.Client
 
 
         public MessagingHubClient(string hostname = "msging.net", string domainName = "msging.net") :
-            this(new ClientChannelFactory(), new CommandProcessorFactory(), hostname, domainName)
+            this(new PersistentClientChannelFactory(), new ClientChannelFactory(), new CommandProcessorFactory(), new LimeSessionProvider(), hostname, domainName)
         { }
 
         public MessagingHubClient UsingAccount(string login, string password)
@@ -158,14 +161,14 @@ namespace Takenet.MessagingHub.Client
         {
             if (!Started) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
 
-            await _clientChannel.SendAsync(message).ConfigureAwait(false);
+            await _clientChannel.SendMessageAsync(message).ConfigureAwait(false);
         }
 
         public async Task SendNotificationAsync(Notification notification)
         {
             if (!Started) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
 
-            await _clientChannel.SendAsync(notification).ConfigureAwait(false);
+            await _clientChannel.SendNotificationAsync(notification).ConfigureAwait(false);
         }
 
         public async Task StartAsync()
@@ -219,7 +222,7 @@ namespace Takenet.MessagingHub.Client
             var authentication = GetAuthenticationScheme();
             var identity = Identity.Parse($"{_login}@{_domainName}");
 
-            _clientChannel = await _clientChannelFactory.CreatePersistentClientChannelAsync(_endpoint, _timeout, identity, authentication).ConfigureAwait(false);
+            _clientChannel = await _persistentClientFactory.CreatePersistentClientChannelAsync(_endpoint, _timeout, identity, authentication, _clientChannelFactory, _limeSessionProvider);
         }
 
         private async Task SetPresenceAsync()

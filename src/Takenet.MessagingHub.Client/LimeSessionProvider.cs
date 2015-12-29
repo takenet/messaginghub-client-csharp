@@ -13,41 +13,26 @@ namespace Takenet.MessagingHub.Client
 {
     internal class LimeSessionProvider : ILimeSessionProvider
     {
-        private Identity _identity;
-        private Authentication _authentication;
-        private Uri _endPoint;
-
-        public LimeSessionProvider(Uri endPoint, Identity identity, Authentication authentication)
+       
+        public async Task EstablishSessionAsync(IClientChannel clientChannel, Uri endPoint, Identity identity, Authentication authentication, CancellationToken cancellationToken)
         {
-            _endPoint = endPoint;
-            _identity = identity;
-            _authentication = authentication;
-        }
-        
-        public async Task<Session> EstablishSessionAsync(IPersistentClientChannel clientChannel, CancellationToken cancellationToken)
-        {
-            if (IsSessionEstablished(clientChannel))
-            {
-                return clientChannel.Session;
-            }
-
-            await clientChannel.Transport.OpenAsync(_endPoint, cancellationToken).ConfigureAwait(false);
+            await clientChannel.Transport.OpenAsync(endPoint, cancellationToken).ConfigureAwait(false);
 
             if (!clientChannel.Transport.IsConnected)
             {
                 throw new Exception("Could not open connection");
             }
 
-            return await clientChannel.EstablishSessionAsync(
+            await clientChannel.EstablishSessionAsync(
                             _ => SessionCompression.None,
                             _ => SessionEncryption.TLS,
-                            _identity,
-                            (_, __) => _authentication,
+                            identity,
+                            (_, __) => authentication,
                             Environment.MachineName,
                             cancellationToken);
         }
 
-        public async Task FinishSessionAsync(IPersistentClientChannel clientChannel, CancellationToken cancellationToken)
+        public async Task FinishSessionAsync(IClientChannel clientChannel, CancellationToken cancellationToken)
         {
             if (IsSessionEstablished(clientChannel))
             {
@@ -60,7 +45,7 @@ namespace Takenet.MessagingHub.Client
             }
         }
 
-        public bool IsSessionEstablished(IPersistentClientChannel clientChannel)
+        public bool IsSessionEstablished(IClientChannel clientChannel)
         {
             return clientChannel.Transport.IsConnected && clientChannel.State == SessionState.Established;
         }

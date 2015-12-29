@@ -7,7 +7,7 @@ namespace Takenet.MessagingHub.Client.Lime
     /// </summary>
     internal class CommandProcessorFactory : ICommandProcessorFactory
     {
-        public ICommandProcessor Create(IClientChannel clientChannel)
+        public ICommandProcessor Create(IPersistentClientChannel clientChannel)
         {
             return new CommandProcessor(clientChannel);
         }

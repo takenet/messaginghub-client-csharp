@@ -1,4 +1,5 @@
 ﻿using Lime.Protocol;
+using Lime.Protocol.Client;
 using Lime.Protocol.Network;
 using Lime.Protocol.Security;
 using NSubstitute;
@@ -15,45 +16,55 @@ namespace Takenet.MessagingHub.Client.Test
     {
         protected IPersistentClientChannel PersistentClientChannel;
         protected ILimeSessionProvider LimeSessionProvider;
-        protected ITransport Transport;
+        protected IClientChannelFactory ClientChannelFactory;
+        protected IClientChannel ClientChannel;
         protected TimeSpan SendTimeout;
         protected Session Session;
         protected string Domain = "msging.net";
         protected string Instance = "msgingHubClient";
+        protected Uri EndPoint = new Uri("tcp://msging.net.test:55332");
+
 
         protected virtual void Setup()
         {
-            Transport = Substitute.For<ITransport>();
             SendTimeout = TimeSpan.FromSeconds(5);
             LimeSessionProvider = Substitute.For<ILimeSessionProvider>();
+            ClientChannelFactory = Substitute.For<IClientChannelFactory>();
+            ClientChannel = Substitute.For<IClientChannel>();
 
             SetEstablishedSession();
 
             SetDefaultMessageReceiver();
 
-            PersistentClientChannel = new PersistentClientChannel(Transport, SendTimeout, LimeSessionProvider);
+            SetClientChannelFactory();
+
+            PersistentClientChannel = new PersistentClientChannel(EndPoint, DefaultIdentity, DefaultAuthentication, SendTimeout, ClientChannelFactory, LimeSessionProvider);
+        }
+
+        private void SetClientChannelFactory()
+        {
+            ClientChannelFactory.CreateClientChannelAsync(TimeSpan.Zero)
+                .ReturnsForAnyArgs(ClientChannel);
         }
 
         protected void SetEstablishedSession()
         {
-            Transport.IsConnected.Returns(true);
-
-            Session = new Session()
-            {
-                State = SessionState.Established
-            };
-
-            LimeSessionProvider.EstablishSessionAsync(null, CancellationToken.None)
-                .ReturnsForAnyArgs(Session);
-
             LimeSessionProvider.IsSessionEstablished(null).ReturnsForAnyArgs(true);
         }
 
         protected void SetDefaultMessageReceiver()
         {
-            Transport.ReceiveAsync(CancellationToken.None)
+            ClientChannel.ReceiveMessageAsync(CancellationToken.None)
                 .ReturnsForAnyArgs(DefaultMessage);
         }
+
+        protected Authentication DefaultAuthentication => new KeyAuthentication();
+
+        protected Identity DefaultIdentity => new Identity
+        {
+            Domain = Domain,
+            Name = "Identity"
+        };
 
         protected Node DefaultFrom => new Node
         {
@@ -69,7 +80,7 @@ namespace Takenet.MessagingHub.Client.Test
             Name = "Destination"
         };
 
-        protected Command DefaultCommand =>new Command
+        protected Command DefaultCommand => new Command
         {
             From = DefaultFrom,
             To = DefaultTo,

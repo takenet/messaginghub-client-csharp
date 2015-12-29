@@ -27,7 +27,7 @@ namespace Takenet.MessagingHub.Client.Test
             MessagingHubClient.StopAsync().Wait();
 
             // Assert
-            ClientChannel.Received(1).StopAsync();
+            PersistentClientChannel.Received(1).StopAsync();
         }
 
         [Test]
@@ -44,7 +44,7 @@ namespace Takenet.MessagingHub.Client.Test
         public void Start_With_Error_On_PersistentClientChannel_Should_Throw_Exception()
         {
             //Arrange
-            ClientChannel.StartAsync().Returns(System.Threading.Tasks.Task.Run(() => { throw new LimeException(1,"Error"); }));
+            PersistentClientChannel.StartAsync().Returns(System.Threading.Tasks.Task.Run(() => { throw new LimeException(1,"Error"); }));
 
             MessagingHubClient.UsingAccessKey("login", "key");
 

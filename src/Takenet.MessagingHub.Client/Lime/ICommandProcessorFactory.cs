@@ -12,6 +12,6 @@ namespace Takenet.MessagingHub.Client.Lime
         /// </summary>
         /// <param name="clientChannel">Client channel used to send and receive the envelopes</param>
         /// <returns></returns>
-        ICommandProcessor Create(IClientChannel clientChannel);
+        ICommandProcessor Create(IPersistentClientChannel clientChannel);
     }
 }

@@ -31,7 +31,7 @@ namespace Takenet.MessagingHub.Client.Test
 
             _semaphore = new SemaphoreSlim(1);
 
-            ClientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (callInfo) =>
+            PersistentClientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (callInfo) =>
             {
                 await _semaphore.WaitAsync();
                 return SomeNotification;
@@ -59,7 +59,7 @@ namespace Takenet.MessagingHub.Client.Test
 
             SomeNotification.Event = Event.Accepted;
 
-            ClientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (callInfo) =>
+            PersistentClientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (callInfo) =>
             {
                 await _semaphore.WaitAsync();
                 return SomeNotification;
@@ -89,7 +89,7 @@ namespace Takenet.MessagingHub.Client.Test
 
             _semaphore = new SemaphoreSlim(1);
 
-            ClientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (_) =>
+            PersistentClientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (_) =>
             {
                 await _semaphore.WaitAsync().ConfigureAwait(false);
                 return SomeNotification;

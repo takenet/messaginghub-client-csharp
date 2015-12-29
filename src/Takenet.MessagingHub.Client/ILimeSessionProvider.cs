@@ -12,10 +12,10 @@ namespace Takenet.MessagingHub.Client
 {
     internal interface ILimeSessionProvider
     {
-        Task<Session> EstablishSessionAsync(IPersistentClientChannel clientChannel, CancellationToken cancellationToken);
+        Task EstablishSessionAsync(IClientChannel clientChannel, Uri endPoint, Identity identity, Authentication authentication, CancellationToken cancellationToken);
 
-        Task FinishSessionAsync(IPersistentClientChannel clientChannel, CancellationToken cancellationToken);
+        Task FinishSessionAsync(IClientChannel clientChannel, CancellationToken cancellationToken);
 
-        bool IsSessionEstablished(IPersistentClientChannel clientChannel);
+        bool IsSessionEstablished(IClientChannel clientChannel);
     }
 }

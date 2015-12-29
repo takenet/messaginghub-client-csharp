@@ -15,13 +15,14 @@ namespace Takenet.MessagingHub.Client
     /// </summary>
     internal class ClientChannelFactory : IClientChannelFactory
     {
-        public Task<IPersistentClientChannel> CreatePersistentClientChannelAsync(Uri endpoint, TimeSpan sendTimeout, Identity identity, Authentication authentication)
+        public Task<IClientChannel> CreateClientChannelAsync(TimeSpan sendTimeout)
         {
             var transport = new TcpTransport(traceWriter: new TraceWriter(), envelopeSerializer: new JsonNetSerializer());
-            
-            var clientChannel = new PersistentClientChannel(transport, sendTimeout, new LimeSessionProvider(endpoint, identity, authentication));
 
-            return Task.FromResult<IPersistentClientChannel>(clientChannel);
+            var clientChannel = new ClientChannel(transport, sendTimeout);
+
+            return Task.FromResult<IClientChannel>(clientChannel);
         }
+        
     }
 }
