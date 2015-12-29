@@ -23,9 +23,8 @@ namespace Takenet.MessagingHub.Client.Playground
                 new MessagingHubClient()
                     // Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
                     .UsingAccount(login, password)
-                    .AddMessageReceiver(messageReceiver: new PlainTextMessageReceiver(),
-                        forMimeType: MediaTypes.PlainText)
-                    .AddNotificationReceiver(receiverFactory: () => new PrintNotificationReceiver())
+                    .AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
+                    .AddNotificationReceiver(new PrintNotificationReceiver())
                     .NewTextMessageReceiverBuilder()
                         .ForSyntax(":LDWord(help,wtf,ajuda,comofaz)")
                             .Return(() => "Welcome to the calculator! Try send me some math operations, like 'sum 1 and 2' or '3 times 4' and I'll try help you :)")

@@ -30,16 +30,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lime.Messaging, Version=0.2.333.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Messaging.0.2.333\lib\net45\Lime.Messaging.dll</HintPath>
+    <Reference Include="Lime.Messaging, Version=0.2.334.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Messaging.0.2.334\lib\net45\Lime.Messaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Protocol, Version=0.2.333.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Protocol.0.2.333\lib\net45\Lime.Protocol.dll</HintPath>
+    <Reference Include="Lime.Protocol, Version=0.2.334.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Protocol.0.2.334\lib\net45\Lime.Protocol.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Transport.Tcp, Version=0.2.333.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Transport.Tcp.0.2.333\lib\net45\Lime.Transport.Tcp.dll</HintPath>
+    <Reference Include="Lime.Transport.Tcp, Version=0.2.334.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Transport.Tcp.0.2.334\lib\net45\Lime.Transport.Tcp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NSubstitute, Version=1.9.2.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
@@ -96,6 +96,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
