@@ -14,8 +14,8 @@ namespace GettingStarted
         }
 
         // Go to http://console.messaginghub.io to register your application and get your access key
-        private const string Login = "GettingStarted";
-        private const string AccessKey = "cjZSZWl5";
+        private const string Login = "getting-started";
+        private const string AccessKey = "NnliTHNE";
 
         private class MessageReceiver : MessageReceiverBase
         {
