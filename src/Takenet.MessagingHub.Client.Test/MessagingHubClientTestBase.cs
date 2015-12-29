@@ -11,10 +11,13 @@ namespace Takenet.MessagingHub.Client.Test
     internal class MessagingHubClientTestBase
     {
         protected IMessagingHubClient MessagingHubClient;
-        protected IPersistentClientChannel ClientChannel;
+        protected IClientChannel ClientChannel;
+        protected IPersistentClientChannel PersistentClientChannel;
+        protected IPersistentClientChannelFactory PersistentClientChannelFactory;
         protected IClientChannelFactory ClientChannelFactory;
         protected ICommandProcessorFactory CommandProcessorFactory;
         protected ICommandProcessor CommandProcessor;
+        protected ILimeSessionProvider LimeSessionProvider;
         private const string hostName = "msging.net";
         private const string domainName = "msging.net";
 
@@ -31,18 +34,34 @@ namespace Takenet.MessagingHub.Client.Test
 
             SubstituteClientChannelFabrication();
 
+            SubstituteLimeSessionProvider();
+
+            SubstituteForPersistentClientChannelFactory();
+
             InstantiateActualMessageHubClient();
+        }
+
+        private void SubstituteForPersistentClientChannelFactory()
+        {
+            PersistentClientChannelFactory = Substitute.For<IPersistentClientChannelFactory>();
+            PersistentClientChannelFactory.CreatePersistentClientChannelAsync(null, TimeSpan.Zero, null, null, null, null)
+                .ReturnsForAnyArgs(PersistentClientChannel);
+        }
+
+        private void SubstituteLimeSessionProvider()
+        {
+            LimeSessionProvider = Substitute.For<ILimeSessionProvider>();
         }
 
         private void InstantiateActualMessageHubClient()
         {
-            MessagingHubClient = new MessagingHubClient(ClientChannelFactory, CommandProcessorFactory, hostName, domainName);
+            MessagingHubClient = new MessagingHubClient(PersistentClientChannelFactory, ClientChannelFactory, CommandProcessorFactory, LimeSessionProvider, hostName, domainName);
         }
 
         private void SubstituteClientChannelFabrication()
         {
             ClientChannelFactory = Substitute.For<IClientChannelFactory>();
-            ClientChannelFactory.CreatePersistentClientChannelAsync(null, TimeSpan.Zero, null, null).ReturnsForAnyArgs(ClientChannel);
+            ClientChannelFactory.CreateClientChannelAsync(TimeSpan.Zero).ReturnsForAnyArgs(ClientChannel);
         }
 
         private void SubstituteEnvelopeProcessorFabrication()
@@ -58,10 +77,10 @@ namespace Takenet.MessagingHub.Client.Test
         
         private void SubstituteClientChannel()
         {
-            ClientChannel = Substitute.For<IPersistentClientChannel>();
+            PersistentClientChannel = Substitute.For<IPersistentClientChannel>();
 
 
-            ClientChannel.ReceiveNotificationAsync(CancellationToken.None)
+            PersistentClientChannel.ReceiveNotificationAsync(CancellationToken.None)
                 .ReturnsForAnyArgs(p =>
                 {
                     var taskCompletionSource = new TaskCompletionSource<Notification>();
@@ -70,7 +89,7 @@ namespace Takenet.MessagingHub.Client.Test
                     return taskCompletionSource.Task;
                 });
 
-            ClientChannel.ReceiveMessageAsync(CancellationToken.None)
+            PersistentClientChannel.ReceiveMessageAsync(CancellationToken.None)
                 .ReturnsForAnyArgs(p =>
                 {
                     var taskCompletionSource = new TaskCompletionSource<Message>();
@@ -84,9 +103,9 @@ namespace Takenet.MessagingHub.Client.Test
         private void SubstituteSetPresence()
         {
             var presenceCommand = new Command();
-            ClientChannel.WhenForAnyArgs(c => c.SendCommandAsync(null)).Do(c =>
+            PersistentClientChannel.WhenForAnyArgs(c => c.SendCommandAsync(null)).Do(c =>
                 presenceCommand = c.Arg<Command>());
-            ClientChannel.ReceiveCommandAsync(Arg.Any<CancellationToken>())
+            PersistentClientChannel.ReceiveCommandAsync(Arg.Any<CancellationToken>())
                 .Returns(c => new Command { Id = presenceCommand.Id, Status = CommandStatus.Success });
         }
     }

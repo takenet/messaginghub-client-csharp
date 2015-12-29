@@ -32,7 +32,7 @@ namespace Takenet.MessagingHub.Client.Test
 
             _semaphore = new SemaphoreSlim(1);
 
-            ClientChannel.ReceiveMessageAsync(new CancellationTokenSource().Token).ReturnsForAnyArgs(async (callInfo) =>
+            PersistentClientChannel.ReceiveMessageAsync(new CancellationTokenSource().Token).ReturnsForAnyArgs(async (callInfo) =>
             {
                 await _semaphore.WaitAsync();
                 return SomeMessage;
@@ -58,7 +58,7 @@ namespace Takenet.MessagingHub.Client.Test
 
             _semaphore = new SemaphoreSlim(1);
 
-            ClientChannel.ReceiveMessageAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (callInfo) =>
+            PersistentClientChannel.ReceiveMessageAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (callInfo) =>
             {
                 await _semaphore.WaitAsync(callInfo.Arg<CancellationToken>());
                 return new Message { Content = new PlainDocument(MediaTypes.PlainText) };
@@ -91,7 +91,7 @@ namespace Takenet.MessagingHub.Client.Test
 
             _semaphore = new SemaphoreSlim(1);
 
-            ClientChannel.ReceiveMessageAsync(new CancellationTokenSource().Token).ReturnsForAnyArgs(async (_) =>
+            PersistentClientChannel.ReceiveMessageAsync(new CancellationTokenSource().Token).ReturnsForAnyArgs(async (_) =>
             {
                 await _semaphore.WaitAsync().ConfigureAwait(false);
                 return SomeMessage;

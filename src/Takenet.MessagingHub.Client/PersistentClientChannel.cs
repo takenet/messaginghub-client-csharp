@@ -1,6 +1,7 @@
 ﻿using Lime.Protocol;
 using Lime.Protocol.Client;
 using Lime.Protocol.Network;
+using Lime.Protocol.Security;
 using System;
 using System.IO;
 using System.Net.Sockets;
@@ -9,25 +10,32 @@ using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client
 {
-    internal class PersistentClientChannel : ClientChannel, IPersistentClientChannel
+    internal class PersistentClientChannel : IPersistentClientChannel
     {
-        private bool _isSessionEstablished => _limeSessionProvider.IsSessionEstablished(this);
-        
-        private SemaphoreSlim _connectionSemaphore;
         private readonly TimeSpan _sendTimeout;
+        private readonly ILimeSessionProvider _limeSessionProvider;
+        private readonly Uri _endPoint;
+        private readonly Identity _identity;
+        private readonly Authentication _authentication;
+        private readonly IClientChannelFactory _clientChannelFactory;
+
+        private SemaphoreSlim _connectionSemaphore;
+        private IClientChannel _clientChannel;
         private Task _watchConnectionTask;
         private CancellationTokenSource _cancellationTokenSource;
-        private readonly ILimeSessionProvider _limeSessionProvider;
-
-        public Session Session { get; private set; }
+        private bool _isSessionEstablished => _limeSessionProvider.IsSessionEstablished(_clientChannel);
 
         private static TimeSpan WatchConnectionDelay => TimeSpan.FromSeconds(2);
         private static TimeSpan ReconnectDelay => TimeSpan.FromSeconds(2);
 
-        internal PersistentClientChannel(ITransport transport, TimeSpan sendTimeout, ILimeSessionProvider limeSessionProvider, int buffersLimit = 5, bool fillEnvelopeRecipients = false, bool autoReplyPings = true, bool autoNotifyReceipt = false, TimeSpan? remotePingInterval = default(TimeSpan?), TimeSpan? remoteIdleTimeout = default(TimeSpan?))
-            : base(transport, sendTimeout, buffersLimit, fillEnvelopeRecipients, autoReplyPings, autoNotifyReceipt, remotePingInterval, remoteIdleTimeout)
+        internal PersistentClientChannel(Uri endPoint, Identity identity, Authentication authentication, TimeSpan sendTimeout,
+            IClientChannelFactory clientChannelFactory, ILimeSessionProvider limeSessionProvider)
         {
+            _endPoint = endPoint;
+            _identity = identity;
+            _authentication = authentication;
             _sendTimeout = sendTimeout;
+            _clientChannelFactory = clientChannelFactory;
             _limeSessionProvider = limeSessionProvider;
         }
         
@@ -69,34 +77,34 @@ namespace Takenet.MessagingHub.Client
             }
         }
 
-        public override Task<Message> ReceiveMessageAsync(CancellationToken cancellationToken)
+        public Task<Message> ReceiveMessageAsync(CancellationToken cancellationToken)
         {
-            return ReceiveAsync(cancellationToken, base.ReceiveMessageAsync);
+            return ReceiveAsync(cancellationToken, _clientChannel.ReceiveMessageAsync);
         }
 
-        public override Task<Command> ReceiveCommandAsync(CancellationToken cancellationToken)
+        public Task<Command> ReceiveCommandAsync(CancellationToken cancellationToken)
         {
-            return ReceiveAsync(cancellationToken, base.ReceiveCommandAsync);
+            return ReceiveAsync(cancellationToken, _clientChannel.ReceiveCommandAsync);
         }
 
-        public override Task<Notification> ReceiveNotificationAsync(CancellationToken cancellationToken)
+        public Task<Notification> ReceiveNotificationAsync(CancellationToken cancellationToken)
         {
-            return ReceiveAsync(cancellationToken, base.ReceiveNotificationAsync);
+            return ReceiveAsync(cancellationToken, _clientChannel.ReceiveNotificationAsync);
         }
 
-        public override Task SendMessageAsync(Message message)
+        public Task SendMessageAsync(Message message)
         {
-            return SendAsync(message, base.SendMessageAsync);
+            return SendAsync(message, _clientChannel.SendMessageAsync);
         }
 
-        public override Task SendCommandAsync(Command command)
+        public Task SendCommandAsync(Command command)
         {
-            return SendAsync(command, base.SendCommandAsync);
+            return SendAsync(command, _clientChannel.SendCommandAsync);
         }
 
-        public override Task SendNotificationAsync(Notification notification)
+        public Task SendNotificationAsync(Notification notification)
         {
-            return SendAsync(notification, base.SendNotificationAsync);
+            return SendAsync(notification, _clientChannel.SendNotificationAsync);
         }
 
         private async Task<T> ReceiveAsync<T>(CancellationToken cancellationToken, Func<CancellationToken, Task<T>> func)
@@ -224,14 +232,29 @@ namespace Takenet.MessagingHub.Client
 
         private async Task EstablishSession(CancellationToken cancellationToken)
         {
-            var session = await _limeSessionProvider.EstablishSessionAsync(this, cancellationToken);
-            State = session.State;
-            Session = session;
+            if(_clientChannel != null)
+            {
+                _clientChannel.DisposeIfDisposable();
+            }
+
+            _clientChannel = await _clientChannelFactory.CreateClientChannelAsync(_sendTimeout);
+
+            await _limeSessionProvider.EstablishSessionAsync(_clientChannel, _endPoint, _identity, _authentication, cancellationToken);
         }
 
-        private Task EndSession(CancellationToken cancellationToken)
+        private async Task EndSession(CancellationToken cancellationToken)
         {
-            return _limeSessionProvider.FinishSessionAsync(this, cancellationToken);
+            await _limeSessionProvider.FinishSessionAsync(_clientChannel, cancellationToken);
+
+            if (_clientChannel != null)
+            {
+                _clientChannel.DisposeIfDisposable();
+            }
+        }
+
+        public Task SetResourceAsync<TResource>(LimeUri uri, TResource resource, CancellationToken cancellationToken, Func<Command, Task> unrelatedCommandHandler = null) where TResource : Document
+        {
+            return _clientChannel.SetResourceAsync(uri, resource, cancellationToken, unrelatedCommandHandler);
         }
     }
 }

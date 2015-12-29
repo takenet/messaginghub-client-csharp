@@ -27,7 +27,7 @@ namespace Takenet.MessagingHub.Client.Test
             MessagingHubClient.StartAsync().Wait();
 
             // Assert
-            ClientChannel.Received(1).StartAsync();
+            PersistentClientChannel.Received(1).StartAsync();
         }
 
         [Test]
@@ -40,7 +40,7 @@ namespace Takenet.MessagingHub.Client.Test
             MessagingHubClient.StartAsync().Wait();
 
             // Assert
-            ClientChannel.Received(1).StartAsync();
+            PersistentClientChannel.Received(1).StartAsync();
         }
 
         [Test]

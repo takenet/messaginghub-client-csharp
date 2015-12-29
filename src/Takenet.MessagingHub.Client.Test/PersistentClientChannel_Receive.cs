@@ -47,7 +47,7 @@ namespace Takenet.MessagingHub.Client.Test
             PersistentClientChannel.StartAsync().Wait();
 
             LimeSessionProvider.IsSessionEstablished(null).ReturnsForAnyArgs(false);
-            Transport.ReceiveAsync(CancellationToken.None).ReturnsForAnyArgs((Func<CallInfo,Envelope>)(c => { throw new LimeException(1,"Session is not estabilished"); }));
+            ClientChannel.ReceiveMessageAsync(CancellationToken.None).ReturnsForAnyArgs((Func<CallInfo,Message>)(c => { throw new LimeException(1,"Session is not estabilished"); }));
 
             using (var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(2)))
             {
