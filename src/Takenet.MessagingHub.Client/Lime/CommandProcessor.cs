@@ -12,13 +12,13 @@ namespace Takenet.MessagingHub.Client.Lime
     /// </summary>
     internal class CommandProcessor : ICommandProcessor
     {
-        private readonly IPersistentClientChannel _clientChannel;
+        private readonly IPersistentLimeSession _clientChannel;
 
         private ConcurrentDictionary<Guid, TaskCompletionSource<Command>> _activeRequests;
         private Task _listenner;
         private CancellationTokenSource _cancellationTokenSource;
 
-        public CommandProcessor(IPersistentClientChannel clientChannel)
+        public CommandProcessor(IPersistentLimeSession clientChannel)
         {
             _clientChannel = clientChannel;
         }

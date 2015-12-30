@@ -12,8 +12,8 @@ namespace Takenet.MessagingHub.Client.Test
     {
         protected IMessagingHubClient MessagingHubClient;
         protected IClientChannel ClientChannel;
-        protected IPersistentClientChannel PersistentClientChannel;
-        protected IPersistentClientChannelFactory PersistentClientChannelFactory;
+        protected IPersistentLimeSession PersistentClientChannel;
+        protected IPersistentLimeSessionFactory PersistentClientChannelFactory;
         protected IClientChannelFactory ClientChannelFactory;
         protected ICommandProcessorFactory CommandProcessorFactory;
         protected ICommandProcessor CommandProcessor;
@@ -43,7 +43,7 @@ namespace Takenet.MessagingHub.Client.Test
 
         private void SubstituteForPersistentClientChannelFactory()
         {
-            PersistentClientChannelFactory = Substitute.For<IPersistentClientChannelFactory>();
+            PersistentClientChannelFactory = Substitute.For<IPersistentLimeSessionFactory>();
             PersistentClientChannelFactory.CreatePersistentClientChannelAsync(null, TimeSpan.Zero, null, null, null, null)
                 .ReturnsForAnyArgs(PersistentClientChannel);
         }
@@ -77,7 +77,7 @@ namespace Takenet.MessagingHub.Client.Test
         
         private void SubstituteClientChannel()
         {
-            PersistentClientChannel = Substitute.For<IPersistentClientChannel>();
+            PersistentClientChannel = Substitute.For<IPersistentLimeSession>();
 
 
             PersistentClientChannel.ReceiveNotificationAsync(CancellationToken.None)

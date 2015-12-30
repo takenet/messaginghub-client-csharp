@@ -34,8 +34,8 @@ namespace Takenet.MessagingHub.Client
         private string _accessKey;
         private readonly string _domainName;
 
-        private readonly IPersistentClientChannelFactory _persistentClientFactory;
-        private IPersistentClientChannel _clientChannel;
+        private readonly IPersistentLimeSessionFactory _persistentClientFactory;
+        private IPersistentLimeSession _clientChannel;
 
         private ICommandProcessor _commandProcessor;
 
@@ -49,7 +49,7 @@ namespace Takenet.MessagingHub.Client
         private readonly TimeSpan _timeout;
         private readonly ILimeSessionProvider _limeSessionProvider;
 
-        internal MessagingHubClient(IPersistentClientChannelFactory persistentChannelFactory, IClientChannelFactory clientChannelFactory,
+        internal MessagingHubClient(IPersistentLimeSessionFactory persistentChannelFactory, IClientChannelFactory clientChannelFactory,
             ICommandProcessorFactory commandProcessorFactory, ILimeSessionProvider limeSessionProvider, string hostName, string domainName)
         {
             _messageReceivers = new Dictionary<MediaType, IList<Func<IMessageReceiver>>>();
@@ -65,7 +65,7 @@ namespace Takenet.MessagingHub.Client
 
 
         public MessagingHubClient(string hostname = DEFAULT_DOMAIN, string domainName = DEFAULT_DOMAIN) :
-            this(new PersistentClientChannelFactory(), new ClientChannelFactory(), new CommandProcessorFactory(), new LimeSessionProvider(), hostname, domainName)
+            this(new PersistentLimeSessionFactory(), new ClientChannelFactory(), new CommandProcessorFactory(), new LimeSessionProvider(), hostname, domainName)
         { }
 
         public IMessagingHubClient UsingAccount(string login, string password)
