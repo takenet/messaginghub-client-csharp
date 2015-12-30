@@ -124,6 +124,11 @@ namespace Takenet.MessagingHub.Client
                 {
                     if (_isSessionEstablished) throw;
                 }
+                catch (OperationCanceledException)
+                {
+                    if (_isSessionEstablished) throw;
+                    if (cancellationToken.IsCancellationRequested) throw;
+                }
 
                 if (!_isSessionEstablished)
                 {
