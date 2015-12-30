@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client
 {
-    internal interface IPersistentClientChannel
+    internal interface IPersistentLimeSession
     {
         Task StartAsync();
 

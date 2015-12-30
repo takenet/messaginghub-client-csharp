@@ -70,24 +70,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EnvelopeDispatcher.cs" />
-    <Compile Include="ILimeSessionProvider.cs" />
-    <Compile Include="IPersistentClientChannel.cs" />
-    <Compile Include="IPersistentClientChannelFactory.cs" />
-    <Compile Include="LimeSessionProvider.cs" />
+    <Compile Include="Lime\ILimeSessionProvider.cs" />
+    <Compile Include="Lime\IPersistentLimeSession.cs" />
+    <Compile Include="Lime\IPersistentLimeSessionFactory.cs" />
+    <Compile Include="Lime\LimeSessionProvider.cs" />
     <Compile Include="Lime\CommandProcessor.cs" />
     <Compile Include="Lime\CommandProcessorFactory.cs" />
     <Compile Include="Lime\ICommandProcessor.cs" />
     <Compile Include="Lime\ICommandProcessorFactory.cs" />
     <Compile Include="MessageSenderExtensions.cs" />
-    <Compile Include="PersistentClientChannel.cs" />
-    <Compile Include="PersistentClientChannelFactory.cs" />
+    <Compile Include="Lime\PersistentLimeSession.cs" />
+    <Compile Include="Lime\PersistentLimeSessionFactory.cs" />
     <Compile Include="Senders\ICommandSender.cs" />
     <Compile Include="Receivers\INotificationReceiver.cs" />
     <Compile Include="Receivers\IEnvelopeReceiver.cs" />
     <Compile Include="Receivers\NotificationReceiverBase.cs" />
     <Compile Include="Receivers\EnvelopeReceiverBase.cs" />
-    <Compile Include="ClientChannelFactory.cs" />
-    <Compile Include="IClientChannelFactory.cs" />
+    <Compile Include="Lime\ClientChannelFactory.cs" />
+    <Compile Include="Lime\IClientChannelFactory.cs" />
     <Compile Include="Receivers\IMessageReceiver.cs" />
     <Compile Include="Senders\IMessageSender.cs" />
     <Compile Include="IMessagingHubClient.cs" />

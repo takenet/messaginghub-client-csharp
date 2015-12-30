@@ -14,7 +14,7 @@ namespace Takenet.MessagingHub.Client.Test
 {
     internal class PersistentClientChannel_Base
     {
-        protected IPersistentClientChannel PersistentClientChannel;
+        protected IPersistentLimeSession PersistentClientChannel;
         protected ILimeSessionProvider LimeSessionProvider;
         protected IClientChannelFactory ClientChannelFactory;
         protected IClientChannel ClientChannel;
@@ -38,7 +38,7 @@ namespace Takenet.MessagingHub.Client.Test
 
             SetClientChannelFactory();
 
-            PersistentClientChannel = new PersistentClientChannel(EndPoint, DefaultIdentity, DefaultAuthentication, SendTimeout, ClientChannelFactory, LimeSessionProvider);
+            PersistentClientChannel = new PersistentLimeSession(EndPoint, DefaultIdentity, DefaultAuthentication, SendTimeout, ClientChannelFactory, LimeSessionProvider);
         }
 
         private void SetClientChannelFactory()

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client
 {
-    internal class PersistentClientChannel : IPersistentClientChannel
+    internal class PersistentLimeSession : IPersistentLimeSession
     {
         private readonly TimeSpan _sendTimeout;
         private readonly ILimeSessionProvider _limeSessionProvider;
@@ -28,7 +28,7 @@ namespace Takenet.MessagingHub.Client
         private static TimeSpan WatchConnectionDelay => TimeSpan.FromSeconds(2);
         private static TimeSpan ReconnectDelay => TimeSpan.FromSeconds(2);
 
-        internal PersistentClientChannel(Uri endPoint, Identity identity, Authentication authentication, TimeSpan sendTimeout,
+        internal PersistentLimeSession(Uri endPoint, Identity identity, Authentication authentication, TimeSpan sendTimeout,
             IClientChannelFactory clientChannelFactory, ILimeSessionProvider limeSessionProvider)
         {
             _endPoint = endPoint;
