@@ -10,11 +10,7 @@ namespace Takenet.VirtualAssistant
         private IMessagingHubClient _messagingHubClient;
 
         public Task StartAsync(CancellationToken cancellationToken)
-        {
-            _messagingHubClient = new MessagingHubClient()
-                .UsingAccessKey(ConfigurationManager.AppSettings["login"], ConfigurationManager.AppSettings["key"])
-                .NewTextcMessageReceiverBuilder()                    
-
+        {            
             throw new System.NotImplementedException();
         }
 
