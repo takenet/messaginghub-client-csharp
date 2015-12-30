@@ -13,10 +13,10 @@
     <copyright>Copyright ©  2015 Curupira S/A</copyright>
     <tags>lime messaginghub</tags>
     <dependencies>
-      <dependency id="Lime.Protocol" />
-      <dependency id="Lime.Transport.Tcp" />
-      <dependency id="Lime.Messaging" />
-      <dependency id="Lime.Protocol.Serialization.Newtonsoft" />     
+      <dependency id="Lime.Protocol" version="0.2.334" />
+      <dependency id="Lime.Transport.Tcp" version="0.2.334" />
+      <dependency id="Lime.Messaging" version="0.2.334" />
+      <dependency id="Lime.Protocol.Serialization.Newtonsoft" version="0.2.334" />     
     </dependencies>
   </metadata>
   <files>

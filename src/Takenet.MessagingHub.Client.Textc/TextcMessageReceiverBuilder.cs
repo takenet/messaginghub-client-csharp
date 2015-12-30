@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Lime.Protocol;
@@ -43,6 +44,17 @@ namespace Takenet.MessagingHub.Client.Textc
         /// <summary>
         /// Adds a new command syntax to the <see cref="TextcMessageReceiver"/> builder.
         /// </summary>
+        /// <param name="culture">The syntax culture.</param>
+        /// <param name="syntaxPattern">The CSDL statement. Please refer to <seealso cref="https://github.com/takenet/textc-csharp#csdl"/> about the notation.</param>        
+        /// <returns></returns>
+        public SyntaxTextcMessageReceiverBuilder ForSyntax(CultureInfo culture, string syntaxPattern)
+        {
+            return ForSyntax(CsdlParser.Parse(syntaxPattern, culture));
+        }
+
+        /// <summary>
+        /// Adds a new command syntax to the <see cref="TextcMessageReceiver"/> builder.
+        /// </summary>
         /// <param name="syntax">The syntax instance to be added.</param>
         /// <returns></returns>
         public SyntaxTextcMessageReceiverBuilder ForSyntax(Syntax syntax)
@@ -59,6 +71,18 @@ namespace Takenet.MessagingHub.Client.Textc
         public SyntaxTextcMessageReceiverBuilder ForSyntaxes(params string[] syntaxPatterns)
         {
             return new SyntaxTextcMessageReceiverBuilder(syntaxPatterns.Select(CsdlParser.Parse).ToList(), this);
+        }
+
+        /// <summary>
+        /// Adds multiple command syntaxes to the <see cref="TextcMessageReceiver"/> builder.
+        /// The added syntaxes should be related and will be associated to a same command processor.
+        /// </summary>
+        /// <param name="culture">The syntaxes culture.</param>
+        /// <param name="syntaxPatterns">The CSDL statements. Please refer to <seealso cref="https://github.com/takenet/textc-csharp#csdl"/> about the notation.</param>
+        /// <returns></returns>
+        public SyntaxTextcMessageReceiverBuilder ForSyntaxes(CultureInfo culture, params string[] syntaxPatterns)
+        {
+            return new SyntaxTextcMessageReceiverBuilder(syntaxPatterns.Select(s => CsdlParser.Parse(s, culture)).ToList(), this);
         }
 
         /// <summary>

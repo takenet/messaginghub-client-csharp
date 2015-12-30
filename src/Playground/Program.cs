@@ -27,23 +27,23 @@ namespace Takenet.MessagingHub.Client.Playground
                     .AddNotificationReceiver(new PrintNotificationReceiver())
                     .NewTextcMessageReceiverBuilder()
                         .ForSyntax(":LDWord(help,wtf,ajuda,comofaz)")
-                            .Return(() => "Welcome to the calculator! Try send me some math operations, like 'sum 1 and 2' or '3 times 4' and I'll try help you :)")
+                            .Return(() => Task.FromResult("Welcome to the calculator! Try send me some math operations, like 'sum 1 and 2' or '3 times 4' and I'll try help you :)"))
                         .ForSyntaxes(
                             "operation+:Word(sum) a:Integer :Word?(and) b:Integer",
                             "a:Integer :Word(plus,more) b:Integer")
-                                .Return<int, int, string>((a, b) => $"The sum result is {a + b}")
+                                .Return<int, int, string>((a, b) => Task.FromResult($"The sum result is {a + b}"))
                         .ForSyntaxes(
                             "operation+:Word(subtract,sub) b:Integer :Word(from) a:Integer",
                             "a:Integer :Word(minus) b:Integer")
-                                .Return<int, int, string>((a, b) => $"The subtraction result is {a - b}")
+                                .Return<int, int, string>((a, b) => Task.FromResult($"The subtraction result is {a - b}"))
                         .ForSyntaxes(
                             "operation+:Word(multiply,mul) a:Integer :Word?(and,by) b:Integer",
                             "a:Integer :Word(times) b:Integer")
-                                .Return<int, int, string>((a, b) => $"The multiplication result is {a * b}")
+                                .Return<int, int, string>((a, b) => Task.FromResult($"The multiplication result is {a * b}"))
                         .ForSyntaxes(
                             "operation+:Word(multiply,mul) a:Integer :Word?(and,by) b:Integer",
                             "a:Integer :Word(times) b:Integer")
-                                .Return<int, int, string>((a, b) => $"The multiplication result is {a * b}")                        
+                                .Return<int, int, string>((a, b) => Task.FromResult($"The multiplication result is {a * b}"))                        
                     .BuildAndAddMessageReceiver();
                                 
 
