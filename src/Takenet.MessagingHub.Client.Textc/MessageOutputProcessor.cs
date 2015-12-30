@@ -17,15 +17,18 @@ namespace Takenet.MessagingHub.Client.Textc
 
         public Task ProcessOutputAsync(object output, IRequestContext context)
         {
-            var to =
-                (context.GetVariable(TextcMessageReceiver.PP_VARIABLE_NAME) ??
-                 context.GetVariable(TextcMessageReceiver.FROM_VARIABLE_NAME)) as Node;
+            var to = context.GetMessagePp() ?? context.GetMessageFrom();
 
             if (to == null)
             {
                 throw new InvalidOperationException("Could not determine the message sender");
             }
 
+            var content = output as Document;
+            if (content != null)
+            {
+                return _client.SendMessageAsync(content, to);
+            }
             return _client.SendMessageAsync(output.ToString(), to);
         }
     }

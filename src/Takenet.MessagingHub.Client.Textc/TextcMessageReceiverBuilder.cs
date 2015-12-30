@@ -10,46 +10,73 @@ using Takenet.Textc.Processors;
 
 namespace Takenet.MessagingHub.Client.Textc
 {
+    /// <summary>
+    /// Builder for instances of <see cref="TextcMessageReceiver"/> class. 
+    /// </summary>
     public sealed class TextcMessageReceiverBuilder
     {
         private readonly MessagingHubClient _client;
-        
-        internal readonly List<ICommandProcessor> CommandProcessors;
-        internal readonly IOutputProcessor MessageOutputProcessor;
-
-        private TimeSpan _contextValidity;
+        private IContextProvider _contextProvider;
         private Func<Message, MessageReceiverBase, Task> _matchNotFoundHandler;
 
-        public TextcMessageReceiverBuilder(MessagingHubClient client)
+        internal readonly List<ICommandProcessor> CommandProcessors;
+        internal readonly IOutputProcessor OutputProcessor;
+        
+        public TextcMessageReceiverBuilder(MessagingHubClient client, IOutputProcessor outputProcessor = null)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             _client = client;
             CommandProcessors = new List<ICommandProcessor>();
-            MessageOutputProcessor = new MessageOutputProcessor(client);
-            _contextValidity = TimeSpan.FromMinutes(5);
+            OutputProcessor = outputProcessor ?? new MessageOutputProcessor(client);
         }
 
-        public SyntaxTextMessageReceiverBuilder ForSyntax(string syntaxPattern)
+        /// <summary>
+        /// Adds a new command syntax to the <see cref="TextcMessageReceiver"/> builder.
+        /// </summary>
+        /// <param name="syntaxPattern">The CSDL statement. Please refer to <seealso cref="https://github.com/takenet/textc-csharp#csdl"/> about the notation.</param>
+        /// <returns></returns>
+        public SyntaxTextcMessageReceiverBuilder ForSyntax(string syntaxPattern)
         {
             return ForSyntax(CsdlParser.Parse(syntaxPattern));
         }
 
-        public SyntaxTextMessageReceiverBuilder ForSyntax(Syntax syntax)
+        /// <summary>
+        /// Adds a new command syntax to the <see cref="TextcMessageReceiver"/> builder.
+        /// </summary>
+        /// <param name="syntax">The syntax instance to be added.</param>
+        /// <returns></returns>
+        public SyntaxTextcMessageReceiverBuilder ForSyntax(Syntax syntax)
         {
-            return new SyntaxTextMessageReceiverBuilder(new List<Syntax> { syntax }, this);
+            return new SyntaxTextcMessageReceiverBuilder(new List<Syntax> { syntax }, this);
         }
 
-        public SyntaxTextMessageReceiverBuilder ForSyntaxes(params string[] syntaxPatterns)
+        /// <summary>
+        /// Adds multiple command syntaxes to the <see cref="TextcMessageReceiver"/> builder.
+        /// The added syntaxes should be related and will be associated to a same command processor.
+        /// </summary>
+        /// <param name="syntaxPatterns">The CSDL statements. Please refer to <seealso cref="https://github.com/takenet/textc-csharp#csdl"/> about the notation.</param>
+        /// <returns></returns>
+        public SyntaxTextcMessageReceiverBuilder ForSyntaxes(params string[] syntaxPatterns)
         {
-            return new SyntaxTextMessageReceiverBuilder(syntaxPatterns.Select(CsdlParser.Parse).ToList(), this);
+            return new SyntaxTextcMessageReceiverBuilder(syntaxPatterns.Select(CsdlParser.Parse).ToList(), this);
         }
 
-        public SyntaxTextMessageReceiverBuilder ForSyntaxes(params Syntax[] syntaxes)
+        /// <summary>
+        /// Adds multiple command syntaxes to the <see cref="TextcMessageReceiver"/> builder.
+        /// The added syntaxes should be related and will be associated to a same command processor.
+        /// </summary>
+        /// <param name="syntaxes">The syntax instances to be added.</param>
+        /// <returns></returns>
+        public SyntaxTextcMessageReceiverBuilder ForSyntaxes(params Syntax[] syntaxes)
         {
-            return new SyntaxTextMessageReceiverBuilder(syntaxes.ToList(), this);
+            return new SyntaxTextcMessageReceiverBuilder(syntaxes.ToList(), this);
         }
 
-
+        /// <summary>
+        /// Sets the message text to be returned in case of no match of the user input.
+        /// </summary>
+        /// <param name="matchNotFoundMessage">The message text.</param>
+        /// <returns></returns>
         public TextcMessageReceiverBuilder WithMatchNotFoundMessage(string matchNotFoundMessage)
         {
             return WithMatchNotFoundHandler(
@@ -57,18 +84,43 @@ namespace Takenet.MessagingHub.Client.Textc
                     receiver.MessageSender.SendMessageAsync(matchNotFoundMessage, message.Pp ?? message.From));
         }
 
+        /// <summary>
+        /// Sets a handler to be called in case of no match of the user input.
+        /// </summary>
+        /// <param name="matchNotFoundHandler">The handler.</param>
+        /// <returns></returns>
         public TextcMessageReceiverBuilder WithMatchNotFoundHandler(Func<Message, MessageReceiverBase, Task> matchNotFoundHandler)
         {
             _matchNotFoundHandler = matchNotFoundHandler;
             return this;
         }
 
+        /// <summary>
+        /// Defines the user context validity, which is used to store the conversation variables.
+        /// </summary>
+        /// <param name="contextValidity">The context validity.</param>
+        /// <returns></returns>
         public TextcMessageReceiverBuilder WithContextValidityOf(TimeSpan contextValidity)
         {
-            _contextValidity = contextValidity;
+            return WithContextProvider(new ContextProvider(contextValidity));            
+        }
+
+        /// <summary>
+        /// Defines a context provider to be used by the instance of <see cref="TextcMessageReceiver"/>.
+        /// </summary>
+        /// <param name="contextProvider">The context provider instance.</param>
+        /// <returns></returns>
+        public TextcMessageReceiverBuilder WithContextProvider(IContextProvider contextProvider)
+        {
+            if (contextProvider == null) throw new ArgumentNullException(nameof(contextProvider));
+            _contextProvider = contextProvider;
             return this;
         }
 
+        /// <summary>
+        /// Builds a new instance of <see cref="TextcMessageReceiver"/> using the defined configurations.
+        /// </summary>
+        /// <returns></returns>
         public TextcMessageReceiver Build()
         {
             var textProcessor = new TextProcessor();
@@ -76,9 +128,16 @@ namespace Takenet.MessagingHub.Client.Textc
             {
                 textProcessor.AddCommandProcessor(commandProcessor);
             }
-            return new TextcMessageReceiver(textProcessor, new ContextProvider(_contextValidity), _matchNotFoundHandler);
+            return new TextcMessageReceiver(
+                textProcessor, 
+                _contextProvider ?? new ContextProvider(TimeSpan.FromMinutes(5)), 
+                _matchNotFoundHandler);
         }
-        
+
+        /// <summary>
+        /// Builds a new instance of <see cref="TextcMessageReceiver"/> using the defined configurations and adds it to the associated <see cref="MessagingHubClient"/> instance.
+        /// </summary>
+        /// <returns></returns>
         public MessagingHubClient BuildAndAddMessageReceiver()
         {
             _client.AddMessageReceiver(Build(), MediaTypes.PlainText);

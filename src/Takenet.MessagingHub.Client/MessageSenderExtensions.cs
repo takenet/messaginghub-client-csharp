@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Lime.Messaging.Contents;
 using Lime.Protocol;
@@ -14,11 +15,18 @@ namespace Takenet.MessagingHub.Client
             => sender.SendMessageAsync(content, Node.Parse(to));
 
         public static Task SendMessageAsync(this IMessageSender sender, string content, Node to)
+            => sender.SendMessageAsync(CreatePlainTextContent(content), to);
+
+        public static Task SendMessageAsync(this IMessageSender sender, Document content, string to)
+        => sender.SendMessageAsync(content, Node.Parse(to));
+
+        public static Task SendMessageAsync(this IMessageSender sender, Document content, Node to)
         {
+            if (content == null) throw new ArgumentNullException(nameof(content));
             var message = new Message
             {
                 To = to,
-                Content = CreatePlainTextContent(content)
+                Content = content
             };
             return sender.SendMessageAsync(message);
         }

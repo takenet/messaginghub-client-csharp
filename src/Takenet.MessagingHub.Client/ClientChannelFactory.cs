@@ -18,9 +18,7 @@ namespace Takenet.MessagingHub.Client
         public Task<IClientChannel> CreateClientChannelAsync(TimeSpan sendTimeout)
         {
             var transport = new TcpTransport(traceWriter: new TraceWriter(), envelopeSerializer: new JsonNetSerializer());
-
-            var clientChannel = new ClientChannel(transport, sendTimeout);
-
+            var clientChannel = new ClientChannel(transport, sendTimeout, autoNotifyReceipt: true);
             return Task.FromResult<IClientChannel>(clientChannel);
         }
         

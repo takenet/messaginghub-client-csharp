@@ -1,6 +1,7 @@
 ﻿using Lime.Protocol;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,16 +54,20 @@ namespace Takenet.MessagingHub.Client
 
                     throw;
                 }
-                
+
                 try
                 {
                     var receivers = receiverFor(envelope);
-                    await Task.WhenAll(receivers.Select(r => CallReceiver(commandSender, messageSender, notificationSender, r, envelope))).ConfigureAwait(false);
+                    await Task
+                            .WhenAll(
+                                receivers.Select(r =>
+                                    CallReceiver(commandSender, messageSender, notificationSender, r, envelope)))
+                            .ConfigureAwait(false);
                 }
-                catch(Exception e)
+                catch (Exception ex)
                 {
                     //TODO: Create a ILogger interface to notify about errors on EnvelopeProcessor.
-                    var message = e.Message;
+                    Trace.TraceError(ex.ToString());                    
                 }
             }
         }

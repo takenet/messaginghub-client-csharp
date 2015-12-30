@@ -62,7 +62,8 @@
     <Compile Include="IContextProvider.cs" />
     <Compile Include="MessagingHubClientExtensions.cs" />
     <Compile Include="MessageOutputProcessor.cs" />
-    <Compile Include="SyntaxTextMessageReceiverBuilder.cs" />
+    <Compile Include="RequestContextExtensions.cs" />
+    <Compile Include="SyntaxTextcMessageReceiverBuilder.cs" />
     <Compile Include="TextcMessageReceiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextcMessageReceiverBuilder.cs" />

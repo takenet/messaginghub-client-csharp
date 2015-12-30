@@ -38,7 +38,7 @@ namespace Takenet.MessagingHub.Client
             _clientChannelFactory = clientChannelFactory;
             _limeSessionProvider = limeSessionProvider;
         }
-        
+
         public async Task StartAsync()
         {
             _connectionSemaphore = new SemaphoreSlim(1);
@@ -71,10 +71,7 @@ namespace Takenet.MessagingHub.Client
                 await EndSession(cancellationTokenSource.Token);
             }
 
-            if (_connectionSemaphore != null)
-            {
-                _connectionSemaphore.Dispose();
-            }
+            _connectionSemaphore?.Dispose();
         }
 
         public Task<Message> ReceiveMessageAsync(CancellationToken cancellationToken)
@@ -194,7 +191,7 @@ namespace Takenet.MessagingHub.Client
                     if (cancellationToken.IsCancellationRequested) return;
                     throw;
                 }
-                
+
                 while (!_isSessionEstablished && !cancellationToken.IsCancellationRequested)
                 {
                     try
@@ -232,10 +229,7 @@ namespace Takenet.MessagingHub.Client
 
         private async Task EstablishSession(CancellationToken cancellationToken)
         {
-            if(_clientChannel != null)
-            {
-                _clientChannel.DisposeIfDisposable();
-            }
+            _clientChannel?.DisposeIfDisposable();
 
             _clientChannel = await _clientChannelFactory.CreateClientChannelAsync(_sendTimeout);
 
@@ -246,10 +240,7 @@ namespace Takenet.MessagingHub.Client
         {
             await _limeSessionProvider.FinishSessionAsync(_clientChannel, cancellationToken);
 
-            if (_clientChannel != null)
-            {
-                _clientChannel.DisposeIfDisposable();
-            }
+            _clientChannel?.DisposeIfDisposable();
         }
 
         public Task SetResourceAsync<TResource>(LimeUri uri, TResource resource, CancellationToken cancellationToken, Func<Command, Task> unrelatedCommandHandler = null) where TResource : Document

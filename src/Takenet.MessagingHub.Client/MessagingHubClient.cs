@@ -15,16 +15,17 @@ using Takenet.MessagingHub.Client.Senders;
 namespace Takenet.MessagingHub.Client
 {
     /// <summary>
-    /// Implementation for <see cref="IMessagingHubClient"/>
+    /// Default implementation for <see cref="IMessagingHubClient"/> class.
     /// </summary>
     public class MessagingHubClient : IMessagingHubClient
     {
+        public const string DEFAULT_DOMAIN = "msging.net";
+
         public bool Started { get; private set; }
 
         private readonly Uri _endpoint;
         private readonly IDictionary<MediaType, IList<Func<IMessageReceiver>>> _messageReceivers;
         private readonly IDictionary<Event, IList<Func<INotificationReceiver>>> _notificationReceivers;
-
         private readonly IList<Func<IMessageReceiver>> _defaultMessageReceivers = new List<Func<IMessageReceiver>> { () => new UnsupportedMessageReceiver() };
         private readonly IList<Func<INotificationReceiver>> _defaultNotificationReceivers = new List<Func<INotificationReceiver>> { () => new BlackholeNotificationReceiver() };
 
@@ -33,7 +34,7 @@ namespace Takenet.MessagingHub.Client
         private string _accessKey;
         private readonly string _domainName;
 
-        private IPersistentClientChannelFactory _persistentClientFactory;
+        private readonly IPersistentClientChannelFactory _persistentClientFactory;
         private IPersistentClientChannel _clientChannel;
 
         private ICommandProcessor _commandProcessor;
@@ -46,7 +47,7 @@ namespace Takenet.MessagingHub.Client
         private Task _messageReceiverTask;
         private Task _notiticationReceiverTask;
         private readonly TimeSpan _timeout;
-        private ILimeSessionProvider _limeSessionProvider;
+        private readonly ILimeSessionProvider _limeSessionProvider;
 
         internal MessagingHubClient(IPersistentClientChannelFactory persistentChannelFactory, IClientChannelFactory clientChannelFactory,
             ICommandProcessorFactory commandProcessorFactory, ILimeSessionProvider limeSessionProvider, string hostName, string domainName)
@@ -63,13 +64,13 @@ namespace Takenet.MessagingHub.Client
         }
 
 
-        public MessagingHubClient(string hostname = "msging.net", string domainName = "msging.net") :
+        public MessagingHubClient(string hostname = DEFAULT_DOMAIN, string domainName = DEFAULT_DOMAIN) :
             this(new PersistentClientChannelFactory(), new ClientChannelFactory(), new CommandProcessorFactory(), new LimeSessionProvider(), hostname, domainName)
         { }
 
         public MessagingHubClient UsingAccount(string login, string password)
         {
-            if (Started) throw new InvalidOperationException("Client already started!");
+            if (Started) throw new InvalidOperationException("The client is already started");
 
             _login = login;
             _password = password;
@@ -78,7 +79,7 @@ namespace Takenet.MessagingHub.Client
 
         public MessagingHubClient UsingAccessKey(string login, string key)
         {
-            if (Started) throw new InvalidOperationException("Client already started!");
+            if (Started) throw new InvalidOperationException("The client is already started");
 
             _login = login;
             _accessKey = key;
@@ -102,8 +103,7 @@ namespace Takenet.MessagingHub.Client
         public MessagingHubClient AddMessageReceiver(Func<IMessageReceiver> receiverFactory, MediaType forMimeType = null)
         {
             if (receiverFactory == null) throw new ArgumentNullException(nameof(receiverFactory));
-
-            if (Started) throw new InvalidOperationException("Cannot add a receiver after the client has been started!");
+            if (Started) throw new InvalidOperationException("Cannot add a receiver after the client has been started");
 
             var mediaTypeToSave = forMimeType ?? MediaTypes.Any;
 
@@ -120,7 +120,7 @@ namespace Takenet.MessagingHub.Client
 
         public MessagingHubClient AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Event? forEventType = default(Event?))
         {
-            if (Started) throw new InvalidOperationException("Cannot add a receiver after the client has been started!");
+            if (Started) throw new InvalidOperationException("Cannot add a receiver after the client has been started");
 
             IList<Func<INotificationReceiver>> eventTypeReceivers;
 
@@ -152,14 +152,14 @@ namespace Takenet.MessagingHub.Client
 
         public async Task<Command> SendCommandAsync(Command command)
         {
-            if (!Started) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
+            if (!Started) throw new InvalidOperationException("Client must be started before to proceed with this operation");
 
             return await _commandProcessor.SendAsync(command, _timeout).ConfigureAwait(false);
         }
 
         public async Task SendMessageAsync(Message message)
         {
-            if (!Started) throw new InvalidOperationException("Client must be started before to proceed with this operation!");
+            if (!Started) throw new InvalidOperationException("Client must be started before to proceed with this operation");
 
             await _clientChannel.SendMessageAsync(message).ConfigureAwait(false);
         }
@@ -176,13 +176,10 @@ namespace Takenet.MessagingHub.Client
             InstantiateGlobalCancellationTokenSource();
 
             await InstantiateClientChannelAsync().ConfigureAwait(false);
-
             await _clientChannel.StartAsync().ConfigureAwait(false);
-
             await SetPresenceAsync().ConfigureAwait(false);
 
             StartEnvelopeProcessors();
-
             InitializeAndStartReceivers();
 
             Started = true;
@@ -292,7 +289,7 @@ namespace Takenet.MessagingHub.Client
             }
 
             if (result == null)
-                throw new InvalidOperationException($"A password (method {nameof(UsingAccount)}) or accessKey (method {nameof(UsingAccessKey)}) should be informed");
+                throw new InvalidOperationException($"A password or accessKey should be defined. Please use the '{nameof(UsingAccount)}' or '{nameof(UsingAccessKey)}' methods for that.");
 
             return result;
         }
