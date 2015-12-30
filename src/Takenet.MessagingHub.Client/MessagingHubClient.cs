@@ -68,7 +68,7 @@ namespace Takenet.MessagingHub.Client
             this(new PersistentClientChannelFactory(), new ClientChannelFactory(), new CommandProcessorFactory(), new LimeSessionProvider(), hostname, domainName)
         { }
 
-        public MessagingHubClient UsingAccount(string login, string password)
+        public IMessagingHubClient UsingAccount(string login, string password)
         {
             if (Started) throw new InvalidOperationException("The client is already started");
 
@@ -77,7 +77,7 @@ namespace Takenet.MessagingHub.Client
             return this;
         }
 
-        public MessagingHubClient UsingAccessKey(string login, string key)
+        public IMessagingHubClient UsingAccessKey(string login, string key)
         {
             if (Started) throw new InvalidOperationException("The client is already started");
 
@@ -86,21 +86,21 @@ namespace Takenet.MessagingHub.Client
             return this;
         }
 
-        public MessagingHubClient AddMessageReceiver(IMessageReceiver messageReceiver, MediaType forMimeType = null)
+        public IMessagingHubClient AddMessageReceiver(IMessageReceiver messageReceiver, MediaType forMimeType = null)
         {
             if (messageReceiver == null) throw new ArgumentNullException(nameof(messageReceiver));
 
             return AddMessageReceiver(() => messageReceiver, forMimeType);
         }
 
-        public MessagingHubClient AddNotificationReceiver(INotificationReceiver notificationReceiver, Event? forEventType = null)
+        public IMessagingHubClient AddNotificationReceiver(INotificationReceiver notificationReceiver, Event? forEventType = null)
         {
             if (notificationReceiver == null) throw new ArgumentNullException(nameof(notificationReceiver));
 
             return AddNotificationReceiver(() => notificationReceiver, forEventType);
         }
 
-        public MessagingHubClient AddMessageReceiver(Func<IMessageReceiver> receiverFactory, MediaType forMimeType = null)
+        public IMessagingHubClient AddMessageReceiver(Func<IMessageReceiver> receiverFactory, MediaType forMimeType = null)
         {
             if (receiverFactory == null) throw new ArgumentNullException(nameof(receiverFactory));
             if (Started) throw new InvalidOperationException("Cannot add a receiver after the client has been started");
@@ -118,7 +118,7 @@ namespace Takenet.MessagingHub.Client
             return this;
         }
 
-        public MessagingHubClient AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Event? forEventType = default(Event?))
+        public IMessagingHubClient AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Event? forEventType = default(Event?))
         {
             if (Started) throw new InvalidOperationException("Cannot add a receiver after the client has been started");
 
