@@ -20,36 +20,36 @@ namespace Takenet.MessagingHub.Client.Playground
 
             // Instantiates a MessageHubClient using its fluent API
             var client =
-                new MessagingHubClient()
+                new MessagingHubClientBuilder()
                     // Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
                     .UsingAccount(login, password)
                     .AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
                     .AddNotificationReceiver(new PrintNotificationReceiver())
-                    .NewTextcMessageReceiverBuilder()
-                        .ForSyntax(":LDWord(help,wtf,ajuda,comofaz)")
-                            .Return(() => "Welcome to the calculator! Try send me some math operations, like 'sum 1 and 2' or '3 times 4' and I'll try help you :)")
-                        .ForSyntaxes(
-                            "operation+:Word(sum) a:Integer :Word?(and) b:Integer",
-                            "a:Integer :Word(plus,more) b:Integer")
-                                .Return<int, int, string>((a, b) => $"The sum result is {a + b}")
-                        .ForSyntaxes(
-                            "operation+:Word(subtract,sub) b:Integer :Word(from) a:Integer",
-                            "a:Integer :Word(minus) b:Integer")
-                                .Return<int, int, string>((a, b) => $"The subtraction result is {a - b}")
-                        .ForSyntaxes(
-                            "operation+:Word(multiply,mul) a:Integer :Word?(and,by) b:Integer",
-                            "a:Integer :Word(times) b:Integer")
-                                .Return<int, int, string>((a, b) => $"The multiplication result is {a * b}")
-                        .ForSyntaxes(
-                            "operation+:Word(multiply,mul) a:Integer :Word?(and,by) b:Integer",
-                            "a:Integer :Word(times) b:Integer")
-                                .Return<int, int, string>((a, b) => $"The multiplication result is {a * b}")                        
-                    .BuildAndAddMessageReceiver();
-                                
+                   // .NewTextcMessageReceiverBuilder()
+                   //    .ForSyntax(":LDWord(help,wtf,ajuda,comofaz)")
+                   //        .Return(() => "Welcome to the calculator! Try send me some math operations, like 'sum 1 and 2' or '3 times 4' and I'll try help you :)")
+                   //    .ForSyntaxes(
+                   //        "operation+:Word(sum) a:Integer :Word?(and) b:Integer",
+                   //        "a:Integer :Word(plus,more) b:Integer")
+                   //            .Return<int, int, string>((a, b) => $"The sum result is {a + b}")
+                   //    .ForSyntaxes(
+                   //        "operation+:Word(subtract,sub) b:Integer :Word(from) a:Integer",
+                   //        "a:Integer :Word(minus) b:Integer")
+                   //            .Return<int, int, string>((a, b) => $"The subtraction result is {a - b}")
+                   //    .ForSyntaxes(
+                   //        "operation+:Word(multiply,mul) a:Integer :Word?(and,by) b:Integer",
+                   //        "a:Integer :Word(times) b:Integer")
+                   //            .Return<int, int, string>((a, b) => $"The multiplication result is {a * b}")
+                   //    .ForSyntaxes(
+                   //        "operation+:Word(multiply,mul) a:Integer :Word?(and,by) b:Integer",
+                   //        "a:Integer :Word(times) b:Integer")
+                   //            .Return<int, int, string>((a, b) => $"The multiplication result is {a * b}")
+                   //.BuildAndAddMessageReceiver()
+                   .Build();
 
             // Starts the client
             await client.StartAsync();
-
+            
             // Instantiates a command to get the current account form the server
             var command = new Command {
                 Method = CommandMethod.Get,

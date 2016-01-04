@@ -15,14 +15,14 @@ namespace Takenet.MessagingHub.Client.Textc
     /// </summary>
     public sealed class TextcMessageReceiverBuilder
     {
-        private readonly IMessagingHubClient _client;
+        private readonly IMessagingHubSender _client;
         private IContextProvider _contextProvider;
         private Func<Message, MessageReceiverBase, Task> _matchNotFoundHandler;
 
         internal readonly List<ICommandProcessor> CommandProcessors;
         internal readonly IOutputProcessor OutputProcessor;
         
-        public TextcMessageReceiverBuilder(IMessagingHubClient client, IOutputProcessor outputProcessor = null)
+        public TextcMessageReceiverBuilder(IMessagingHubSender client, IOutputProcessor outputProcessor = null)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             _client = client;
@@ -81,7 +81,7 @@ namespace Takenet.MessagingHub.Client.Textc
         {
             return WithMatchNotFoundHandler(
                 (message, receiver) =>
-                    receiver.MessageSender.SendMessageAsync(matchNotFoundMessage, message.Pp ?? message.From));
+                    receiver.EnvelopeSender.SendMessageAsync(matchNotFoundMessage, message.Pp ?? message.From));
         }
 
         /// <summary>
@@ -138,10 +138,10 @@ namespace Takenet.MessagingHub.Client.Textc
         /// Builds a new instance of <see cref="TextcMessageReceiver"/> using the defined configurations and adds it to the associated <see cref="MessagingHubClient"/> instance.
         /// </summary>
         /// <returns></returns>
-        public IMessagingHubClient BuildAndAddMessageReceiver()
-        {
-            _client.AddMessageReceiver(Build(), MediaTypes.PlainText);
-            return _client;
-        }
+        //public IMessagingHubSender BuildAndAddMessageReceiver()
+        //{
+        //    _client.AddMessageReceiver(Build(), MediaTypes.PlainText);
+        //    return _client;
+        //}
     }
 }

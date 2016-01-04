@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Takenet.MessagingHub.Client.Receivers;
-using Takenet.MessagingHub.Client.Senders;
 
 namespace Takenet.MessagingHub.Client
 {
@@ -27,16 +26,14 @@ namespace Takenet.MessagingHub.Client
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns></returns>
         public static Task StartAsync<TEnvelope>(Func<CancellationToken, Task<TEnvelope>> producer,
-            ICommandSender commandSender, IMessageSender messageSender, INotificationSender notificationSender,
-            Func<TEnvelope, IEnumerable<IEnvelopeReceiver<TEnvelope>>> receiverFor, CancellationToken cancellationToken)
+            IEnvelopeSender envelopeSender, Func<TEnvelope, IEnumerable<IEnvelopeReceiver<TEnvelope>>> receiverFor, CancellationToken cancellationToken)
             where TEnvelope : Envelope
         {
-            return Task.Run(() => Process(producer, commandSender, messageSender, notificationSender, receiverFor, cancellationToken), cancellationToken);
+            return Task.Run(() => Process(producer, envelopeSender, receiverFor, cancellationToken), cancellationToken);
         }
 
         private static async Task Process<TEnvelope>(Func<CancellationToken, Task<TEnvelope>> producer,
-            ICommandSender commandSender, IMessageSender messageSender, INotificationSender notificationSender,
-            Func<TEnvelope, IEnumerable<IEnvelopeReceiver<TEnvelope>>> receiverFor, CancellationToken cancellationToken)
+            IEnvelopeSender envelopeSender, Func<TEnvelope, IEnumerable<IEnvelopeReceiver<TEnvelope>>> receiverFor, CancellationToken cancellationToken)
             where TEnvelope : Envelope
         {
             while (!cancellationToken.IsCancellationRequested)
@@ -61,7 +58,7 @@ namespace Takenet.MessagingHub.Client
                     await Task
                             .WhenAll(
                                 receivers.Select(r =>
-                                    CallReceiver(commandSender, messageSender, notificationSender, r, envelope)))
+                                    CallReceiver(envelopeSender, r, envelope)))
                             .ConfigureAwait(false);
                 }
                 catch (Exception ex)
@@ -72,23 +69,21 @@ namespace Takenet.MessagingHub.Client
             }
         }
 
-        private static Task CallReceiver<TEnvelope>(ICommandSender commandSender, IMessageSender messageSender, INotificationSender notificationSender,
+        private static Task CallReceiver<TEnvelope>(IEnvelopeSender envelopeSender,
             IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope)
             where TEnvelope : Envelope
         {
-            InjectSenders(commandSender, messageSender, notificationSender, envelopeReceiver);
+            InjectSenders(envelopeSender, envelopeReceiver);
             return envelopeReceiver.ReceiveAsync(envelope);
         }
 
-        private static void InjectSenders(ICommandSender commandSender, IMessageSender messageSender, INotificationSender notificationSender, object receiver)
+        private static void InjectSenders(IEnvelopeSender envelopeSender, object receiver)
         {
             if (!(receiver is EnvelopeReceiverBase))
                 return;
 
             var receiverBase = ((EnvelopeReceiverBase)receiver);
-            receiverBase.MessageSender = messageSender;
-            receiverBase.CommandSender = commandSender;
-            receiverBase.NotificationSender = notificationSender;
+            receiverBase.EnvelopeSender = envelopeSender;
         }
     }
 }
