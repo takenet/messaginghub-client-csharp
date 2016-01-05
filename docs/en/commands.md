@@ -6,7 +6,7 @@ The client allow you to send commands through the Messaging Hub. But it is not p
 
 To send a command, you can use the following method:
 
-```C# 
+``` 
 var command = new Command {
     Method = CommandMethod.Get,
     Uri = new LimeUri("/account")

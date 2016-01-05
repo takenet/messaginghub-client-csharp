@@ -6,7 +6,7 @@ The client allow you to send and receive messages through the Messaging Hub.
 
 To receive a message, register a receiver like so:
 
-```C# 
+``` 
 public class MyMessageReceiver : MessageReceiverBase
 {
     public override async Task ReceiveAsync(Message message)
@@ -21,13 +21,13 @@ client.AddMessageReceiver(new MyMessageReceiver(), MediaTypes.PlainText);
 
 It is also possible to pass a factory method to construct the receiver:
 
-```C# 
+``` 
 client.AddMessageReceiver(() => new MyMessageReceiver(), MediaTypes.PlainText);
 ```
 
 And you can specify a `media type` to filter your messages
 
-```C# 
+``` 
 client.AddMessageReceiver(() => new MyMessageReceiver(), new MediaType(MediaType.DiscreteTypes.Application, MediaType.SubTypes.JSON));
 ```
 
@@ -35,7 +35,7 @@ client.AddMessageReceiver(() => new MyMessageReceiver(), new MediaType(MediaType
 
 To send a message, you can use the following method:
 
-```C# 
+``` 
 var message = new Message
 {
     To = Node.Parse("user"),
@@ -47,7 +47,7 @@ await client.SendMessageAsync(message);
 
 Or you can use these extension methods to construct and send your message:
 
-```C# 
+``` 
 await client.SendMessageAsync("Message Text", to: "user");
 
 await client.SendMessageAsync("Message Text", Node.Parse("user"));

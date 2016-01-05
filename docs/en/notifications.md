@@ -6,7 +6,7 @@ The client allow you to send and receive notifications through the Messaging Hub
 
 To receive a notification, register a receiver like so:
 
-```C# 
+``` 
 public class MyNotificationReceiver : NotificationReceiverBase
 {
     public override async Task ReceiveAsync(Notification notification)
@@ -21,13 +21,13 @@ client.AddNotificationReceiver(new MyNotificationReceiver());
 
 It is also possible to pass a factory method to construct the receiver:
 
-```C# 
+``` 
 client.AddNotificationReceiver(() => new MyNotificationReceiver());
 ```
 
 And you can specify an event type to filter your notifications
 
-```C# 
+``` 
 client.AddNotificationReceiver(() => new MyNotificationReceiver(), Event.Received);
 ```
 
@@ -35,7 +35,7 @@ client.AddNotificationReceiver(() => new MyNotificationReceiver(), Event.Receive
 
 To send a notification, you can use the following method:
 
-```C# 
+``` 
 var notification = new Notification
 {
     To = Node.Parse("user"),
@@ -47,7 +47,7 @@ await client.SendNotificationAsync(notification);
 
 Or you can use these extension methods to construct and send your notification:
 
-```C# 
+``` 
 await client.SendNotificationAsync(message.ToReceivedNotification());
 
 await client.SendNotificationAsync(message.ToConsumedNotification());

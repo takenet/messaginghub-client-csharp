@@ -4,7 +4,7 @@ Este guia de como começar irá apresentar a você o uso das funcionalidades bá
 
 ## Instanciando o cliente
 
-```C#
+```
 const string login = "guest";
 const string password = "guest";
 
@@ -14,7 +14,7 @@ var client = new MessagingHubClient() // Uma vez que o nome do host e do domíni
 
 ## Se inscrevendo para receber uma mensagem de texto
 
-```C# 
+``` 
 public class PlainTextMessageReceiver : MessageReceiverBase
 {
     public override async Task ReceiveAsync(Message message)
@@ -29,7 +29,7 @@ client.AddMessageReceiver(messageReceiver: new PlainTextMessageReceiver(), forMi
 
 ## Se inscrevendo para receber uma notificação
 
-```C# 
+``` 
 public class PrintNotificationReceiver : NotificationReceiverBase
 {
     public override Task ReceiveAsync(Notification notification)
@@ -45,14 +45,14 @@ client.AddNotificationReceiver(receiverBuilder: () => new PrintNotificationRecei
 
 ## Iniciando o cliente
 
-```C# 
+``` 
 // APÓS registrados os receptores, o cliente DEVE ser iniciado
 await client.StartAsync();
 ```
 
 ## Enviando um comando e acessando sua resposta
 
-```C# 
+``` 
 var command = new Command {
     Method = CommandMethod.Get,
     Uri = new LimeUri("/account")
@@ -67,12 +67,12 @@ Console.WriteLine(account.Email);
 
 ## Publicando uma mensagem
 
-```C# 
+``` 
 await client.SendMessageAsync("Olá, mundo", to: "user");
 ```
 
 ## Desconectando
 
-```C# 
+``` 
 await client.StopAsync();
 ```

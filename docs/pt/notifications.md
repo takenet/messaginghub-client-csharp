@@ -6,7 +6,7 @@ O cliente permite que você envie e receba notificações através do Messaging 
 
 Para receber uma notificação, registre um receptor da seguinte forma:
 
-```C# 
+``` 
 public class MyNotificationReceiver : NotificationReceiverBase
 {
     public override async Task ReceiveAsync(Notification notification)
@@ -21,13 +21,13 @@ client.AddNotificationReceiver(new MyNotificationReceiver());
 
 Também é possível passar um factory method para construir o receptor:
 
-```C# 
+``` 
 client.AddNotificationReceiver(() => new MyNotificationReceiver());
 ```
 
 E você pode especificar um `event type` para filtrar suas mensagens
 
-```C# 
+``` 
 client.AddNotificationReceiver(() => new MyNotificationReceiver(), Event.Received);
 ```
 
@@ -35,7 +35,7 @@ client.AddNotificationReceiver(() => new MyNotificationReceiver(), Event.Receive
 
 Para enviar uma notificação, você pode usar o seguinte método:
 
-```C# 
+``` 
 var notification = new Notification
 {
     To = Node.Parse("user"),
@@ -47,7 +47,7 @@ await client.SendNotificationAsync(notification);
 
 Ou você pode usar um destes métodos de extensão para construir e enviar sua notificação:
 
-```C# 
+``` 
 await client.SendNotificationAsync(message.ToReceivedNotification());
 
 await client.SendNotificationAsync(message.ToConsumedNotification());

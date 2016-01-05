@@ -8,17 +8,11 @@ MessagingHub.Client is a simple client for the [Messaging Hub](https://messaging
 
 ## Getting Started
 
-To get started with the Messaging Hub Client, see the [Getting Started](http://takenet.github.io/messaginghub-client-csharp/en/getting-started) page.
+To get started with the Messaging Hub Client, see the [Getting Started](http://messaginghub.io/docs/sdks/getting-started) page.
 
 ## Documentation 
 
-The full documentation can be found at [http://takenet.github.io/messaginghub-client-csharp](http://takenet.github.io/messaginghub-client-csharp).
-
-### About the Documentation
-
-The documentation for this project is provided by [GitHub Pages](http://pages.github.io).
-
-Documentation files exist only in the gh-pages branch.
+The full documentation can be found at [http://messaginghub.io/docs/sdks/introduction](http://messaginghub.io/docs/sdks/introduction).
 
 ## License
 

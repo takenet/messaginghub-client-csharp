@@ -26,7 +26,7 @@ The following operations are supported:
 
 For receiving envelopes (messages or notifications) the client requests that the developer register receiver agents that will filter the received data and execute the desired action over it, like the example below:
 
-```C# 
+``` 
 public class PlainTextMessageReceiver : MessageReceiverBase
 {
     public override async Task ReceiveAsync(Message message)
@@ -41,9 +41,9 @@ client.AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
 
 For sending operations, the client provides Send methods that can be invoked directly, like the example below:
 
-```C#
+```
 // Send a plain text message to the 'user@msging.net' 
 await client.SendMessageAsync("Hello, world", to: "user");
 ```
 
-For more information about specific usage, see the detailed documentation for [Getting Started](../{{page.lang}}/getting-started), [Client Configuration](../{{page.lang}}/client-configuration), [Messages](../{{page.lang}}/messages), [Notifications](../{{page.lang}}/notifications) and [Commands](../{{page.lang}}/commands).
+For more information about specific usage, see the detailed documentation for [Getting Started](http://messaginghub.io/docs/sdks/getting-started), [Client Configuration](http://messaginghub.io/docs/sdks/client-configuration), [Messages](http://messaginghub.io/docs/sdks/messages), [Notifications](http://messaginghub.io/docs/sdks/notifications) and [Commands](http://messaginghub.io/docs/sdks/commands).

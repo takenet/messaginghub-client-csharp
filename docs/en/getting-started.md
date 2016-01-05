@@ -4,7 +4,7 @@ This getting started guide will show you how to use the basic functionalities of
 
 ## Instantiating a client
 
-```C#
+```
 const string login = "guest";
 const string password = "guest";
 
@@ -14,7 +14,7 @@ var client = new MessagingHubClient() // Since host name and domain name are not
 
 ## Subscribing to receive a plain text message
 
-```C#
+```
 public class PlainTextMessageReceiver : MessageReceiverBase
 {
     public override async Task ReceiveAsync(Message message)
@@ -29,7 +29,7 @@ client.AddMessageReceiver(messageReceiver: new PlainTextMessageReceiver(), forMi
 
 ## Subscribing to receive a notification
 
-```C# 
+``` 
 public class PrintNotificationReceiver : NotificationReceiverBase
 {
     public override Task ReceiveAsync(Notification notification)
@@ -45,14 +45,14 @@ client.AddNotificationReceiver(receiverBuilder: () => new PrintNotificationRecei
 
 ## Starting the client
 
-```C# 
+``` 
 // AFTER registered the reveivers, the client MUST be started
 await client.StartAsync();
 ```
 
 ## Sending a command and accessing its response
 
-```C# 
+``` 
 var command = new Command {
     Method = CommandMethod.Get,
     Uri = new LimeUri("/account")
@@ -67,12 +67,12 @@ Console.WriteLine(account.Email);
 
 ## Publishing a message
 
-```C# 
+``` 
 await client.SendMessageAsync("Hello, world", to: "user");
 ```
 
 ## Disconnecting
 
-```C# 
+``` 
 await client.StopAsync();
 ```

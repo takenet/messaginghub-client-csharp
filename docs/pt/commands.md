@@ -6,7 +6,7 @@ O cliente permite que você envie comandos através do Messaging Hub. No entanto
 
 Para enviar um comando, você pode usar o seguinte método:
 
-```C# 
+``` 
 var command = new Command {
     Method = CommandMethod.Get,
     Uri = new LimeUri("/account")

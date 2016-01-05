@@ -4,7 +4,7 @@ O cliente do Messaging Hub foi projetado para ser simples e fácil de usar, dest
 
 Para se conectar ao Messaging Hub, o host padrão, `"msging.net"` e o domínio padrão, também `"msging.net"`, são usados por padrão. Caso queira especificar outro host ou domínio, você pode passa-los no construtor do cliente, como exibido abaixo:  
 
-```C#
+```
 var client = new MessagingHubClient("meuhost.com", "meudominio.com")
 ```
 
@@ -12,7 +12,7 @@ Além do nome do host e do domínio, uma autenticação é obrigatória. Essa au
 
 ### Usando login e senha:
 
-```C#
+```
 const string login = "user";
 const string password = "password";
 
@@ -23,7 +23,7 @@ var client = new MessagingHubClient()
 
 ### Usando login e chave de acesso:
 
-```C#
+```
 const string login = "user";
 const string accessKey = "key";
 
