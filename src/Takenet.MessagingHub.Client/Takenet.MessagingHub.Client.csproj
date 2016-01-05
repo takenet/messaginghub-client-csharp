@@ -69,8 +69,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="EnvelopeDispatcher.cs" />
     <Compile Include="EnvelopeListener.cs" />
+    <Compile Include="EnvelopeListenerExtensions.cs" />
     <Compile Include="IEnvelopeListener.cs" />
     <Compile Include="IEnvelopeReceiver.cs" />
     <Compile Include="IEnvelopeSender.cs" />

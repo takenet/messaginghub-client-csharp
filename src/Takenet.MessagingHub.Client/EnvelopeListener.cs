@@ -13,10 +13,12 @@ namespace Takenet.MessagingHub.Client
 {
     public class EnvelopeListener : MessagingHubClient, IEnvelopeListener
     {
-        private readonly IDictionary<MediaType, IList<Func<IMessageReceiver>>> _messageReceivers;
-        private readonly IDictionary<Event, IList<Func<INotificationReceiver>>> _notificationReceivers;
-        private readonly IList<Func<IMessageReceiver>> _defaultMessageReceivers = new List<Func<IMessageReceiver>> { () => new UnsupportedMessageReceiver() };
-        private readonly IList<Func<INotificationReceiver>> _defaultNotificationReceivers = new List<Func<INotificationReceiver>> { () => new BlackholeNotificationReceiver() };
+        private readonly IList<ReceiverFactoryPredicate<Message>> _messageReceivers;
+        private readonly IList<ReceiverFactoryPredicate<Notification>> _notificationReceivers;
+
+        private static readonly IEnumerable<IMessageReceiver> DefaultMessageReceivers = new IMessageReceiver[] { new UnsupportedMessageReceiver() };
+        private static readonly IEnumerable<INotificationReceiver> DefaultNotificationReceivers = new INotificationReceiver[] { new BlackholeNotificationReceiver() };
+
         private CancellationTokenSource _cancellationTokenSource;
         private Task _backgroundExecution;
         private Task _messageReceiverTask;
@@ -28,76 +30,25 @@ namespace Takenet.MessagingHub.Client
             : base(login, authentication, endPoint, domainName, persistentChannelFactory, clientChannelFactory,
             commandProcessorFactory, limeSessionProvider)
         {
-            _messageReceivers = new Dictionary<MediaType, IList<Func<IMessageReceiver>>>();
-            _notificationReceivers = new Dictionary<Event, IList<Func<INotificationReceiver>>>();
+            _messageReceivers = new List<ReceiverFactoryPredicate<Message>>();
+            _notificationReceivers = new List<ReceiverFactoryPredicate<Notification>>();
         }
 
         public EnvelopeListener(string login, Authentication authentication, Uri endPoint, string domainName)
             : base(login, authentication, endPoint, domainName)
         {
-            _messageReceivers = new Dictionary<MediaType, IList<Func<IMessageReceiver>>>();
-            _notificationReceivers = new Dictionary<Event, IList<Func<INotificationReceiver>>>();
+            _messageReceivers = new List<ReceiverFactoryPredicate<Message>>();
+            _notificationReceivers = new List<ReceiverFactoryPredicate<Notification>>();
         }
         
-        public void AddMessageReceiver(Func<IMessageReceiver> receiverFactory, MediaType forMimeType = null)
+        public void AddMessageReceiver(Func<IMessageReceiver> receiverFactory, Predicate<Message> predicate)
         {
-            if (receiverFactory == null) throw new ArgumentNullException(nameof(receiverFactory));
-            if (_started) throw new InvalidOperationException("Cannot add a receiver after the client has been started");
-
-            var mediaTypeToSave = forMimeType ?? MediaTypes.Any;
-
-            IList<Func<IMessageReceiver>> mediaTypeReceivers;
-            if (!_messageReceivers.TryGetValue(mediaTypeToSave, out mediaTypeReceivers))
-            {
-                mediaTypeReceivers = new List<Func<IMessageReceiver>>();
-                _messageReceivers.Add(mediaTypeToSave, mediaTypeReceivers);
-            }
-
-            mediaTypeReceivers.Add(receiverFactory);
+            AddEnvelopeReceiver(_messageReceivers, receiverFactory, predicate);
         }
 
-        public void AddMessageReceiver(IMessageReceiver messageReceiver, MediaType forMimeType = null)
+        public void AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Predicate<Notification> predicate)
         {
-            if (messageReceiver == null) throw new ArgumentNullException(nameof(messageReceiver));
-
-            AddMessageReceiver(() => messageReceiver, forMimeType);
-        }
-
-        public void AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Event? forEventType = default(Event?))
-        {
-            if (_started) throw new InvalidOperationException("Cannot add a receiver after the client has been started");
-
-            IList<Func<INotificationReceiver>> eventTypeReceivers;
-
-            if (forEventType.HasValue)
-            {
-                if (!_notificationReceivers.TryGetValue(forEventType.Value, out eventTypeReceivers))
-                {
-                    eventTypeReceivers = new List<Func<INotificationReceiver>>();
-                    _notificationReceivers.Add(forEventType.Value, eventTypeReceivers);
-                }
-
-                eventTypeReceivers.Add(receiverFactory);
-            }
-            else
-            {
-                eventTypeReceivers = new List<Func<INotificationReceiver>> { receiverFactory };
-
-                _notificationReceivers.Add(Event.Accepted, eventTypeReceivers);
-                _notificationReceivers.Add(Event.Authorized, eventTypeReceivers);
-                _notificationReceivers.Add(Event.Consumed, eventTypeReceivers);
-                _notificationReceivers.Add(Event.Dispatched, eventTypeReceivers);
-                _notificationReceivers.Add(Event.Failed, eventTypeReceivers);
-                _notificationReceivers.Add(Event.Received, eventTypeReceivers);
-                _notificationReceivers.Add(Event.Validated, eventTypeReceivers);
-            }
-        }
-
-        public void AddNotificationReceiver(INotificationReceiver notificationReceiver, Event? forEventType = default(Event?))
-        {
-            if (notificationReceiver == null) throw new ArgumentNullException(nameof(notificationReceiver));
-
-            AddNotificationReceiver(() => notificationReceiver, forEventType);
+            AddEnvelopeReceiver(_notificationReceivers, receiverFactory, predicate);
         }
 
         public override async Task StartAsync()
@@ -105,7 +56,6 @@ namespace Takenet.MessagingHub.Client
             await base.StartAsync();
 
             _cancellationTokenSource = new CancellationTokenSource();
-
             InitializeAndStartReceivers();
 
             _started = true;
@@ -143,29 +93,50 @@ namespace Takenet.MessagingHub.Client
             _backgroundExecution = Task.WhenAll(_messageReceiverTask, _notiticationReceiverTask);
         }
 
-        private IEnumerable<IMessageReceiver> GetReceiversFor(Message message)
+        private IEnumerable<IEnvelopeReceiver<Message>> GetReceiversFor(Message message)
         {
-            IList<Func<IMessageReceiver>> mimeTypeReceiversFunc;
-
-            var hasReceiver = _messageReceivers.TryGetValue(message.Type, out mimeTypeReceiversFunc) ||
-                              _messageReceivers.TryGetValue(MediaTypes.Any, out mimeTypeReceiversFunc);
-
-            if (!hasReceiver)
-                mimeTypeReceiversFunc = _defaultMessageReceivers;
-
-            return mimeTypeReceiversFunc.Select(m => m?.Invoke()).ToList();
+            return GetReceiversFor(_messageReceivers, message).Coalesce(DefaultMessageReceivers);
         }
 
-        private IEnumerable<INotificationReceiver> GetReceiversFor(Notification notificaiton)
+        private IEnumerable<IEnvelopeReceiver<Notification>> GetReceiversFor(Notification notification)
         {
-            IList<Func<INotificationReceiver>> eventTypeReceiversFunc;
-            var hasReceiver = _notificationReceivers.TryGetValue(notificaiton.Event, out eventTypeReceiversFunc);
-            if (!hasReceiver)
-                eventTypeReceiversFunc = _defaultNotificationReceivers;
-
-            return eventTypeReceiversFunc.Select(m => m?.Invoke()).ToList();
+            return GetReceiversFor(_notificationReceivers, notification).Coalesce(DefaultNotificationReceivers);
         }
 
-        
+        private IEnumerable<IEnvelopeReceiver<T>> GetReceiversFor<T>(
+            IEnumerable<ReceiverFactoryPredicate<T>> envelopeReceivers,             
+            T envelope) where T : Envelope, new()
+        {
+            if (envelope == null) throw new ArgumentNullException(nameof(envelope));
+            return envelopeReceivers.Where(r => r.Predicate(envelope)).Select(r => r.ReceiverFactory());            
+        }
+
+
+        private void AddEnvelopeReceiver<T>(IList<ReceiverFactoryPredicate<T>> envelopeReceivers,
+            Func<IEnvelopeReceiver<T>> receiverFactory, Predicate<T> predicate) where T : Envelope, new()
+        {
+            if (receiverFactory == null) throw new ArgumentNullException(nameof(receiverFactory));
+            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+            if (_started) throw new InvalidOperationException("Cannot add a receiver after the client has been started");
+
+            var predicateReceiverFactory = new ReceiverFactoryPredicate<T>(receiverFactory, predicate);
+            envelopeReceivers.Add(predicateReceiverFactory);
+        }
+
+        class ReceiverFactoryPredicate<T> where T : Envelope, new()
+        {
+            public ReceiverFactoryPredicate(Func<IEnvelopeReceiver<T>> receiverFactory, Predicate<T> predicate)
+            {
+                if (receiverFactory == null) throw new ArgumentNullException(nameof(receiverFactory));
+                if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+
+                ReceiverFactory = receiverFactory;
+                Predicate = predicate;
+            }
+
+            public Func<IEnvelopeReceiver<T>> ReceiverFactory { get; }
+
+            public Predicate<T> Predicate { get; }
+        }
     }
 }
