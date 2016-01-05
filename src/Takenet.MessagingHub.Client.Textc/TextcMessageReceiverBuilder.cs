@@ -16,19 +16,19 @@ namespace Takenet.MessagingHub.Client.Textc
     /// </summary>
     public sealed class TextcMessageReceiverBuilder
     {
-        private readonly IMessagingHubSender _client;
+        private readonly MessageHubSenderBuilder _senderBuilder;
         private IContextProvider _contextProvider;
         private Func<Message, MessageReceiverBase, Task> _matchNotFoundHandler;
 
         internal readonly List<ICommandProcessor> CommandProcessors;
         internal readonly IOutputProcessor OutputProcessor;
         
-        public TextcMessageReceiverBuilder(IMessagingHubSender client, IOutputProcessor outputProcessor = null)
+        public TextcMessageReceiverBuilder(MessageHubSenderBuilder senderBuilder, IOutputProcessor outputProcessor = null)
         {
-            if (client == null) throw new ArgumentNullException(nameof(client));
-            _client = client;
+            _senderBuilder = senderBuilder;
+            if (senderBuilder == null) throw new ArgumentNullException(nameof(senderBuilder));
             CommandProcessors = new List<ICommandProcessor>();
-            OutputProcessor = outputProcessor ?? new MessageOutputProcessor(client);
+            OutputProcessor = outputProcessor ?? new MessageOutputProcessor(senderBuilder.EnvelopeListener);
         }
 
         /// <summary>
@@ -162,10 +162,10 @@ namespace Takenet.MessagingHub.Client.Textc
         /// Builds a new instance of <see cref="TextcMessageReceiver"/> using the defined configurations and adds it to the associated <see cref="MessagingHubClient"/> instance.
         /// </summary>
         /// <returns></returns>
-        //public IMessagingHubSender BuildAndAddMessageReceiver()
-        //{
-        //    _client.AddMessageReceiver(Build(), MediaTypes.PlainText);
-        //    return _client;
-        //}
+        public MessageHubSenderBuilder BuildAndAddTextcMessageReceiver()
+        {
+            _senderBuilder.AddMessageReceiver(Build(), MediaTypes.PlainText);
+            return _senderBuilder;
+        }
     }
 }

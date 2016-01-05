@@ -9,15 +9,16 @@ namespace Takenet.MessagingHub.Client.Textc
 {
     public sealed class MessageOutputProcessor : IOutputProcessor
     {
-        private readonly IMessagingHubSender _client;
-
-        public MessageOutputProcessor(IMessagingHubSender client)
+        private readonly IEnvelopeListener _envelopeListener;
+        
+        public MessageOutputProcessor(IEnvelopeListener envelopeListener)
         {
-            _client = client;
+            if (envelopeListener == null) throw new ArgumentNullException(nameof(envelopeListener));
+            _envelopeListener = envelopeListener;
         }
 
         public Task ProcessOutputAsync(object output, IRequestContext context, CancellationToken cancellationToken)
-        {
+        {            
             cancellationToken.ThrowIfCancellationRequested();            
 
             var to = context.GetMessagePp() ?? context.GetMessageFrom();
@@ -30,9 +31,9 @@ namespace Takenet.MessagingHub.Client.Textc
             var content = output as Document;
             if (content != null)
             {
-                return _client.SendMessageAsync(content, to);
+                return _envelopeListener.SendMessageAsync(content, to);
             }
-            return _client.SendMessageAsync(output.ToString(), to);
+            return _envelopeListener.SendMessageAsync(output.ToString(), to);
         }
     }
 }
