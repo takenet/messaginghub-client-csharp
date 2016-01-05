@@ -15,7 +15,9 @@ namespace Takenet.MessagingHub.Client
         Task StartAsync();
 
         Task StopAsync();
-        
+
+        event EventHandler SessionEstabilished;
+
         Task<Message> ReceiveMessageAsync(CancellationToken cancellationToken);
         Task SendMessageAsync(Message message);
 

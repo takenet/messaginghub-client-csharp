@@ -23,6 +23,9 @@ namespace Takenet.MessagingHub.Client
         private IClientChannel _clientChannel;
         private Task _watchConnectionTask;
         private CancellationTokenSource _cancellationTokenSource;
+
+        public event EventHandler SessionEstabilished;
+
         private bool _isSessionEstablished => _limeSessionProvider.IsSessionEstablished(_clientChannel);
 
         private static TimeSpan WatchConnectionDelay => TimeSpan.FromSeconds(2);
@@ -239,6 +242,11 @@ namespace Takenet.MessagingHub.Client
             _clientChannel = await _clientChannelFactory.CreateClientChannelAsync(_sendTimeout);
 
             await _limeSessionProvider.EstablishSessionAsync(_clientChannel, _endPoint, _identity, _authentication, cancellationToken);
+
+            if (_isSessionEstablished && SessionEstabilished != null)
+            {
+                SessionEstabilished(this, EventArgs.Empty);
+            }
         }
 
         private async Task EndSession(CancellationToken cancellationToken)
