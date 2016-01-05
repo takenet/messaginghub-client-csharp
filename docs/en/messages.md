@@ -4,7 +4,28 @@ The client allow you to send and receive messages through the Messaging Hub.
 
 ## Receiving Messages
 
-To receive a message, register a receiver like so:
+To receive a message, you can simply build the client and call ReceiveMessageAsync:
+
+```
+const string login = "user";
+const string accessKey = "myAccessKey";
+
+var client = new MessagingHubClientBuilder()
+                 .UsingAccessKey(login, accessKey)
+                 .Build();
+
+await client.StartAsync();
+
+using(var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
+{
+    var message = await client.ReceiveMessageAsync(cancellationToken.Token);
+}
+
+await client.StopAsync();
+
+```
+
+You can also create a Receiver class that will handle the inbound messages:
 
 ``` 
 public class MyMessageReceiver : MessageReceiverBase
@@ -16,19 +37,30 @@ public class MyMessageReceiver : MessageReceiverBase
     }
 }
 
-client.AddMessageReceiver(new MyMessageReceiver(), MediaTypes.PlainText);
 ```
+And then set it in the builder:
 
+```
+const string login = "user";
+const string accessKey = "myAccessKey";
+
+var client = new MessagingHubClientBuilder()
+                 .UsingAccessKey(login, accessKey)
+                 .AddMessageReceiver(new MyMessageReceiver())
+                 .Build();
+
+await client.StartAsync();
+```
 It is also possible to pass a factory method to construct the receiver:
 
 ``` 
-client.AddMessageReceiver(() => new MyMessageReceiver(), MediaTypes.PlainText);
+AddMessageReceiver(() => new MyMessageReceiver(), MediaTypes.PlainText);
 ```
 
 And you can specify a `media type` to filter your messages
 
 ``` 
-client.AddMessageReceiver(() => new MyMessageReceiver(), new MediaType(MediaType.DiscreteTypes.Application, MediaType.SubTypes.JSON));
+AddMessageReceiver(() => new MyMessageReceiver(), new MediaType(MediaType.DiscreteTypes.Application, MediaType.SubTypes.JSON));
 ```
 
 ## Sending Messages
@@ -43,6 +75,7 @@ var message = new Message
 };
 
 await client.SendMessageAsync(message);
+
 ```
 
 Or you can use these extension methods to construct and send your message:

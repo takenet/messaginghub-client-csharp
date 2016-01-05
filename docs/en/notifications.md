@@ -4,7 +4,27 @@ The client allow you to send and receive notifications through the Messaging Hub
 
 ## Receiving Notifications
 
-To receive a notification, register a receiver like so:
+To receive a notification, you can simply build the client and call ReceiveNotificationAsync:
+
+```
+const string login = "user";
+const string accessKey = "myAccessKey";
+
+var client = new MessagingHubClientBuilder()
+                 .UsingAccessKey(login, accessKey)
+                 .Build();
+
+await client.StartAsync();
+
+using(var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
+{
+    var notification = await client.ReceiveNotificationAsync(cancellationToken.Token);
+}
+
+await client.StopAsync();
+
+```
+You can also create a Receiver class that will handle the inbound notifications:
 
 ``` 
 public class MyNotificationReceiver : NotificationReceiverBase
@@ -16,19 +36,31 @@ public class MyNotificationReceiver : NotificationReceiverBase
     }
 }
 
-client.AddNotificationReceiver(new MyNotificationReceiver());
+```
+And then set it in the builder:
+
+```
+const string login = "user";
+const string accessKey = "myAccessKey";
+
+var client = new MessagingHubClientBuilder()
+                 .UsingAccessKey(login, accessKey)
+                 .AddNotificationReceiver(new MyNotificationReceiver())
+                 .Build();
+
+await client.StartAsync();
 ```
 
 It is also possible to pass a factory method to construct the receiver:
 
 ``` 
-client.AddNotificationReceiver(() => new MyNotificationReceiver());
+AddNotificationReceiver(() => new MyNotificationReceiver());
 ```
 
 And you can specify an event type to filter your notifications
 
 ``` 
-client.AddNotificationReceiver(() => new MyNotificationReceiver(), Event.Received);
+AddNotificationReceiver(() => new MyNotificationReceiver(), Event.Received);
 ```
 
 ## Sending Notifications
