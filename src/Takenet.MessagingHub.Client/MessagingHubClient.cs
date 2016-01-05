@@ -116,6 +116,7 @@ namespace Takenet.MessagingHub.Client
                 if (!Started) throw new InvalidOperationException("The client is not started");
 
                 await _commandProcessor.StopReceivingAsync().ConfigureAwait(false);
+                _persistentLimeSession.SessionEstabilished -= OnSessionEstabilished;
                 await _persistentLimeSession.StopAsync().ConfigureAwait(false);
                 Started = false;
             }
