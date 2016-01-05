@@ -21,12 +21,12 @@ namespace Takenet.MessagingHub.Client
         private readonly ICommandProcessorFactory _commandProcessorFactory;                
         private readonly ILimeSessionProvider _limeSessionProvider;                
         private readonly SemaphoreSlim _semaphore;
-        private readonly TimeSpan _timeout;
+        private readonly TimeSpan _sendTimeout;
 
         private ICommandProcessor _commandProcessor;
         private IPersistentLimeSession _persistentLimeSession;
 
-        internal MessagingHubClient(Identity identity, Authentication authentication, Uri endPoint,
+        internal MessagingHubClient(Identity identity, Authentication authentication, Uri endPoint, TimeSpan sendTimeout,
             IPersistentLimeSessionFactory persistentChannelFactory, IClientChannelFactory clientChannelFactory,
             ICommandProcessorFactory commandProcessorFactory, ILimeSessionProvider limeSessionProvider)
         {
@@ -37,17 +37,19 @@ namespace Takenet.MessagingHub.Client
             _clientChannelFactory = clientChannelFactory;
             _commandProcessorFactory = commandProcessorFactory;
             _limeSessionProvider = limeSessionProvider;                       
-            _timeout = TimeSpan.FromSeconds(60);            
+            _sendTimeout = sendTimeout;            
             _semaphore = new SemaphoreSlim(1);
         }
-
-
+        
         public MessagingHubClient(Identity identity, Authentication authentication, Uri endPoint) :
+            this(identity, authentication, endPoint, TimeSpan.FromSeconds(20))
+        { }
+
+        public MessagingHubClient(Identity identity, Authentication authentication, Uri endPoint, TimeSpan sendTimeout) :
             this(
-            identity, authentication, endPoint, new PersistentLimeSessionFactory(), new ClientChannelFactory(),
+            identity, authentication, endPoint, TimeSpan.FromSeconds(20), new PersistentLimeSessionFactory(), new ClientChannelFactory(),
             new CommandProcessorFactory(), new LimeSessionProvider())
-        {
-        }
+        { }
 
         public bool Started { get; private set; }
 
@@ -56,7 +58,7 @@ namespace Takenet.MessagingHub.Client
             if (!Started)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation");
 
-            return await _commandProcessor.SendAsync(command, _timeout).ConfigureAwait(false);
+            return await _commandProcessor.SendAsync(command, _sendTimeout).ConfigureAwait(false);
         }
 
         public virtual async Task SendMessageAsync(Message message)
@@ -136,7 +138,7 @@ namespace Takenet.MessagingHub.Client
         {
             _persistentLimeSession =
                 await
-                    _persistentClientFactory.CreatePersistentClientChannelAsync(_endpoint, _timeout, _identity,
+                    _persistentClientFactory.CreatePersistentClientChannelAsync(_endpoint, _sendTimeout, _identity,
                         _authentication, _clientChannelFactory, _limeSessionProvider);
 
             _persistentLimeSession.SessionEstabilished += OnSessionEstabilished;
@@ -149,7 +151,7 @@ namespace Takenet.MessagingHub.Client
 
         private async Task SetPresenceAsync()
         {
-            using (var cancellationToken = new CancellationTokenSource(_timeout))
+            using (var cancellationToken = new CancellationTokenSource(_sendTimeout))
             {
                 await _persistentLimeSession.SetResourceAsync(
                     LimeUri.Parse(UriTemplates.PRESENCE),

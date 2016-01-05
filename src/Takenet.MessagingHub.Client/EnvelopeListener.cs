@@ -25,9 +25,9 @@ namespace Takenet.MessagingHub.Client
         private Task _notiticationReceiverTask;
         private bool _started;
 
-        internal EnvelopeListener(Identity identity, Authentication authentication, Uri endPoint, IPersistentLimeSessionFactory persistentChannelFactory, IClientChannelFactory clientChannelFactory,
+        internal EnvelopeListener(Identity identity, Authentication authentication, Uri endPoint, TimeSpan sendTimeout, IPersistentLimeSessionFactory persistentChannelFactory, IClientChannelFactory clientChannelFactory,
             ICommandProcessorFactory commandProcessorFactory, ILimeSessionProvider limeSessionProvider)
-            : base(identity, authentication, endPoint, persistentChannelFactory, clientChannelFactory,
+            : base(identity, authentication, endPoint, sendTimeout, persistentChannelFactory, clientChannelFactory,
             commandProcessorFactory, limeSessionProvider)
         {
             _messageReceivers = new List<ReceiverFactoryPredicate<Message>>();
@@ -40,7 +40,14 @@ namespace Takenet.MessagingHub.Client
             _messageReceivers = new List<ReceiverFactoryPredicate<Message>>();
             _notificationReceivers = new List<ReceiverFactoryPredicate<Notification>>();
         }
-        
+
+        public EnvelopeListener(Identity identity, Authentication authentication, Uri endPoint, TimeSpan sendTimeout)
+            : base(identity, authentication, endPoint, sendTimeout)
+        {
+            _messageReceivers = new List<ReceiverFactoryPredicate<Message>>();
+            _notificationReceivers = new List<ReceiverFactoryPredicate<Notification>>();
+        }
+
         public void AddMessageReceiver(Func<IMessageReceiver> receiverFactory, Predicate<Message> predicate)
         {
             AddEnvelopeReceiver(_messageReceivers, receiverFactory, predicate);
