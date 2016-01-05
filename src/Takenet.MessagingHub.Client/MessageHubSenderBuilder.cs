@@ -13,9 +13,9 @@ namespace Takenet.MessagingHub.Client
     {
         internal readonly EnvelopeListener EnvelopeListener;
 
-        public MessageHubSenderBuilder(string login, Authentication authentication, Uri endPoint, string domain)
+        public MessageHubSenderBuilder(Identity identity, Authentication authentication, Uri endPoint)
         {
-            EnvelopeListener = new EnvelopeListener(login, authentication, endPoint, domain);
+            EnvelopeListener = new EnvelopeListener(identity, authentication, endPoint);
         }
         
         public MessageHubSenderBuilder AddMessageReceiver(IMessageReceiver messageReceiver, MediaType forMimeType = null)

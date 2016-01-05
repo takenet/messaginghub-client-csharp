@@ -19,21 +19,22 @@ namespace Takenet.MessagingHub.Client.Test
         protected ICommandProcessorFactory CommandProcessorFactory;
         protected ICommandProcessor CommandProcessor;
         protected ILimeSessionProvider LimeSessionProvider;
-        private Uri endPoint = new Uri("net.tcp://msg.net:12345");
-        private string domainName = "msging.net";
-        protected string Login = "developerTakenet";
+        private Uri _endPoint = new Uri("net.tcp://msg.net:12345");
+        private Identity _identity => new Identity("developerTakenet","msging.net");
         protected string AccessKey = "1234";
 
 
         protected virtual void Setup()
         {
-            SubstituteClientChannel();
+            SubstitutePersistentLimeSession();
 
             SubstituteSetPresence();
             
             SubstituteEnvelopeProcessor();
 
             SubstituteEnvelopeProcessorFabrication();
+
+            SubstituteClientChannel();
 
             SubstituteClientChannelFabrication();
 
@@ -42,6 +43,11 @@ namespace Takenet.MessagingHub.Client.Test
             SubstituteForPersistentClientChannelFactory();
 
             InstantiateActualMessageHubClient();
+        }
+
+        private void SubstituteClientChannel()
+        {
+            ClientChannel = Substitute.For<IClientChannel>();
         }
 
         private void SubstituteForPersistentClientChannelFactory()
@@ -58,7 +64,7 @@ namespace Takenet.MessagingHub.Client.Test
 
         private void InstantiateActualMessageHubClient()
         {
-            MessagingHubClient = new EnvelopeListener(Login, new KeyAuthentication() { Key = AccessKey }, endPoint, domainName, PersistentClientChannelFactory, ClientChannelFactory, CommandProcessorFactory, LimeSessionProvider);
+            MessagingHubClient = new EnvelopeListener(_identity, new KeyAuthentication() { Key = AccessKey }, _endPoint, PersistentClientChannelFactory, ClientChannelFactory, CommandProcessorFactory, LimeSessionProvider);
         }
 
         private void SubstituteClientChannelFabrication()
@@ -78,7 +84,7 @@ namespace Takenet.MessagingHub.Client.Test
             CommandProcessor = Substitute.For<ICommandProcessor>();
         }
         
-        private void SubstituteClientChannel()
+        private void SubstitutePersistentLimeSession()
         {
             PersistentClientChannel = Substitute.For<IPersistentLimeSession>();
 

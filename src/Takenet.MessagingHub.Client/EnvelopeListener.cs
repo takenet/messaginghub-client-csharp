@@ -25,17 +25,17 @@ namespace Takenet.MessagingHub.Client
         private Task _notiticationReceiverTask;
         private bool _started;
 
-        internal EnvelopeListener(string login, Authentication authentication, Uri endPoint, string domainName, IPersistentLimeSessionFactory persistentChannelFactory, IClientChannelFactory clientChannelFactory,
+        internal EnvelopeListener(Identity identity, Authentication authentication, Uri endPoint, IPersistentLimeSessionFactory persistentChannelFactory, IClientChannelFactory clientChannelFactory,
             ICommandProcessorFactory commandProcessorFactory, ILimeSessionProvider limeSessionProvider)
-            : base(login, authentication, endPoint, domainName, persistentChannelFactory, clientChannelFactory,
+            : base(identity, authentication, endPoint, persistentChannelFactory, clientChannelFactory,
             commandProcessorFactory, limeSessionProvider)
         {
             _messageReceivers = new List<ReceiverFactoryPredicate<Message>>();
             _notificationReceivers = new List<ReceiverFactoryPredicate<Notification>>();
         }
 
-        public EnvelopeListener(string login, Authentication authentication, Uri endPoint, string domainName)
-            : base(login, authentication, endPoint, domainName)
+        public EnvelopeListener(Identity identity, Authentication authentication, Uri endPoint)
+            : base(identity, authentication, endPoint)
         {
             _messageReceivers = new List<ReceiverFactoryPredicate<Message>>();
             _notificationReceivers = new List<ReceiverFactoryPredicate<Notification>>();

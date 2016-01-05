@@ -13,10 +13,9 @@ namespace Takenet.MessagingHub.Client
     /// </summary>
     public class MessagingHubClient : IMessagingHubClient
     {
-        private readonly string _login;
+        private readonly Identity _identity;
         private readonly Authentication _authentication;
         private readonly Uri _endpoint;
-        private readonly string _domainName;
         private readonly IPersistentLimeSessionFactory _persistentClientFactory;
         private readonly IClientChannelFactory _clientChannelFactory;
         private readonly ICommandProcessorFactory _commandProcessorFactory;                
@@ -27,14 +26,13 @@ namespace Takenet.MessagingHub.Client
         private ICommandProcessor _commandProcessor;
         private IPersistentLimeSession _persistentLimeSession;
 
-        internal MessagingHubClient(string login, Authentication authentication, Uri endPoint, string domainName,
+        internal MessagingHubClient(Identity identity, Authentication authentication, Uri endPoint,
             IPersistentLimeSessionFactory persistentChannelFactory, IClientChannelFactory clientChannelFactory,
             ICommandProcessorFactory commandProcessorFactory, ILimeSessionProvider limeSessionProvider)
         {
-            _login = login;
+            _identity = identity;
             _authentication = authentication;
             _endpoint = endPoint;
-            _domainName = domainName;
             _persistentClientFactory = persistentChannelFactory;
             _clientChannelFactory = clientChannelFactory;
             _commandProcessorFactory = commandProcessorFactory;
@@ -44,9 +42,9 @@ namespace Takenet.MessagingHub.Client
         }
 
 
-        public MessagingHubClient(string login, Authentication authentication, Uri endPoint, string domainName) :
+        public MessagingHubClient(Identity identity, Authentication authentication, Uri endPoint) :
             this(
-            login, authentication, endPoint, domainName, new PersistentLimeSessionFactory(), new ClientChannelFactory(),
+            identity, authentication, endPoint, new PersistentLimeSessionFactory(), new ClientChannelFactory(),
             new CommandProcessorFactory(), new LimeSessionProvider())
         {
         }
@@ -135,11 +133,9 @@ namespace Takenet.MessagingHub.Client
 
         private async Task InstantiateClientChannelAsync()
         {
-            var identity = Identity.Parse($"{_login}@{_domainName}");
-
             _persistentLimeSession =
                 await
-                    _persistentClientFactory.CreatePersistentClientChannelAsync(_endpoint, _timeout, identity,
+                    _persistentClientFactory.CreatePersistentClientChannelAsync(_endpoint, _timeout, _identity,
                         _authentication, _clientChannelFactory, _limeSessionProvider);
 
             _persistentLimeSession.SessionEstabilished += OnSessionEstabilished;
