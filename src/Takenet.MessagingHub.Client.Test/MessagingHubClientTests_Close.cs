@@ -21,7 +21,6 @@ namespace Takenet.MessagingHub.Client.Test
         public void Start_Then_Stop_Should_Stop_PersistentClientChannel()
         {
             //Arrange
-            MessagingHubClient.UsingAccessKey("login", "key");
             MessagingHubClient.StartAsync().Wait(); 
 
             // Act
@@ -34,9 +33,6 @@ namespace Takenet.MessagingHub.Client.Test
         [Test]
         public void Stop_Without_Start_Should_Throw_Exception()
         {
-            //Arrange
-            MessagingHubClient.UsingAccessKey("login", "key");
-            
             // Act // Assert
             Should.ThrowAsync<InvalidOperationException>(async () => await MessagingHubClient.StopAsync()).Wait();
         }
@@ -46,9 +42,7 @@ namespace Takenet.MessagingHub.Client.Test
         {
             //Arrange
             PersistentClientChannel.StartAsync().Returns(System.Threading.Tasks.Task.Run(() => { throw new LimeException(1,"Error"); }));
-
-            MessagingHubClient.UsingAccessKey("login", "key");
-
+            
             // Act / Assert
             Should.ThrowAsync<LimeException>(async () => await MessagingHubClient.StartAsync());
         }

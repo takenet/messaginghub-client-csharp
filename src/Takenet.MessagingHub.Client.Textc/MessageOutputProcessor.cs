@@ -9,9 +9,9 @@ namespace Takenet.MessagingHub.Client.Textc
 {
     public sealed class MessageOutputProcessor : IOutputProcessor
     {
-        private readonly IMessagingHubClient _client;
+        private readonly IMessagingHubSender _client;
 
-        public MessageOutputProcessor(IMessagingHubClient client)
+        public MessageOutputProcessor(IMessagingHubSender client)
         {
             _client = client;
         }

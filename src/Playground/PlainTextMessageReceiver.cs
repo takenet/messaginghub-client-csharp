@@ -13,7 +13,9 @@ namespace Takenet.MessagingHub.Client.Playground
         public override async Task ReceiveAsync(Message message)
         {
             Console.WriteLine(message.Content.ToString());
-            await MessageSender.SendMessageAsync("Thanks for your message!", message.From);
+            await EnvelopeSender.SendMessageAsync("Thanks for your message!", message.From);
         }
+
+
     }
 }

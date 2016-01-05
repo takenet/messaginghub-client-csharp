@@ -7,7 +7,7 @@ namespace Takenet.MessagingHub.Client.Lime
     /// <summary>
     /// Sends a command and waits for its response
     /// </summary>
-    interface ICommandProcessor
+    internal interface ICommandProcessor
     {
         /// <summary>
         /// Starts listening for envelopes
