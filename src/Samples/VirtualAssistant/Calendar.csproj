@@ -7,8 +7,8 @@
     <ProjectGuid>{7D3BAA23-A118-4272-8798-B9DEFA18EFF8}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Takenet.VirtualAssistant</RootNamespace>
-    <AssemblyName>VirtualAssistant</AssemblyName>
+    <RootNamespace>Takenet.Calendar</RootNamespace>
+    <AssemblyName>Calendar</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -71,20 +71,19 @@
       <HintPath>..\..\packages\Takenet.MessagingHub.Client.0.1.119\lib\net45\Takenet.MessagingHub.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Takenet.MessagingHub.Client.Textc, Version=0.1.119.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Takenet.MessagingHub.Client.Textc.0.1.119\lib\net45\Takenet.MessagingHub.Client.Textc.dll</HintPath>
+    <Reference Include="Takenet.MessagingHub.Client.Textc, Version=0.1.122.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.MessagingHub.Client.Textc.0.1.122\lib\net45\Takenet.MessagingHub.Client.Textc.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Takenet.Textc, Version=0.1.22.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Takenet.Textc.0.1.22\lib\net451\Takenet.Textc.dll</HintPath>
+    <Reference Include="Takenet.Textc, Version=0.1.29.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.Textc.0.1.29\lib\net451\Takenet.Textc.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IService.cs" />
+    <Compile Include="CalendarImpl.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VirtualAssistantService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -92,6 +91,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -6,33 +6,18 @@ using Takenet.MessagingHub.Client.Receivers;
 
 namespace Template
 {
-    internal static class Program
+    class Program
     {
-        public static void Main(string[] args)
-        {
-            Init().Wait();
-        }
-
         // Go to http://console.messaginghub.io to register your application and get your access key
         private const string Login = "yourApplicationName";
         private const string AccessKey = "yourAccessKey";
 
-        private class MessageReceiver : MessageReceiverBase
+        static void Main(string[] args)
         {
-            public override async Task ReceiveAsync(Message message)
-            {
-                // Text messages sent to your application will be received here
-                Console.WriteLine($"MESSAGE RECEIVED");
-                Console.WriteLine($"From: {message.From}");
-                Console.WriteLine($"At: {DateTime.Now}");
-                Console.WriteLine($"With: \"{message.Content}\"");
-                Console.WriteLine();
-                if (message.From.Name != Login)
-                    await MessageSender.SendMessageAsync("It works!", message.From);
-            }
+            MainAsync(args).Wait();
         }
 
-        private static async Task Init()
+        static async Task MainAsync(string[] args)
         {
             // Instantiates a MessageHubClient using its fluent API
             // Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
@@ -54,5 +39,22 @@ namespace Template
             // Stop the client
             await client.StopAsync();
         }
+
+        private class MessageReceiver : MessageReceiverBase
+        {
+            public override async Task ReceiveAsync(Message message)
+            {
+                // Text messages sent to your application will be received here
+                Console.WriteLine($"MESSAGE RECEIVED");
+                Console.WriteLine($"From: {message.From}");
+                Console.WriteLine($"At: {DateTime.Now}");
+                Console.WriteLine($"With: \"{message.Content}\"");
+                Console.WriteLine();
+                if (message.From.Name != Login)
+                    await MessageSender.SendMessageAsync("It works!", message.From);
+            }
+        }
+
+
     }
 }

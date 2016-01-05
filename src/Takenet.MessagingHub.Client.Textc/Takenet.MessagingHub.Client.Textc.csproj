@@ -52,8 +52,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Takenet.Textc, Version=0.1.22.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Takenet.Textc.0.1.22\lib\net451\Takenet.Textc.dll</HintPath>
+    <Reference Include="Takenet.Textc, Version=0.1.29.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Takenet.Textc.0.1.29\lib\net451\Takenet.Textc.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

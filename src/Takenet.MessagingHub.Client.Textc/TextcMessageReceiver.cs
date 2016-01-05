@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Takenet.MessagingHub.Client.Receivers;
@@ -11,14 +12,18 @@ namespace Takenet.MessagingHub.Client.Textc
         private readonly ITextProcessor _textProcessor;
         private readonly IContextProvider _contextProvider;
         private readonly Func<Message, MessageReceiverBase, Task> _matchNotFoundHandler;
+        private readonly TimeSpan _processTimeout;
 
-        public TextcMessageReceiver(ITextProcessor textProcessor, IContextProvider contextProvider, Func<Message, MessageReceiverBase, Task> matchNotFoundHandler = null)
+        private static readonly TimeSpan DefaultProcessTimeout = TimeSpan.FromSeconds(60);
+
+        public TextcMessageReceiver(ITextProcessor textProcessor, IContextProvider contextProvider, Func<Message, MessageReceiverBase, Task> matchNotFoundHandler = null, TimeSpan? processTimeout = null)
         {
             if (textProcessor == null) throw new ArgumentNullException(nameof(textProcessor));
             if (contextProvider == null) throw new ArgumentNullException(nameof(contextProvider));
             _textProcessor = textProcessor;
             _contextProvider = contextProvider;
             _matchNotFoundHandler = matchNotFoundHandler;
+            _processTimeout = processTimeout ?? DefaultProcessTimeout;
         }
 
         public override async Task ReceiveAsync(Message message)
@@ -33,7 +38,13 @@ namespace Takenet.MessagingHub.Client.Textc
                 context.SetMessageType(message.Type);
                 context.SetMessageContent(message.Content);
                 context.SetMessageMetadata(message.Metadata);
-                await _textProcessor.ProcessAsync(message.Content.ToString(), context).ConfigureAwait(false);
+
+                using (var cts = new CancellationTokenSource(_processTimeout))
+                {
+                    await
+                        _textProcessor.ProcessAsync(message.Content.ToString(), context, cts.Token)
+                            .ConfigureAwait(false);
+                }
             }
             catch (MatchNotFoundException)
             {

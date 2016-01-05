@@ -150,7 +150,7 @@ namespace Takenet.MessagingHub.Client.Textc
             var textProcessor = new TextProcessor();
             foreach (var commandProcessor in CommandProcessors)
             {
-                textProcessor.AddCommandProcessor(commandProcessor);
+                textProcessor.CommandProcessors.Add(commandProcessor);
             }
             return new TextcMessageReceiver(
                 textProcessor, 

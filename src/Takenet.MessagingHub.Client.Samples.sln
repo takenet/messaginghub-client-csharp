@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template", "Template\Templa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GettingStarted", "GettingStarted\GettingStarted.csproj", "{C5FCEBDF-1F93-4A8E-8BE0-494B00D49665}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualAssistant", "Samples\VirtualAssistant\VirtualAssistant.csproj", "{7D3BAA23-A118-4272-8798-B9DEFA18EFF8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calendar", "Samples\VirtualAssistant\Calendar.csproj", "{7D3BAA23-A118-4272-8798-B9DEFA18EFF8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Takenet.Textc;
@@ -15,8 +16,10 @@ namespace Takenet.MessagingHub.Client.Textc
             _client = client;
         }
 
-        public Task ProcessOutputAsync(object output, IRequestContext context)
+        public Task ProcessOutputAsync(object output, IRequestContext context, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();            
+
             var to = context.GetMessagePp() ?? context.GetMessageFrom();
 
             if (to == null)
