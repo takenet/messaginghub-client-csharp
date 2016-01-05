@@ -46,4 +46,4 @@ Para operações de envio, o cliente provê métodos Send que podem ser invocado
 await client.SendMessageAsync("Olá, mundo", to: "user");
 ```
 
-Para mais informações específicas de uso, veja a documentação detalheada para [Como Começar?](http://messaginghub.io/docs/sdks/getting-started), [Configuração do Cliente](http://messaginghub.io/docs/sdks/client-configuration), [Mensagens](http://messaginghub.io/docs/sdks/messages), [Notificações](../{{page.lang}}/notifications) e [Comandos](http://messaginghub.io/docs/sdks/commands).
+Para mais informações específicas de uso, veja a documentação detalheada para [Como Começar?](http://messaginghub.io/docs/sdks/getting-started), [Configuração do Cliente](http://messaginghub.io/docs/sdks/client-configuration), [Mensagens](http://messaginghub.io/docs/sdks/messages), [Notificações](http://messaginghub.io/docs/sdks/notifications) e [Comandos](http://messaginghub.io/docs/sdks/commands).
