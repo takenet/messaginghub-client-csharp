@@ -1,5 +1,4 @@
-﻿using Takenet.MessagingHub.Client.Senders;
-
+﻿
 namespace Takenet.MessagingHub.Client.Receivers
 {
     /// <summary>
@@ -10,8 +9,6 @@ namespace Takenet.MessagingHub.Client.Receivers
     /// </remarks>
     public abstract class EnvelopeReceiverBase
     {
-        public IMessageSender MessageSender { get; internal set; }
-        public ICommandSender CommandSender { get; internal set; }
-        public INotificationSender NotificationSender { get; internal set; }
+        public IEnvelopeSender EnvelopeSender { get; internal set; }
     }
 }

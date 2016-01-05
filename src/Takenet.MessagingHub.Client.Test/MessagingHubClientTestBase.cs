@@ -1,5 +1,6 @@
 ﻿using Lime.Protocol;
 using Lime.Protocol.Client;
+using Lime.Protocol.Security;
 using NSubstitute;
 using System;
 using System.Threading;
@@ -10,7 +11,7 @@ namespace Takenet.MessagingHub.Client.Test
 {
     internal class MessagingHubClientTestBase
     {
-        protected IMessagingHubClient MessagingHubClient;
+        protected IEnvelopeListener MessagingHubClient;
         protected IClientChannel ClientChannel;
         protected IPersistentLimeSession PersistentClientChannel;
         protected IPersistentLimeSessionFactory PersistentClientChannelFactory;
@@ -18,8 +19,10 @@ namespace Takenet.MessagingHub.Client.Test
         protected ICommandProcessorFactory CommandProcessorFactory;
         protected ICommandProcessor CommandProcessor;
         protected ILimeSessionProvider LimeSessionProvider;
-        private const string hostName = "msging.net";
-        private const string domainName = "msging.net";
+        private Uri endPoint = new Uri("net.tcp://msg.net:12345");
+        private string domainName = "msging.net";
+        protected string Login = "developerTakenet";
+        protected string AccessKey = "1234";
 
 
         protected virtual void Setup()
@@ -55,7 +58,7 @@ namespace Takenet.MessagingHub.Client.Test
 
         private void InstantiateActualMessageHubClient()
         {
-            MessagingHubClient = new MessagingHubClient(PersistentClientChannelFactory, ClientChannelFactory, CommandProcessorFactory, LimeSessionProvider, hostName, domainName);
+            MessagingHubClient = new EnvelopeListener(Login, new KeyAuthentication() { Key = AccessKey }, endPoint, domainName, PersistentClientChannelFactory, ClientChannelFactory, CommandProcessorFactory, LimeSessionProvider);
         }
 
         private void SubstituteClientChannelFabrication()

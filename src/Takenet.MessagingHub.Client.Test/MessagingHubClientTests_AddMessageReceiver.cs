@@ -27,7 +27,6 @@ namespace Takenet.MessagingHub.Client.Test
         public void Add_MessageReceiver_And_Process_Message_With_Success()
         {
             //Arrange
-            MessagingHubClient.UsingAccount("login", "pass");
             MessagingHubClient.AddMessageReceiver(_messageReceiver);
 
             _semaphore = new SemaphoreSlim(1);
@@ -53,7 +52,6 @@ namespace Takenet.MessagingHub.Client.Test
         public void Add_MessageReceiver_Process_Message_And_Stop_With_Success()
         {
             //Arrange
-            MessagingHubClient.UsingAccount("login", "pass");
             MessagingHubClient.AddMessageReceiver(_messageReceiver);
 
             _semaphore = new SemaphoreSlim(1);
@@ -86,7 +84,6 @@ namespace Takenet.MessagingHub.Client.Test
 
             var messageReceiver = Substitute.For<MessageReceiverBase>();
 
-            MessagingHubClient.UsingAccount("login", "pass");
             MessagingHubClient.AddMessageReceiver(messageReceiver);
 
             _semaphore = new SemaphoreSlim(1);
@@ -104,9 +101,7 @@ namespace Takenet.MessagingHub.Client.Test
 
             //Assert
             messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
-            messageReceiver.MessageSender.ShouldNotBeNull();
-            messageReceiver.NotificationSender.ShouldNotBeNull();
-            messageReceiver.CommandSender.ShouldNotBeNull();
+            messageReceiver.EnvelopeSender.ShouldNotBeNull();
 
             _semaphore.DisposeIfDisposable();
         }
