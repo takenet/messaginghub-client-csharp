@@ -24,26 +24,4 @@ As seguintes operações são suportados:
 
 - Enviar comandos através do Messaging Hub;
 
-Para reveber envelopes (mensagens e notificações) o cliente requer que o desenvolvedor registre agentes receptores que irão filtrar os dados recebidos e executar a ação desejada sobre eles, como no exemplo a seguir:
-
-``` 
-public class PlainTextMessageReceiver : MessageReceiverBase
-{
-    public override async Task ReceiveAsync(Message message)
-    {
-        // Faz algo com a mensagem recebida
-    }
-}
-
-// Registra um receptor para receber mensagens com `media type` 'text/plain'
-client.AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
-```
-
-Para operações de envio, o cliente provê métodos Send que podem ser invocados diretamente, como no exemplo a seguir:
-
-```
-// Envia uma mensagem de texto para 'user@msging.net' 
-await client.SendMessageAsync("Olá, mundo", to: "user");
-```
-
 Para mais informações específicas de uso, veja a documentação detalheada para [Como Começar?](http://messaginghub.io/docs/sdks/getting-started), [Configuração do Cliente](http://messaginghub.io/docs/sdks/client-configuration), [Mensagens](http://messaginghub.io/docs/sdks/messages), [Notificações](http://messaginghub.io/docs/sdks/notifications) e [Comandos](http://messaginghub.io/docs/sdks/commands).

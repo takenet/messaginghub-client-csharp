@@ -1,78 +1,49 @@
-# Como começar?
+# Como começar
 
-Este guia de como começar irá apresentar a você o uso das funcionalidades básicas do cliente do Messaging Hub 
+Este guia de como começar irá apresentar a você o uso das funcionalidades básicas do cliente do Messaging Hub.
+Para executar os exemplos, você vai precisar do seu Login e de sua AccessKey.
 
-## Instanciando o cliente
+## Enviando uma mensagem
+
+Uma mensagem é disparada para o usuário "otherUser" com o conteúdo "Hello World".
 
 ```
-const string login = "guest";
-const string password = "guest";
+const string login = "user";
+const string accessKey = "myAccessKey";
 
-var client = new MessagingHubClient() // Uma vez que o nome do host e do domínio não foram informados, o valor padrão, 'msging.net', será utilizado para ambos os parâmetros
-                .UsingAccount(login, password);
-```
+var client = new MessagingHubClientBuilder()
+                 .UsingAccessKey(login, accessKey)
+                 .Build();
 
-## Se inscrevendo para receber uma mensagem de texto
-
-``` 
-public class PlainTextMessageReceiver : MessageReceiverBase
-{
-    public override async Task ReceiveAsync(Message message)
-    {
-        Console.WriteLine(message.Content.ToString());
-        await MessageSender.SendMessageAsync("Obrigado por sua mensagem!", message.From);
-    }
-}
-
-client.AddMessageReceiver(messageReceiver: new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText);
-```
-
-## Se inscrevendo para receber uma notificação
-
-``` 
-public class PrintNotificationReceiver : NotificationReceiverBase
-{
-    public override Task ReceiveAsync(Notification notification)
-    {
-        Console.WriteLine("Notificação do evento {0} recebida. Motivo: {1}", notification.Event, notification.Reason);
-        return Task.FromResult(0);
-    }
-}
-
-client.AddNotificationReceiver(receiverBuilder: () => new PrintNotificationReceiver());
-```
-
-
-## Iniciando o cliente
-
-``` 
-// APÓS registrados os receptores, o cliente DEVE ser iniciado
 await client.StartAsync();
-```
 
-## Enviando um comando e acessando sua resposta
+await client.SendMessageAsync("Hello world", to: "otherUser");
 
-``` 
-var command = new Command {
-    Method = CommandMethod.Get,
-    Uri = new LimeUri("/account")
-};
-
-var responseCommand = await client.SendCommandAsync(command);
-
-var account = (Account)responseCommand.Resource;
-
-Console.WriteLine(account.Email);
-```
-
-## Publicando uma mensagem
-
-``` 
-await client.SendMessageAsync("Olá, mundo", to: "user");
-```
-
-## Desconectando
-
-``` 
 await client.StopAsync();
+
 ```
+
+## Recebendo uma mensagem
+
+Este exemplo espera por 30 segundos até uma mensagem ser recebida.
+Você pode usar também um [Receiver](http://messaginghub.io/docs/sdks/messages) para tratar as mensagens que chegarem.
+
+```
+const string login = "user";
+const string accessKey = "myAccessKey";
+
+var client = new MessagingHubClientBuilder()
+                 .UsingAccessKey(login, accessKey)
+                 .Build();
+
+await client.StartAsync();
+
+using(var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
+{
+    var message = await client.ReceiveMessageAsync(cancellationToken.Token);
+}
+
+await client.StopAsync();
+
+```
+

@@ -80,11 +80,11 @@ await client.SendNotificationAsync(notification);
 Or you can use these extension methods to construct and send your notification:
 
 ``` 
-await client.SendNotificationAsync(message.ToReceivedNotification());
+await client.SendNotificationAsync(notification.ToReceivedNotification());
 
-await client.SendNotificationAsync(message.ToConsumedNotification());
+await client.SendNotificationAsync(notification.ToConsumedNotification());
 
-await client.SendNotificationAsync(message.ToFailedNotification());
+await client.SendNotificationAsync(notification.ToFailedNotification());
 
-await client.SendNotificationAsync(message.ToNotification(Event.Received));
+await client.SendNotificationAsync(notification.ToNotification(Event.Received));
 ```

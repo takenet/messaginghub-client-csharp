@@ -12,26 +12,22 @@ var client = new MessagingHubClientBuilder()
 ```
 
 Besides the host name and domain, an authentication is mandatory. 
-The authentication can be in a form of a login and password, or in a form of a login and access key, being the access key method the preferred one.
-
-### Using a login and password:
+The authentication requires your login and access key:
 
 ```
 const string login = "user";
-const string password = "password";
-
-var client = new MessagingHubClientBuilder()
-                .UsingAccount(login, password)
-                .Build();
-```
-
-### Using a login and access key:
-
-```
-const string login = "user";
-const string accessKey = "key";
+const string accessKey = "accessKey";
 
 var client = new MessagingHubClientBuilder()
                 .UsingAccessKey(login, accessKey)
+                .Build();
+```
+
+You can also set the timeout to requests made to Messaging Hub server:
+
+```
+var client = new MessagingHubClientBuilder()
+                .UsingAccessKey(login, accessKey)
+                .WithSendTimeout(TimeSpan.FromSeconds(20))
                 .Build();
 ```
