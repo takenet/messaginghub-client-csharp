@@ -6,7 +6,7 @@ O cliente permite que você envie e receba mensagens através do Messaging Hub.
 
 Para enviar uma mensagem, você pode usar o seguinte método:
 
-``` 
+```csharp
 var message = new Message
 {
     To = Node.Parse("user"),
@@ -18,7 +18,7 @@ await client.SendMessageAsync(message);
 
 Ou você pode usar um destes métodos de extensão para construir e enviar sua mensagem:
 
-``` 
+```csharp
 await client.SendMessageAsync("Texto da Mensagem", to: "user");
 
 await client.SendMessageAsync("Texto da Mensagem", Node.Parse("user"));
@@ -28,7 +28,7 @@ await client.SendMessageAsync("Texto da Mensagem", Node.Parse("user"));
 
 Para receber uma mensagem você pode construir o cliente e chamar ReceiveMessageAsync:
 
-```
+```csharp
 const string login = "user";
 const string accessKey = "myAccessKey";
 
@@ -49,7 +49,7 @@ await client.StopAsync();
 
 Você tambem pode construir um Receiver para tratar as mensagens recebidas:
 
-``` 
+```csharp
 public class MyMessageReceiver : MessageReceiverBase
 {
     public override async Task ReceiveAsync(Message message)
@@ -62,7 +62,7 @@ public class MyMessageReceiver : MessageReceiverBase
 ```
 E adicionar no builder:
 
-```
+```csharp
 const string login = "user";
 const string accessKey = "myAccessKey";
 
@@ -76,12 +76,12 @@ await client.StartAsync();
 
 Também é possível passar um factory method para construir o receptor:
 
-``` 
+```csharp
 AddMessageReceiver(() => new MyMessageReceiver(), MediaTypes.PlainText);
 ```
 
 E você pode especificar um media type para filtrar suas mensagens:
 
-``` 
+```csharp
 AddMessageReceiver(() => new MyMessageReceiver(), new MediaType(MediaType.DiscreteTypes.Application, MediaType.SubTypes.JSON));
 ```

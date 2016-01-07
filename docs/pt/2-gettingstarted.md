@@ -7,7 +7,7 @@ Para executar os exemplos, você vai precisar do seu Login e de sua AccessKey.
 
 Uma mensagem é disparada para o usuário "otherUser" com o conteúdo "Hello World".
 
-```
+```csharp
 const string login = "user";
 const string accessKey = "myAccessKey";
 
@@ -28,7 +28,7 @@ await client.StopAsync();
 Este exemplo espera por 30 segundos até uma mensagem ser recebida.
 Você pode usar também um [Receiver](http://messaginghub.io/docs/sdks/messages) para tratar as mensagens que chegarem.
 
-```
+```csharp
 const string login = "user";
 const string accessKey = "myAccessKey";
 

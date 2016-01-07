@@ -6,7 +6,7 @@ The client allow you to send and receive notifications through the Messaging Hub
 
 To receive a notification, you can simply build the client and call ReceiveNotificationAsync:
 
-```
+```csharp
 const string login = "user";
 const string accessKey = "myAccessKey";
 
@@ -26,7 +26,7 @@ await client.StopAsync();
 ```
 You can also create a Receiver class that will handle the inbound notifications:
 
-``` 
+```csharp
 public class MyNotificationReceiver : NotificationReceiverBase
 {
     public override async Task ReceiveAsync(Notification notification)
@@ -39,7 +39,7 @@ public class MyNotificationReceiver : NotificationReceiverBase
 ```
 And then set it in the builder:
 
-```
+```csharp
 const string login = "user";
 const string accessKey = "myAccessKey";
 
@@ -53,13 +53,13 @@ await client.StartAsync();
 
 It is also possible to pass a factory method to construct the receiver:
 
-``` 
+```csharp
 AddNotificationReceiver(() => new MyNotificationReceiver());
 ```
 
 And you can specify an event type to filter your notifications
 
-``` 
+```csharp
 AddNotificationReceiver(() => new MyNotificationReceiver(), Event.Received);
 ```
 
@@ -67,7 +67,7 @@ AddNotificationReceiver(() => new MyNotificationReceiver(), Event.Received);
 
 To send a notification, you can use the following method:
 
-``` 
+```csharp
 var notification = new Notification
 {
     To = Node.Parse("user"),
@@ -79,7 +79,7 @@ await client.SendNotificationAsync(notification);
 
 Or you can use these extension methods to construct and send your notification:
 
-``` 
+```csharp
 await client.SendNotificationAsync(notification.ToReceivedNotification());
 
 await client.SendNotificationAsync(notification.ToConsumedNotification());

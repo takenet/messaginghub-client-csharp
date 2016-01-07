@@ -7,7 +7,7 @@ To run this samples you will need your MessagingHub Login and AccessKey.
 
 This will send a message to "otherUser" with the content "Hello world".
 
-```
+```csharp
 const string login = "user";
 const string accessKey = "myAccessKey";
 
@@ -28,7 +28,7 @@ await client.StopAsync();
 This code sample will wait for 30 seconds until a message is received.
 You can also use a [Receiver](http://messaginghub.io/docs/sdks/messages) to handle inbound messages.
 
-```
+```csharp
 const string login = "user";
 const string accessKey = "myAccessKey";
 
