@@ -1,5 +1,3 @@
-# Como começar
-
 Este guia de como começar irá apresentar a você o uso das funcionalidades básicas do cliente do Messaging Hub.
 Para executar os exemplos, você vai precisar do seu Login e de sua AccessKey.
 

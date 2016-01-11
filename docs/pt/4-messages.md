@@ -1,5 +1,3 @@
-# Mensagens
-
 O cliente permite que você envie e receba mensagens através do Messaging Hub.
 
 ## Enviando Mensagens

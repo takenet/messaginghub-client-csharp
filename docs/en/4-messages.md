@@ -1,5 +1,3 @@
-# Messages
-
 The client allow you to send and receive messages through the Messaging Hub.
 
 ## Sending Messages

@@ -1,5 +1,3 @@
-# Notifications
-
 The client allow you to send and receive notifications through the Messaging Hub.
 
 ## Receiving Notifications

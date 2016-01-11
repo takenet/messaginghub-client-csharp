@@ -1,5 +1,3 @@
-# Commands
-
 The client allow you to send commands through the Messaging Hub. But it is not possible to receive commands.
 
 ## Sending Commands

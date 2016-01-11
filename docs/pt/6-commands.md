@@ -1,5 +1,3 @@
-# Comandos
-
 O cliente permite que você envie comandos através do Messaging Hub. No entanto não é possível receber comandos. 
 
 ## Enviando comandos

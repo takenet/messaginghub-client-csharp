@@ -1,5 +1,3 @@
-# Getting Started
-
 This getting started guide will show you how to use the basic functionalities of the Messaging Hub Client 
 To run this samples you will need your MessagingHub Login and AccessKey.
 

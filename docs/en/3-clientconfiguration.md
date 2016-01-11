@@ -1,5 +1,3 @@
-# Client Configuration
-
 The Messaging Hub client is designed to be simple and easy to use, this way few configuration options are available.
 
 To connect to the Messaging Hub, the default host, `"msging.net"` and default domain, also `"msging.net"`, are used by default. 

@@ -1,5 +1,3 @@
-# Notificações
-
 O cliente permite que você envie e receba notificações através do Messaging Hub.
 
 ## Recebendo Notificações
