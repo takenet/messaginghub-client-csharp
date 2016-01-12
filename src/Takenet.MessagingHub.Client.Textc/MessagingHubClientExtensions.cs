@@ -12,9 +12,14 @@ namespace Takenet.MessagingHub.Client
         /// <param name="senderBuilder"></param>
         /// <param name="outputProcessor"></param>
         /// <returns></returns>
-        public static TextcMessageReceiverBuilder NewTextcMessageReceiverBuilder(this MessageHubSenderBuilder senderBuilder, IOutputProcessor outputProcessor = null)
+        public static TextcMessageReceiverBuilder NewTextcMessageReceiverBuilder(this MessagingHubSenderBuilder senderBuilder, IOutputProcessor outputProcessor = null)
         {
             return new TextcMessageReceiverBuilder(senderBuilder, outputProcessor);
+        }
+
+        public static TextcMessageReceiverBuilder NewTextcMessageReceiverBuilder(this MessagingHubClientBuilder clientBuilder, IOutputProcessor outputProcessor = null)
+        {
+            return new TextcMessageReceiverBuilder(clientBuilder.AsMessagingSenderBuilder(), outputProcessor);
         }
     }
 }

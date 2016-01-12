@@ -9,34 +9,34 @@ using Takenet.MessagingHub.Client.Receivers;
 
 namespace Takenet.MessagingHub.Client
 {
-    public class MessageHubSenderBuilder
+    public class MessagingHubSenderBuilder
     {
         internal readonly EnvelopeListener EnvelopeListener;
 
-        public MessageHubSenderBuilder(Identity identity, Authentication authentication, Uri endPoint, TimeSpan sendTimeout)
+        public MessagingHubSenderBuilder(Identity identity, Authentication authentication, Uri endPoint, TimeSpan sendTimeout)
         {
             EnvelopeListener = new EnvelopeListener(identity, authentication, endPoint, sendTimeout);
         }
         
-        public MessageHubSenderBuilder AddMessageReceiver(IMessageReceiver messageReceiver, MediaType forMimeType = null)
+        public MessagingHubSenderBuilder AddMessageReceiver(IMessageReceiver messageReceiver, MediaType forMimeType = null)
         {
             EnvelopeListener.AddMessageReceiver(messageReceiver, forMimeType);
             return this;
         }
 
-        public MessageHubSenderBuilder AddMessageReceiver(Func<IMessageReceiver> receiverFactory, MediaType forMimeType = null)
+        public MessagingHubSenderBuilder AddMessageReceiver(Func<IMessageReceiver> receiverFactory, MediaType forMimeType = null)
         {
             EnvelopeListener.AddMessageReceiver(receiverFactory, forMimeType);
             return this;
         }
 
-        public MessageHubSenderBuilder AddNotificationReceiver(INotificationReceiver notificationReceiver, Event? forEventType = null)
+        public MessagingHubSenderBuilder AddNotificationReceiver(INotificationReceiver notificationReceiver, Event? forEventType = null)
         {
             EnvelopeListener.AddNotificationReceiver(notificationReceiver, forEventType);
             return this;
         }
 
-        public MessageHubSenderBuilder AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Event? forEventType = null)
+        public MessagingHubSenderBuilder AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Event? forEventType = null)
         {
             EnvelopeListener.AddNotificationReceiver(receiverFactory, forEventType);
             return this;

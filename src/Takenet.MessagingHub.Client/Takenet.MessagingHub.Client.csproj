@@ -87,7 +87,7 @@
     <Compile Include="Lime\CommandProcessorFactory.cs" />
     <Compile Include="Lime\ICommandProcessor.cs" />
     <Compile Include="Lime\ICommandProcessorFactory.cs" />
-    <Compile Include="MessageHubSenderBuilder.cs" />
+    <Compile Include="MessagingHubSenderBuilder.cs" />
     <Compile Include="MessageSenderExtensions.cs" />
     <Compile Include="Lime\PersistentLimeSession.cs" />
     <Compile Include="Lime\PersistentLimeSessionFactory.cs" />

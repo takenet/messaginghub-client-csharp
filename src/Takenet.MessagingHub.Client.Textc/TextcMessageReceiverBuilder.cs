@@ -16,21 +16,21 @@ namespace Takenet.MessagingHub.Client.Textc
     /// </summary>
     public sealed class TextcMessageReceiverBuilder
     {
-        private readonly MessageHubSenderBuilder _senderBuilder;
+        private readonly MessagingHubSenderBuilder _senderBuilder;
         private IContextProvider _contextProvider;
         private Func<Message, MessageReceiverBase, Task> _matchNotFoundHandler;
 
         internal readonly List<ICommandProcessor> CommandProcessors;
-        internal readonly IOutputProcessor OutputProcessor;
-        
-        public TextcMessageReceiverBuilder(MessageHubSenderBuilder senderBuilder, IOutputProcessor outputProcessor = null)
+        internal IOutputProcessor OutputProcessor;
+
+        public TextcMessageReceiverBuilder(MessagingHubSenderBuilder senderBuilder, IOutputProcessor outputProcessor = null)
         {
             _senderBuilder = senderBuilder;
             if (senderBuilder == null) throw new ArgumentNullException(nameof(senderBuilder));
             CommandProcessors = new List<ICommandProcessor>();
-            OutputProcessor = outputProcessor ?? new MessageOutputProcessor(senderBuilder.EnvelopeListener);
+            OutputProcessor = outputProcessor ?? new MessageOutputProcessor(_senderBuilder.EnvelopeListener);
         }
-
+        
         /// <summary>
         /// Adds a new command syntax to the <see cref="TextcMessageReceiver"/> builder.
         /// </summary>
@@ -157,12 +157,12 @@ namespace Takenet.MessagingHub.Client.Textc
                 _contextProvider ?? new ContextProvider(TimeSpan.FromMinutes(5)), 
                 _matchNotFoundHandler);
         }
-
+        
         /// <summary>
         /// Builds a new instance of <see cref="TextcMessageReceiver"/> using the defined configurations and adds it to the associated <see cref="MessagingHubClient"/> instance.
         /// </summary>
         /// <returns></returns>
-        public MessageHubSenderBuilder BuildAndAddTextcMessageReceiver()
+        public MessagingHubSenderBuilder BuildAndAddTextcMessageReceiver()
         {
             _senderBuilder.AddMessageReceiver(Build(), MediaTypes.PlainText);
             return _senderBuilder;

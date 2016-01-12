@@ -74,33 +74,38 @@ namespace Takenet.MessagingHub.Client
             return this;
         }
 
-        public MessageHubSenderBuilder AddMessageReceiver(IMessageReceiver messageReceiver, MediaType forMimeType = null)
+        public MessagingHubSenderBuilder AddMessageReceiver(IMessageReceiver messageReceiver, MediaType forMimeType = null)
         {
-            return new MessageHubSenderBuilder(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout)
+            return new MessagingHubSenderBuilder(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout)
                  .AddMessageReceiver(messageReceiver, forMimeType);
         }
 
-        public MessageHubSenderBuilder AddMessageReceiver(Func<IMessageReceiver> receiverFactory, MediaType forMimeType = null)
+        public MessagingHubSenderBuilder AddMessageReceiver(Func<IMessageReceiver> receiverFactory, MediaType forMimeType = null)
         {
-            return new MessageHubSenderBuilder(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout)
+            return new MessagingHubSenderBuilder(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout)
                 .AddMessageReceiver(receiverFactory, forMimeType);
         }
 
-        public MessageHubSenderBuilder AddNotificationReceiver(INotificationReceiver notificationReceiver, Event? forEventType = null)
+        public MessagingHubSenderBuilder AddNotificationReceiver(INotificationReceiver notificationReceiver, Event? forEventType = null)
         {
-            return new MessageHubSenderBuilder(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout)
+            return new MessagingHubSenderBuilder(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout)
                 .AddNotificationReceiver(notificationReceiver, forEventType);
         }
 
-        public MessageHubSenderBuilder AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Event? forEventType = null)
+        public MessagingHubSenderBuilder AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Event? forEventType = null)
         {
-            return new MessageHubSenderBuilder(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout)
+            return new MessagingHubSenderBuilder(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout)
                 .AddNotificationReceiver(receiverFactory, forEventType);
         }
 
         public IMessagingHubClient Build()
         {
             return new MessagingHubClient(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout);
+        }
+
+        internal MessagingHubSenderBuilder AsMessagingSenderBuilder()
+        {
+            return new MessagingHubSenderBuilder(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout);
         }
 
         private Authentication GetAuthenticationScheme()

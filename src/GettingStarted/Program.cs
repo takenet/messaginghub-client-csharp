@@ -21,9 +21,10 @@ namespace GettingStarted
         {
             // Instantiates a MessageHubClient using its fluent API
             // Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
-            var client = new MessagingHubClient()
+            var client = new MessagingHubClientBuilder()
                             .UsingAccessKey(Login, AccessKey)
-                            .AddMessageReceiver(new MessageReceiver(), MediaTypes.PlainText);
+                            .AddMessageReceiver(new MessageReceiver(), MediaTypes.PlainText)
+                            .Build();
 
             // Starts the client
             await client.StartAsync();
@@ -51,7 +52,7 @@ namespace GettingStarted
                 Console.WriteLine($"With: \"{message.Content}\"");
                 Console.WriteLine();
                 if (message.From.Name != Login)
-                    await MessageSender.SendMessageAsync("It works!", message.From);
+                    await EnvelopeSender.SendMessageAsync("It works!", message.From);
             }
         }
 

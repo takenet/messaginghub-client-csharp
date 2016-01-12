@@ -32,7 +32,7 @@ namespace Takenet.Calendar
             // Adds the calendar syntaxes and actions for en-us and pt-br
             
 
-            var client = new MessagingHubClient()
+            var client = new MessagingHubClientBuilder()
                 .UsingAccessKey(Login, AccessKey)
                 .NewTextcMessageReceiverBuilder()
                 .ForSyntaxes(
