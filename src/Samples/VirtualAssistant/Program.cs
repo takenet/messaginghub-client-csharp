@@ -82,7 +82,8 @@ namespace Takenet.Calendar
 
                     return Task.FromResult(messageBuilder.ToString());
                 })
-                .BuildAndAddMessageReceiver();
+                .BuildAndAddTextcMessageReceiver()
+                .Build();
 
             // Starts the client
             await client.StartAsync();
