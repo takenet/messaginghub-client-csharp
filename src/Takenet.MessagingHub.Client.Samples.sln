@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GettingStarted", "GettingSt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calendar", "Samples\VirtualAssistant\Calendar.csproj", "{7D3BAA23-A118-4272-8798-B9DEFA18EFF8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageSearch", "ImageSearch\ImageSearch.csproj", "{86220E54-00C1-4755-ACAB-0A7016270B01}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{7D3BAA23-A118-4272-8798-B9DEFA18EFF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D3BAA23-A118-4272-8798-B9DEFA18EFF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D3BAA23-A118-4272-8798-B9DEFA18EFF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86220E54-00C1-4755-ACAB-0A7016270B01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86220E54-00C1-4755-ACAB-0A7016270B01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86220E54-00C1-4755-ACAB-0A7016270B01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86220E54-00C1-4755-ACAB-0A7016270B01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

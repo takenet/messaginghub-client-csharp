@@ -36,8 +36,8 @@ namespace Takenet.Calendar
                 .UsingAccessKey(Login, AccessKey)
                 .NewTextcMessageReceiverBuilder()
                 .ForSyntaxes(
-                    "^[:Word?(hey,ok) :LDWord?(calendar,agenda) :Word?(add,new,create) command:LDWord(remind,reminder) :Word?(me) :Word~(to,of) message:Text :Word?(for) when:LDWord?(today,tomorrow,someday)]",
-                    "^[:Word?(ola,oi,ok) :LDWord?(calendario,agenda) :Word?(adicione,novo,crie) :Word?(um,me) command:LDWord(lembrete,lembre) :Word~(para,da,de,do) message:Text when:LDWord?(hoje,amanha,eventualmente)]")
+                    "^[:Word?(hey,ok) :LDWord?(calendar,agenda) :Word?(add,new,create) command:LDWord(remind,reminder) :Word?(me) :Word~(to,of) text:Text :Word?(for) when:LDWord?(today,tomorrow,someday)]",
+                    "^[:Word?(ola,oi,ok) :LDWord?(calendario,agenda) :Word?(adicione,novo,crie) :Word?(um,me) command:LDWord(lembrete,lembre) :Word~(para,da,de,do) text:Text when:LDWord?(hoje,amanha,eventualmente)]")
                 .Return<string, string, IRequestContext, string>((text, when, context) =>
                 {
                     var reminder = _calendar.AddReminder(text, CalendarImpl.ParseWhen(when), context);
