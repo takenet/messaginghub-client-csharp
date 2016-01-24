@@ -14,7 +14,7 @@
     <tags>lime messaginghub textc</tags>
     <dependencies>
       <dependency id="Takenet.MessagingHub.Client" version="$version$" />
-      <dependency id="Takenet.Textc" version="0.1.29" />
+      <dependency id="Takenet.Textc" version="0.2.5.0" />
     </dependencies>
   </metadata>
   <files>

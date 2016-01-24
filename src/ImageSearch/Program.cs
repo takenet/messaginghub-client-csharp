@@ -16,10 +16,13 @@ namespace ImageSearch
     {
         private const string LOGIN = "calendar";
         private const string ACCESS_KEY = "MnE1Mmlm";
-        private const string BING_API_KEY = "";
-
+        private const string BING_API_KEY = "1ZjkpdYqcVf5h9J1L9DCbu2I5G6iY6Fg283HSNT3LU0";
         private static readonly Uri BingServiceRoot = new Uri("https://api.datamarket.azure.com/Bing/Search/");
         private static readonly MediaType ResponseMediaType = new MediaType("application", "vnd.omni.text", "json");
+        private static readonly BingSearchContainer SearchContainer = new BingSearchContainer(BingServiceRoot)
+        {
+            Credentials = new NetworkCredential(BING_API_KEY, BING_API_KEY)
+        };
 
         static void Main(string[] args)
         {
@@ -28,19 +31,13 @@ namespace ImageSearch
 
         static async Task MainAsync(string[] args)
         {
-
-            var searchContainer = new BingSearchContainer(BingServiceRoot)
-            {
-                Credentials = new NetworkCredential(BING_API_KEY, BING_API_KEY)
-            };
-
             var client = new MessagingHubClientBuilder()
                 .UsingAccessKey(LOGIN, ACCESS_KEY)
                 .NewTextcMessageReceiverBuilder()
                 .ForSyntax("[:LDWord(mais,more) top:Integer? query+:Text]")
-                    .Return<int?, string, IRequestContext, JsonDocument>((top, query, context) => GetImageDocumentAsync(query, context, searchContainer, top))
+                    .Return<int?, string, IRequestContext, JsonDocument>((top, query, context) => GetImageDocumentAsync(query, context, top))
                 .ForSyntax("[query+:Text]")
-                    .Return<string, IRequestContext, JsonDocument>((query, context) => GetImageDocumentAsync(query, context, searchContainer))                
+                    .Return<string, IRequestContext, JsonDocument>((query, context) => GetImageDocumentAsync(query, context))                
                 .BuildAndAddTextcMessageReceiver()
                 .Build();
 
@@ -54,13 +51,13 @@ namespace ImageSearch
             await client.StopAsync();
         }
 
-        private static async Task<JsonDocument> GetImageDocumentAsync(string query, IRequestContext context, BingSearchContainer searchContainer, int? top = 1)
+        private static async Task<JsonDocument> GetImageDocumentAsync(string query, IRequestContext context, int? top = 1)
         {
             int skip;
             skip = context.GetVariable<int>(nameof(skip));
 
             var document = new JsonDocument(ResponseMediaType);
-            var imageQuery = searchContainer
+            var imageQuery = SearchContainer
                 .Image(query, null, "pt-BR", null, null, null, null)
                 .AddQueryOption($"${nameof(top)}", top)
                 .AddQueryOption($"${nameof(skip)}", skip);
