@@ -89,7 +89,7 @@ namespace Takenet.MessagingHub.Client
 
         public virtual async Task StartAsync()
         {
-            await _semaphore.WaitAsync();
+            await _semaphore.WaitAsync().ConfigureAwait(false);
 
             try
             {
@@ -111,7 +111,7 @@ namespace Takenet.MessagingHub.Client
 
         public virtual async Task StopAsync()
         {
-            await _semaphore.WaitAsync();
+            await _semaphore.WaitAsync().ConfigureAwait(false);
 
             try
             {
@@ -139,14 +139,15 @@ namespace Takenet.MessagingHub.Client
             _persistentLimeSession =
                 await
                     _persistentClientFactory.CreatePersistentClientChannelAsync(_endpoint, _sendTimeout, _identity,
-                        _authentication, _clientChannelFactory, _limeSessionProvider);
+                        _authentication, _clientChannelFactory, _limeSessionProvider)
+                            .ConfigureAwait(false);
 
             _persistentLimeSession.SessionEstabilished += OnSessionEstabilished;
         }
 
-        private void OnSessionEstabilished(object sender, EventArgs e)
+        private async void OnSessionEstabilished(object sender, EventArgs e)
         {
-            SetPresenceAsync().Wait();
+            await SetPresenceAsync().ConfigureAwait(false);
         }
 
         private async Task SetPresenceAsync()
@@ -156,7 +157,8 @@ namespace Takenet.MessagingHub.Client
                 await _persistentLimeSession.SetResourceAsync(
                     LimeUri.Parse(UriTemplates.PRESENCE),
                     new Presence { Status = PresenceStatus.Available, RoutingRule = RoutingRule.Identity },
-                    cancellationToken.Token).ConfigureAwait(false);
+                    cancellationToken.Token)
+                    .ConfigureAwait(false);
             }
         }
     }
