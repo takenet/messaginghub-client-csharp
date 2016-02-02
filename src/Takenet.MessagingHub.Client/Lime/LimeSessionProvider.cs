@@ -29,19 +29,19 @@ namespace Takenet.MessagingHub.Client
                             identity,
                             (_, __) => authentication,
                             Environment.MachineName,
-                            cancellationToken);
+                            cancellationToken).ConfigureAwait(false);
         }
 
         public async Task FinishSessionAsync(IClientChannel clientChannel, CancellationToken cancellationToken)
         {
             if (IsSessionEstablished(clientChannel))
             {
-                await clientChannel.SendFinishingSessionAsync();
+                await clientChannel.SendFinishingSessionAsync().ConfigureAwait(false);
             }
 
             if (clientChannel.Transport.IsConnected)
             {
-                await clientChannel.Transport.CloseAsync(cancellationToken);
+                await clientChannel.Transport.CloseAsync(cancellationToken).ConfigureAwait(false);
             }
         }
 

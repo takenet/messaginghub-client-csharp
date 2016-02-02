@@ -60,7 +60,7 @@ namespace Takenet.MessagingHub.Client
 
         public override async Task StartAsync()
         {
-            await base.StartAsync();
+            await base.StartAsync().ConfigureAwait(false);
 
             _cancellationTokenSource = new CancellationTokenSource();
             InitializeAndStartReceivers();
@@ -70,7 +70,7 @@ namespace Takenet.MessagingHub.Client
 
         public async Task StopSync()
         {
-            await base.StopAsync();
+            await base.StopAsync().ConfigureAwait(false);
 
             if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
             {

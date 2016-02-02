@@ -35,7 +35,7 @@ namespace Takenet.MessagingHub.Client.Lime
             if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
             {
                 _cancellationTokenSource.Cancel();
-                await _listenner;
+                await _listenner.ConfigureAwait(false);
                 _cancellationTokenSource.Dispose();
             }
         }
@@ -67,8 +67,8 @@ namespace Takenet.MessagingHub.Client.Lime
                 try
                 {
                     cancellationTokenSource.Token.Register(() => taskCompletionSource.TrySetCanceled());
-                    await SendAsync(envelope);
-                    return await taskCompletionSource.Task;
+                    await SendAsync(envelope).ConfigureAwait(false);
+                    return await taskCompletionSource.Task.ConfigureAwait(false);
                 }
                 catch (OperationCanceledException)
                 {
@@ -90,7 +90,7 @@ namespace Takenet.MessagingHub.Client.Lime
 
                 try
                 {
-                    command = await ReceiveAsync(_cancellationTokenSource.Token);
+                    command = await ReceiveAsync(_cancellationTokenSource.Token).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException)
                 {

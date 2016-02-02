@@ -239,9 +239,9 @@ namespace Takenet.MessagingHub.Client
         {
             _clientChannel?.DisposeIfDisposable();
 
-            _clientChannel = await _clientChannelFactory.CreateClientChannelAsync(_sendTimeout);
+            _clientChannel = await _clientChannelFactory.CreateClientChannelAsync(_sendTimeout).ConfigureAwait(false);
 
-            await _limeSessionProvider.EstablishSessionAsync(_clientChannel, _endPoint, _identity, _authentication, cancellationToken);
+            await _limeSessionProvider.EstablishSessionAsync(_clientChannel, _endPoint, _identity, _authentication, cancellationToken).ConfigureAwait(false);
 
             if (_isSessionEstablished && SessionEstabilished != null)
             {
@@ -251,7 +251,7 @@ namespace Takenet.MessagingHub.Client
 
         private async Task EndSession(CancellationToken cancellationToken)
         {
-            await _limeSessionProvider.FinishSessionAsync(_clientChannel, cancellationToken);
+            await _limeSessionProvider.FinishSessionAsync(_clientChannel, cancellationToken).ConfigureAwait(false);
 
             _clientChannel?.DisposeIfDisposable();
         }
