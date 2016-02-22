@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Lime.Messaging.Resources;
 using Lime.Protocol;
 using Lime.Protocol.Security;
-using Takenet.MessagingHub.Client.Lime;
+using Takenet.MessagingHub.Client.LimeProtocol;
 
 namespace Takenet.MessagingHub.Client
 {

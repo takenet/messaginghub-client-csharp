@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
-using Takenet.MessagingHub.Client.Receivers;
-using System.Threading;
 using Lime.Protocol.Security;
-using Takenet.MessagingHub.Client.Lime;
+using Takenet.MessagingHub.Client.LimeProtocol;
+using Takenet.MessagingHub.Client.Receivers;
+using Lime.Protocol.Listeners;
 
 namespace Takenet.MessagingHub.Client
 {

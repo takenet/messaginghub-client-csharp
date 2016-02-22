@@ -1,14 +1,10 @@
-﻿using Lime.Protocol;
+﻿using System;
+using System.Threading;
+using Lime.Protocol;
 using Lime.Protocol.Client;
-using Lime.Protocol.Network;
 using Lime.Protocol.Security;
 using NSubstitute;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using Takenet.MessagingHub.Client.LimeProtocol;
 
 namespace Takenet.MessagingHub.Client.Test
 {

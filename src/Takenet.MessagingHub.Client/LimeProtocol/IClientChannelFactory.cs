@@ -4,7 +4,7 @@ using Lime.Protocol.Security;
 using System;
 using System.Threading.Tasks;
 
-namespace Takenet.MessagingHub.Client
+namespace Takenet.MessagingHub.Client.LimeProtocol
 {
     /// <summary>
     /// Factory for Messaging Hub client channels

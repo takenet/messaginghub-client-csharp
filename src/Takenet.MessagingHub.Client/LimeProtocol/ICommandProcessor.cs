@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Takenet.MessagingHub.Client.Lime
+namespace Takenet.MessagingHub.Client.LimeProtocol
 {
     /// <summary>
     /// Sends a command and waits for its response

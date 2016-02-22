@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Takenet.MessagingHub.Client
+namespace Takenet.MessagingHub.Client.LimeProtocol
 {
     internal interface ILimeSessionProvider
     {

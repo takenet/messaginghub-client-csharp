@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol.Client;
 
-namespace Takenet.MessagingHub.Client.Lime
+namespace Takenet.MessagingHub.Client.LimeProtocol
 {
     /// <summary>
     /// Implementation for <see cref="ICommandProcessor"/>

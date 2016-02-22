@@ -8,7 +8,7 @@ using Lime.Protocol;
 using Lime.Protocol.Security;
 using Lime.Protocol.Serialization.Newtonsoft;
 
-namespace Takenet.MessagingHub.Client
+namespace Takenet.MessagingHub.Client.LimeProtocol
 {
     /// <summary>
     /// Implementation for <see cref="IClientChannelFactory"/>

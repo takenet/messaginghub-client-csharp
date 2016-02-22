@@ -1,6 +1,6 @@
 ﻿using Lime.Protocol.Client;
 
-namespace Takenet.MessagingHub.Client.Lime
+namespace Takenet.MessagingHub.Client.LimeProtocol
 {
     /// <summary>
     /// Factory for command processors
