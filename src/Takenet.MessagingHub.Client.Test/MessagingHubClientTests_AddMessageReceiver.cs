@@ -1,10 +1,9 @@
-﻿using Lime.Protocol;
-using Lime.Protocol.Client;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Lime.Protocol;
 using NSubstitute;
 using NUnit.Framework;
 using Shouldly;
-using System.Threading;
-using System.Threading.Tasks;
 using Takenet.MessagingHub.Client.Receivers;
 
 namespace Takenet.MessagingHub.Client.Test
@@ -21,6 +20,12 @@ namespace Takenet.MessagingHub.Client.Test
         {
             base.Setup();
             _messageReceiver = Substitute.For<IMessageReceiver>();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _semaphore.Dispose();
         }
 
         [Test]
@@ -44,8 +49,6 @@ namespace Takenet.MessagingHub.Client.Test
 
             //Assert
             _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
-
-            _semaphore.DisposeIfDisposable();
         }
 
         [Test]
@@ -73,8 +76,6 @@ namespace Takenet.MessagingHub.Client.Test
 
             //Assert
             _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
-
-            _semaphore.DisposeIfDisposable();
         }
 
         [Test]
@@ -102,8 +103,34 @@ namespace Takenet.MessagingHub.Client.Test
             //Assert
             messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
             messageReceiver.EnvelopeSender.ShouldNotBeNull();
-
-            _semaphore.DisposeIfDisposable();
         }
+
+        [Test]
+        public void Add_Multiple_MessageReceivers_And_Process_Message_With_Success()
+        {
+            //Arrange
+            var otherMessageReceiver = Substitute.For<IMessageReceiver>();
+
+            MessagingHubClient.AddMessageReceiver(_messageReceiver);
+            MessagingHubClient.AddMessageReceiver(otherMessageReceiver);
+
+            _semaphore = new SemaphoreSlim(1);
+
+            PersistentClientChannel.ReceiveMessageAsync(new CancellationTokenSource().Token).ReturnsForAnyArgs(async (_) =>
+            {
+                await _semaphore.WaitAsync().ConfigureAwait(false);
+                return SomeMessage;
+            });
+
+            //Act
+            MessagingHubClient.StartAsync().Wait();
+
+            Task.Delay(3000).Wait();
+
+            //Assert
+            _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
+            otherMessageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
+        }
+
     }
 }

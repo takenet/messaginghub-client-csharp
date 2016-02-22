@@ -19,28 +19,21 @@ namespace Takenet.MessagingHub.Client.Test
         protected ICommandProcessorFactory CommandProcessorFactory;
         protected ICommandProcessor CommandProcessor;
         protected ILimeSessionProvider LimeSessionProvider;
+        protected string AccessKey = "1234";
         private Uri _endPoint = new Uri("net.tcp://msg.net:12345");
         private Identity _identity => new Identity("developerTakenet","msging.net");
         private TimeSpan _sendTimeout = TimeSpan.FromSeconds(20);
-        protected string AccessKey = "1234";
 
 
         protected virtual void Setup()
         {
             SubstitutePersistentLimeSession();
-
-            SubstituteSetPresence();
-            
+            SubstituteSetPresence();            
             SubstituteEnvelopeProcessor();
-
             SubstituteEnvelopeProcessorFabrication();
-
             SubstituteClientChannel();
-
             SubstituteClientChannelFabrication();
-
             SubstituteLimeSessionProvider();
-
             SubstituteForPersistentClientChannelFactory();
 
             InstantiateActualMessageHubClient();
@@ -65,7 +58,7 @@ namespace Takenet.MessagingHub.Client.Test
 
         private void InstantiateActualMessageHubClient()
         {
-            MessagingHubClient = new EnvelopeListener(_identity, new KeyAuthentication() { Key = AccessKey }, _endPoint, _sendTimeout, PersistentClientChannelFactory, ClientChannelFactory, CommandProcessorFactory, LimeSessionProvider);
+            MessagingHubClient = new EnvelopeListener(_identity, new KeyAuthentication { Key = AccessKey }, _endPoint, _sendTimeout, PersistentClientChannelFactory, ClientChannelFactory, CommandProcessorFactory, LimeSessionProvider);
         }
 
         private void SubstituteClientChannelFabrication()
