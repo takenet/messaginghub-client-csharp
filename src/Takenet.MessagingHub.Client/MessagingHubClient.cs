@@ -47,7 +47,7 @@ namespace Takenet.MessagingHub.Client
 
         public MessagingHubClient(Identity identity, Authentication authentication, Uri endPoint, TimeSpan sendTimeout) :
             this(
-            identity, authentication, endPoint, TimeSpan.FromSeconds(20), new PersistentLimeSessionFactory(), new ClientChannelFactory(),
+            identity, authentication, endPoint, sendTimeout, new PersistentLimeSessionFactory(), new ClientChannelFactory(),
             new CommandProcessorFactory(), new LimeSessionProvider())
         { }
 
