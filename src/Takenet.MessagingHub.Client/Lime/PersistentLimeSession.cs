@@ -258,7 +258,7 @@ namespace Takenet.MessagingHub.Client
 
         public Task SetResourceAsync<TResource>(LimeUri uri, TResource resource, CancellationToken cancellationToken, Func<Command, Task> unrelatedCommandHandler = null) where TResource : Document
         {
-            return _clientChannel.SetResourceAsync(uri, resource, cancellationToken, unrelatedCommandHandler);
+            return _clientChannel.SetResourceAsync(uri, resource, cancellationToken);
         }
     }
 }
