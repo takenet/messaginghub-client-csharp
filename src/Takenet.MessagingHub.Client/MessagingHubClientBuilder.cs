@@ -62,7 +62,7 @@ namespace Takenet.MessagingHub.Client
 
         public MessagingHubClientBuilder UsingDomain(string domain)
         {
-            if (string.IsNullOrEmpty(domain)) throw new ArgumentNullException("domain");
+            if (string.IsNullOrEmpty(domain)) throw new ArgumentNullException(nameof(domain));
 
             _domain = domain;
             return this;
@@ -76,25 +76,25 @@ namespace Takenet.MessagingHub.Client
 
         public MessagingHubSenderBuilder AddMessageReceiver(IMessageReceiver messageReceiver, MediaType forMimeType = null)
         {
-            return new MessagingHubSenderBuilder(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout)
+            return AsMessagingSenderBuilder()
                  .AddMessageReceiver(messageReceiver, forMimeType);
         }
 
         public MessagingHubSenderBuilder AddMessageReceiver(Func<IMessageReceiver> receiverFactory, MediaType forMimeType = null)
         {
-            return new MessagingHubSenderBuilder(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout)
+            return AsMessagingSenderBuilder()
                 .AddMessageReceiver(receiverFactory, forMimeType);
         }
 
         public MessagingHubSenderBuilder AddNotificationReceiver(INotificationReceiver notificationReceiver, Event? forEventType = null)
         {
-            return new MessagingHubSenderBuilder(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout)
+            return AsMessagingSenderBuilder()
                 .AddNotificationReceiver(notificationReceiver, forEventType);
         }
 
         public MessagingHubSenderBuilder AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Event? forEventType = null)
         {
-            return new MessagingHubSenderBuilder(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout)
+            return AsMessagingSenderBuilder()
                 .AddNotificationReceiver(receiverFactory, forEventType);
         }
 
