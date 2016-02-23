@@ -1,33 +1,34 @@
 ﻿using Lime.Protocol;
 using Lime.Protocol.Security;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Takenet.MessagingHub.Client.Receivers;
 
 namespace Takenet.MessagingHub.Client
 {
     public class MessagingHubClientBuilder
     {
+        public const string DEFAULT_DOMAIN = "msging.net";
+
+        private readonly MessagingHubSenderBuilder _senderBuilder;
+
         private string _login;
         private string _password;
         private string _accessKey;
-
-        public const string DEFAULT_DOMAIN = "msging.net";
         private TimeSpan _sendTimeout;
         private string _domain;
         private string _hostName;
+
         private Identity _identity => Identity.Parse($"{_login}@{_domain}");
         private Uri _endPoint => new Uri($"net.tcp://{_hostName}:55321");
 
+        internal MessagingHubClient MessagingHubClient { get; private set; }
 
         public MessagingHubClientBuilder()
         {
             _hostName = DEFAULT_DOMAIN;
             _domain = DEFAULT_DOMAIN;
             _sendTimeout = TimeSpan.FromSeconds(20);
+            _senderBuilder = new MessagingHubSenderBuilder(this);
         }
 
         public MessagingHubClientBuilder UsingAccount(string login, string password)
@@ -76,37 +77,35 @@ namespace Takenet.MessagingHub.Client
 
         public MessagingHubSenderBuilder AddMessageReceiver(IMessageReceiver messageReceiver, MediaType forMimeType = null)
         {
-            return AsMessagingSenderBuilder()
-                 .AddMessageReceiver(messageReceiver, forMimeType);
+            _senderBuilder.AddMessageReceiver(messageReceiver, forMimeType);
+            return _senderBuilder;
         }
 
         public MessagingHubSenderBuilder AddMessageReceiver(Func<IMessageReceiver> receiverFactory, MediaType forMimeType = null)
         {
-            return AsMessagingSenderBuilder()
-                .AddMessageReceiver(receiverFactory, forMimeType);
+            _senderBuilder.AddMessageReceiver(receiverFactory, forMimeType);
+            return _senderBuilder;
         }
 
         public MessagingHubSenderBuilder AddNotificationReceiver(INotificationReceiver notificationReceiver, Event? forEventType = null)
         {
-            return AsMessagingSenderBuilder()
-                .AddNotificationReceiver(notificationReceiver, forEventType);
+            _senderBuilder.AddNotificationReceiver(notificationReceiver, forEventType);
+            return _senderBuilder;
         }
 
         public MessagingHubSenderBuilder AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Event? forEventType = null)
         {
-            return AsMessagingSenderBuilder()
-                .AddNotificationReceiver(receiverFactory, forEventType);
+            _senderBuilder.AddNotificationReceiver(receiverFactory, forEventType);
+            return _senderBuilder;
         }
 
         public IMessagingHubClient Build()
         {
-            return new MessagingHubClient(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout);
+            MessagingHubClient = new MessagingHubClient(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout, _senderBuilder.EnvelopeRegistrar);
+            return MessagingHubClient;
         }
 
-        internal MessagingHubSenderBuilder AsMessagingSenderBuilder()
-        {
-            return new MessagingHubSenderBuilder(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout);
-        }
+        internal MessagingHubSenderBuilder AsMessagingSenderBuilder() => _senderBuilder;
 
         private Authentication GetAuthenticationScheme()
         {

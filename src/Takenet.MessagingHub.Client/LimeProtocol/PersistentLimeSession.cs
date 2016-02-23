@@ -24,7 +24,9 @@ namespace Takenet.MessagingHub.Client.LimeProtocol
         private Task _watchConnectionTask;
         private CancellationTokenSource _cancellationTokenSource;
 
-        public event EventHandler SessionEstabilished;
+        public event EventHandler SessionEstablished;
+
+        public IClientChannel ClientChannel => _clientChannel;
 
         private bool _isSessionEstablished => _limeSessionProvider.IsSessionEstablished(_clientChannel);
 
@@ -243,9 +245,9 @@ namespace Takenet.MessagingHub.Client.LimeProtocol
 
             await _limeSessionProvider.EstablishSessionAsync(_clientChannel, _endPoint, _identity, _authentication, cancellationToken).ConfigureAwait(false);
 
-            if (_isSessionEstablished && SessionEstabilished != null)
+            if (_isSessionEstablished && SessionEstablished != null)
             {
-                SessionEstabilished(this, EventArgs.Empty);
+                SessionEstablished(this, EventArgs.Empty);
             }
         }
 

@@ -16,7 +16,6 @@ namespace Takenet.MessagingHub.Client
             MediaType forMimeType = null)
         {
             AddMessageReceiver(envelopeListener, () => messageReceiver, forMimeType);            
-
         }
 
         ///// <summary>

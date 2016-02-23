@@ -1,4 +1,5 @@
 ﻿using Lime.Protocol;
+using Lime.Protocol.Client;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +12,9 @@ namespace Takenet.MessagingHub.Client.LimeProtocol
 
         Task StopAsync();
 
-        event EventHandler SessionEstabilished;
+        event EventHandler SessionEstablished;
+
+        IClientChannel ClientChannel { get; }
 
         Task<Message> ReceiveMessageAsync(CancellationToken cancellationToken);
         Task SendMessageAsync(Message message);

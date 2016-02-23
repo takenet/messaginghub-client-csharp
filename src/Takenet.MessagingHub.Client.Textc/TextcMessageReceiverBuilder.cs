@@ -32,7 +32,7 @@ namespace Takenet.MessagingHub.Client.Textc
         {
             if (senderBuilder == null) throw new ArgumentNullException(nameof(senderBuilder));
             _senderBuilder = senderBuilder;                        
-            _outputProcessor = outputProcessor ?? new MessageOutputProcessor(_senderBuilder.EnvelopeListener);
+            _outputProcessor = outputProcessor ?? new MessageOutputProcessor(() => _senderBuilder.EnvelopeSender);
             _syntaxParser = syntaxParser ?? new SyntaxParser();
             _expressionScorer = expressionScorer ?? new RatioExpressionScorer();
             _cultureProvider = cultureProvider ?? new DefaultCultureProvider(CultureInfo.InvariantCulture);

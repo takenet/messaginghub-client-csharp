@@ -4,7 +4,7 @@ using Takenet.MessagingHub.Client.Receivers;
 
 namespace Takenet.MessagingHub.Client
 {
-    public interface IEnvelopeListener : IMessagingHubClient
+    public interface IEnvelopeListener
     { 
         /// <summary>
         /// Add a message receiver listener to handle received messages.
