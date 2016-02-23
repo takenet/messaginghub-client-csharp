@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
@@ -11,15 +12,20 @@ namespace Takenet.MessagingHub.Client.Test
 {
     internal class MessagingHubClientTestBase
     {
+        protected readonly TimeSpan TIME_OUT = TimeSpan.FromSeconds(2);
+
         protected MessagingHubClient MessagingHubClient;
         protected IClientChannel ClientChannel;
         protected IPersistentLimeSession PersistentClientChannel;
-        protected IPersistentLimeSessionFactory PersistentClientChannelFactory;
-        protected IClientChannelFactory ClientChannelFactory;
-        protected ILimeSessionProvider LimeSessionProvider;
         protected EnvelopeListenerRegistrar EnvelopeListenerRegistrar;
+        protected BlockingCollection<Message> MessageProducer;
+        protected BlockingCollection<Notification> NotificationProducer;
+        protected BlockingCollection<Command> CommandProducer;
 
         protected string AccessKey = "1234";
+        private IPersistentLimeSessionFactory PersistentClientChannelFactory;
+        private IClientChannelFactory ClientChannelFactory;
+        private ILimeSessionProvider LimeSessionProvider;
         private Uri _endPoint = new Uri("net.tcp://msg.net:12345");
         private Identity _identity => new Identity("developerTakenet","msging.net");
         private TimeSpan _sendTimeout = TimeSpan.FromSeconds(20);
@@ -27,19 +33,41 @@ namespace Takenet.MessagingHub.Client.Test
 
         protected virtual void Setup()
         {
-            SubstitutePersistentLimeSession();
-            SubstituteSetPresence();            
+            CreateProducers();
+
             SubstituteClientChannel();
+            SubstitutePersistentLimeSession();
+            SubstituteSetPresence();
             SubstituteClientChannelFabrication();
             SubstituteLimeSessionProvider();
             SubstituteForPersistentClientChannelFactory();
 
-            InstantiateActualMessageHubClient();
+            CreateActualMessageHubClient();
+
+        }
+
+        protected virtual void TearDown()
+        {
+            MessageProducer.Dispose();
+            NotificationProducer.Dispose();
+            CommandProducer.Dispose();
+
+            if (MessagingHubClient.Started) MessagingHubClient.StopAsync().Wait();
+        }
+
+        private void CreateProducers()
+        {
+            MessageProducer = new BlockingCollection<Message>();
+            NotificationProducer = new BlockingCollection<Notification>();
+            CommandProducer = new BlockingCollection<Command>();
         }
 
         private void SubstituteClientChannel()
         {
             ClientChannel = Substitute.For<IClientChannel>();
+            ClientChannel.ReceiveMessageAsync(CancellationToken.None).ReturnsForAnyArgs(callInfo => MessageProducer.Take());
+            ClientChannel.ReceiveNotificationAsync(CancellationToken.None).ReturnsForAnyArgs(callInfo => NotificationProducer.Take());
+            ClientChannel.ReceiveCommandAsync(CancellationToken.None).ReturnsForAnyArgs(callInfo => CommandProducer.Take());
         }
 
         private void SubstituteForPersistentClientChannelFactory()
@@ -54,7 +82,7 @@ namespace Takenet.MessagingHub.Client.Test
             LimeSessionProvider = Substitute.For<ILimeSessionProvider>();
         }
 
-        private void InstantiateActualMessageHubClient()
+        private void CreateActualMessageHubClient()
         {
             EnvelopeListenerRegistrar = new EnvelopeListenerRegistrar();
             MessagingHubClient = new MessagingHubClient(_identity, new KeyAuthentication { Key = AccessKey }, _endPoint, _sendTimeout, PersistentClientChannelFactory, ClientChannelFactory, LimeSessionProvider, EnvelopeListenerRegistrar);
@@ -65,30 +93,29 @@ namespace Takenet.MessagingHub.Client.Test
             ClientChannelFactory = Substitute.For<IClientChannelFactory>();
             ClientChannelFactory.CreateClientChannelAsync(TimeSpan.Zero).ReturnsForAnyArgs(ClientChannel);
         }
-
         
         private void SubstitutePersistentLimeSession()
         {
             PersistentClientChannel = Substitute.For<IPersistentLimeSession>();
+            PersistentClientChannel.ClientChannel.Returns(ClientChannel);
 
+            //PersistentClientChannel.ReceiveNotificationAsync(CancellationToken.None)
+            //    .ReturnsForAnyArgs(p =>
+            //    {
+            //        var taskCompletionSource = new TaskCompletionSource<Notification>();
+            //        var token = p.Arg<CancellationToken>();
+            //        token.Register(() => taskCompletionSource.TrySetCanceled());
+            //        return taskCompletionSource.Task;
+            //    });
 
-            PersistentClientChannel.ReceiveNotificationAsync(CancellationToken.None)
-                .ReturnsForAnyArgs(p =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<Notification>();
-                    var token = p.Arg<CancellationToken>();
-                    token.Register(() => taskCompletionSource.TrySetCanceled());
-                    return taskCompletionSource.Task;
-                });
-
-            PersistentClientChannel.ReceiveMessageAsync(CancellationToken.None)
-                .ReturnsForAnyArgs(p =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<Message>();
-                    var token = p.Arg<CancellationToken>();
-                    token.Register(() => taskCompletionSource.TrySetCanceled());
-                    return taskCompletionSource.Task;
-                });
+            //PersistentClientChannel.ReceiveMessageAsync(CancellationToken.None)
+            //    .ReturnsForAnyArgs(p =>
+            //    {
+            //        var taskCompletionSource = new TaskCompletionSource<Message>();
+            //        var token = p.Arg<CancellationToken>();
+            //        token.Register(() => taskCompletionSource.TrySetCanceled());
+            //        return taskCompletionSource.Task;
+            //    });
 
         }
 

@@ -13,7 +13,6 @@ namespace Takenet.MessagingHub.Client.Test
     {
         private Notification SomeNotification => new Notification { Event = Event.Accepted };
         private INotificationReceiver _notificationReceiver;
-        private SemaphoreSlim _semaphore;
 
         [SetUp]
         protected override void Setup()
@@ -22,85 +21,65 @@ namespace Takenet.MessagingHub.Client.Test
             _notificationReceiver = Substitute.For<INotificationReceiver>();
         }
 
+        [TearDown]
+        protected override void TearDown()
+        {
+            base.TearDown();
+        }
+
         [Test]
-        public void Add_NotificationReceiver_And_Process_Notification_With_Success()
+        public async Task Add_NotificationReceiver_And_Process_Notification_With_Success()
         {
             //Arrange
             EnvelopeListenerRegistrar.AddNotificationReceiver(_notificationReceiver);
-
-            _semaphore = new SemaphoreSlim(1);
-
-            PersistentClientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (callInfo) =>
-            {
-                await _semaphore.WaitAsync();
-                return SomeNotification;
-            });
+            await MessagingHubClient.StartAsync();
 
             //Act
-            MessagingHubClient.StartAsync().Wait();
-
-            Task.Delay(3000).Wait();
+            DispatchNotification();
+            await Task.Delay(TIME_OUT);
 
             //Assert
             _notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
-
-            _semaphore.DisposeIfDisposable();
         }
 
         [Test]
-        public void Add_Specific_NotificationReceiver_And_Process_Notification_With_Success()
+        public async Task Add_Specific_NotificationReceiver_And_Process_Notification_With_Success()
         {
             //Arrange
             EnvelopeListenerRegistrar.AddNotificationReceiver(_notificationReceiver, Event.Accepted);
-
-            _semaphore = new SemaphoreSlim(1);
-
             SomeNotification.Event = Event.Accepted;
-
-            PersistentClientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (callInfo) =>
-            {
-                await _semaphore.WaitAsync();
-                return SomeNotification;
-            });
+            await MessagingHubClient.StartAsync();
 
             //Act
-            MessagingHubClient.StartAsync().Wait();
-
-            Task.Delay(5000).Wait();
+            DispatchNotification();
+            await Task.Delay(TIME_OUT);
 
             //Assert
             _notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
-
-            _semaphore.DisposeIfDisposable();
         }
 
 
         [Test]
-        public void Add_Base_NotificationReceiver_And_Process_Notification_With_Success()
+        public async Task Add_Base_NotificationReceiver_And_Process_Notification_With_Success()
         {
             //Arrange
             var notificationReceiver = Substitute.For<NotificationReceiverBase>();
-
             EnvelopeListenerRegistrar.AddNotificationReceiver(notificationReceiver);
-
-            _semaphore = new SemaphoreSlim(1);
-
-            PersistentClientChannel.ReceiveNotificationAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (_) =>
-            {
-                await _semaphore.WaitAsync().ConfigureAwait(false);
-                return SomeNotification;
-            });
+            await MessagingHubClient.StartAsync();
 
             //Act
-            MessagingHubClient.StartAsync().Wait();
-
-            Task.Delay(3000).Wait();
+            DispatchNotification();
+            await Task.Delay(TIME_OUT);
 
             //Assert
             notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
             notificationReceiver.EnvelopeSender.ShouldNotBeNull();
-
-            _semaphore.DisposeIfDisposable();
         }
+
+        private void DispatchNotification()
+        {
+            NotificationProducer.Add(SomeNotification);
+        }
+
     }
 }

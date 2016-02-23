@@ -5,6 +5,8 @@ using NSubstitute;
 using NUnit.Framework;
 using Shouldly;
 using Takenet.MessagingHub.Client.Receivers;
+using System.Collections.Concurrent;
+using System;
 
 namespace Takenet.MessagingHub.Client.Test
 {
@@ -12,29 +14,20 @@ namespace Takenet.MessagingHub.Client.Test
     internal class MessagingHubClientTests_AddMessageReceiver : MessagingHubClientTestBase
     {
         private Message SomeMessage => new Message { Content = new PlainDocument(MediaTypes.PlainText) };
+
         private IMessageReceiver _messageReceiver;
-        private SemaphoreSlim _semaphore;
 
         [SetUp]
         protected override void Setup()
         {
             base.Setup();
             _messageReceiver = Substitute.For<IMessageReceiver>();
-            _semaphore = new SemaphoreSlim(1);
-            _semaphore.Wait();
-
-            PersistentClientChannel.ReceiveMessageAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (_) =>
-            {
-                await _semaphore.WaitAsync().ConfigureAwait(false);
-                return SomeMessage;
-            });
         }
 
         [TearDown]
-        public void TearDown()
+        protected override void TearDown()
         {
-            _semaphore.Dispose();
-            MessagingHubClient.StopAsync().Wait();
+            base.TearDown();
         }
 
         [Test]
@@ -46,41 +39,40 @@ namespace Takenet.MessagingHub.Client.Test
 
             //Act
             DispatchMessage();
-            await Task.Delay(3000);
+            await Task.Delay(TIME_OUT);
 
             //Assert
             _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
         }
 
         [Test]
-        public void Add_MessageReceiver_Process_Message_And_Stop_With_Success()
+        public async Task Add_MessageReceiver_Process_Message_And_Stop_With_Success()
         {
             //Arrange
             EnvelopeListenerRegistrar.AddMessageReceiver(_messageReceiver);
 
-            MessagingHubClient.StartAsync().Wait();
-            Task.Delay(3000).Wait();
+            await MessagingHubClient.StartAsync();
             DispatchMessage();
+            await Task.Delay(TIME_OUT);
 
             //Act
-            MessagingHubClient.StopAsync().Wait();
-            Task.Delay(3000).Wait();
+            await MessagingHubClient.StopAsync();
 
             //Assert
             _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
         }
 
         [Test]
-        public void Add_Base_MessageReceiver_And_Process_Message_With_Success()
+        public async Task Add_Base_MessageReceiver_And_Process_Message_With_Success()
         {
             //Arrange
             var messageReceiver = Substitute.For<MessageReceiverBase>();
             EnvelopeListenerRegistrar.AddMessageReceiver(messageReceiver);
-            MessagingHubClient.StartAsync().Wait();
+            await MessagingHubClient.StartAsync();
 
             //Act
             DispatchMessage();
-            Task.Delay(3000).Wait();
+            await Task.Delay(TIME_OUT);
 
             //Assert
             messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
@@ -88,18 +80,18 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void Add_Multiple_MessageReceivers_And_Process_Message_With_Success()
+        public async Task Add_Multiple_MessageReceivers_And_Process_Message_With_Success()
         {
             //Arrange
             var otherMessageReceiver = Substitute.For<IMessageReceiver>();
             EnvelopeListenerRegistrar.AddMessageReceiver(_messageReceiver);
             EnvelopeListenerRegistrar.AddMessageReceiver(otherMessageReceiver);
 
-            MessagingHubClient.StartAsync().Wait();
+            await MessagingHubClient.StartAsync();
 
             //Act
             DispatchMessage();
-            Task.Delay(3000).Wait();
+            await Task.Delay(TIME_OUT);
 
             //Assert
             _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
@@ -108,7 +100,7 @@ namespace Takenet.MessagingHub.Client.Test
 
         private void DispatchMessage()
         {
-            _semaphore.Release();
+            MessageProducer.Add(SomeMessage);
         }
 
     }

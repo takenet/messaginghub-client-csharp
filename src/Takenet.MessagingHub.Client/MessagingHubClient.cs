@@ -127,7 +127,9 @@ namespace Takenet.MessagingHub.Client
                 if (!Started) throw new InvalidOperationException("The client is not started");
 
                 _channelListener.Stop();
-                await Task.WhenAll(_channelListener.NotificationListenerTask, _channelListener.MessageListenerTask, _channelListener.NotificationListenerTask);
+                //await Task.WhenAll(_channelListener.NotificationListenerTask, _channelListener.MessageListenerTask, _channelListener.NotificationListenerTask);
+                _channelListener.Dispose();
+
                 _persistentLimeSession.SessionEstablished -= OnSessionEstabilished;
                 await _persistentLimeSession.StopAsync().ConfigureAwait(false);
                 Started = false;
@@ -142,8 +144,8 @@ namespace Takenet.MessagingHub.Client
         {
             var handler = new EnvelopeReceivedHandler(this, _listenerRegistrar);
             _channelListener = new ChannelListener(
-                handler.Handle,
-                handler.Handle,
+                handler.HandleAsync,
+                handler.HandleAsync,
                 c => true.AsCompletedTask());
             _channelListener.Start(_persistentLimeSession.ClientChannel);
         }

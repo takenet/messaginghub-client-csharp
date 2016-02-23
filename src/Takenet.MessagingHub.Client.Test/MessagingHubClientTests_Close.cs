@@ -5,6 +5,7 @@ using Lime.Protocol.Network;
 using NSubstitute;
 using NUnit.Framework;
 using Shouldly;
+using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client.Test
 {
@@ -16,15 +17,20 @@ namespace Takenet.MessagingHub.Client.Test
             base.Setup();
         }
 
+        [TearDown]
+        protected override void TearDown()
+        {
+            base.TearDown();
+        }
+
         [Test]
-        [Ignore("Timing issues?")]
-        public void Start_Then_Stop_Should_Stop_PersistentClientChannel()
+        public async Task Start_Then_Stop_Should_Stop_PersistentClientChannel()
         {
             //Arrange
-            MessagingHubClient.StartAsync().Wait(); 
+            await MessagingHubClient.StartAsync(); 
 
             // Act
-            MessagingHubClient.StopAsync().Wait();
+            await MessagingHubClient.StopAsync();
 
             // Assert
             PersistentClientChannel.Received(1).StopAsync().Wait();
@@ -41,7 +47,7 @@ namespace Takenet.MessagingHub.Client.Test
         public void Start_With_Error_On_PersistentClientChannel_Should_Throw_Exception()
         {
             //Arrange
-            PersistentClientChannel.StartAsync().Returns(System.Threading.Tasks.Task.Run(() => { throw new LimeException(1,"Error"); }));
+            PersistentClientChannel.StartAsync().Returns(Task.Run(() => { throw new LimeException(1,"Error"); }));
             
             // Act / Assert
             Should.ThrowAsync<LimeException>(async () => await MessagingHubClient.StartAsync());

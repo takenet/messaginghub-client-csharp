@@ -18,7 +18,7 @@ namespace Takenet.MessagingHub.Client
             this.registrar = registrar;
         }
 
-        public async Task<bool> Handle<TEnvelope>(TEnvelope envelope)
+        public async Task<bool> HandleAsync<TEnvelope>(TEnvelope envelope)
             where TEnvelope : Envelope
         {
             try
