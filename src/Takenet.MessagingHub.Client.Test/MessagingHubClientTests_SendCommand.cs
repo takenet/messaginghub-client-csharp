@@ -3,6 +3,8 @@ using NSubstitute;
 using NUnit.Framework;
 using Shouldly;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client.Test
 {
@@ -15,25 +17,31 @@ namespace Takenet.MessagingHub.Client.Test
             base.Setup();
         }
 
+        [TearDown]
+        protected override void TearDown()
+        {
+            base.TearDown();
+        }
+
         [Test]
-        public void Send_Command_And_Receive_Response_With_Success()
+        public async Task Send_Command_And_Receive_Response_With_Success()
         {
             //Arrange
             var commandId = Guid.NewGuid();
-
             var commandResponse = new Command
             {
                 Id = commandId,
                 Status = CommandStatus.Success,
             };
-            
+
+            ClientChannel.ProcessCommandAsync(null, CancellationToken.None).ReturnsForAnyArgs(commandResponse);
+            await MessagingHubClient.StartAsync();
 
             //Act
-            MessagingHubClient.StartAsync().Wait();
-            
             var result = MessagingHubClient.SendCommandAsync(new Command { Id = commandId }).Result;
 
             //Assert
+            ClientChannel.ReceivedWithAnyArgs().ReceiveCommandAsync(CancellationToken.None);
             result.ShouldNotBeNull();
             result.Status.ShouldBe(CommandStatus.Success);
             result.Id.ShouldBe(commandId);
