@@ -38,7 +38,8 @@ namespace Takenet.MessagingHub.Client.Test
             await MessagingHubClient.StartAsync();
 
             //Act
-            var result = MessagingHubClient.SendCommandAsync(new Command { Id = commandId }).Result;
+            var result = await MessagingHubClient.SendCommandAsync(new Command { Id = commandId });
+            await Task.Delay(TIME_OUT);
 
             //Assert
             ClientChannel.ReceivedWithAnyArgs().ReceiveCommandAsync(CancellationToken.None);
