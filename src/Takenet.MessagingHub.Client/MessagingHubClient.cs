@@ -157,6 +157,7 @@ namespace Takenet.MessagingHub.Client
                         _authentication, _clientChannelFactory, _limeSessionProvider)
                             .ConfigureAwait(false);
 
+            // TODO Use ClientChannel handlers instead of this event, since exceptions on async void methods can crash the process
             _persistentLimeSession.SessionEstablished += OnSessionEstabilished;
         }
 

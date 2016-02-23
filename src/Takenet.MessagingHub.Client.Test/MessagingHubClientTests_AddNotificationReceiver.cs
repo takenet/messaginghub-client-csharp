@@ -26,7 +26,7 @@ namespace Takenet.MessagingHub.Client.Test
         public void Add_NotificationReceiver_And_Process_Notification_With_Success()
         {
             //Arrange
-            MessagingHubClient.AddNotificationReceiver(_notificationReceiver);
+            EnvelopeListenerRegistrar.AddNotificationReceiver(_notificationReceiver);
 
             _semaphore = new SemaphoreSlim(1);
 
@@ -51,7 +51,7 @@ namespace Takenet.MessagingHub.Client.Test
         public void Add_Specific_NotificationReceiver_And_Process_Notification_With_Success()
         {
             //Arrange
-            MessagingHubClient.AddNotificationReceiver(_notificationReceiver, Event.Accepted);
+            EnvelopeListenerRegistrar.AddNotificationReceiver(_notificationReceiver, Event.Accepted);
 
             _semaphore = new SemaphoreSlim(1);
 
@@ -79,10 +79,9 @@ namespace Takenet.MessagingHub.Client.Test
         public void Add_Base_NotificationReceiver_And_Process_Notification_With_Success()
         {
             //Arrange
-
             var notificationReceiver = Substitute.For<NotificationReceiverBase>();
 
-            MessagingHubClient.AddNotificationReceiver(notificationReceiver);
+            EnvelopeListenerRegistrar.AddNotificationReceiver(notificationReceiver);
 
             _semaphore = new SemaphoreSlim(1);
 

@@ -1,10 +1,10 @@
-﻿using Lime.Protocol;
+﻿using System;
+using System.Threading;
+using Lime.Protocol;
 using Lime.Protocol.Network;
 using NSubstitute;
 using NUnit.Framework;
 using Shouldly;
-using System;
-using System.Threading;
 
 namespace Takenet.MessagingHub.Client.Test
 {
@@ -17,7 +17,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        [Ignore]
+        [Ignore("Timing issues?")]
         public void Start_Then_Stop_Should_Stop_PersistentClientChannel()
         {
             //Arrange

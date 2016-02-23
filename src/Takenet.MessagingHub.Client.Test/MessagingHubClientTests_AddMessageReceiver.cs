@@ -20,32 +20,33 @@ namespace Takenet.MessagingHub.Client.Test
         {
             base.Setup();
             _messageReceiver = Substitute.For<IMessageReceiver>();
+            _semaphore = new SemaphoreSlim(1);
+            _semaphore.Wait();
+
+            PersistentClientChannel.ReceiveMessageAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (_) =>
+            {
+                await _semaphore.WaitAsync().ConfigureAwait(false);
+                return SomeMessage;
+            });
         }
 
         [TearDown]
         public void TearDown()
         {
             _semaphore.Dispose();
+            MessagingHubClient.StopAsync().Wait();
         }
 
         [Test]
-        public void Add_MessageReceiver_And_Process_Message_With_Success()
+        public async Task Add_MessageReceiver_And_Process_Message_With_Success()
         {
             //Arrange
-            MessagingHubClient.AddMessageReceiver(_messageReceiver);
-
-            _semaphore = new SemaphoreSlim(1);
-
-            PersistentClientChannel.ReceiveMessageAsync(new CancellationTokenSource().Token).ReturnsForAnyArgs(async (callInfo) =>
-            {
-                await _semaphore.WaitAsync();
-                return SomeMessage;
-            });
+            EnvelopeListenerRegistrar.AddMessageReceiver(_messageReceiver);
+            await MessagingHubClient.StartAsync();
 
             //Act
-            MessagingHubClient.StartAsync().Wait();
-
-            Task.Delay(3000).Wait();
+            DispatchMessage();
+            await Task.Delay(3000);
 
             //Assert
             _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
@@ -55,23 +56,14 @@ namespace Takenet.MessagingHub.Client.Test
         public void Add_MessageReceiver_Process_Message_And_Stop_With_Success()
         {
             //Arrange
-            MessagingHubClient.AddMessageReceiver(_messageReceiver);
+            EnvelopeListenerRegistrar.AddMessageReceiver(_messageReceiver);
 
-            _semaphore = new SemaphoreSlim(1);
-
-            PersistentClientChannel.ReceiveMessageAsync(Arg.Any<CancellationToken>()).ReturnsForAnyArgs(async (callInfo) =>
-            {
-                await _semaphore.WaitAsync(callInfo.Arg<CancellationToken>());
-                return new Message { Content = new PlainDocument(MediaTypes.PlainText) };
-            });
-            
-            //Act
             MessagingHubClient.StartAsync().Wait();
-
             Task.Delay(3000).Wait();
+            DispatchMessage();
 
+            //Act
             MessagingHubClient.StopAsync().Wait();
-
             Task.Delay(3000).Wait();
 
             //Assert
@@ -82,22 +74,12 @@ namespace Takenet.MessagingHub.Client.Test
         public void Add_Base_MessageReceiver_And_Process_Message_With_Success()
         {
             //Arrange
-
             var messageReceiver = Substitute.For<MessageReceiverBase>();
-
-            MessagingHubClient.AddMessageReceiver(messageReceiver);
-
-            _semaphore = new SemaphoreSlim(1);
-
-            PersistentClientChannel.ReceiveMessageAsync(new CancellationTokenSource().Token).ReturnsForAnyArgs(async (_) =>
-            {
-                await _semaphore.WaitAsync().ConfigureAwait(false);
-                return SomeMessage;
-            });
-
-            //Act
+            EnvelopeListenerRegistrar.AddMessageReceiver(messageReceiver);
             MessagingHubClient.StartAsync().Wait();
 
+            //Act
+            DispatchMessage();
             Task.Delay(3000).Wait();
 
             //Assert
@@ -110,26 +92,23 @@ namespace Takenet.MessagingHub.Client.Test
         {
             //Arrange
             var otherMessageReceiver = Substitute.For<IMessageReceiver>();
+            EnvelopeListenerRegistrar.AddMessageReceiver(_messageReceiver);
+            EnvelopeListenerRegistrar.AddMessageReceiver(otherMessageReceiver);
 
-            MessagingHubClient.AddMessageReceiver(_messageReceiver);
-            MessagingHubClient.AddMessageReceiver(otherMessageReceiver);
-
-            _semaphore = new SemaphoreSlim(1);
-
-            PersistentClientChannel.ReceiveMessageAsync(new CancellationTokenSource().Token).ReturnsForAnyArgs(async (_) =>
-            {
-                await _semaphore.WaitAsync().ConfigureAwait(false);
-                return SomeMessage;
-            });
-
-            //Act
             MessagingHubClient.StartAsync().Wait();
 
+            //Act
+            DispatchMessage();
             Task.Delay(3000).Wait();
 
             //Assert
             _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
             otherMessageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
+        }
+
+        private void DispatchMessage()
+        {
+            _semaphore.Release();
         }
 
     }
