@@ -83,8 +83,6 @@
     <Compile Include="LimeProtocol\IPersistentLimeSession.cs" />
     <Compile Include="LimeProtocol\IPersistentLimeSessionFactory.cs" />
     <Compile Include="LimeProtocol\LimeSessionProvider.cs" />
-    <Compile Include="LimeProtocol\ICommandProcessor.cs" />
-    <Compile Include="LimeProtocol\ICommandProcessorFactory.cs" />
     <Compile Include="MessagingHubSenderBuilder.cs" />
     <Compile Include="MessageSenderExtensions.cs" />
     <Compile Include="LimeProtocol\PersistentLimeSession.cs" />

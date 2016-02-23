@@ -20,26 +20,23 @@ namespace Takenet.MessagingHub.Client
         private readonly Uri _endpoint;
         private readonly IPersistentLimeSessionFactory _persistentClientFactory;
         private readonly IClientChannelFactory _clientChannelFactory;
-        private readonly ICommandProcessorFactory _commandProcessorFactory;
         private readonly ILimeSessionProvider _limeSessionProvider;
         private readonly SemaphoreSlim _semaphore;
         private readonly TimeSpan _sendTimeout;
         private readonly EnvelopeListenerRegistrar _listenerRegistrar;
 
-        private ICommandProcessor _commandProcessor;
         private IPersistentLimeSession _persistentLimeSession;
         private ChannelListener _channelListener;
 
         internal MessagingHubClient(Identity identity, Authentication authentication, Uri endPoint, TimeSpan sendTimeout,
-            IPersistentLimeSessionFactory persistentChannelFactory, IClientChannelFactory clientChannelFactory,
-            ICommandProcessorFactory commandProcessorFactory, ILimeSessionProvider limeSessionProvider, EnvelopeListenerRegistrar listenerRegistrar)
+            IPersistentLimeSessionFactory persistentChannelFactory, IClientChannelFactory clientChannelFactory, ILimeSessionProvider limeSessionProvider, 
+            EnvelopeListenerRegistrar listenerRegistrar)
         {
             _identity = identity;
             _authentication = authentication;
             _endpoint = endPoint;
             _persistentClientFactory = persistentChannelFactory;
             _clientChannelFactory = clientChannelFactory;
-            _commandProcessorFactory = commandProcessorFactory;
             _limeSessionProvider = limeSessionProvider;
             _sendTimeout = sendTimeout;
             _semaphore = new SemaphoreSlim(1);
@@ -58,7 +55,7 @@ namespace Takenet.MessagingHub.Client
 
         public MessagingHubClient(Identity identity, Authentication authentication, Uri endPoint, TimeSpan sendTimeout) :
             this(identity, authentication, endPoint, sendTimeout, new PersistentLimeSessionFactory(), new ClientChannelFactory(),
-                new CommandProcessorFactory(), new LimeSessionProvider(), new EnvelopeListenerRegistrar())
+                new LimeSessionProvider(), new EnvelopeListenerRegistrar())
         { }
 
         public bool Started { get; private set; }
@@ -68,7 +65,10 @@ namespace Takenet.MessagingHub.Client
             if (!Started)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation");
 
-            return await _commandProcessor.SendAsync(command, _sendTimeout).ConfigureAwait(false);
+            using (var cts = new CancellationTokenSource(_sendTimeout))
+            {
+                return await _persistentLimeSession.ClientChannel.ProcessCommandAsync(command, cts.Token).ConfigureAwait(false);
+            }
         }
 
         public virtual async Task SendMessageAsync(Message message)
@@ -108,7 +108,7 @@ namespace Takenet.MessagingHub.Client
                 await InstantiateClientChannelAsync().ConfigureAwait(false);
                 await _persistentLimeSession.StartAsync().ConfigureAwait(false);
 
-                StartEnvelopeProcessors();
+                StartEnvelopeListeners();
 
                 Started = true;
             }
@@ -126,7 +126,6 @@ namespace Takenet.MessagingHub.Client
             {
                 if (!Started) throw new InvalidOperationException("The client is not started");
 
-                await _commandProcessor.StopReceivingAsync().ConfigureAwait(false);
                 _channelListener.Stop();
                 await Task.WhenAll(_channelListener.NotificationListenerTask, _channelListener.MessageListenerTask, _channelListener.NotificationListenerTask);
                 _persistentLimeSession.SessionEstablished -= OnSessionEstabilished;
@@ -139,11 +138,8 @@ namespace Takenet.MessagingHub.Client
             }
         }
 
-        private void StartEnvelopeProcessors()
+        private void StartEnvelopeListeners()
         {
-            _commandProcessor = _commandProcessorFactory.Create(_persistentLimeSession);
-            _commandProcessor.StartReceiving();
-
             var handler = new EnvelopeReceivedHandler(this, _listenerRegistrar);
             _channelListener = new ChannelListener(
                 handler.Handle,

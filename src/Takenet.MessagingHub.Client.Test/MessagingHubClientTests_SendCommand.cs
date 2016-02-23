@@ -21,21 +21,19 @@ namespace Takenet.MessagingHub.Client.Test
             //Arrange
             var commandId = Guid.NewGuid();
 
-            var commandResponse = new Command()
+            var commandResponse = new Command
             {
                 Id = commandId,
                 Status = CommandStatus.Success,
             };
             
-            CommandProcessor.SendAsync(null, TimeSpan.Zero).ReturnsForAnyArgs(commandResponse);
 
             //Act
             MessagingHubClient.StartAsync().Wait();
             
-            var result = MessagingHubClient.SendCommandAsync(new Command() { Id = commandId }).Result;
+            var result = MessagingHubClient.SendCommandAsync(new Command { Id = commandId }).Result;
 
             //Assert
-            CommandProcessor.ReceivedWithAnyArgs().SendAsync(null,TimeSpan.Zero).Wait();
             result.ShouldNotBeNull();
             result.Status.ShouldBe(CommandStatus.Success);
             result.Id.ShouldBe(commandId);
