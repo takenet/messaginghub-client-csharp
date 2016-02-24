@@ -127,7 +127,6 @@ namespace Takenet.MessagingHub.Client
                 if (!Started) throw new InvalidOperationException("The client is not started");
 
                 _channelListener.Stop();
-                //await Task.WhenAll(_channelListener.NotificationListenerTask, _channelListener.MessageListenerTask, _channelListener.NotificationListenerTask);
                 _channelListener.Dispose();
 
                 _persistentLimeSession.SessionEstablished -= OnSessionEstabilished;
