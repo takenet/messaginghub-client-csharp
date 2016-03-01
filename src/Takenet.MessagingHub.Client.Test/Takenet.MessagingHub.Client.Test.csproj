@@ -30,20 +30,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lime.Messaging, Version=0.3.14.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Messaging.0.3.14\lib\net45\Lime.Messaging.dll</HintPath>
+    <Reference Include="Lime.Messaging, Version=0.3.26.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Messaging.0.3.26\lib\net45\Lime.Messaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Protocol, Version=0.3.14.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Protocol.0.3.14\lib\net45\Lime.Protocol.dll</HintPath>
+    <Reference Include="Lime.Protocol, Version=0.3.26.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Protocol.0.3.26\lib\net45\Lime.Protocol.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Protocol.Serialization.Newtonsoft, Version=0.3.14.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Protocol.Serialization.Newtonsoft.0.3.14\lib\net45\Lime.Protocol.Serialization.Newtonsoft.dll</HintPath>
+    <Reference Include="Lime.Protocol.Serialization.Newtonsoft, Version=0.3.26.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Protocol.Serialization.Newtonsoft.0.3.26\lib\net45\Lime.Protocol.Serialization.Newtonsoft.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Transport.Tcp, Version=0.3.14.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Transport.Tcp.0.3.14\lib\net45\Lime.Transport.Tcp.dll</HintPath>
+    <Reference Include="Lime.Transport.Tcp, Version=0.3.26.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Transport.Tcp.0.3.26\lib\net45\Lime.Transport.Tcp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -98,9 +98,6 @@
     <Compile Include="MessagingHubClientTests_Close.cs" />
     <Compile Include="MessagingHubClientTests_SendCommand.cs" />
     <Compile Include="MessagingHubClientTests_Start.cs" />
-    <Compile Include="PersistentClientChannel_Base.cs" />
-    <Compile Include="PersistentClientChannel_Receive.cs" />
-    <Compile Include="PersistentClientChannel_Send.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

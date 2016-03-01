@@ -31,20 +31,20 @@
     <DocumentationFile>bin\Release\Takenet.MessagingHub.Client.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lime.Messaging, Version=0.3.14.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Messaging.0.3.14\lib\net45\Lime.Messaging.dll</HintPath>
+    <Reference Include="Lime.Messaging, Version=0.3.26.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Messaging.0.3.26\lib\net45\Lime.Messaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Protocol, Version=0.3.14.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Protocol.0.3.14\lib\net45\Lime.Protocol.dll</HintPath>
+    <Reference Include="Lime.Protocol, Version=0.3.26.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Protocol.0.3.26\lib\net45\Lime.Protocol.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Protocol.Serialization.Newtonsoft, Version=0.3.14.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Protocol.Serialization.Newtonsoft.0.3.14\lib\net45\Lime.Protocol.Serialization.Newtonsoft.dll</HintPath>
+    <Reference Include="Lime.Protocol.Serialization.Newtonsoft, Version=0.3.26.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Protocol.Serialization.Newtonsoft.0.3.26\lib\net45\Lime.Protocol.Serialization.Newtonsoft.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Transport.Tcp, Version=0.3.14.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Transport.Tcp.0.3.14\lib\net45\Lime.Transport.Tcp.dll</HintPath>
+    <Reference Include="Lime.Transport.Tcp, Version=0.3.26.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Transport.Tcp.0.3.26\lib\net45\Lime.Transport.Tcp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -79,21 +79,15 @@
     <Compile Include="IMessagingHubSender.cs" />
     <Compile Include="IStoppable.cs" />
     <Compile Include="IWorker.cs" />
-    <Compile Include="LimeProtocol\ILimeSessionProvider.cs" />
-    <Compile Include="LimeProtocol\IPersistentLimeSession.cs" />
-    <Compile Include="LimeProtocol\IPersistentLimeSessionFactory.cs" />
-    <Compile Include="LimeProtocol\LimeSessionProvider.cs" />
+    <Compile Include="LimeProtocol\IOnDemandClientChannelFactory.cs" />
+    <Compile Include="LimeProtocol\OnDemandClientChannelFactory.cs" />
     <Compile Include="MessagingHubSenderBuilder.cs" />
     <Compile Include="MessageSenderExtensions.cs" />
-    <Compile Include="LimeProtocol\PersistentLimeSession.cs" />
-    <Compile Include="LimeProtocol\PersistentLimeSessionFactory.cs" />
     <Compile Include="MessagingHubClientBuilder.cs" />
     <Compile Include="Receivers\INotificationReceiver.cs" />
     <Compile Include="Receivers\IEnvelopeReceiver.cs" />
     <Compile Include="Receivers\NotificationReceiverBase.cs" />
     <Compile Include="Receivers\EnvelopeReceiverBase.cs" />
-    <Compile Include="LimeProtocol\ClientChannelFactory.cs" />
-    <Compile Include="LimeProtocol\IClientChannelFactory.cs" />
     <Compile Include="Receivers\IMessageReceiver.cs" />
     <Compile Include="IMessagingHubClient.cs" />
     <Compile Include="MediaTypes.cs" />

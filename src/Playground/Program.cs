@@ -15,13 +15,14 @@ namespace Takenet.MessagingHub.Client.Playground
 
         private static async Task Init()
         {
-            const string login = "andreminelli";
+            const string login = "aldo";
             const string password = "123456";
 
             // Instantiates a MessageHubClient using its fluent API
             var client =
                 new MessagingHubClientBuilder()
                     // Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
+                    .UsingHostName("hmg.msging.net")
                     .UsingAccount(login, password)
                     .AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
                     .AddNotificationReceiver(new PrintNotificationReceiver())                    

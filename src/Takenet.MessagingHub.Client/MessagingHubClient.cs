@@ -7,6 +7,11 @@ using Lime.Protocol.Security;
 using Takenet.MessagingHub.Client.LimeProtocol;
 using Takenet.MessagingHub.Client.Receivers;
 using Lime.Protocol.Listeners;
+using Lime.Protocol.Client;
+using Lime.Transport.Tcp;
+using Lime.Protocol.Network;
+using Lime.Protocol.Serialization.Newtonsoft;
+using Lime.Protocol.Network.Modules;
 
 namespace Takenet.MessagingHub.Client
 {
@@ -15,47 +20,45 @@ namespace Takenet.MessagingHub.Client
     /// </summary>
     public class MessagingHubClient : IMessagingHubClient
     {
-        private readonly Identity _identity;
-        private readonly Authentication _authentication;
-        private readonly Uri _endpoint;
-        private readonly IPersistentLimeSessionFactory _persistentClientFactory;
-        private readonly IClientChannelFactory _clientChannelFactory;
-        private readonly ILimeSessionProvider _limeSessionProvider;
         private readonly SemaphoreSlim _semaphore;
         private readonly TimeSpan _sendTimeout;
         private readonly EnvelopeListenerRegistrar _listenerRegistrar;
-
-        private IPersistentLimeSession _persistentLimeSession;
+        private IOnDemandClientChannel _onDemandClientChannel;
+        private IEstablishedClientChannelBuilder _establishedClientChannelBuilder;
+        private IOnDemandClientChannelFactory _onDemandClientChannelFactory;
         private ChannelListener _channelListener;
 
-        internal MessagingHubClient(Identity identity, Authentication authentication, Uri endPoint, TimeSpan sendTimeout,
-            IPersistentLimeSessionFactory persistentChannelFactory, IClientChannelFactory clientChannelFactory, ILimeSessionProvider limeSessionProvider, 
-            EnvelopeListenerRegistrar listenerRegistrar)
+        internal MessagingHubClient(IEstablishedClientChannelBuilder establishedClientChannelBuilder, IOnDemandClientChannelFactory onDemandClientChannelFactory, TimeSpan sendTimeout, EnvelopeListenerRegistrar listenerRegistrar)
         {
-            _identity = identity;
-            _authentication = authentication;
-            _endpoint = endPoint;
-            _persistentClientFactory = persistentChannelFactory;
-            _clientChannelFactory = clientChannelFactory;
-            _limeSessionProvider = limeSessionProvider;
+            _establishedClientChannelBuilder = establishedClientChannelBuilder;
+            _onDemandClientChannelFactory = onDemandClientChannelFactory;
+            _listenerRegistrar = listenerRegistrar;
             _sendTimeout = sendTimeout;
             _semaphore = new SemaphoreSlim(1);
-            _listenerRegistrar = listenerRegistrar;
         }
 
-        internal MessagingHubClient(Identity identity, Authentication authentication, Uri endPoint, TimeSpan sendTimeout, EnvelopeListenerRegistrar listenerRegistrar)
-            : this(identity, authentication, endPoint, sendTimeout)
+        public MessagingHubClient(Identity identity, Authentication authentication, Uri endPoint, TimeSpan sendTimeout, EnvelopeListenerRegistrar listenerRegistrar)
         {
+            _semaphore = new SemaphoreSlim(1);
             _listenerRegistrar = listenerRegistrar;
-        }
+            _sendTimeout = sendTimeout;
 
-        public MessagingHubClient(Identity identity, Authentication authentication, Uri endPoint) :
-            this(identity, authentication, endPoint, TimeSpan.FromSeconds(20))
-        { }
+            var channelBuilder = ClientChannelBuilder.Create(new TcpTransport(traceWriter: new TraceWriter(), envelopeSerializer: new JsonNetSerializer()), endPoint)
+                                 .WithSendTimeout(sendTimeout)
+                                 .AddMessageModule(c => new NotifyReceiptChannelModule(c));
+
+            _establishedClientChannelBuilder = new EstablishedClientChannelBuilder(channelBuilder)
+                                                .WithIdentity(identity)
+                                                .WithAuthentication(authentication)
+                                                .WithCompression(SessionCompression.None)
+                                                .AddEstablishedHandler(SetPresenceAsync)
+                                                .WithEncryption(SessionEncryption.TLS);
+            
+            _onDemandClientChannelFactory = new OnDemandClientChannelFactory();
+        }
 
         public MessagingHubClient(Identity identity, Authentication authentication, Uri endPoint, TimeSpan sendTimeout) :
-            this(identity, authentication, endPoint, sendTimeout, new PersistentLimeSessionFactory(), new ClientChannelFactory(),
-                new LimeSessionProvider(), new EnvelopeListenerRegistrar())
+            this(identity, authentication, endPoint, sendTimeout, new EnvelopeListenerRegistrar())
         { }
 
         public bool Started { get; private set; }
@@ -67,7 +70,7 @@ namespace Takenet.MessagingHub.Client
 
             using (var cts = new CancellationTokenSource(_sendTimeout))
             {
-                return await _persistentLimeSession.ClientChannel.ProcessCommandAsync(command, cts.Token).ConfigureAwait(false);
+                return await _onDemandClientChannel.ProcessCommandAsync(command, cts.Token).ConfigureAwait(false);
             }
         }
 
@@ -76,7 +79,7 @@ namespace Takenet.MessagingHub.Client
             if (!Started)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation");
 
-            await _persistentLimeSession.SendMessageAsync(message).ConfigureAwait(false);
+            await _onDemandClientChannel.SendMessageAsync(message).ConfigureAwait(false);
         }
 
         public virtual async Task SendNotificationAsync(Notification notification)
@@ -84,17 +87,17 @@ namespace Takenet.MessagingHub.Client
             if (!Started)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation!");
 
-            await _persistentLimeSession.SendNotificationAsync(notification).ConfigureAwait(false);
+            await _onDemandClientChannel.SendNotificationAsync(notification).ConfigureAwait(false);
         }
 
         public virtual Task<Message> ReceiveMessageAsync(CancellationToken cancellationToken)
         {
-            return _persistentLimeSession.ReceiveMessageAsync(cancellationToken);
+            return _onDemandClientChannel.ReceiveMessageAsync(cancellationToken);
         }
 
         public virtual Task<Notification> ReceiveNotificationAsync(CancellationToken cancellationToken)
         {
-            return _persistentLimeSession.ReceiveNotificationAsync(cancellationToken);
+            return _onDemandClientChannel.ReceiveNotificationAsync(cancellationToken);
         }
 
         public virtual async Task StartAsync()
@@ -105,9 +108,15 @@ namespace Takenet.MessagingHub.Client
             {
                 if (Started) throw new InvalidOperationException("The client is already started");
 
-                await InstantiateClientChannelAsync().ConfigureAwait(false);
-                await _persistentLimeSession.StartAsync().ConfigureAwait(false);
-
+                //Try to establish the session
+                //using (var cancellationTokenSource = new CancellationTokenSource(_sendTimeout))
+                //{
+                //    await _establishedClientChannelBuilder.BuildAndEstablishAsync(cancellationTokenSource.Token);
+                //}
+                
+                _onDemandClientChannel = _onDemandClientChannelFactory.Create(_establishedClientChannelBuilder);
+                _onDemandClientChannel.ChannelOperationFailedHandlers.Add(i => Task.FromResult(false));
+                
                 StartEnvelopeListeners();
 
                 Started = true;
@@ -118,6 +127,15 @@ namespace Takenet.MessagingHub.Client
             }
         }
 
+        private async Task SetPresenceAsync(IClientChannel clientChannel, CancellationToken cancellationToken)
+        {
+            await clientChannel.SetResourceAsync(
+                    LimeUri.Parse(UriTemplates.PRESENCE),
+                    new Presence { Status = PresenceStatus.Available, RoutingRule = RoutingRule.Identity, RoundRobin = true },
+                    cancellationToken)
+                    .ConfigureAwait(false);
+        }
+        
         public virtual async Task StopAsync()
         {
             await _semaphore.WaitAsync().ConfigureAwait(false);
@@ -126,12 +144,14 @@ namespace Takenet.MessagingHub.Client
             {
                 if (!Started) throw new InvalidOperationException("The client is not started");
 
-                _channelListener.Stop();
-                //await Task.WhenAll(_channelListener.NotificationListenerTask, _channelListener.MessageListenerTask, _channelListener.NotificationListenerTask);
-                _channelListener.Dispose();
+                using (var cancellationTokenSource = new CancellationTokenSource(_sendTimeout))
+                {
+                    await _onDemandClientChannel.FinishAsync(cancellationTokenSource.Token);
+                }
 
-                _persistentLimeSession.SessionEstablished -= OnSessionEstablished;
-                await _persistentLimeSession.StopAsync().ConfigureAwait(false);
+                _channelListener.Stop();
+                _channelListener.DisposeIfDisposable();
+
                 Started = false;
             }
             finally
@@ -147,37 +167,8 @@ namespace Takenet.MessagingHub.Client
                 handler.HandleAsync,
                 handler.HandleAsync,
                 c => true.AsCompletedTask());
-            _channelListener.Start(_persistentLimeSession.ClientChannel);
+            _channelListener.Start(_onDemandClientChannel);
         }
-
-
-        private async Task InstantiateClientChannelAsync()
-        {
-            _persistentLimeSession =
-                await
-                    _persistentClientFactory.CreatePersistentClientChannelAsync(_endpoint, _sendTimeout, _identity,
-                        _authentication, _clientChannelFactory, _limeSessionProvider)
-                            .ConfigureAwait(false);
-
-            // TODO Use ClientChannel handlers instead of this event, since exceptions on async void methods can crash the process
-            _persistentLimeSession.SessionEstablished += OnSessionEstablished;
-        }
-
-        private async void OnSessionEstablished(object sender, EventArgs e)
-        {
-            await SetPresenceAsync().ConfigureAwait(false);
-        }
-
-        private async Task SetPresenceAsync()
-        {
-            using (var cancellationToken = new CancellationTokenSource(_sendTimeout))
-            {
-                await _persistentLimeSession.SetResourceAsync(
-                    LimeUri.Parse(UriTemplates.PRESENCE),
-                    new Presence { Status = PresenceStatus.Available, RoutingRule = RoutingRule.Identity, RoundRobin = true},
-                    cancellationToken.Token)
-                    .ConfigureAwait(false);
-            }
-        }
+        
     }
 }
