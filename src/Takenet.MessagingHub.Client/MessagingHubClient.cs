@@ -130,7 +130,7 @@ namespace Takenet.MessagingHub.Client
                 //await Task.WhenAll(_channelListener.NotificationListenerTask, _channelListener.MessageListenerTask, _channelListener.NotificationListenerTask);
                 _channelListener.Dispose();
 
-                _persistentLimeSession.SessionEstablished -= OnSessionEstabilished;
+                _persistentLimeSession.SessionEstablished -= OnSessionEstablished;
                 await _persistentLimeSession.StopAsync().ConfigureAwait(false);
                 Started = false;
             }
@@ -160,10 +160,10 @@ namespace Takenet.MessagingHub.Client
                             .ConfigureAwait(false);
 
             // TODO Use ClientChannel handlers instead of this event, since exceptions on async void methods can crash the process
-            _persistentLimeSession.SessionEstablished += OnSessionEstabilished;
+            _persistentLimeSession.SessionEstablished += OnSessionEstablished;
         }
 
-        private async void OnSessionEstabilished(object sender, EventArgs e)
+        private async void OnSessionEstablished(object sender, EventArgs e)
         {
             await SetPresenceAsync().ConfigureAwait(false);
         }
@@ -174,7 +174,7 @@ namespace Takenet.MessagingHub.Client
             {
                 await _persistentLimeSession.SetResourceAsync(
                     LimeUri.Parse(UriTemplates.PRESENCE),
-                    new Presence { Status = PresenceStatus.Available, RoutingRule = RoutingRule.Identity },
+                    new Presence { Status = PresenceStatus.Available, RoutingRule = RoutingRule.Identity, RoundRobin = true},
                     cancellationToken.Token)
                     .ConfigureAwait(false);
             }

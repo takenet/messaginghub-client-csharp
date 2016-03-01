@@ -17,10 +17,9 @@ namespace Takenet.MessagingHub.Client.LimeProtocol
         public async Task EstablishSessionAsync(IClientChannel clientChannel, Uri endPoint, Identity identity, Authentication authentication, CancellationToken cancellationToken)
         {
             await clientChannel.Transport.OpenAsync(endPoint, cancellationToken).ConfigureAwait(false);
-
             if (!clientChannel.Transport.IsConnected)
             {
-                throw new Exception("Could not open connection");
+                throw new Exception("Could not open the transport");
             }
 
             await clientChannel.EstablishSessionAsync(
@@ -36,7 +35,9 @@ namespace Takenet.MessagingHub.Client.LimeProtocol
         {
             if (IsSessionEstablished(clientChannel))
             {
+                var finishedSessionTask = clientChannel.ReceiveFinishedSessionAsync(cancellationToken);
                 await clientChannel.SendFinishingSessionAsync().ConfigureAwait(false);
+                await finishedSessionTask.ConfigureAwait(false);
             }
 
             if (clientChannel.Transport.IsConnected)

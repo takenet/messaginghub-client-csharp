@@ -252,7 +252,7 @@ namespace Takenet.MessagingHub.Client.LimeProtocol
         }
 
         private async Task EndSession(CancellationToken cancellationToken)
-        {
+        {            
             await _limeSessionProvider.FinishSessionAsync(_clientChannel, cancellationToken).ConfigureAwait(false);
 
             _clientChannel?.DisposeIfDisposable();
