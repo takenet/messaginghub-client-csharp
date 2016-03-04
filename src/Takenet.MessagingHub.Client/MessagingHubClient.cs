@@ -70,9 +70,9 @@ namespace Takenet.MessagingHub.Client
             if (!Started)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation");
 
-            using (var cts = new CancellationTokenSource(_sendTimeout))
+            using (var cancellationTokenSource = new CancellationTokenSource(_sendTimeout))
             {
-                return await _onDemandClientChannel.ProcessCommandAsync(command, cts.Token).ConfigureAwait(false);
+                return await _onDemandClientChannel.ProcessCommandAsync(command, cancellationTokenSource.Token).ConfigureAwait(false);
             }
         }
 
@@ -80,8 +80,11 @@ namespace Takenet.MessagingHub.Client
         {
             if (!Started)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation");
-            
-            await _onDemandClientChannel.SendMessageAsync(message).ConfigureAwait(false);
+
+            using (var cancellationTokenSource = new CancellationTokenSource(_sendTimeout))
+            {
+                await _onDemandClientChannel.SendMessageAsync(message, cancellationTokenSource.Token).ConfigureAwait(false);
+            }
         }
 
         public virtual async Task SendNotificationAsync(Notification notification)
@@ -89,7 +92,10 @@ namespace Takenet.MessagingHub.Client
             if (!Started)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation!");
 
-            await _onDemandClientChannel.SendNotificationAsync(notification).ConfigureAwait(false);
+            using (var cancellationTokenSource = new CancellationTokenSource(_sendTimeout))
+            {
+                await _onDemandClientChannel.SendNotificationAsync(notification, cancellationTokenSource.Token).ConfigureAwait(false);
+            }
         }
 
         public virtual Task<Message> ReceiveMessageAsync(CancellationToken cancellationToken)
