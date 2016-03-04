@@ -32,8 +32,8 @@
     <DocumentationFile>bin\Release\Takenet.MessagingHub.Client.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lime.Messaging, Version=0.4.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Messaging.0.4.4\lib\net461\Lime.Messaging.dll</HintPath>
+    <Reference Include="Lime.Messaging, Version=0.4.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Messaging.0.4.9\lib\net461\Lime.Messaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Lime.Protocol, Version=0.4.4.0, Culture=neutral, processorArchitecture=MSIL">

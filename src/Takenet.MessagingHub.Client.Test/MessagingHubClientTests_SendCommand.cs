@@ -42,7 +42,6 @@ namespace Takenet.MessagingHub.Client.Test
             await Task.Delay(TIME_OUT);
 
             //Assert
-            OnDemandClientChannel.ReceivedWithAnyArgs().ReceiveCommandAsync(CancellationToken.None).Wait();
             result.ShouldNotBeNull();
             result.Status.ShouldBe(CommandStatus.Success);
             result.Id.ShouldBe(commandId);

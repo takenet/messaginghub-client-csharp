@@ -80,7 +80,7 @@ namespace Takenet.MessagingHub.Client
         {
             if (!Started)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation");
-
+            
             await _onDemandClientChannel.SendMessageAsync(message).ConfigureAwait(false);
         }
 
