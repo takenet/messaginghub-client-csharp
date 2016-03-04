@@ -27,6 +27,7 @@ namespace Takenet.MessagingHub.Client
         private IEstablishedClientChannelBuilder _establishedClientChannelBuilder;
         private IOnDemandClientChannelFactory _onDemandClientChannelFactory;
         private ChannelListener _channelListener;
+        private static TimeSpan _channelDiscardedDelay = TimeSpan.FromMilliseconds(300);
 
         internal MessagingHubClient(IEstablishedClientChannelBuilder establishedClientChannelBuilder, IOnDemandClientChannelFactory onDemandClientChannelFactory, TimeSpan sendTimeout, EnvelopeListenerRegistrar listenerRegistrar)
         {
@@ -43,9 +44,10 @@ namespace Takenet.MessagingHub.Client
             _listenerRegistrar = listenerRegistrar;
             _sendTimeout = sendTimeout;
 
-            var channelBuilder = ClientChannelBuilder.Create(new TcpTransport(traceWriter: new TraceWriter(), envelopeSerializer: new JsonNetSerializer()), endPoint)
+            var channelBuilder = ClientChannelBuilder.Create(() => new TcpTransport(traceWriter: new TraceWriter(), envelopeSerializer: new JsonNetSerializer()), endPoint)
                                  .WithSendTimeout(sendTimeout)
-                                 .AddMessageModule(c => new NotifyReceiptChannelModule(c));
+                                 .AddMessageModule(c => new NotifyReceiptChannelModule(c))
+                                 .AddCommandModule(c => new ReplyPingChannelModule(c));
 
             _establishedClientChannelBuilder = new EstablishedClientChannelBuilder(channelBuilder)
                                                 .WithIdentity(identity)
@@ -107,17 +109,14 @@ namespace Takenet.MessagingHub.Client
             try
             {
                 if (Started) throw new InvalidOperationException("The client is already started");
-
-                //Try to establish the session
-                //using (var cancellationTokenSource = new CancellationTokenSource(_sendTimeout))
-                //{
-                //    await _establishedClientChannelBuilder.BuildAndEstablishAsync(cancellationTokenSource.Token);
-                //}
                 
                 _onDemandClientChannel = _onDemandClientChannelFactory.Create(_establishedClientChannelBuilder);
-                _onDemandClientChannel.ChannelOperationFailedHandlers.Add(i => Task.FromResult(false));
-                
-                StartEnvelopeListeners();
+                _onDemandClientChannel.ChannelDiscardedHandlers.Add(ChannelDiscarded);
+
+                if (_listenerRegistrar.HasRegisteredReceivers)
+                {
+                    StartEnvelopeListeners();
+                }
 
                 Started = true;
             }
@@ -125,15 +124,6 @@ namespace Takenet.MessagingHub.Client
             {
                 _semaphore.Release();
             }
-        }
-
-        private async Task SetPresenceAsync(IClientChannel clientChannel, CancellationToken cancellationToken)
-        {
-            await clientChannel.SetResourceAsync(
-                    LimeUri.Parse(UriTemplates.PRESENCE),
-                    new Presence { Status = PresenceStatus.Available, RoutingRule = RoutingRule.Identity, RoundRobin = true },
-                    cancellationToken)
-                    .ConfigureAwait(false);
         }
         
         public virtual async Task StopAsync()
@@ -149,8 +139,13 @@ namespace Takenet.MessagingHub.Client
                     await _onDemandClientChannel.FinishAsync(cancellationTokenSource.Token);
                 }
 
-                _channelListener.Stop();
-                _channelListener.DisposeIfDisposable();
+                if (_channelListener != null)
+                {
+                    _channelListener.Stop();
+                    _channelListener.DisposeIfDisposable();
+                }
+
+                _onDemandClientChannel.DisposeIfDisposable();
 
                 Started = false;
             }
@@ -159,6 +154,22 @@ namespace Takenet.MessagingHub.Client
                 _semaphore.Release();
             }
         }
+
+        private Task ChannelDiscarded(ChannelInformation channelInformation)
+        {
+            return Task.Delay(_channelDiscardedDelay);
+        }
+
+        private async Task SetPresenceAsync(IClientChannel clientChannel, CancellationToken cancellationToken)
+        {
+            await clientChannel.SetResourceAsync(
+                    LimeUri.Parse(UriTemplates.PRESENCE),
+                    new Presence { Status = PresenceStatus.Available, RoutingRule = RoutingRule.Identity, RoundRobin = true },
+                    cancellationToken)
+                    .ConfigureAwait(false);
+        }
+        
+        
 
         private void StartEnvelopeListeners()
         {

@@ -30,6 +30,8 @@ namespace Takenet.MessagingHub.Client
             AddEnvelopeReceiver(_notificationReceivers, receiverFactory, predicate);
         }
 
+        public bool HasRegisteredReceivers => _messageReceivers.Any() || _notificationReceivers.Any();
+
         public IEnumerable<IEnvelopeReceiver<TEnvelope>> GetReceiversFor<TEnvelope>(TEnvelope envelope)
             where TEnvelope : Envelope
         {
