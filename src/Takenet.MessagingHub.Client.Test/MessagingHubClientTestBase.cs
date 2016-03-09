@@ -12,7 +12,7 @@ namespace Takenet.MessagingHub.Client.Test
 {
     internal class MessagingHubClientTestBase
     {
-        protected readonly TimeSpan TIME_OUT = TimeSpan.FromSeconds(2);
+        protected readonly TimeSpan TIME_OUT = TimeSpan.FromSeconds(2.5);
 
         protected MessagingHubClient MessagingHubClient;
         protected IOnDemandClientChannel OnDemandClientChannel;
