@@ -16,26 +16,5 @@ namespace Takenet.MessagingHub.Client.Test
         {
             base.Setup();
         }
-
-        [Test]
-        public void Start_UsingAccount_Should_Succeed()
-        {
-            
-            // Act
-            MessagingHubClient.StartAsync().Wait();
-
-            // Assert
-            PersistentClientChannel.Received(1).StartAsync();
-        }
-
-        [Test]
-        public void Start_UsingAccessKey_Should_Succeed()
-        {
-            // Act
-            MessagingHubClient.StartAsync().Wait();
-
-            // Assert
-            PersistentClientChannel.Received(1).StartAsync();
-        }
     }
 }

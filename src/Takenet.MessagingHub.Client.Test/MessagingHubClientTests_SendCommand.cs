@@ -34,7 +34,7 @@ namespace Takenet.MessagingHub.Client.Test
                 Status = CommandStatus.Success,
             };
 
-            ClientChannel.ProcessCommandAsync(null, CancellationToken.None).ReturnsForAnyArgs(commandResponse);
+            OnDemandClientChannel.ProcessCommandAsync(null, CancellationToken.None).ReturnsForAnyArgs(commandResponse);
             await MessagingHubClient.StartAsync();
 
             //Act
@@ -42,7 +42,6 @@ namespace Takenet.MessagingHub.Client.Test
             await Task.Delay(TIME_OUT);
 
             //Assert
-            ClientChannel.ReceivedWithAnyArgs().ReceiveCommandAsync(CancellationToken.None);
             result.ShouldNotBeNull();
             result.Status.ShouldBe(CommandStatus.Success);
             result.Id.ShouldBe(commandId);

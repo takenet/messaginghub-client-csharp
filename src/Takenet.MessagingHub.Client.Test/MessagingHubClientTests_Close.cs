@@ -24,7 +24,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public async Task Start_Then_Stop_Should_Stop_PersistentClientChannel()
+        public async Task Start_Then_Stop_Should_Finish_OnDemandClientChannel()
         {
             //Arrange
             await MessagingHubClient.StartAsync(); 
@@ -33,7 +33,7 @@ namespace Takenet.MessagingHub.Client.Test
             await MessagingHubClient.StopAsync();
 
             // Assert
-            PersistentClientChannel.Received(1).StopAsync().Wait();
+            OnDemandClientChannel.ReceivedWithAnyArgs(1).FinishAsync(CancellationToken.None).Wait();
         }
 
         [Test]
@@ -42,15 +42,6 @@ namespace Takenet.MessagingHub.Client.Test
             // Act // Assert
             Should.ThrowAsync<InvalidOperationException>(async () => await MessagingHubClient.StopAsync()).Wait();
         }
-
-        [Test]
-        public void Start_With_Error_On_PersistentClientChannel_Should_Throw_Exception()
-        {
-            //Arrange
-            PersistentClientChannel.StartAsync().Returns(Task.Run(() => { throw new LimeException(1,"Error"); }));
-            
-            // Act / Assert
-            Should.ThrowAsync<LimeException>(async () => await MessagingHubClient.StartAsync());
-        }
+        
     }
 }
