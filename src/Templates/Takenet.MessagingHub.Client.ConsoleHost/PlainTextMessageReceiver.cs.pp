@@ -11,7 +11,8 @@ namespace $rootnamespace$
         public async override Task ReceiveAsync(Message message)
         {
             Console.WriteLine($"From: {message.From} \tContent: {message.Content}");
-            await EnvelopeSender.SendMessageAsync("Obrigado pela sua mensagem", message.From.Name);
+            await EnvelopeSender.SendMessageAsync("Obrigado por sua mensagem", message.From);
+            await EnvelopeSender.SendNotificationAsync(message.ToConsumedNotification());
         }
     }
 }
