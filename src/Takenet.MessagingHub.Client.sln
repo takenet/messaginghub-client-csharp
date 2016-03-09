@@ -16,6 +16,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "Playground\Playground.csproj", "{056825AC-0EFC-4F2F-A1B4-AF8A721C1609}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{694B26D3-E6CB-4A9F-88DB-CC7148CCA4E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.ConsoleHost", "Templates\Takenet.MessagingHub.Client.ConsoleHost\Takenet.MessagingHub.Client.ConsoleHost.csproj", "{726EC1F8-3E62-4BA3-B362-823C692AA2A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,8 +42,15 @@ Global
 		{056825AC-0EFC-4F2F-A1B4-AF8A721C1609}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{056825AC-0EFC-4F2F-A1B4-AF8A721C1609}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{056825AC-0EFC-4F2F-A1B4-AF8A721C1609}.Release|Any CPU.Build.0 = Release|Any CPU
+		{726EC1F8-3E62-4BA3-B362-823C692AA2A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{726EC1F8-3E62-4BA3-B362-823C692AA2A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{726EC1F8-3E62-4BA3-B362-823C692AA2A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{726EC1F8-3E62-4BA3-B362-823C692AA2A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{726EC1F8-3E62-4BA3-B362-823C692AA2A2} = {694B26D3-E6CB-4A9F-88DB-CC7148CCA4E0}
 	EndGlobalSection
 EndGlobal
