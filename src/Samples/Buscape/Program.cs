@@ -28,6 +28,7 @@ namespace Buscape
             Console.WriteLine();
             Console.WriteLine(@"Press any key to continue...");
             Console.ReadKey();
+            Console.WriteLine(@"Listening...");
 
             using (var cts = new CancellationTokenSource())
             {
