@@ -16,12 +16,13 @@ namespace Chat
         private static string _helpCommand = "ajuda";
         private static string _helpMessage = "Envie #assunto para entrar em um chat";
 
-        private static char[] _invalidChars = new[] {'#','/','@' };
+        private static char[] _invalidChars = new[] {'#','/','@','ç' };
 
         private static Identity GroupIdentity(string groupName) => new Identity($"{_groupPrefix}{groupName}", _targetGroupDomain);
 
         public async override Task ReceiveAsync(Message message)
         {
+
             if(message.Content == null)
             {
                 await NotifyAndExplain(message, _helpMessage);
