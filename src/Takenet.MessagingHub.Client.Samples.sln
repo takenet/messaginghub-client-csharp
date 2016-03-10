@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GettingStarted", "GettingSt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calendar", "Samples\VirtualAssistant\Calendar.csproj", "{7D3BAA23-A118-4272-8798-B9DEFA18EFF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageSearch", "ImageSearch\ImageSearch.csproj", "{86220E54-00C1-4755-ACAB-0A7016270B01}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageSearch", "Samples\ImageSearch\ImageSearch.csproj", "{86220E54-00C1-4755-ACAB-0A7016270B01}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buscape", "Samples\Buscape\Buscape.csproj", "{AAB1ECEA-F8D3-4A23-8495-5C5C55C7D7B5}"
 EndProject
