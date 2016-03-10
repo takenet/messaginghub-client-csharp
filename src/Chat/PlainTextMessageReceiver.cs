@@ -15,13 +15,17 @@ namespace Chat
 
         private static string _helpCommand = "ajuda";
         private static string _helpMessage = "Envie #assunto para entrar em um chat";
-
-        private static char[] _invalidChars = new[] {'#','/','@' };
-
+        
         private static Identity GroupIdentity(string groupName) => new Identity($"{_groupPrefix}{groupName}", _targetGroupDomain);
 
         public async override Task ReceiveAsync(Message message)
         {
+            if(message.To.Domain.Equals(_targetGroupDomain, StringComparison.InvariantCultureIgnoreCase))
+            {
+                await SendConsumedNotification(message);
+                return;
+            }
+
             if(message.Content == null)
             {
                 await NotifyAndExplain(message, _helpMessage);
@@ -40,7 +44,7 @@ namespace Chat
 
             if (!IsValidGroupName(groupName))
             {
-                await NotifyAndExplain(message, $"Formato de assunto inválido. Evite os caracteres {string.Join(" ", _invalidChars)}");
+                await NotifyAndExplain(message, $"Formato de assunto inválido. Evite caracteres especiais e acentuação");
                 return;
             }
 
@@ -132,12 +136,15 @@ namespace Chat
 
         private static bool IsValidGroupName(string groupName)
         {
-            if (string.IsNullOrEmpty(groupName))
+            try
+            {
+                new LimeUri($"{groupName}");
+                return true;
+            }
+            catch
             {
                 return false;
             }
-
-            return groupName.IndexOfAny(_invalidChars) == -1;
         }
     }
 }
