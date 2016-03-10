@@ -35,30 +35,30 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Lime.Messaging, Version=0.4.12.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Messaging.0.4.12\lib\net461\Lime.Messaging.dll</HintPath>
+      <HintPath>..\..\packages\Lime.Messaging.0.4.12\lib\net461\Lime.Messaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Lime.Protocol, Version=0.4.12.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Protocol.0.4.12\lib\net461\Lime.Protocol.dll</HintPath>
+      <HintPath>..\..\packages\Lime.Protocol.0.4.12\lib\net461\Lime.Protocol.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Lime.Protocol.Serialization.Newtonsoft, Version=0.4.12.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Protocol.Serialization.Newtonsoft.0.4.12\lib\net461\Lime.Protocol.Serialization.Newtonsoft.dll</HintPath>
+      <HintPath>..\..\packages\Lime.Protocol.Serialization.Newtonsoft.0.4.12\lib\net461\Lime.Protocol.Serialization.Newtonsoft.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Lime.Transport.Tcp, Version=0.4.12.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Transport.Tcp.0.4.12\lib\net461\Lime.Transport.Tcp.dll</HintPath>
+      <HintPath>..\..\packages\Lime.Transport.Tcp.0.4.12\lib\net461\Lime.Transport.Tcp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Services.Client" />
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
@@ -67,26 +67,30 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Takenet.MessagingHub.Client, Version=0.2.20.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Takenet.MessagingHub.Client.0.2.20\lib\net45\Takenet.MessagingHub.Client.dll</HintPath>
+    <Reference Include="Takenet.MessagingHub.Client, Version=0.2.22.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.MessagingHub.Client.0.2.22\lib\net45\Takenet.MessagingHub.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Takenet.MessagingHub.Client.Textc, Version=0.2.20.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Takenet.MessagingHub.Client.Textc.0.2.20\lib\net45\Takenet.MessagingHub.Client.Textc.dll</HintPath>
+    <Reference Include="Takenet.MessagingHub.Client.Textc, Version=0.2.21.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.MessagingHub.Client.Textc.0.2.21\lib\net45\Takenet.MessagingHub.Client.Textc.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Takenet.Textc, Version=0.2.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Takenet.Textc.0.2.5.0\lib\net451\Takenet.Textc.dll</HintPath>
+      <HintPath>..\..\packages\Takenet.Textc.0.2.5.0\lib\net451\Takenet.Textc.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BingSearchContainer.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
