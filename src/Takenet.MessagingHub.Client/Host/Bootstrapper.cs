@@ -18,6 +18,8 @@ namespace Takenet.MessagingHub.Client.Host
 
         static Bootstrapper()
         {            
+            TypeUtil.LoadAssembliesAndReferences(".", assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter);
+
             Types = TypeUtil
                 .GetAllLoadedTypes()
                 .Where(t => 
@@ -45,11 +47,7 @@ namespace Takenet.MessagingHub.Client.Host
             {
                 var fileName = $"{nameof(application)}.json";
                 if (!File.Exists(fileName)) throw new FileNotFoundException($"Could not find the '{fileName}' file", fileName);
-                application = JsonConvert.DeserializeObject<Application>(
-                    File.ReadAllText(fileName), new JsonSerializerSettings
-                    {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver()
-                    });
+                application = Application.ParseFromJsonFile(fileName);
             }
 
             var clientBuilder = new MessagingHubClientBuilder();

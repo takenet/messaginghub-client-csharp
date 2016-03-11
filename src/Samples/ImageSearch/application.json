@@ -1,0 +1,26 @@
+﻿{
+  "login": "mandanudes",
+  "accessKey": "NTFxeXVq",
+  "messageReceivers": [
+    {
+      "type": "TextcMessageReceiverFactory",
+      "settings": {
+        "syntaxes": [
+          {
+            "[:Word(mais,more,top) top:Integer? query+:Text]": { "processor": "ImageProcessor", "method": "GetImageDocumentAsync" }
+          },
+          {
+            "[query+:Text]": {
+              "processor": "ImageProcessor",
+              "method": "GetFirstImageDocumentAsync"
+            }
+          }
+        ],
+        "scorer": "MatchCountExpressionScorer"
+      }
+    }
+  ],
+  "settings": {
+    "bingApiKey": "z1f6I3djqJy0sWG/0HxxwjbrVrQZMF1JbTK+a5U9oNU="
+  }
+}

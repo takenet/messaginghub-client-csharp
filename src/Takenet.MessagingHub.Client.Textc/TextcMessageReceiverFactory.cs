@@ -7,6 +7,7 @@ using Takenet.MessagingHub.Client.Host;
 using Takenet.MessagingHub.Client.Receivers;
 using Takenet.Textc.Csdl;
 using Takenet.Textc.Processors;
+using Takenet.Textc.Scorers;
 using TypeUtil = Lime.Protocol.Serialization.TypeUtil;
 
 namespace Takenet.MessagingHub.Client.Textc
@@ -18,42 +19,106 @@ namespace Takenet.MessagingHub.Client.Textc
             var builder = new TextcMessageReceiverBuilder(serviceProvider.GetService<MessagingHubSenderBuilder>());
             if (settings != null)
             {
-                foreach (var setting in settings)
+                if (settings.ContainsKey("syntaxes"))
                 {
-                    var syntax = CsdlParser.Parse(setting.Key);
-                    builder = builder
-                        .ForSyntax(syntax)
-                        .ProcessWith(o =>
-                        {
-                            var dictionary = setting.Value as IDictionary<string, object>;
-                            if (dictionary == null && setting.Value is JObject)
-                            {
-                                dictionary = ((JObject)setting.Value).ToObject<Dictionary<string, object>>();
-                            }
-                            if (dictionary?["processor"] == null || dictionary["method"] == null)
-                            {
-                                throw new ArgumentException("The syntax values must be a dictionary with the 'processor' and 'method' keys");
-                            }
-                            var processorTypeName = (string)dictionary["processor"];
-                            var methodName = (string)dictionary["method"];
-                            var processorType =
-                                TypeUtil.GetAllLoadedTypes()
-                                    .FirstOrDefault(t => t.Name.Equals(processorTypeName, StringComparison.OrdinalIgnoreCase)) ??
-                                Type.GetType(processorTypeName, true, true);
+                    builder = SetupSyntaxes(serviceProvider, settings, builder);
+                }
 
-                            var processor = serviceProvider.GetService(processorType) ?? Activator.CreateInstance(processorType);
-                            var method = processor.GetType().GetMethod(methodName);
-                            if (method == null || method.ReturnType != typeof(Task))
-                            {
-                                return new ReflectionCommandProcessor(processor, methodName, true, o, syntax);
-                            }
+                MatchCountExpressionScorer a = new MatchCountExpressionScorer();
 
-                            return new ReflectionCommandProcessor(processor, methodName, true, syntaxes: syntax);
-                        });
+                if (settings.ContainsKey("scorer"))
+                {
+                    builder = SetupScorer(serviceProvider, settings, builder);
                 }
             }
 
             return Task.FromResult<IMessageReceiver>(builder.Build());
+        }
+
+        private static TextcMessageReceiverBuilder SetupSyntaxes(IServiceProvider serviceProvider, IDictionary<string, object> settings, 
+            TextcMessageReceiverBuilder builder)
+        {
+            var syntaxes = GetArrayFromJson<IDictionary<string, object>>(settings["syntaxes"]);
+
+            foreach (var syntaxDictionary in syntaxes)
+            {
+                var syntaxSetting = syntaxDictionary.First();
+
+                var syntax = CsdlParser.Parse(syntaxSetting.Key);
+                builder = builder
+                    .ForSyntax(syntax)
+                    .ProcessWith(o =>
+                    {
+                        var dictionary = GetDictionaryFromJson(syntaxSetting.Value);
+                        if (dictionary?["processor"] == null || dictionary["method"] == null)
+                        {
+                            throw new ArgumentException(
+                                "The syntax values must be a dictionary with the 'processor' and 'method' keys");
+                        }
+                        var processorTypeName = (string) dictionary["processor"];
+                        var methodName = (string) dictionary["method"];
+                        var processorType =
+                            TypeUtil.GetAllLoadedTypes()
+                                .FirstOrDefault(t => t.Name.Equals(processorTypeName, StringComparison.OrdinalIgnoreCase)) ??
+                            Type.GetType(processorTypeName, true, true);
+
+                        var processor = serviceProvider.GetService(processorType) ?? Activator.CreateInstance(processorType);
+                        var method = processor.GetType().GetMethod(methodName);
+                        if (method == null || method.ReturnType != typeof (Task))
+                        {
+                            return new ReflectionCommandProcessor(processor, methodName, true, o, syntax);
+                        }
+
+                        return new ReflectionCommandProcessor(processor, methodName, true, syntaxes: syntax);
+                    });
+            }
+            return builder;
+        }
+
+        private static TextcMessageReceiverBuilder SetupScorer(IServiceProvider serviceProvider, IDictionary<string, object> settings,
+            TextcMessageReceiverBuilder builder)
+        {
+            var scorerTypeName = (string) settings["scorer"];
+
+            IExpressionScorer scorer;
+            if (scorerTypeName.Equals(nameof(MatchCountExpressionScorer)))
+            {
+                scorer = new MatchCountExpressionScorer();
+            }
+            else if (scorerTypeName.Equals(nameof(RatioExpressionScorer)))
+            {
+                scorer = new RatioExpressionScorer();
+            }
+            else
+            {
+                var scorerType = TypeUtil
+                    .GetAllLoadedTypes()
+                    .FirstOrDefault(
+                        t => typeof (IExpressionScorer).IsAssignableFrom(t) && t.Name.Equals(scorerTypeName));
+
+                if (scorerType == null)
+                    throw new ArgumentException($"Could not find the expression scorer '{scorerTypeName}'");
+                scorer =
+                    (IExpressionScorer)
+                        (serviceProvider.GetService(scorerType) ?? Activator.CreateInstance(scorerType));
+            }
+            builder = builder.WithExpressionScorer(scorer);
+            return builder;
+        }
+
+        private static T[] GetArrayFromJson<T>(object value)
+        {
+            var jArray = value as JArray;
+            if (jArray != null) return jArray.ToObject<T[]>();
+            return value as T[];
+        }
+
+        private static IDictionary<string, object> GetDictionaryFromJson(object value)
+        {
+            var jObject = value as JObject;
+            if (jObject != null) return jObject.ToObject<Dictionary<string, object>>();
+            return value as IDictionary<string, object>;
+
         }
     }
 }
