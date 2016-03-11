@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Lime.Messaging.Contents;
 using Lime.Protocol;
 using Newtonsoft.Json;
 using Takenet.MessagingHub.Client;
@@ -91,6 +92,7 @@ namespace Buscape
                 //Send Message to confirm connection
                 await receiver.SendMessageAsync(new Message
                 {
+                    To = Node.Parse(appShortName),
                     Content = new PlainDocument(ConnectedMessage, MediaTypes.PlainText)
                 });
 
@@ -141,7 +143,7 @@ namespace Buscape
                     });
 
 
-                    var keyword = ((PlainDocument)message.Content).Value;
+                    var keyword = ((PlainText)message.Content)?.Text;
 
                     if (keyword == ConnectedMessage)
                     {
@@ -149,10 +151,12 @@ namespace Buscape
                     }
                     else if (keyword == StartMessage)
                     {
+                        Console.WriteLine($"Start message received from {message.From.Instance}!");
                         await receiver.SendMessageAsync(@"Tudo pronto. Qual produto deseja pesquisar?", message.From);
                     }
                     else
                     {
+                        Console.WriteLine($"Requested search by {keyword}!");
                         var uri =
                             $"http://sandbox.buscape.com.br/service/findProductList/lomadee/{appToken}/BR?results=10&page=1&keyword={keyword}&format=json";
 
@@ -175,14 +179,13 @@ namespace Buscape
                             }
                         }
                     }
-
-                    Console.WriteLine(@"Listening...");
                 }
                 catch (Exception)
                 {
                     await receiver.SendMessageAsync(@"Falhou :(", message.From);
                 }
             });
+            Console.WriteLine(@"Listening...");
         }
     }
 }
