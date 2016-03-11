@@ -108,11 +108,13 @@ namespace Takenet.MessagingHub.Client.Textc.Test
 
     public class TestCommandProcessor
     {
+        public static IDictionary<string, object> Settings;
         public static bool Instantiated;
         public static int InstanceCount;
 
-        public TestCommandProcessor()
+        public TestCommandProcessor(IDictionary<string, object> settings)
         {
+            Settings = settings;
             Instantiated = true;
             InstanceCount++;
         }

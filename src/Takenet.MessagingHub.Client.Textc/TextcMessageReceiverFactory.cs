@@ -14,7 +14,7 @@ namespace Takenet.MessagingHub.Client.Textc
 {
     public class TextcMessageReceiverFactory : IFactory<IMessageReceiver>
     {
-        public Task<IMessageReceiver> CreateAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings)
+        public async Task<IMessageReceiver> CreateAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings)
         {
             var builder = new TextcMessageReceiverBuilder(serviceProvider.GetService<MessagingHubSenderBuilder>());
             if (settings != null)
@@ -22,17 +22,15 @@ namespace Takenet.MessagingHub.Client.Textc
                 if (settings.ContainsKey("syntaxes"))
                 {
                     builder = SetupSyntaxes(serviceProvider, settings, builder);
-                }
-
-                MatchCountExpressionScorer a = new MatchCountExpressionScorer();
+                }                
 
                 if (settings.ContainsKey("scorer"))
                 {
-                    builder = SetupScorer(serviceProvider, settings, builder);
+                    builder = await SetupScorerAsync(serviceProvider, settings, builder).ConfigureAwait(false);
                 }
             }
 
-            return Task.FromResult<IMessageReceiver>(builder.Build());
+            return builder.Build();
         }
 
         private static TextcMessageReceiverBuilder SetupSyntaxes(IServiceProvider serviceProvider, IDictionary<string, object> settings, 
@@ -56,13 +54,8 @@ namespace Takenet.MessagingHub.Client.Textc
                                 "The syntax values must be a dictionary with the 'processor' and 'method' keys");
                         }
                         var processorTypeName = (string) dictionary["processor"];
-                        var methodName = (string) dictionary["method"];
-                        var processorType =
-                            TypeUtil.GetAllLoadedTypes()
-                                .FirstOrDefault(t => t.Name.Equals(processorTypeName, StringComparison.OrdinalIgnoreCase)) ??
-                            Type.GetType(processorTypeName, true, true);
-
-                        var processor = serviceProvider.GetService(processorType) ?? Activator.CreateInstance(processorType);
+                        var methodName = (string) dictionary["method"];                        
+                        var processor = Bootstrapper.CreateAsync<object>(processorTypeName, serviceProvider, settings).Result;                        
                         var method = processor.GetType().GetMethod(methodName);
                         if (method == null || method.ReturnType != typeof (Task))
                         {
@@ -75,7 +68,7 @@ namespace Takenet.MessagingHub.Client.Textc
             return builder;
         }
 
-        private static TextcMessageReceiverBuilder SetupScorer(IServiceProvider serviceProvider, IDictionary<string, object> settings,
+        private static async Task<TextcMessageReceiverBuilder> SetupScorerAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings,
             TextcMessageReceiverBuilder builder)
         {
             var scorerTypeName = (string) settings["scorer"];
@@ -91,16 +84,7 @@ namespace Takenet.MessagingHub.Client.Textc
             }
             else
             {
-                var scorerType = TypeUtil
-                    .GetAllLoadedTypes()
-                    .FirstOrDefault(
-                        t => typeof (IExpressionScorer).IsAssignableFrom(t) && t.Name.Equals(scorerTypeName));
-
-                if (scorerType == null)
-                    throw new ArgumentException($"Could not find the expression scorer '{scorerTypeName}'");
-                scorer =
-                    (IExpressionScorer)
-                        (serviceProvider.GetService(scorerType) ?? Activator.CreateInstance(scorerType));
+                scorer = await Bootstrapper.CreateAsync<IExpressionScorer>(scorerTypeName, serviceProvider, settings).ConfigureAwait(false);
             }
             builder = builder.WithExpressionScorer(scorer);
             return builder;

@@ -15,23 +15,9 @@ namespace Takenet.MessagingHub.Client.Host
 {
     public static class Bootstrapper
     {
-        private static readonly IDictionary<string, Type> Types;        
-
         static Bootstrapper()
         {            
             TypeUtil.LoadAssembliesAndReferences(".", assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter);
-
-            Types = TypeUtil
-                .GetAllLoadedTypes()
-                .Where(t => 
-                    typeof(IFactory<IMessageReceiver>).IsAssignableFrom(t) || 
-                    typeof(IFactory<INotificationReceiver>).IsAssignableFrom(t) || 
-                    typeof (IStartable).IsAssignableFrom(t) || 
-                    typeof(IMessageReceiver).IsAssignableFrom(t) || 
-                    typeof(INotificationReceiver).IsAssignableFrom(t))
-                .Where(t => !t.IsAbstract && !t.IsInterface)
-                .GroupBy(t => t.Name)
-                .ToDictionary(t => t.Key, t => t.First());
         }
 
         /// <summary>
@@ -171,15 +157,13 @@ namespace Takenet.MessagingHub.Client.Host
             return settings;
         }
 
-        private static Task<T> CreateAsync<T>(string typeName, IServiceProvider serviceProvider, IDictionary<string, object> settings) where T : class
+        public static Task<T> CreateAsync<T>(string typeName, IServiceProvider serviceProvider, IDictionary<string, object> settings) where T : class
         {
             if (typeName == null) throw new ArgumentNullException(nameof(typeName));
 
-            Type type;
-            if (!Types.TryGetValue(typeName, out type))
-            {
-                type = Type.GetType(typeName, true);
-            }
+            var type = TypeUtil
+                .GetAllLoadedTypes()
+                .FirstOrDefault(t => t.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase)) ?? Type.GetType(typeName, true, true);
 
             IFactory<T> factory;
             if (typeof(IFactory<T>).IsAssignableFrom(type))
