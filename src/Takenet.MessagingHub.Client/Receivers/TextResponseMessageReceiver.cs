@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,10 +10,10 @@ namespace Takenet.MessagingHub.Client.Receivers
     {
         private static string _text;
 
-        public TextResponseMessageReceiver(IDictionary<string, object> settings)
+        public TextResponseMessageReceiver(string text)
         {
-            if (!settings.ContainsKey("text")) throw new ArgumentException("The key 'text' was not found");
-            _text = (string)settings["text"];
+            if (text == null) throw new ArgumentNullException(nameof(text));
+            _text = text;
         }
 
         public override Task ReceiveAsync(Message message)
