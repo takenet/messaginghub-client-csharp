@@ -6,7 +6,7 @@ namespace Takenet.MessagingHub.Client.Receivers
     /// <summary>
     /// Notification receiver that simply ignores the received notification
     /// </summary>
-    internal class BlackholeNotificationReceiver : INotificationReceiver
+    public class BlackholeNotificationReceiver : INotificationReceiver
     {
         public Task ReceiveAsync(Notification notification)
         {

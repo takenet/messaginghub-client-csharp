@@ -14,6 +14,17 @@ namespace Takenet.MessagingHub.Client.Host
 {
     public static class Bootstrapper
     {
+        private static readonly IDictionary<string, Type> Types;        
+
+        static Bootstrapper()
+        {            
+            Types = TypeUtil
+                .GetAllLoadedTypes()
+                .Where(t => typeof(IFactory<>).IsAssignableFrom(t) || typeof (IStartable).IsAssignableFrom(t) || typeof(IMessageReceiver).IsAssignableFrom(t) || typeof(INotificationReceiver).IsAssignableFrom(t))
+                .GroupBy(t => t.Name)
+                .ToDictionary(t => t.Key, t => t.First());
+        }
+
         /// <summary>
         /// Creates ans starts an application with the given settings.
         /// </summary>
@@ -23,7 +34,7 @@ namespace Takenet.MessagingHub.Client.Host
         /// <exception cref="FileNotFoundException">Could not find the 'application.json' file</exception>
         /// <exception cref="ArgumentException">At least an access key or password must be defined</exception>
         public static async Task<IStoppable> StartAsync(Application application = null, IServiceProvider serviceProvider = null)
-        {
+        {            
             if (application == null)
             {
                 var fileName = $"{nameof(application)}.json";
@@ -79,7 +90,9 @@ namespace Takenet.MessagingHub.Client.Host
         private static async Task<MessagingHubSenderBuilder> BuildSenderAsync(Application application, MessagingHubClientBuilder clientBuilder,
             ServiceProvider localServiceProvider)
         {
+            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubClientBuilder), clientBuilder);
             var senderBuilder = new MessagingHubSenderBuilder(clientBuilder);
+            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubSenderBuilder), senderBuilder);
 
             if (application.MessageReceivers != null && application.MessageReceivers.Length > 0)
             {
@@ -135,7 +148,12 @@ namespace Takenet.MessagingHub.Client.Host
         {
             if (typeName == null) throw new ArgumentNullException(nameof(typeName));
 
-            var type = Type.GetType(typeName, true);
+            Type type;
+            if (!Types.TryGetValue(typeName, out type))
+            {
+                type = Type.GetType(typeName, true);
+            }
+
             IFactory<T> factory;
             if (typeof(IFactory<T>).IsAssignableFrom(type))
             {

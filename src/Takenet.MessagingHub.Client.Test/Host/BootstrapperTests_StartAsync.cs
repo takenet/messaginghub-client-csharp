@@ -99,7 +99,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
             {
                 Login = "testlogin",
                 AccessKey = "12345".ToBase64(),
-                StartupType = typeof(TestStartable).AssemblyQualifiedName
+                StartupType = typeof(TestStartable).Name
             };
 
             // Act
@@ -120,7 +120,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
             {
                 Login = "testlogin",
                 AccessKey = "12345".ToBase64(),
-                StartupType = typeof(SettingsTestStartable).AssemblyQualifiedName,
+                StartupType = typeof(SettingsTestStartable).Name,
                 Settings = new Dictionary<string, object>()
                 {
                     { "setting1", "value1" },
@@ -135,7 +135,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
             actual.ShouldNotBeNull();
             var messagingHubClient = actual.ShouldBeOfType<MessagingHubClient>();
             messagingHubClient.Started.ShouldBe(true);
-            TestStartable._Started.ShouldBeTrue();
+            SettingsTestStartable._Started.ShouldBeTrue();
             SettingsTestStartable.Settings.ShouldNotBeNull();
             SettingsTestStartable.Settings.ShouldBe(application.Settings);
         }
@@ -203,12 +203,12 @@ namespace Takenet.MessagingHub.Client.Test.Host
                 {
                     new MessageApplicationReceiver()
                     {
-                        Type = typeof(TestMessageReceiver).AssemblyQualifiedName,
+                        Type = typeof(TestMessageReceiver).Name,
                         MediaType = "text/plain"
                     },
                     new MessageApplicationReceiver()
                     {
-                        Type = typeof(TestMessageReceiver).AssemblyQualifiedName,
+                        Type = typeof(TestMessageReceiver).Name,
                         MediaType = "application/json"
                     },
                     new MessageApplicationReceiver()
@@ -240,7 +240,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
                 {
                     new MessageApplicationReceiver()
                     {
-                        Type = typeof(TestMessageReceiver).AssemblyQualifiedName,
+                        Type = typeof(TestMessageReceiver).Name,
                         MediaType = "text/plain",
                         Settings = new Dictionary<string, object>()
                         {

@@ -76,6 +76,7 @@
     <Compile Include="Host\MessageApplicationReceiver.cs" />
     <Compile Include="Host\IFactory.cs" />
     <Compile Include="Host\Bootstrapper.cs" />
+    <Compile Include="Host\ServiceProviderExtensions.cs" />
     <Compile Include="IEnvelopeListener.cs" />
     <Compile Include="IEnvelopeReceiver.cs" />
     <Compile Include="IEnvelopeSender.cs" />
