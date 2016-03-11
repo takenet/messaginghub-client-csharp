@@ -34,8 +34,8 @@ namespace Takenet.MessagingHub.Client
 
         public MessagingHubClientBuilder UsingAccount(string login, string password)
         {
-            if (string.IsNullOrEmpty(login)) throw new ArgumentNullException("login");
-            if (string.IsNullOrEmpty(password)) throw new ArgumentNullException("password");
+            if (string.IsNullOrEmpty(login)) throw new ArgumentNullException(nameof(login));
+            if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
 
             _login = login;
             _password = password;
@@ -51,8 +51,8 @@ namespace Takenet.MessagingHub.Client
 
         public MessagingHubClientBuilder UsingAccessKey(string login, string accessKey)
         {
-            if (string.IsNullOrEmpty(login)) throw new ArgumentNullException("login");
-            if (string.IsNullOrEmpty(accessKey)) throw new ArgumentNullException("accessKey");
+            if (string.IsNullOrEmpty(login)) throw new ArgumentNullException(nameof(login));
+            if (string.IsNullOrEmpty(accessKey)) throw new ArgumentNullException(nameof(accessKey));
 
             _login = login;
             _accessKey = accessKey;
@@ -62,7 +62,7 @@ namespace Takenet.MessagingHub.Client
 
         public MessagingHubClientBuilder UsingHostName(string hostName)
         {
-            if (string.IsNullOrEmpty(hostName)) throw new ArgumentNullException("hostName");
+            if (string.IsNullOrEmpty(hostName)) throw new ArgumentNullException(nameof(hostName));
 
             _hostName = hostName;
             return this;
