@@ -34,7 +34,7 @@ namespace Takenet.MessagingHub.Client
             {
                 //TODO: Create a ILogger interface to notify about errors on EnvelopeProcessor.
                 Trace.TraceError(ex.ToString());
-                return false;
+                return true;
             }
         }
 

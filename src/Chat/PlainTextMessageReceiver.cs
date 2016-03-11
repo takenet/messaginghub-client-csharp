@@ -1,10 +1,10 @@
-﻿using Lime.Protocol;
+using Lime.Protocol;
 using System;
 using System.Threading.Tasks;
 using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Receivers;
 
-namespace $rootnamespace$
+namespace Chat
 {
     public class PlainTextMessageReceiver : MessageReceiverBase
     {

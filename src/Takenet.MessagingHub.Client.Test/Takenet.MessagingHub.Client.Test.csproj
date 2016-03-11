@@ -93,6 +93,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Host\BootstrapperTests_StartAsync.cs" />
     <Compile Include="MessagingHubClientTestBase.cs" />
     <Compile Include="MessagingHubClientTests_AddMessageReceiver.cs" />
     <Compile Include="MessagingHubClientTests_AddNotificationReceiver.cs" />

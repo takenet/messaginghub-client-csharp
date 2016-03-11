@@ -24,10 +24,10 @@ namespace Takenet.MessagingHub.Client
         private readonly TimeSpan _sendTimeout;
         private readonly EnvelopeListenerRegistrar _listenerRegistrar;
         private IOnDemandClientChannel _onDemandClientChannel;
-        private IEstablishedClientChannelBuilder _establishedClientChannelBuilder;
-        private IOnDemandClientChannelFactory _onDemandClientChannelFactory;
+        private readonly IEstablishedClientChannelBuilder _establishedClientChannelBuilder;
+        private readonly IOnDemandClientChannelFactory _onDemandClientChannelFactory;
         private ChannelListener _channelListener;
-        private static TimeSpan _channelDiscardedDelay = TimeSpan.FromMilliseconds(300);
+        private static readonly TimeSpan _channelDiscardedDelay = TimeSpan.FromMilliseconds(300);
 
         internal MessagingHubClient(IEstablishedClientChannelBuilder establishedClientChannelBuilder, IOnDemandClientChannelFactory onDemandClientChannelFactory, TimeSpan sendTimeout, EnvelopeListenerRegistrar listenerRegistrar)
         {
