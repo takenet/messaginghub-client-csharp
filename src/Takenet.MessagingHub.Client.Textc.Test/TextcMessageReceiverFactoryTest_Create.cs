@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using Shouldly;
 using Takenet.MessagingHub.Client.Host;
 using Takenet.Textc;
 
@@ -60,6 +61,12 @@ namespace Takenet.MessagingHub.Client.Textc.Test
             // Act
             var actual = await Bootstrapper.StartAsync(application);
 
+            // Assert
+            actual.ShouldNotBeNull();
+            var messagingHubClient = actual.ShouldBeOfType<MessagingHubClient>();
+            messagingHubClient.Started.ShouldBe(true);
+            TestCommandProcessor.Instantiated.ShouldBeTrue();
+            TestCommandProcessor.InstanceCount.ShouldBe(2);
         }
     }
 
