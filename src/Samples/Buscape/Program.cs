@@ -28,7 +28,9 @@ namespace Buscape
             Console.WriteLine();
             Console.WriteLine(@"Press any key to continue...");
             Console.ReadKey();
-            Console.WriteLine(@"Listening...");
+
+            if (receiver == null)
+                return;
 
             using (var cts = new CancellationTokenSource())
             {
@@ -37,8 +39,11 @@ namespace Buscape
 
                 await WaitForUserCancellationAsync(cts, receiver);
             }
-
         }
+
+        private const string ConnectedMessage = "$Connected$";
+        private const string StartMessage = "Iniciar";
+        //private static read only MediaType ResponseMediaType = new MediaType("application", "vnd.omni.text", "json");
 
         private static JsonConfigFile ValidateAndLoadParameters(string[] args)
         {
@@ -54,7 +59,7 @@ namespace Buscape
                 var json = File.ReadAllText(file.FullName);
                 jsonConfigFile = JsonConvert.DeserializeObject<JsonConfigFile>(json);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Console.WriteLine(@"Could not load configuration file!");
                 Environment.Exit(1);
@@ -73,14 +78,31 @@ namespace Buscape
 
         private static async Task<IMessagingHubClient> PrepareReceiverAsync(string appShortName, string accessKey)
         {
-            var receiverBuilder = new MessagingHubClientBuilder();
-            receiverBuilder = receiverBuilder.UsingAccessKey(appShortName, accessKey);
-            var receiver = receiverBuilder.Build();
-            await receiver.StartAsync();
+            try
+            {
+                Console.WriteLine(@"Trying to connect to Messaging Hub...");
 
-            Console.WriteLine($"{DateTime.Now} -> Receiver connected to Messaging Hub!");
+                var receiverBuilder = new MessagingHubClientBuilder();
+                receiverBuilder = receiverBuilder.UsingAccessKey(appShortName, accessKey);
+                receiverBuilder = receiverBuilder.WithSendTimeout(TimeSpan.FromSeconds(30));
+                var receiver = receiverBuilder.Build();
+                await receiver.StartAsync();
 
-            return receiver;
+                //Send Message to confirm connection
+                await receiver.SendMessageAsync(new Message
+                {
+                    Content = new PlainDocument(ConnectedMessage, MediaTypes.PlainText)
+                });
+
+                Console.WriteLine($"{DateTime.Now} -> Receiver connected to Messaging Hub!");
+
+                return receiver;
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"{DateTime.Now} -> Could not connect to Messaging Hub!");
+                return null;
+            }
         }
 
         private static async Task WaitForUserCancellationAsync(CancellationTokenSource cts, IMessagingHubClient receiver)
@@ -119,9 +141,13 @@ namespace Buscape
                     });
 
 
-                    var keyword = ((PlainDocument) message.Content).Value;
+                    var keyword = ((PlainDocument)message.Content).Value;
 
-                    if (keyword == "Iniciar")
+                    if (keyword == ConnectedMessage)
+                    {
+                        Console.WriteLine("Connected!");
+                    }
+                    else if (keyword == StartMessage)
                     {
                         await receiver.SendMessageAsync(@"Tudo pronto. Qual produto deseja pesquisar?", message.From);
                     }
@@ -149,6 +175,8 @@ namespace Buscape
                             }
                         }
                     }
+
+                    Console.WriteLine(@"Listening...");
                 }
                 catch (Exception)
                 {
