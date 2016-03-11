@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Serialization;
@@ -106,9 +107,31 @@ namespace Takenet.MessagingHub.Client.Host
                         await 
                             CreateAsync<IMessageReceiver>(applicationReceiver.Type, localServiceProvider, MergeSettings(application, applicationReceiver))
                                 .ConfigureAwait(false);
-                    MediaType mediaType = null;
-                    if (applicationReceiver.MediaType != null) mediaType = MediaType.Parse(applicationReceiver.MediaType);
-                    senderBuilder = senderBuilder.AddMessageReceiver(receiver, mediaType);
+
+                    Predicate<Message> messagePredicate = m => m != null;
+
+                    if (applicationReceiver.MediaType != null)
+                    {
+                        var currentMessagePredicate = messagePredicate;
+                        var mediaType = MediaType.Parse(applicationReceiver.MediaType);
+                        messagePredicate = m => currentMessagePredicate(m) && m.Type.Equals(mediaType);
+                    }
+
+                    if (applicationReceiver.Content != null)
+                    {
+                        var currentMessagePredicate = messagePredicate;
+                        var contentRegex = new Regex(applicationReceiver.Content, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                        messagePredicate = m => currentMessagePredicate(m) && contentRegex.IsMatch(m.Content.ToString());
+                    }
+
+                    if (applicationReceiver.Sender != null)
+                    {
+                        var currentMessagePredicate = messagePredicate;
+                        var senderRegex = new Regex(applicationReceiver.Sender, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                        messagePredicate = m => currentMessagePredicate(m) && senderRegex.IsMatch(m.GetSender().ToString());
+                    }
+                    
+                    senderBuilder = senderBuilder.AddMessageReceiver(receiver, messagePredicate);
                 }
             }
 

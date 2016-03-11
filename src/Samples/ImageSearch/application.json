@@ -10,10 +10,7 @@
             "[:Word(mais,more,top) top:Integer? query+:Text]": { "processor": "ImageProcessor", "method": "GetImageDocumentAsync" }
           },
           {
-            "[query+:Text]": {
-              "processor": "ImageProcessor",
-              "method": "GetFirstImageDocumentAsync"
-            }
+            "[query+:Text]": { "processor": "ImageProcessor", "method": "GetFirstImageDocumentAsync" }
           }
         ],
         "scorer": "MatchCountExpressionScorer"

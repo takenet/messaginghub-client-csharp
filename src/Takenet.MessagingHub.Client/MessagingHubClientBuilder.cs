@@ -94,6 +94,19 @@ namespace Takenet.MessagingHub.Client
             return _senderBuilder;
         }
 
+
+        public MessagingHubSenderBuilder AddMessageReceiver(IMessageReceiver messageReceiver, Predicate<Message> messagePredicate)
+        {
+            _senderBuilder.AddMessageReceiver(messageReceiver, messagePredicate);
+            return _senderBuilder;
+        }
+
+        public MessagingHubSenderBuilder AddMessageReceiver(Func<IMessageReceiver> receiverFactory, Predicate<Message> messagePredicate)
+        {
+            _senderBuilder.AddMessageReceiver(receiverFactory, messagePredicate);
+            return _senderBuilder;
+        }
+
         public MessagingHubSenderBuilder AddNotificationReceiver(INotificationReceiver notificationReceiver, Event? forEventType = null)
         {
             _senderBuilder.AddNotificationReceiver(notificationReceiver, forEventType);
@@ -103,6 +116,18 @@ namespace Takenet.MessagingHub.Client
         public MessagingHubSenderBuilder AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Event? forEventType = null)
         {
             _senderBuilder.AddNotificationReceiver(receiverFactory, forEventType);
+            return _senderBuilder;
+        }
+
+        public MessagingHubSenderBuilder AddNotificationReceiver(INotificationReceiver notificationReceiver, Predicate<Notification> notificationPredicate)
+        {
+            _senderBuilder.AddNotificationReceiver(notificationReceiver, notificationPredicate);
+            return _senderBuilder;
+        }
+
+        public MessagingHubSenderBuilder AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Predicate<Notification> notificationPredicate)
+        {
+            _senderBuilder.AddNotificationReceiver(receiverFactory, notificationPredicate);
             return _senderBuilder;
         }
 
