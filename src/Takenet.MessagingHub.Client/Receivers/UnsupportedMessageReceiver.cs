@@ -6,7 +6,7 @@ namespace Takenet.MessagingHub.Client.Receivers
     /// <summary>
     /// Message receiver that automatically respond to any message as an unsupported message
     /// </summary>
-    internal class UnsupportedMessageReceiver : MessageReceiverBase
+    public class UnsupportedMessageReceiver : MessageReceiverBase
     {
         public override Task ReceiveAsync(Message message)
         {
