@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Takenet.MessagingHub.Client.Host;
 using Takenet.MessagingHub.Client.Receivers;
 using Takenet.Textc.Csdl;
 using Takenet.Textc.Processors;
+using TypeUtil = Lime.Protocol.Serialization.TypeUtil;
 
 namespace Takenet.MessagingHub.Client.Textc
 {
@@ -23,13 +25,23 @@ namespace Takenet.MessagingHub.Client.Textc
                         .ForSyntax(syntax)
                         .ProcessWith(o =>
                         {
-                            var json = setting.Value as JObject;
-                            if (json?["processor"] == null || json["method"] == null) throw new ArgumentException("The syntax values must be a JSON with the 'processor' and 'method' keys");
-                            var processorTypeName = json["processor"].ToObject<string>();
-                            var methodName = json["method"].ToObject<string>();
-                            var processorType = Type.GetType(processorTypeName, true, true);
-                            var processor = serviceProvider.GetService(processorType) ?? Activator.CreateInstance(processorType);
+                            var dictionary = setting.Value as IDictionary<string, object>;
+                            if (dictionary == null && setting.Value is JObject)
+                            {
+                                dictionary = ((JObject)setting.Value).ToObject<Dictionary<string, object>>();
+                            }
+                            if (dictionary?["processor"] == null || dictionary["method"] == null)
+                            {
+                                throw new ArgumentException("The syntax values must be a dictionary with the 'processor' and 'method' keys");
+                            }
+                            var processorTypeName = (string)dictionary["processor"];
+                            var methodName = (string)dictionary["method"];
+                            var processorType =
+                                TypeUtil.GetAllLoadedTypes()
+                                    .FirstOrDefault(t => t.Name.Equals(processorTypeName, StringComparison.OrdinalIgnoreCase)) ??
+                                Type.GetType(processorTypeName, true, true);
 
+                            var processor = serviceProvider.GetService(processorType) ?? Activator.CreateInstance(processorType);
                             var method = processor.GetType().GetMethod(methodName);
                             if (method == null || method.ReturnType != typeof(Task))
                             {

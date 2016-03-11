@@ -20,7 +20,13 @@ namespace Takenet.MessagingHub.Client.Host
         {            
             Types = TypeUtil
                 .GetAllLoadedTypes()
-                .Where(t => typeof(IFactory<>).IsAssignableFrom(t) || typeof (IStartable).IsAssignableFrom(t) || typeof(IMessageReceiver).IsAssignableFrom(t) || typeof(INotificationReceiver).IsAssignableFrom(t))
+                .Where(t => 
+                    typeof(IFactory<IMessageReceiver>).IsAssignableFrom(t) || 
+                    typeof(IFactory<INotificationReceiver>).IsAssignableFrom(t) || 
+                    typeof (IStartable).IsAssignableFrom(t) || 
+                    typeof(IMessageReceiver).IsAssignableFrom(t) || 
+                    typeof(INotificationReceiver).IsAssignableFrom(t))
+                .Where(t => !t.IsAbstract && !t.IsInterface)
                 .GroupBy(t => t.Name)
                 .ToDictionary(t => t.Key, t => t.First());
         }

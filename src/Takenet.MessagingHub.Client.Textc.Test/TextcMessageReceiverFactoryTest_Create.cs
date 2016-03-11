@@ -13,6 +13,13 @@ namespace Takenet.MessagingHub.Client.Textc.Test
     [TestFixture]
     public class TextcMessageReceiverFactoryTest_Create
     {
+        [TearDown]
+        public void TearDown()
+        {
+            TestCommandProcessor.Instantiated = false;
+            TestCommandProcessor.InstanceCount = 0;
+        }
+
         [Test]
         public async Task Create_With_Single_Syntax_Should_Create_Processor()
         {
@@ -23,14 +30,14 @@ namespace Takenet.MessagingHub.Client.Textc.Test
                 {
                     new MessageApplicationReceiver()
                     {
-                        Type = typeof(TextcMessageReceiverFactory).AssemblyQualifiedName,
+                        Type = typeof(TextcMessageReceiverFactory).Name,
                         Settings = new Dictionary<string, object>
                         {
                             {
                                 "value1:Word value2:Integer",
                                 new JObject()
                                 {
-                                    { "processor", typeof(TestCommandProcessor).AssemblyQualifiedName },
+                                    { "processor", typeof(TestCommandProcessor).Name },
                                     { "method", nameof(TestCommandProcessor.ProcessAsync) }
 
                                 }
@@ -58,6 +65,15 @@ namespace Takenet.MessagingHub.Client.Textc.Test
 
     public class TestCommandProcessor
     {
+        public static bool Instantiated;
+        public static int InstanceCount;
+
+        public TestCommandProcessor()
+        {
+            Instantiated = true;
+            InstanceCount++;
+        }
+
         public Task ProcessAsync(string value1, int value2, IRequestContext context)
         {
             return Task.CompletedTask;
