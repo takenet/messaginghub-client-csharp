@@ -1,15 +1,13 @@
-using System;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
 using Takenet.MessagingHub.Client;
 
-namespace Chat
+namespace RssContact
 {
     class Program
     {
-        private const string Login = "<yout login>";
-        private const string AccessKey = "<yout access key>";
+        private const string ApplicationIdentifier = "rss-contact";
+        private const string AccessKey = "blB4bUpC";
 
         static void Main(string[] args)
         {
@@ -19,7 +17,7 @@ namespace Chat
         static async Task MainAsync(string[] args)
         {
             var client = new MessagingHubClientBuilder()
-                .UsingAccessKey(Login, AccessKey)
+                .UsingAccessKey(ApplicationIdentifier, AccessKey)
                 .AddMessageReceiver(new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText)
                 .Build();
 
