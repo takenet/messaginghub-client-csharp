@@ -81,9 +81,9 @@ namespace Takenet.MessagingHub.Client.Host
         private static async Task<MessagingHubSenderBuilder> BuildSenderAsync(Application application, MessagingHubClientBuilder clientBuilder,
             ServiceProvider localServiceProvider)
         {
-            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubClientBuilder), clientBuilder);
-            var senderBuilder = new MessagingHubSenderBuilder(clientBuilder);
-            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubSenderBuilder), senderBuilder);
+            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubClientBuilder), clientBuilder);            
+            var senderBuilder = clientBuilder.SenderBuilder;
+            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubSenderBuilder), senderBuilder);            
 
             if (application.MessageReceivers != null && application.MessageReceivers.Length > 0)
             {

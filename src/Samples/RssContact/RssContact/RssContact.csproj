@@ -67,8 +67,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Takenet.MessagingHub.Client, Version=0.2.36.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Takenet.MessagingHub.Client.0.2.36\lib\net45\Takenet.MessagingHub.Client.dll</HintPath>
+    <Reference Include="Takenet.MessagingHub.Client, Version=0.2.37.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Takenet.MessagingHub.Client.0.2.37\lib\net45\Takenet.MessagingHub.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

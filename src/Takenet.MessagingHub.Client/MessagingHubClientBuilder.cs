@@ -8,16 +8,15 @@ namespace Takenet.MessagingHub.Client
     public class MessagingHubClientBuilder
     {
         public const string DEFAULT_DOMAIN = "msging.net";
-        private const string GUEST = "guest";
-
-        private readonly MessagingHubSenderBuilder _senderBuilder;
-
+        private const string GUEST = "guest";        
         private string _login;
         private string _password;
         private string _accessKey;
         private TimeSpan _sendTimeout;
         private string _domain;
         private string _hostName;
+
+        internal readonly MessagingHubSenderBuilder SenderBuilder;
 
         private Identity _identity => Identity.Parse($"{_login}@{_domain}");
         private Uri _endPoint => new Uri($"net.tcp://{_hostName}:55321");
@@ -29,7 +28,7 @@ namespace Takenet.MessagingHub.Client
             _hostName = DEFAULT_DOMAIN;
             _domain = DEFAULT_DOMAIN;
             _sendTimeout = TimeSpan.FromSeconds(20);
-            _senderBuilder = new MessagingHubSenderBuilder(this);
+            SenderBuilder = new MessagingHubSenderBuilder(this);
         }
 
         public MessagingHubClientBuilder UsingAccount(string login, string password)
@@ -84,60 +83,60 @@ namespace Takenet.MessagingHub.Client
 
         public MessagingHubSenderBuilder AddMessageReceiver(IMessageReceiver messageReceiver, MediaType forMimeType = null)
         {
-            _senderBuilder.AddMessageReceiver(messageReceiver, forMimeType);
-            return _senderBuilder;
+            SenderBuilder.AddMessageReceiver(messageReceiver, forMimeType);
+            return SenderBuilder;
         }
 
         public MessagingHubSenderBuilder AddMessageReceiver(Func<IMessageReceiver> receiverFactory, MediaType forMimeType = null)
         {
-            _senderBuilder.AddMessageReceiver(receiverFactory, forMimeType);
-            return _senderBuilder;
+            SenderBuilder.AddMessageReceiver(receiverFactory, forMimeType);
+            return SenderBuilder;
         }
 
 
         public MessagingHubSenderBuilder AddMessageReceiver(IMessageReceiver messageReceiver, Predicate<Message> messagePredicate)
         {
-            _senderBuilder.AddMessageReceiver(messageReceiver, messagePredicate);
-            return _senderBuilder;
+            SenderBuilder.AddMessageReceiver(messageReceiver, messagePredicate);
+            return SenderBuilder;
         }
 
         public MessagingHubSenderBuilder AddMessageReceiver(Func<IMessageReceiver> receiverFactory, Predicate<Message> messagePredicate)
         {
-            _senderBuilder.AddMessageReceiver(receiverFactory, messagePredicate);
-            return _senderBuilder;
+            SenderBuilder.AddMessageReceiver(receiverFactory, messagePredicate);
+            return SenderBuilder;
         }
 
         public MessagingHubSenderBuilder AddNotificationReceiver(INotificationReceiver notificationReceiver, Event? forEventType = null)
         {
-            _senderBuilder.AddNotificationReceiver(notificationReceiver, forEventType);
-            return _senderBuilder;
+            SenderBuilder.AddNotificationReceiver(notificationReceiver, forEventType);
+            return SenderBuilder;
         }
 
         public MessagingHubSenderBuilder AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Event? forEventType = null)
         {
-            _senderBuilder.AddNotificationReceiver(receiverFactory, forEventType);
-            return _senderBuilder;
+            SenderBuilder.AddNotificationReceiver(receiverFactory, forEventType);
+            return SenderBuilder;
         }
 
         public MessagingHubSenderBuilder AddNotificationReceiver(INotificationReceiver notificationReceiver, Predicate<Notification> notificationPredicate)
         {
-            _senderBuilder.AddNotificationReceiver(notificationReceiver, notificationPredicate);
-            return _senderBuilder;
+            SenderBuilder.AddNotificationReceiver(notificationReceiver, notificationPredicate);
+            return SenderBuilder;
         }
 
         public MessagingHubSenderBuilder AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Predicate<Notification> notificationPredicate)
         {
-            _senderBuilder.AddNotificationReceiver(receiverFactory, notificationPredicate);
-            return _senderBuilder;
+            SenderBuilder.AddNotificationReceiver(receiverFactory, notificationPredicate);
+            return SenderBuilder;
         }
 
         public IMessagingHubClient Build()
         {
-            MessagingHubClient = new MessagingHubClient(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout, _senderBuilder.EnvelopeRegistrar);
+            MessagingHubClient = new MessagingHubClient(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout, SenderBuilder.EnvelopeRegistrar);
             return MessagingHubClient;
         }
 
-        internal MessagingHubSenderBuilder AsMessagingSenderBuilder() => _senderBuilder;
+        internal MessagingHubSenderBuilder AsMessagingSenderBuilder() => SenderBuilder;
 
         private Authentication GetAuthenticationScheme()
         {

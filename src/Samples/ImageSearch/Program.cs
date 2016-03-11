@@ -28,11 +28,12 @@ namespace ImageSearch
         }
 
         static async Task MainAsync(string[] args)
-        {
-            var factory = typeof (TextcMessageReceiverFactory);
-            
+        {                        
             // Starts the client
-            var stoppable = await Bootstrapper.StartAsync();
+
+            var application = Application.ParseFromJsonFile("application.json");
+
+            var stoppable = await Bootstrapper.StartAsync(application);
 
             Console.WriteLine("Press any key to stop");
             Console.ReadKey();
