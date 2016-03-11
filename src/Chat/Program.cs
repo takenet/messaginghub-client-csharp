@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,9 +8,8 @@ namespace Chat
 {
     class Program
     {
-        private const string Login = "";
-        private const string AccessKey = "";
-        
+        private const string Login = "<yout login>";
+        private const string AccessKey = "<yout access key>";
 
         static void Main(string[] args)
         {
