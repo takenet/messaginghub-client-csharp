@@ -21,7 +21,6 @@ namespace ImageSearch
 {
     class Program
     { 
-
         static void Main(string[] args)
         {
             MainAsync(args).Wait();
@@ -29,16 +28,12 @@ namespace ImageSearch
 
         static async Task MainAsync(string[] args)
         {                        
-            // Starts the client
-
-            var application = Application.ParseFromJsonFile("application.json");
-
-            var stoppable = await Bootstrapper.StartAsync(application);
-
+            // Starts the application            
+            var stoppable = await Bootstrapper.StartAsync();
             Console.WriteLine("Press any key to stop");
             Console.ReadKey();
 
-            // Stop the client
+            // Stop the application
             await stoppable.StopAsync();
         }
     }
