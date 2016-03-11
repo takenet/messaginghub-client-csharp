@@ -18,6 +18,20 @@ namespace Takenet.MessagingHub.Client.Test.Host
     [TestFixture]
     public class BootstrapperTests_StartAsync
     {
+        [TearDown]
+        public void TearDown()
+        {
+            TestStartable._Started = false;
+            TestStartableFactory.Settings = null;
+            TestStartableFactory.ServiceProvider = null;
+            SettingsTestStartable._Started = false;
+            SettingsTestStartable.Settings = null;            
+            TestMessageReceiver.InstanceCount = 0;
+            TestMessageReceiver.Settings = null;
+            TestNotificationReceiver.InstanceCount = 0;
+            TestNotificationReceiver.Settings = null;            
+        }
+
         [Test]
         public async Task Create_With_No_Credential_And_No_Receiver_Should_Return_Instance()
         {
@@ -187,21 +201,20 @@ namespace Takenet.MessagingHub.Client.Test.Host
                 AccessKey = "12345".ToBase64(),
                 MessageReceivers = new []
                 {
-                    new ApplicationMessageReceiver()
+                    new MessageApplicationReceiver()
                     {
                         Type = typeof(TestMessageReceiver).AssemblyQualifiedName,
                         MediaType = "text/plain"
                     },
-                    new ApplicationMessageReceiver()
+                    new MessageApplicationReceiver()
                     {
                         Type = typeof(TestMessageReceiver).AssemblyQualifiedName,
                         MediaType = "application/json"
                     },
-                    new ApplicationMessageReceiver()
+                    new MessageApplicationReceiver()
                     {
                         Type = typeof(TestMessageReceiver).AssemblyQualifiedName                        
                     }
-
                 }
             };
 
@@ -216,6 +229,53 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
 
         [Test]
+        public async Task Create_With_MessageReceiverType_With_Settings_Should_Return_Instance()
+        {
+            // Arrange
+            var application = new Application()
+            {
+                Login = "testlogin",
+                AccessKey = "12345".ToBase64(),
+                MessageReceivers = new[]
+                {
+                    new MessageApplicationReceiver()
+                    {
+                        Type = typeof(TestMessageReceiver).AssemblyQualifiedName,
+                        MediaType = "text/plain",
+                        Settings = new Dictionary<string, object>()
+                        {
+                            { "setting3", "value3" },
+                            { "setting4", 4 },
+                            { "setting5", 55 }
+                        }
+                    }
+
+                },
+                Settings = new Dictionary<string, object>()
+                {
+                    { "setting1", "value1" },
+                    { "setting2", 2 },
+                    { "setting5", 5 }
+                }
+            };
+
+            // Act
+            var actual = await Bootstrapper.StartAsync(application);
+
+            // Assert
+            actual.ShouldNotBeNull();
+            var messagingHubClient = actual.ShouldBeOfType<MessagingHubClient>();
+            messagingHubClient.Started.ShouldBe(true);
+            TestMessageReceiver.InstanceCount.ShouldBe(1);
+            TestMessageReceiver.Settings.Keys.Count.ShouldBe(5);
+            TestMessageReceiver.Settings["setting1"].ShouldBe("value1");
+            TestMessageReceiver.Settings["setting2"].ShouldBe(2);
+            TestMessageReceiver.Settings["setting3"].ShouldBe("value3");
+            TestMessageReceiver.Settings["setting4"].ShouldBe(4);
+            TestMessageReceiver.Settings["setting5"].ShouldBe(55);
+        }
+
+        [Test]
         public async Task Create_With_NotificationReceiverType_Should_Return_Instance()
         {
             // Arrange
@@ -225,17 +285,17 @@ namespace Takenet.MessagingHub.Client.Test.Host
                 AccessKey = "12345".ToBase64(),
                 NotificationReceivers = new[]
                 {
-                    new ApplicationNotificationReceiver()
+                    new NotificationApplicationReceiver()
                     {
                         Type = typeof(TestNotificationReceiver).AssemblyQualifiedName,
                         EventType = Event.Accepted
                     },
-                    new ApplicationNotificationReceiver()
+                    new NotificationApplicationReceiver()
                     {
                         Type = typeof(TestNotificationReceiver).AssemblyQualifiedName,
                         EventType = Event.Dispatched
                     },
-                    new ApplicationNotificationReceiver()
+                    new NotificationApplicationReceiver()
                     {
                         Type = typeof(TestNotificationReceiver).AssemblyQualifiedName
                     }
@@ -266,13 +326,23 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
     }
 
-    public class SettingsTestStartable : TestStartable
-    {
-        public static IDictionary<string, object> Settings;
-
+    public class SettingsTestStartable : IStartable
+    {      
         public SettingsTestStartable(IDictionary<string, object> settings)
         {
             Settings = settings;
+        }
+
+        public bool Started => _Started;
+
+        public static bool _Started;
+
+        public static IDictionary<string, object> Settings;
+
+        public Task StartAsync()
+        {
+            _Started = true;
+            return Task.CompletedTask;
         }
     }
 
@@ -295,10 +365,12 @@ namespace Takenet.MessagingHub.Client.Test.Host
     public class TestMessageReceiver : IMessageReceiver
     {
         public static int InstanceCount;
+        public static IDictionary<string, object> Settings;
 
-        public TestMessageReceiver()
+        public TestMessageReceiver(IDictionary<string, object> settings)
         {
             InstanceCount++;
+            Settings = settings;
         }
 
         public Task ReceiveAsync(Message envelope)
@@ -310,10 +382,12 @@ namespace Takenet.MessagingHub.Client.Test.Host
     public class TestNotificationReceiver : INotificationReceiver
     {
         public static int InstanceCount;
+        public static IDictionary<string, object> Settings;
 
-        public TestNotificationReceiver()
+        public TestNotificationReceiver(IDictionary<string, object> settings)
         {
             InstanceCount++;
+            Settings = settings;
         }
 
         public Task ReceiveAsync(Notification envelope)

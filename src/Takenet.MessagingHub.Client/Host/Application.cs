@@ -61,7 +61,7 @@ namespace Takenet.MessagingHub.Client.Host
         /// <value>
         /// The receivers.
         /// </value>
-        public ApplicationMessageReceiver[] MessageReceivers { get; set; }
+        public MessageApplicationReceiver[] MessageReceivers { get; set; }
 
         /// <summary>
         /// Gets or sets the receivers.
@@ -69,7 +69,7 @@ namespace Takenet.MessagingHub.Client.Host
         /// <value>
         /// The receivers.
         /// </value>
-        public ApplicationNotificationReceiver[] NotificationReceivers { get; set; }
+        public NotificationApplicationReceiver[] NotificationReceivers { get; set; }
 
         /// <summary>
         /// Gets or sets the type for the startup .NET type. It must implement <see cref="IStartable"/> or <see cref="IFactory{IStartable}"/>.

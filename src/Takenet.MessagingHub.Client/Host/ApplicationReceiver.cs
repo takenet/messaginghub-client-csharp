@@ -1,28 +1,25 @@
 using System;
 using System.Collections.Generic;
-using Lime.Protocol;
-using Takenet.MessagingHub.Client.Receivers;
 
 namespace Takenet.MessagingHub.Client.Host
 {
-    public class ApplicationNotificationReceiver
+    public class ApplicationReceiver
     {
         /// <summary>
-        /// Gets or sets the receiver .NET type. It must implement <see cref="INotificationReceiver"/> or <see cref="IFactory{INotificationReceiver}"/>.
+        /// Gets or sets the receiver .NET type. 
         /// The type constructor must be parameterless or receive only a <see cref="IServiceProvider"/> instance plus a <see cref="IDictionary{TKey,TValue}"/> settings instance.
         /// </summary>
         /// <value>
-        /// The type.
+        /// The type of the receiver.
         /// </value>
         public string Type { get; set; }
 
         /// <summary>
-        /// Gets or sets the type of the event. 
+        /// Gets or sets the settings to be injected to the startup and receivers types.
         /// </summary>
         /// <value>
-        /// The type of the event.
+        /// The settings.
         /// </value>
-        public Event? EventType { get; set; }
-
+        public IDictionary<string, object> Settings { get; set; }
     }
 }

@@ -83,28 +83,52 @@ namespace Takenet.MessagingHub.Client.Host
 
             if (application.MessageReceivers != null && application.MessageReceivers.Length > 0)
             {
-                foreach (var configReceiver in application.MessageReceivers)
-                {
-                    var receiver =
-                        await CreateAsync<IMessageReceiver>(configReceiver.Type, localServiceProvider, application.Settings);
+                foreach (var applicationReceiver in application.MessageReceivers)
+                {                    
+                    var receiver = 
+                        await 
+                            CreateAsync<IMessageReceiver>(applicationReceiver.Type, localServiceProvider, MergeSettings(application, applicationReceiver))
+                                .ConfigureAwait(false);
                     MediaType mediaType = null;
-                    if (configReceiver.MediaType != null) mediaType = MediaType.Parse(configReceiver.MediaType);
+                    if (applicationReceiver.MediaType != null) mediaType = MediaType.Parse(applicationReceiver.MediaType);
                     senderBuilder = senderBuilder.AddMessageReceiver(receiver, mediaType);
                 }
             }
 
             if (application.NotificationReceivers != null && application.NotificationReceivers.Length > 0)
             {
-                foreach (var configReceiver in application.NotificationReceivers)
-                {
+                foreach (var applicationReceiver in application.NotificationReceivers)
+                {                    
                     var receiver =
                         await
-                            CreateAsync<INotificationReceiver>(configReceiver.Type, localServiceProvider, application.Settings)
+                            CreateAsync<INotificationReceiver>(applicationReceiver.Type, localServiceProvider, MergeSettings(application, applicationReceiver))
                                 .ConfigureAwait(false);
-                    senderBuilder = senderBuilder.AddNotificationReceiver(receiver, configReceiver.EventType);
+                    senderBuilder = senderBuilder.AddNotificationReceiver(receiver, applicationReceiver.EventType);
                 }
             }
             return senderBuilder;
+        }
+
+        private static IDictionary<string, object> MergeSettings(Application application, ApplicationReceiver applicationReceiver)
+        {
+            IDictionary<string, object> settings;
+            if (application.Settings == null)
+            {
+                settings = applicationReceiver.Settings;
+            }
+            else if (applicationReceiver.Settings == null)
+            {
+                settings = application.Settings;
+            }
+            else
+            {
+                settings = applicationReceiver
+                    .Settings
+                    .Union(application.Settings)
+                    .GroupBy(a => a.Key)
+                    .ToDictionary(a => a.Key, a => a.First().Value);
+            }
+            return settings;
         }
 
         private static Task<T> CreateAsync<T>(string typeName, IServiceProvider serviceProvider, IDictionary<string, object> settings) where T : class
