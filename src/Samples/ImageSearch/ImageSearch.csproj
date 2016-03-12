@@ -88,9 +88,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="config.empty.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="application.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

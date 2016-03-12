@@ -15,6 +15,8 @@ namespace Takenet.MessagingHub.Client.Host
 {
     public static class Bootstrapper
     {
+        public const string ApplicationFileName = "application.json";
+
         static Bootstrapper()
         {            
             TypeUtil.LoadAssembliesAndReferences(".", assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter);
@@ -32,9 +34,8 @@ namespace Takenet.MessagingHub.Client.Host
         {            
             if (application == null)
             {
-                var fileName = $"{nameof(application)}.json";
-                if (!File.Exists(fileName)) throw new FileNotFoundException($"Could not find the '{fileName}' file", fileName);
-                application = Application.ParseFromJsonFile(fileName);
+                if (!File.Exists(ApplicationFileName)) throw new FileNotFoundException($"Could not find the '{ApplicationFileName}' file", ApplicationFileName);
+                application = Application.ParseFromJsonFile(ApplicationFileName);
             }
 
             var clientBuilder = new MessagingHubClientBuilder();
