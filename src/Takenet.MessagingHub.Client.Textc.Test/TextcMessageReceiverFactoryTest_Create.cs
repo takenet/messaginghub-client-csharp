@@ -77,8 +77,6 @@ namespace Takenet.MessagingHub.Client.Textc.Test
 
             // Assert
             actual.ShouldNotBeNull();
-            var messagingHubClient = actual.ShouldBeOfType<MessagingHubClient>();
-            messagingHubClient.Started.ShouldBe(true);
             TestCommandProcessor.Instantiated.ShouldBeTrue();
             TestCommandProcessor.InstanceCount.ShouldBe(2);
         }
@@ -98,8 +96,6 @@ namespace Takenet.MessagingHub.Client.Textc.Test
 
             // Assert
             actual.ShouldNotBeNull();
-            var messagingHubClient = actual.ShouldBeOfType<MessagingHubClient>();
-            messagingHubClient.Started.ShouldBe(true);
             TestCommandProcessor.Instantiated.ShouldBeTrue();
             TestCommandProcessor.InstanceCount.ShouldBe(2);
         }
