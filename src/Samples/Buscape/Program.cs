@@ -152,7 +152,7 @@ namespace Buscape
                             var response = await webClient.SendAsync(request, cts.Token);
                             if (response.StatusCode != HttpStatusCode.OK)
                             {
-                                await receiver.SendMessageAsync(@"Falhou :(", message.From);
+                                await receiver.SendMessageAsync(@"Não foi possível obter uma resposta do Buscapé!", message.From);
                             }
                             else
                             {
@@ -167,14 +167,14 @@ namespace Buscape
                                         var pricemin = obj.Value["pricemin"].Value<string>();
                                         var pricemax = obj.Value["pricemax"].Value<string>();
                                         await
-                                            receiver.SendMessageAsync($"{name} de {pricemin} até {pricemax}",
-                                                message.From);
+                                            receiver.SendMessageAsync($"{name} de {pricemin} até {pricemax}", message.From);
                                     }
-                                    catch (Exception)
+                                    catch (Exception e)
                                     {
-                                        await receiver.SendMessageAsync(@"Produto não encontrado!", message.From);
+                                        Console.Error.WriteLine($"Exception parsing product: {e}");
                                     }
                                 }
+                                await receiver.SendMessageAsync(@"Pronto para um nova pesquisa!", message.From);
                             }
                         }
                     }
@@ -186,8 +186,9 @@ namespace Buscape
                         To = message.From
                     });
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Console.Error.WriteLine($"Exception processing message: {e}");
                     await receiver.SendMessageAsync(@"Falhou :(", message.From);
                 }
             });
