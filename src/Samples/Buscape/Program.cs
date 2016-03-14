@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using Lime.Messaging.Contents;
 using Lime.Protocol;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Takenet.MessagingHub.Client;
 
 namespace Buscape
@@ -128,21 +130,6 @@ namespace Buscape
             {
                 try
                 {
-                    await receiver.SendNotificationAsync(new Notification
-                    {
-                        Id = message.Id,
-                        Event = Event.Received,
-                        To = message.From
-                    });
-
-                    await receiver.SendNotificationAsync(new Notification
-                    {
-                        Id = message.Id,
-                        Event = Event.Consumed,
-                        To = message.From
-                    });
-
-
                     var keyword = ((PlainText)message.Content)?.Text;
 
                     if (keyword == ConnectedMessage)
@@ -151,7 +138,7 @@ namespace Buscape
                     }
                     else if (keyword == StartMessage)
                     {
-                        Console.WriteLine($"Start message received from {message.From.Instance}!");
+                        Console.WriteLine($"Start message received from {message.From}!");
                         await receiver.SendMessageAsync(@"Tudo pronto. Qual produto deseja pesquisar?", message.From);
                     }
                     else
@@ -171,14 +158,33 @@ namespace Buscape
                             {
                                 var resultJson = await response.Content.ReadAsStringAsync();
                                 dynamic responseMessage = JsonConvert.DeserializeObject(resultJson);
-                                foreach (var product in responseMessage.product)
-                                    await
-                                        receiver.SendMessageAsync(
-                                            $"{product.productshortname} de {product.pricemin} até {product.pricemax}",
-                                            message.From);
+                                foreach (JObject product in responseMessage.product)
+                                {
+                                    try
+                                    {
+                                        var obj = product.Properties().First();
+                                        var name = obj.Value["productshortname"].Value<string>();
+                                        var pricemin = obj.Value["pricemin"].Value<string>();
+                                        var pricemax = obj.Value["pricemax"].Value<string>();
+                                        await
+                                            receiver.SendMessageAsync($"{name} de {pricemin} até {pricemax}",
+                                                message.From);
+                                    }
+                                    catch (Exception)
+                                    {
+                                        await receiver.SendMessageAsync(@"Produto não encontrado!", message.From);
+                                    }
+                                }
                             }
                         }
                     }
+
+                    await receiver.SendNotificationAsync(new Notification
+                    {
+                        Id = message.Id,
+                        Event = Event.Consumed,
+                        To = message.From
+                    });
                 }
                 catch (Exception)
                 {
