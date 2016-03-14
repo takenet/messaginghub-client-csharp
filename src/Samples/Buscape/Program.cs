@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -46,7 +47,7 @@ namespace Buscape
 
         private const string ConnectedMessage = "$Connected$";
         private const string StartMessage = "Iniciar";
-        //private static read only MediaType ResponseMediaType = new MediaType("application", "vnd.omni.text", "json");
+        private static readonly List<Guid> ProcessedMessageIds = new List<Guid>();
 
         private static JsonConfigFile ValidateAndLoadParameters(string[] args)
         {
@@ -128,8 +129,29 @@ namespace Buscape
         {
             receiver.StartReceivingMessages(cts, async message =>
             {
+                if (ProcessedMessageIds.Contains(message.Id))
+                {
+                    Console.WriteLine($"Repeated message received and ignored: {message.Id}");
+                    return;
+                }
+
+                ProcessedMessageIds.Add(message.Id);
+
                 try
                 {
+                    var chatState = message.Content as ChatState;
+                    if (chatState != null) { 
+                        Console.WriteLine($"ChatState received and ignored: {chatState}");
+                        return;
+                    }
+
+                    if (!(message.Content is PlainText))
+                    {
+                        Console.WriteLine($"Tipo de mensagem não suportada: {message.Content.GetType().Name}!");
+                        await receiver.SendMessageAsync($"Tipo de mensagem não suportada: {message.Content.GetType().Name}!", message.From);
+                        return;
+                    }
+
                     var keyword = ((PlainText)message.Content)?.Text;
 
                     if (keyword == ConnectedMessage)
