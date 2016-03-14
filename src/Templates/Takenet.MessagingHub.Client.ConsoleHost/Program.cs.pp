@@ -8,7 +8,7 @@ namespace $rootnamespace$
 {
     class Program
     {
-        private const string Login = "<yout login>";
+        private const string ApplicationIdentifier = "<yout application id>";
         private const string AccessKey = "<yout access key>";
 
         static void Main(string[] args)
@@ -19,7 +19,7 @@ namespace $rootnamespace$
         static async Task MainAsync(string[] args)
         {
             var client = new MessagingHubClientBuilder()
-                .UsingAccessKey(Login, AccessKey)
+                .UsingAccessKey(ApplicationIdentifier, AccessKey)
                 .AddMessageReceiver(new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText)
                 .Build();
 
