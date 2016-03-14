@@ -151,11 +151,13 @@ namespace Takenet.MessagingHub.Client
                 if (_channelListener != null)
                 {
                     _channelListener.Stop();
-                    await Task.WhenAll(
-                        _channelListener.CommandListenerTask, 
-                        _channelListener.MessageListenerTask,
-                        _channelListener.NotificationListenerTask)
-                        .ConfigureAwait(false);
+
+                    // TODO: Signal to the listener to stop consuming the envelopes.
+                    //await Task.WhenAll(
+                    //    _channelListener.CommandListenerTask, 
+                    //    _channelListener.MessageListenerTask,
+                    //    _channelListener.NotificationListenerTask)
+                    //    .ConfigureAwait(false);
 
                     _channelListener.DisposeIfDisposable();
                 }
@@ -189,7 +191,7 @@ namespace Takenet.MessagingHub.Client
             _channelListener = new ChannelListener(
                 handler.HandleAsync,
                 handler.HandleAsync,
-                c => TaskUtil.TrueCompletedTask);
+                c => TaskUtil.FalseCompletedTask);
             _channelListener.Start(_onDemandClientChannel);
         }        
     }
