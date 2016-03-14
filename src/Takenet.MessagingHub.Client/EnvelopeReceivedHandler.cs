@@ -9,13 +9,13 @@ namespace Takenet.MessagingHub.Client
 {
     internal class EnvelopeReceivedHandler
     {
-        private readonly EnvelopeListenerRegistrar registrar;
-        private readonly IEnvelopeSender envelopeSender;
+        private readonly EnvelopeListenerRegistrar _registrar;
+        private readonly IEnvelopeSender _envelopeSender;
 
         public EnvelopeReceivedHandler(IEnvelopeSender envelopeSender, EnvelopeListenerRegistrar registrar)
         {
-            this.envelopeSender = envelopeSender;
-            this.registrar = registrar;
+            _envelopeSender = envelopeSender;
+            _registrar = registrar;
         }
 
         public async Task<bool> HandleAsync<TEnvelope>(TEnvelope envelope)
@@ -25,8 +25,8 @@ namespace Takenet.MessagingHub.Client
             {
                 await Task
                         .WhenAll(
-                            registrar.GetReceiversFor(envelope).Select(r =>
-                                CallReceiver(envelopeSender, r, envelope)))
+                            _registrar.GetReceiversFor(envelope).Select(r =>
+                                CallReceiver(_envelopeSender, r, envelope)))
                         .ConfigureAwait(false);
                 return true;
             }

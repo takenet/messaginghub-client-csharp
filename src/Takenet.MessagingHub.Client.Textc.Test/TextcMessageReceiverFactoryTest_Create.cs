@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lime.Protocol;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Shouldly;
@@ -35,27 +37,39 @@ namespace Takenet.MessagingHub.Client.Textc.Test
                         Settings = new Dictionary<string, object>
                         {
                             {
-                                "value1:Word value2:Integer",
-                                new JObject()
+                                "syntaxes",
+                                new[]
                                 {
-                                    { "processor", typeof(TestCommandProcessor).Name },
-                                    { "method", nameof(TestCommandProcessor.ProcessAsync) }
+                                    new Dictionary<string, object>
+                                    {
+                                        {
+                                            "value1:Word value2:Integer",
+                                            new JObject()
+                                            {
+                                                { "processor", typeof(TestCommandProcessor).Name },
+                                                { "method", nameof(TestCommandProcessor.ProcessAsync) }
 
-                                }
-                            },
-                            {
-                                "value1:Word value2:Integer value3:Word",
-                                new JObject()
-                                {
-                                    { "processor", typeof(TestCommandProcessor).AssemblyQualifiedName },
-                                    { "method", nameof(TestCommandProcessor.ProcessWithResultAsync) }
+                                            }
+                                        },
 
+                                    },
+                                    new Dictionary<string, object>
+                                    {
+                                        {
+                                            "value1:Word value2:Integer value3:Word",
+                                            new JObject()
+                                            {
+                                                { "processor", typeof(TestCommandProcessor).AssemblyQualifiedName },
+                                                { "method", nameof(TestCommandProcessor.ProcessWithResultAsync) }
+
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
-
             };
 
             // Act
@@ -68,15 +82,39 @@ namespace Takenet.MessagingHub.Client.Textc.Test
             TestCommandProcessor.Instantiated.ShouldBeTrue();
             TestCommandProcessor.InstanceCount.ShouldBe(2);
         }
+
+
+        [Test]
+        public async Task Create_With_Json_Single_Multiple_Syntaxes_Should_Create_Processor()
+        {
+            // Arrange
+            var json =
+                "{ \"login\": \"abcd1234\", \"accessKey\": \"xyz1234\", \"messageReceivers\": [ { \"type\": \"TextcMessageReceiverFactory\", \"settings\": { \"syntaxes\": [ { \"[:Word(mais,more,top) top:Integer? query+:Text]\": { \"processor\": \"TestCommandProcessor\", \"method\": \"GetImageDocumentAsync\" } }, { \"[query+:Text]\": { \"processor\": \"TestCommandProcessor\", \"method\": \"GetFirstImageDocumentAsync\" } } ], \"scorer\": \"MatchCountExpressionScorer\" } } ], \"settings\": { \"myApiKey\": \"askjakdaksjasjdalksjd\" } } ";
+
+            var application = Application.ParseFromJson(json);
+
+            // Act
+            var actual = await Bootstrapper.StartAsync(application);
+
+            // Assert
+            actual.ShouldNotBeNull();
+            var messagingHubClient = actual.ShouldBeOfType<MessagingHubClient>();
+            messagingHubClient.Started.ShouldBe(true);
+            TestCommandProcessor.Instantiated.ShouldBeTrue();
+            TestCommandProcessor.InstanceCount.ShouldBe(2);
+        }
+
     }
 
     public class TestCommandProcessor
     {
+        public static IDictionary<string, object> Settings;
         public static bool Instantiated;
         public static int InstanceCount;
 
-        public TestCommandProcessor()
+        public TestCommandProcessor(IDictionary<string, object> settings)
         {
+            Settings = settings;
             Instantiated = true;
             InstanceCount++;
         }
@@ -89,6 +127,16 @@ namespace Takenet.MessagingHub.Client.Textc.Test
         public Task<string> ProcessWithResultAsync(string value1, int value2, string value3, IRequestContext context)
         {
             return Task.FromResult("result");
+        }
+
+        public async Task<JsonDocument> GetFirstImageDocumentAsync(string query, IRequestContext context)
+        {
+            return new JsonDocument();
+        }
+
+        public async Task<JsonDocument> GetImageDocumentAsync(int? top, string query, IRequestContext context)
+        {
+            return new JsonDocument();
         }
     }
 }

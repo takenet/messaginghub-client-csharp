@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Serialization;
@@ -14,21 +15,11 @@ namespace Takenet.MessagingHub.Client.Host
 {
     public static class Bootstrapper
     {
-        private static readonly IDictionary<string, Type> Types;        
+        public const string ApplicationFileName = "application.json";
 
         static Bootstrapper()
         {            
-            Types = TypeUtil
-                .GetAllLoadedTypes()
-                .Where(t => 
-                    typeof(IFactory<IMessageReceiver>).IsAssignableFrom(t) || 
-                    typeof(IFactory<INotificationReceiver>).IsAssignableFrom(t) || 
-                    typeof (IStartable).IsAssignableFrom(t) || 
-                    typeof(IMessageReceiver).IsAssignableFrom(t) || 
-                    typeof(INotificationReceiver).IsAssignableFrom(t))
-                .Where(t => !t.IsAbstract && !t.IsInterface)
-                .GroupBy(t => t.Name)
-                .ToDictionary(t => t.Key, t => t.First());
+            TypeUtil.LoadAssembliesAndReferences(".", assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter);
         }
 
         /// <summary>
@@ -43,13 +34,8 @@ namespace Takenet.MessagingHub.Client.Host
         {            
             if (application == null)
             {
-                var fileName = $"{nameof(application)}.json";
-                if (!File.Exists(fileName)) throw new FileNotFoundException($"Could not find the '{fileName}' file", fileName);
-                application = JsonConvert.DeserializeObject<Application>(
-                    File.ReadAllText(fileName), new JsonSerializerSettings
-                    {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver()
-                    });
+                if (!File.Exists(ApplicationFileName)) throw new FileNotFoundException($"Could not find the '{ApplicationFileName}' file", ApplicationFileName);
+                application = Application.ParseFromJsonFile(ApplicationFileName);
             }
 
             var clientBuilder = new MessagingHubClientBuilder();
@@ -96,9 +82,9 @@ namespace Takenet.MessagingHub.Client.Host
         private static async Task<MessagingHubSenderBuilder> BuildSenderAsync(Application application, MessagingHubClientBuilder clientBuilder,
             ServiceProvider localServiceProvider)
         {
-            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubClientBuilder), clientBuilder);
-            var senderBuilder = new MessagingHubSenderBuilder(clientBuilder);
-            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubSenderBuilder), senderBuilder);
+            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubClientBuilder), clientBuilder);            
+            var senderBuilder = clientBuilder.SenderBuilder;
+            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubSenderBuilder), senderBuilder);            
 
             if (application.MessageReceivers != null && application.MessageReceivers.Length > 0)
             {
@@ -108,9 +94,31 @@ namespace Takenet.MessagingHub.Client.Host
                         await 
                             CreateAsync<IMessageReceiver>(applicationReceiver.Type, localServiceProvider, MergeSettings(application, applicationReceiver))
                                 .ConfigureAwait(false);
-                    MediaType mediaType = null;
-                    if (applicationReceiver.MediaType != null) mediaType = MediaType.Parse(applicationReceiver.MediaType);
-                    senderBuilder = senderBuilder.AddMessageReceiver(receiver, mediaType);
+
+                    Predicate<Message> messagePredicate = m => m != null;
+
+                    if (applicationReceiver.MediaType != null)
+                    {
+                        var currentMessagePredicate = messagePredicate;
+                        var mediaType = MediaType.Parse(applicationReceiver.MediaType);
+                        messagePredicate = m => currentMessagePredicate(m) && m.Type.Equals(mediaType);
+                    }
+
+                    if (applicationReceiver.Content != null)
+                    {
+                        var currentMessagePredicate = messagePredicate;
+                        var contentRegex = new Regex(applicationReceiver.Content, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                        messagePredicate = m => currentMessagePredicate(m) && contentRegex.IsMatch(m.Content.ToString());
+                    }
+
+                    if (applicationReceiver.Sender != null)
+                    {
+                        var currentMessagePredicate = messagePredicate;
+                        var senderRegex = new Regex(applicationReceiver.Sender, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                        messagePredicate = m => currentMessagePredicate(m) && senderRegex.IsMatch(m.GetSender().ToString());
+                    }
+                    
+                    senderBuilder = senderBuilder.AddMessageReceiver(receiver, messagePredicate);
                 }
             }
 
@@ -150,15 +158,13 @@ namespace Takenet.MessagingHub.Client.Host
             return settings;
         }
 
-        private static Task<T> CreateAsync<T>(string typeName, IServiceProvider serviceProvider, IDictionary<string, object> settings) where T : class
+        public static Task<T> CreateAsync<T>(string typeName, IServiceProvider serviceProvider, IDictionary<string, object> settings) where T : class
         {
             if (typeName == null) throw new ArgumentNullException(nameof(typeName));
 
-            Type type;
-            if (!Types.TryGetValue(typeName, out type))
-            {
-                type = Type.GetType(typeName, true);
-            }
+            var type = TypeUtil
+                .GetAllLoadedTypes()
+                .FirstOrDefault(t => t.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase)) ?? Type.GetType(typeName, true, true);
 
             IFactory<T> factory;
             if (typeof(IFactory<T>).IsAssignableFrom(type))
