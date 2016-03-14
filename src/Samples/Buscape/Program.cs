@@ -131,7 +131,6 @@ namespace Buscape
             Console.WriteLine($"{DateTime.Now} -> Stopping service...");
 
             await Sender.StopAsync();
-            await Sender.StopAsync();
 
             Console.WriteLine();
             Console.WriteLine("Press any key to exit!");
