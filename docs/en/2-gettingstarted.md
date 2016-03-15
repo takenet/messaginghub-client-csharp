@@ -7,7 +7,7 @@ From the Package Manager Console, install it using:
 
     PM> Install-Package Takenet.MessagingHub.Client
 
-*Note: this package targets framework 4.6.1, so change your project target framework accordingly.*
+*Note*: this package targets framework 4.6.1, so change your project target framework accordingly.
 
 ## Sending a text message
 
