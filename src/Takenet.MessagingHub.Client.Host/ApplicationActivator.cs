@@ -74,11 +74,15 @@ namespace Takenet.MessagingHub.Client.Host
                 var applicationLastWrite = File.GetLastWriteTimeUtc(e.FullPath);
                 if (!_applicationLastWriteDictionary.ContainsKey(e.FullPath) ||
                     _applicationLastWriteDictionary[e.FullPath] < applicationLastWrite)
-                {
-                    _applicationLastWriteDictionary.AddOrUpdate(e.FullPath, applicationLastWrite,
-                        (k, v) => applicationLastWrite);
+                {                    
                     Deactivate(e.FullPath);
-                    Activate(e.FullPath);
+                    if (Activate(e.FullPath))
+                    {
+                        _applicationLastWriteDictionary.AddOrUpdate(
+                            e.FullPath, 
+                            applicationLastWrite,
+                            (k, v) => applicationLastWrite);
+                    }
                 }
             }
         }
