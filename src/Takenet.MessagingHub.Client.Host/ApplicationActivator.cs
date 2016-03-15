@@ -230,11 +230,6 @@ namespace Takenet.MessagingHub.Client.Host
 
         const uint WM_KEYDOWN = 0x100;
 
-        private void SendKey(IntPtr windowHandle, ushort k)
-        {
-            Win32.SendMessage(windowHandle, WM_KEYDOWN, ((IntPtr)k), (IntPtr)0);
-        }
-
         public void Dispose()
         {
             foreach (var applicationPath in _applicationProcessesDictionary.Keys.ToList())
