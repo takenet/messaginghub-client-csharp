@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.Host", "Takenet.MessagingHub.Client.Host\Takenet.MessagingHub.Client.Host.csproj", "{A0D7C8F1-F807-4D00-BC5D-0A9E819E003C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.ConsoleActivator", "Takenet.MessagingHub.ConsoleActivator\Takenet.MessagingHub.ConsoleActivator.csproj", "{813F4DB8-52BD-49A6-AED4-488CDF1C006E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{A0D7C8F1-F807-4D00-BC5D-0A9E819E003C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0D7C8F1-F807-4D00-BC5D-0A9E819E003C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0D7C8F1-F807-4D00-BC5D-0A9E819E003C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{813F4DB8-52BD-49A6-AED4-488CDF1C006E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{813F4DB8-52BD-49A6-AED4-488CDF1C006E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{813F4DB8-52BD-49A6-AED4-488CDF1C006E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{813F4DB8-52BD-49A6-AED4-488CDF1C006E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
