@@ -4,7 +4,7 @@ Para facilitar o esforço para testar sua aplicação, existe um pacote inicial par
 
 Adicione um novo projeto de um *Console Application* e a partir do *Package Manager Console*, instale-o usando:
 
-    PM> Install-Package Takenet.MessagingHub.Client.ConsoleHost
+    Install-Package Takenet.MessagingHub.Client.ConsoleHost
 
 *Observação*: este pacote tem como *target* o *framework* 4.6.1, então altere o *target framework* do seu projeto.
 
