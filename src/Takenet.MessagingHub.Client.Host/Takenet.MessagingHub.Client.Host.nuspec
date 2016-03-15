@@ -22,7 +22,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="application.json" target="content\application.json"/>
+    <file src="application.template.json" target="content\application.json"/>
     <file src="PlainTextMessageReceiver.cs.pp" target="content\PlainTextMessageReceiver.cs.pp"/>
     <file src="Readme.txt" target="" />
     <file src="Startup.cs.pp" target="content\Startup.cs.pp"/>
