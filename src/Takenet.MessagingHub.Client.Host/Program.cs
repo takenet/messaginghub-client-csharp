@@ -52,7 +52,7 @@ namespace Takenet.MessagingHub.Client.Host
 
                 var stopabble = await Bootstrapper.StartAsync(application);
                 WriteLine("Application started. Press any key to stop.", ConsoleColor.Blue);
-                Console.ReadKey(true);
+                Console.Read();
                 await stopabble.StopAsync();
             }
             catch (Exception ex)
