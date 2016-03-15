@@ -58,8 +58,10 @@ namespace Takenet.MessagingHub.Client.Host
 
         private void Watcher_Changed(object sender, FileSystemEventArgs e)
         {
+            Trace.TraceError("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
+
             lock (_syncRoot)
-            {
+            {                
                 var fileInfo = new FileInfo(e.FullPath);
                 while (IsFileLocked(fileInfo))
                 {
@@ -83,6 +85,8 @@ namespace Takenet.MessagingHub.Client.Host
 
         private void Watcher_Deleted(object sender, FileSystemEventArgs e)
         {
+            Trace.TraceError("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
+
             lock (_syncRoot)
             {
                 Thread.Sleep(_waitForActivationDelay);
@@ -95,6 +99,8 @@ namespace Takenet.MessagingHub.Client.Host
 
         private void Watcher_Renamed(object sender, RenamedEventArgs e)
         {
+            Trace.TraceError("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
+
             lock (_syncRoot)
             {
                 Thread.Sleep(_waitForActivationDelay);                
@@ -106,7 +112,7 @@ namespace Takenet.MessagingHub.Client.Host
         }
 
         private void Watcher_Error(object sender, ErrorEventArgs e)
-        {
+        {            
             Trace.TraceError(e.GetException().ToString());
         }
 
@@ -142,9 +148,19 @@ namespace Takenet.MessagingHub.Client.Host
                 {
                     CreateNoWindow = false,
                     RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
                     UseShellExecute = false,
                     FileName = "mhh.exe",
                     Arguments = tempApplicationPath
+                }
+            };
+
+            var outputPath = Path.Combine(applicationDirectory, "Output.log");
+            process.OutputDataReceived += (sender, e) =>
+            {
+                using (var writer = File.AppendText(outputPath))
+                {
+                    writer.WriteLine("{0} - {1}", DateTime.UtcNow, e.Data);
                 }
             };
 
@@ -152,7 +168,10 @@ namespace Takenet.MessagingHub.Client.Host
             {
                 Trace.TraceError("The process failed to start at '{0}'", tempApplicationPath);
                 return false;
-            }            
+            }
+
+            process.BeginOutputReadLine();
+
             _job.AddProcess(process.Handle);
 
             if (!_applicationProcessesDictionary.TryAdd(applicationPath, process))
@@ -164,6 +183,11 @@ namespace Takenet.MessagingHub.Client.Host
             Trace.TraceInformation("Application started from file '{0}' in the path '{1}'", 
                 applicationPath, tempApplicationPath);
             return true;
+        }
+
+        private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private bool Deactivate(string applicationPath)
