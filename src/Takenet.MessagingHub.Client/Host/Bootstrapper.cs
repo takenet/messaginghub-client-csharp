@@ -231,7 +231,12 @@ namespace Takenet.MessagingHub.Client.Host
                 var serviceConstructor = serviceType
                     .GetConstructors()
                     .OrderByDescending(c => c.GetParameters().Length)
-                    .First();
+                    .FirstOrDefault();
+
+                if (serviceConstructor == null)
+                {
+                    throw new ArgumentException($"The  type '{serviceType}' doesn't have a public constructor", nameof(serviceType));
+                }
 
                 var parameters = serviceConstructor.GetParameters();
                 var serviceArgs = new object[parameters.Length];
