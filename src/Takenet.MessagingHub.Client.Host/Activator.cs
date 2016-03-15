@@ -23,7 +23,7 @@ namespace Takenet.MessagingHub.Client.Host
             _watcher = new FileSystemWatcher()
             {
                 Path = basePath,
-                Filter = Bootstrapper.ApplicationFileName,
+                Filter = Bootstrapper.DefaultApplicationFileName,
                 EnableRaisingEvents = true,
                 IncludeSubdirectories = true
             };
