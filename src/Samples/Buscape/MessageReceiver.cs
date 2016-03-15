@@ -40,9 +40,10 @@ namespace Buscape
 
         private readonly Dictionary<Node, Tuple<string, int>> Session = new Dictionary<Node, Tuple<string, int>>();
 
-        private MessageReceiver(IDictionary<string, object> settings)
+        public MessageReceiver(IDictionary<string, object> settings)
         {
             Settings = settings;
+            Console.WriteLine("Listening...");
         }
 
         public override async Task ReceiveAsync(Message message)
