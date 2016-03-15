@@ -15,15 +15,16 @@ using Takenet.MessagingHub.Client.Receivers;
 
 namespace Buscape
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             StartListenningAndWaitForCancellation(args).Wait();
         }
 
         private static JsonConfigFile Config;
         private static HttpClient WebClient;
+        private static readonly Dictionary<Node, Tuple<string, int>> Session = new Dictionary<Node, Tuple<string, int>>();
 
         static async Task StartListenningAndWaitForCancellation(string[] args)
         {
@@ -39,6 +40,8 @@ namespace Buscape
         private static readonly MediaType ResponseMediaType = new MediaType("application", "vnd.omni.text", "json");
         private const string ConnectedMessage = "$Connected$";
         private const string StartMessage = "Iniciar";
+        private const string FinishMessage = "ENCERRAR";
+        private const string MoreResultsMessage = "MAIS RESULTADOS";
 
         private static IMessagingHubSender Sender;
 
@@ -114,7 +117,7 @@ namespace Buscape
                         To = envelope.From
                     });
 
-                    await ProcessMessageAsync(envelope);
+                    await ProcessMessagesAsync(envelope);
                 }
                 catch (Exception e)
                 {
@@ -137,67 +140,157 @@ namespace Buscape
             Console.ReadKey();
         }
 
-        private static async Task ProcessMessageAsync(Message message)
+        private static async Task ProcessMessagesAsync(Message message)
         {
-            var chatState = message.Content as ChatState;
-            if (chatState != null)
-            {
-                Console.WriteLine($"ChatState received and ignored: {chatState}");
-                return;
-            }
+            if (HandleChatState(message)) return;
 
-            if (!(message.Content is PlainText))
-            {
-                Console.WriteLine($"Tipo de mensagem não suportada: {message.Content.GetType().Name}!");
-                await
-                    Sender.SendMessageAsync($"Tipo de mensagem não suportada: {message.Content.GetType().Name}!", message.From);
-                return;
-            }
+            if (await HandleInvalidMessageTypeAsync(message)) return;
 
             var keyword = ((PlainText)message.Content)?.Text;
 
-            if (keyword == ConnectedMessage)
-            {
-                Console.WriteLine("Connected!");
-            }
-            else if (keyword == StartMessage)
-            {
-                Console.WriteLine($"Start message received from {message.From}!");
-                await Sender.SendMessageAsync(@"Tudo pronto. Qual produto deseja pesquisar?", message.From);
-            }
-            else
-            {
-                Console.WriteLine($"Requested search by {keyword}!");
-                var uri =
-                    $"http://sandbox.buscape.com.br/service/findProductList/lomadee/{Config.buscapeAppToken}/BR?results=3&page=1&keyword={keyword}&format=json";
+            if (HandleConnectedMessage(keyword)) return;
 
-                using (var request = new HttpRequestMessage(HttpMethod.Get, uri))
+            if (await HandleStartMessageAsync(message, keyword)) return;
+
+            if (await HandleEndOfSearchAsync(message, keyword)) return;
+
+            if (await HandleNextPageRequestAsync(message, keyword)) return;
+
+            keyword = HandleNextPageKeywordAsync(message, keyword);
+
+            var uri = ComposeSearchUri(message, keyword);
+
+            await ExecuteSearchAsync(message, uri);
+        }
+
+        private static async Task ExecuteSearchAsync(Message message, string uri)
+        {
+            using (var request = new HttpRequestMessage(HttpMethod.Get, uri))
+            {
+                using (var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
                 {
-                    var response = await WebClient.SendAsync(request, CancellationToken.None);
-                    if (response.StatusCode != HttpStatusCode.OK)
+                    var buscapeResponse = await WebClient.SendAsync(request, cancellationTokenSource.Token);
+                    if (buscapeResponse.StatusCode != HttpStatusCode.OK)
                     {
                         await Sender.SendMessageAsync(@"Não foi possível obter uma resposta do Buscapé!", message.From);
                     }
                     else
                     {
-                        var resultJson = await response.Content.ReadAsStringAsync();
+                        var resultJson = await buscapeResponse.Content.ReadAsStringAsync();
                         dynamic responseMessage = JsonConvert.DeserializeObject(resultJson);
-                        foreach (JObject product in responseMessage.product)
+                        try
                         {
-                            try
+                            foreach (JObject product in responseMessage.product)
                             {
-                                var resultItem = ParseProduct(product);
-                                await Sender.SendMessageAsync(resultItem, message.From);
-                            }
-                            catch (Exception e)
-                            {
-                                Console.Error.WriteLine($"Exception parsing product: {e}");
+                                try
+                                {
+                                    var resultItem = ParseProduct(product);
+                                    await Sender.SendMessageAsync(resultItem, message.From);
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.Error.WriteLine($"Exception parsing product: {e}");
+                                }
                             }
                         }
-                        await Sender.SendMessageAsync(@"Pronto para um nova pesquisa!", message.From);
+                        catch (Exception)
+                        {
+                            await Sender.SendMessageAsync("Nenhum resultado encontrado", message.From);
+                            return;
+                        }
+                        await Task.Delay(TimeSpan.FromSeconds(2), cancellationTokenSource.Token);
+                        await Sender.SendMessageAsync($"Envie: {FinishMessage}; {MoreResultsMessage}", message.From);
                     }
                 }
             }
+        }
+
+        private static string ComposeSearchUri(Message message, string keyword)
+        {
+            Console.WriteLine($"Requested search by {keyword}!");
+
+            const int pageSize = 3;
+            var page = 1;
+            if (Session.ContainsKey(message.From))
+                page = Session[message.From].Item2;
+
+            var parameters = $"{Config.buscapeAppToken}/BR?results={pageSize}&page={page}&keyword={keyword}&format=json";
+            var uri = $"http://sandbox.buscape.com.br/service/findProductList/lomadee/{parameters}";
+            Session[message.From] = new Tuple<string, int>(keyword, page + 1);
+            return uri;
+        }
+
+        private static string HandleNextPageKeywordAsync(Message message, string keyword)
+        {
+            if (Session.ContainsKey(message.From) && keyword == MoreResultsMessage)
+                keyword = Session[message.From].Item1;
+            return keyword;
+        }
+
+        private static async Task<bool> HandleNextPageRequestAsync(Message message, string keyword)
+        {
+            if (keyword != MoreResultsMessage)
+                return false;
+
+            if (Session.ContainsKey(message.From))
+                return false;
+
+            await Sender.SendMessageAsync(@"Não foi possível identificar o último item pesquisado!", message.From);
+            return true;
+        }
+
+        private static async Task<bool> HandleEndOfSearchAsync(Message message, string keyword)
+        {
+            if (keyword == FinishMessage)
+            {
+                await Sender.SendMessageAsync(@"Obrigado por usar o Buscapé!", message.From);
+                return true;
+            }
+            return false;
+        }
+
+        private static async Task<bool> HandleStartMessageAsync(Message message, string keyword)
+        {
+            if (keyword == StartMessage)
+            {
+                Console.WriteLine($"Start message received from {message.From}!");
+                await Sender.SendMessageAsync(@"Tudo pronto. Qual produto deseja pesquisar?", message.From);
+                return true;
+            }
+            return false;
+        }
+
+        private static bool HandleConnectedMessage(string keyword)
+        {
+            if (keyword == ConnectedMessage)
+            {
+                Console.WriteLine("Connected!");
+                return true;
+            }
+            return false;
+        }
+
+        private static async Task<bool> HandleInvalidMessageTypeAsync(Message message)
+        {
+            if (!(message.Content is PlainText))
+            {
+                Console.WriteLine($"Tipo de mensagem não suportada: {message.Content.GetType().Name}!");
+                await
+                    Sender.SendMessageAsync("Apenas mensagens de texto são suportadas!", message.From);
+                return true;
+            }
+            return false;
+        }
+
+        private static bool HandleChatState(Message message)
+        {
+            var chatState = message.Content as ChatState;
+            if (chatState != null)
+            {
+                Console.WriteLine($"ChatState received and ignored: {chatState}");
+                return true;
+            }
+            return false;
         }
 
         private static Document ParseProduct(JObject product)
