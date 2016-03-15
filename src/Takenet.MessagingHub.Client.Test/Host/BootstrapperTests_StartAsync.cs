@@ -46,8 +46,6 @@ namespace Takenet.MessagingHub.Client.Test.Host
 
             // Assert
             actual.ShouldNotBeNull();
-            var messagingHubClient = actual.ShouldBeOfType<MessagingHubClient>();
-            messagingHubClient.Started.ShouldBe(true);
 
         }
 
@@ -66,8 +64,6 @@ namespace Takenet.MessagingHub.Client.Test.Host
 
             // Assert
             actual.ShouldNotBeNull();
-            var messagingHubClient = actual.ShouldBeOfType<MessagingHubClient>();
-            messagingHubClient.Started.ShouldBe(true);
 
         }
 
@@ -86,8 +82,6 @@ namespace Takenet.MessagingHub.Client.Test.Host
             
             // Assert
             actual.ShouldNotBeNull();
-            var messagingHubClient = actual.ShouldBeOfType<MessagingHubClient>();
-            messagingHubClient.Started.ShouldBe(true);
             
         }
 
@@ -107,8 +101,6 @@ namespace Takenet.MessagingHub.Client.Test.Host
 
             // Assert
             actual.ShouldNotBeNull();
-            var messagingHubClient = actual.ShouldBeOfType<MessagingHubClient>();
-            messagingHubClient.Started.ShouldBe(true);
             TestStartable._Started.ShouldBeTrue();
         }
 
@@ -133,8 +125,6 @@ namespace Takenet.MessagingHub.Client.Test.Host
 
             // Assert
             actual.ShouldNotBeNull();
-            var messagingHubClient = actual.ShouldBeOfType<MessagingHubClient>();
-            messagingHubClient.Started.ShouldBe(true);
             SettingsTestStartable._Started.ShouldBeTrue();
             SettingsTestStartable.Settings.ShouldNotBeNull();
             SettingsTestStartable.Settings.ShouldBe(application.Settings);
@@ -156,8 +146,6 @@ namespace Takenet.MessagingHub.Client.Test.Host
 
             // Assert
             actual.ShouldNotBeNull();
-            var messagingHubClient = actual.ShouldBeOfType<MessagingHubClient>();
-            messagingHubClient.Started.ShouldBe(true);
             TestStartable._Started.ShouldBeTrue();
             TestStartableFactory.ServiceProvider.ShouldNotBeNull();
             TestStartableFactory.Settings.ShouldBeNull();
@@ -184,8 +172,6 @@ namespace Takenet.MessagingHub.Client.Test.Host
 
             // Assert
             actual.ShouldNotBeNull();
-            var messagingHubClient = actual.ShouldBeOfType<MessagingHubClient>();
-            messagingHubClient.Started.ShouldBe(true);
             TestStartable._Started.ShouldBeTrue();
             TestStartableFactory.ServiceProvider.ShouldNotBeNull();
             TestStartableFactory.Settings.ShouldBe(application.Settings);
@@ -223,8 +209,6 @@ namespace Takenet.MessagingHub.Client.Test.Host
 
             // Assert
             actual.ShouldNotBeNull();
-            var messagingHubClient = actual.ShouldBeOfType<MessagingHubClient>();
-            messagingHubClient.Started.ShouldBe(true);
             TestMessageReceiver.InstanceCount.ShouldBe(3);
         }
 
@@ -264,8 +248,6 @@ namespace Takenet.MessagingHub.Client.Test.Host
 
             // Assert
             actual.ShouldNotBeNull();
-            var messagingHubClient = actual.ShouldBeOfType<MessagingHubClient>();
-            messagingHubClient.Started.ShouldBe(true);
             TestMessageReceiver.InstanceCount.ShouldBe(1);
             TestMessageReceiver.Settings.Keys.Count.ShouldBe(5);
             TestMessageReceiver.Settings["setting1"].ShouldBe("value1");
@@ -307,8 +289,6 @@ namespace Takenet.MessagingHub.Client.Test.Host
 
             // Assert
             actual.ShouldNotBeNull();
-            var messagingHubClient = actual.ShouldBeOfType<MessagingHubClient>();
-            messagingHubClient.Started.ShouldBe(true);
             TestNotificationReceiver.InstanceCount.ShouldBe(3);
         }
     }

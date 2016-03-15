@@ -1,0 +1,1 @@
+﻿You can retrieve your access key on http://messaginghub.io/home/console

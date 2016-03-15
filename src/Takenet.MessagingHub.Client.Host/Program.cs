@@ -23,7 +23,7 @@ namespace Takenet.MessagingHub.Client.Host
         {
             try
             {                
-                var applicationFileName = Bootstrapper.ApplicationFileName;
+                var applicationFileName = Bootstrapper.DefaultApplicationFileName;
                 if (args.Length > 0)
                 {                    
                     applicationFileName = args[0];
