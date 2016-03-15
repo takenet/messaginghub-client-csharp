@@ -59,6 +59,9 @@ namespace Takenet.MessagingHub.Client.Host
             {
                 WriteLine("Application start failed:");
                 WriteLine(ex.ToString(), ConsoleColor.Red);
+#if DEBUG
+                Console.ReadKey(true);
+#endif
             }
         }
 
