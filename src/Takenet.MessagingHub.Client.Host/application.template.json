@@ -1,0 +1,14 @@
+﻿{
+  /* Retrieve your application's login and access key at http://messaginghub.io */
+  "login": "",
+  "accessKey": "",
+  "messageReceivers": [
+    {
+      "type": "PlainTextMessageReceiver",
+      "mediaType": "text/plain"
+    }
+  ],
+  "settings": {
+    "setting1": "value1"
+  }
+}

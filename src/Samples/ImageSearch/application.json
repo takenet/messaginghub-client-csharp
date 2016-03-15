@@ -1,6 +1,6 @@
 ﻿{
   "login": "image.search",
-  "accessKey": "",
+  "accessKey": "Z09SNXdt",
   "messageReceivers": [
     {
       "type": "TextcMessageReceiverFactory",
@@ -25,6 +25,6 @@
     }
   ],
   "settings": {
-    "bingApiKey": ""
+    "bingApiKey": "z1f6I3djqJy0sWG/0HxxwjbrVrQZMF1JbTK+a5U9oNU="
   }
 }

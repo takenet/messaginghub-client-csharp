@@ -15,27 +15,30 @@ namespace Takenet.MessagingHub.Client.Host
 {
     public static class Bootstrapper
     {
-        public const string ApplicationFileName = "application.json";
-
-        static Bootstrapper()
-        {            
-            TypeUtil.LoadAssembliesAndReferences(".", assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter);
-        }
+        public const string DefaultApplicationFileName = "application.json";
 
         /// <summary>
         /// Creates ans starts an application with the given settings.
         /// </summary>
         /// <param name="application">The application instance. If not defined, the class will look for an application.json file in the current directory.</param>
-        /// <param name="serviceProvider">The service provider to be used when building the type instances. It not provided, the only injected types will be the <see cref="IMessagingHubSender"/> and the settings instances.</param>
+        /// <param name="serviceProvider">The service provider to be used when building the type instances. It not provided, the only injected types will be the <see cref="IMessagingHubSender" /> and the settings instances.</param>
+        /// <param name="loadAssembliesFromWorkingDirectory">if set to <c>true</c> indicates to the bootstrapper to load all assemblies from the current working directory.</param>
         /// <returns></returns>
+        /// <exception cref="System.IO.FileNotFoundException"></exception>
+        /// <exception cref="System.ArgumentException">At least an access key or password must be defined</exception>
         /// <exception cref="FileNotFoundException">Could not find the 'application.json' file</exception>
         /// <exception cref="ArgumentException">At least an access key or password must be defined</exception>
-        public static async Task<IStoppable> StartAsync(Application application = null, IServiceProvider serviceProvider = null)
+        public static async Task<IStoppable> StartAsync(Application application = null, IServiceProvider serviceProvider = null, bool loadAssembliesFromWorkingDirectory = true)
         {            
             if (application == null)
             {
-                if (!File.Exists(ApplicationFileName)) throw new FileNotFoundException($"Could not find the '{ApplicationFileName}' file", ApplicationFileName);
-                application = Application.ParseFromJsonFile(ApplicationFileName);
+                if (!File.Exists(DefaultApplicationFileName)) throw new FileNotFoundException($"Could not find the '{DefaultApplicationFileName}' file", DefaultApplicationFileName);
+                application = Application.ParseFromJsonFile(DefaultApplicationFileName);
+            }
+
+            if (loadAssembliesFromWorkingDirectory)
+            {
+                TypeUtil.LoadAssembliesAndReferences(".", assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter);
             }
 
             var clientBuilder = new MessagingHubClientBuilder();
@@ -68,15 +71,21 @@ namespace Takenet.MessagingHub.Client.Host
 
             var sender = senderBuilder.Build();
             localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubSender), sender);
+            await sender.StartAsync().ConfigureAwait(false);
 
+            var stoppables = new IStoppable[2];
+            stoppables[0] = sender;
             if (application.StartupType != null)
             {
-                var startable = await CreateAsync<IStartable>(application.StartupType, localServiceProvider, application.Settings).ConfigureAwait(false);
+                var startable = await CreateAsync<IStartable>(
+                    application.StartupType, 
+                    localServiceProvider, 
+                    application.Settings)
+                    .ConfigureAwait(false);
                 await startable.StartAsync().ConfigureAwait(false);
-            }
-
-            await sender.StartAsync().ConfigureAwait(false);
-            return sender;
+                stoppables[1] = startable as IStoppable;
+            }            
+            return new StoppableWrapper(stoppables);
         }
 
         private static async Task<MessagingHubSenderBuilder> BuildSenderAsync(Application application, MessagingHubClientBuilder clientBuilder,
@@ -243,6 +252,24 @@ namespace Takenet.MessagingHub.Client.Host
 
                 return Activator.CreateInstance(serviceType, serviceArgs);
             }
-        }        
+        }
+
+        private class StoppableWrapper : IStoppable
+        {
+            private readonly IStoppable[] _stoppables;
+
+            public StoppableWrapper(params IStoppable[] stoppables)
+            {
+                _stoppables = stoppables;
+            }
+
+            public async Task StopAsync()
+            {
+                foreach (var stoppable in _stoppables)
+                {
+                    if (stoppable != null) await stoppable.StopAsync().ConfigureAwait(false);
+                }                
+            }
+        }
     }
 } 
