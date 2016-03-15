@@ -1,6 +1,14 @@
 This getting started guide will show you how to use the basic functionalities of the Messaging Hub Client 
 To run this samples you will need your MessagingHub Login and AccessKey.
 
+## Install
+
+From the Package Manager Console, install it using:
+
+    PM> Install-Package Takenet.MessagingHub.Client
+
+*Note*: this package targets framework 4.6.1, so change your project target framework accordingly.
+
 ## Sending a text message
 
 This will send a message to "otherUser" with the content "Hello world".
