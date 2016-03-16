@@ -4,14 +4,14 @@ using System.Threading.Tasks;
 using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Receivers;
 
-namespace Chat
+namespace ImageSearch
 {
     public class PlainTextMessageReceiver : MessageReceiverBase
     {
-        public async override Task ReceiveAsync(Message message)
+        public override async Task ReceiveAsync(Message message)
         {
             Console.WriteLine($"From: {message.From} \tContent: {message.Content}");
-            await EnvelopeSender.SendMessageAsync("Obrigado por sua mensagem", message.From);
+            await EnvelopeSender.SendMessageAsync("Pong!", message.From);
             await EnvelopeSender.SendNotificationAsync(message.ToConsumedNotification());
         }
     }

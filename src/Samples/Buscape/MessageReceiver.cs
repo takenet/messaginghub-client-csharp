@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.Caching;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Messaging.Contents;
@@ -14,7 +15,7 @@ using Takenet.MessagingHub.Client.Receivers;
 
 namespace Buscape
 {
-    public class MessageReceiver : MessageReceiverBase
+    public sealed class MessageReceiver : MessageReceiverBase, IDisposable
     {
         private const string StartMessage = "Iniciar";
         private const string FinishMessage = "ENCERRAR";
@@ -38,11 +39,12 @@ namespace Buscape
             }
         }
 
-        private readonly Dictionary<Node, Tuple<string, int>> Session = new Dictionary<Node, Tuple<string, int>>();
+        private readonly MemoryCache Session = new MemoryCache(nameof(Buscape));
 
         public MessageReceiver(IDictionary<string, object> settings)
         {
             Settings = settings;
+            
         }
 
         public override async Task ReceiveAsync(Message message)
@@ -60,7 +62,7 @@ namespace Buscape
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine($"Exception processing message: {e}");
+                Console.WriteLine($"Exception processing message: {e}");
                 await EnvelopeSender.SendMessageAsync(@"Falhou :(", message.From);
             }
         }
@@ -77,30 +79,28 @@ namespace Buscape
 
             keyword = HandleNextPageKeywordAsync(message, keyword);
 
-            var uri = ComposeSearchUri(message, keyword);
+            var uri = await ComposeSearchUriAsync(message, keyword);
 
             await ExecuteSearchAsync(message, uri);
         }
 
         private async Task<bool> HandleStartMessageAsync(Message message, string keyword)
         {
-            if (keyword == StartMessage)
-            {
-                Console.WriteLine($"Start message received from {message.From}!");
-                await EnvelopeSender.SendMessageAsync(@"Tudo pronto. Qual produto deseja pesquisar?", message.From);
-                return true;
-            }
-            return false;
+            if (keyword != StartMessage)
+                return false;
+
+            Console.WriteLine($"Start message received from {message.From}!");
+            await EnvelopeSender.SendMessageAsync(@"Tudo pronto. Qual produto deseja pesquisar?", message.From);
+            return true;
         }
 
         private async Task<bool> HandleEndOfSearchAsync(Message message, string keyword)
         {
-            if (keyword == FinishMessage)
-            {
-                await EnvelopeSender.SendMessageAsync(@"Obrigado por usar o aplicativo OMNI!", message.From);
-                return true;
-            }
-            return false;
+            if (keyword != FinishMessage)
+                return false;
+
+            await EnvelopeSender.SendMessageAsync(@"Obrigado por usar o aplicativo OMNI!", message.From);
+            return true;
         }
 
         private async Task<bool> HandleNextPageRequestAsync(Message message, string keyword)
@@ -108,7 +108,7 @@ namespace Buscape
             if (keyword != MoreResultsMessage)
                 return false;
 
-            if (Session.ContainsKey(message.From))
+            if (Session.Contains(message.From.ToString()))
                 return false;
 
             await EnvelopeSender.SendMessageAsync(@"Não foi possível identificar o último item pesquisado!", message.From);
@@ -117,24 +117,72 @@ namespace Buscape
 
         private string HandleNextPageKeywordAsync(Message message, string keyword)
         {
-            if (Session.ContainsKey(message.From) && keyword == MoreResultsMessage)
-                keyword = Session[message.From].Item1;
+            if (Session.Contains(message.From.ToString()) && keyword == MoreResultsMessage)
+                keyword = ((Tuple<string, int>)Session[message.From.ToString()]).Item1;
             return keyword;
         }
 
-        private string ComposeSearchUri(Message message, string keyword)
+        private async Task<string> ComposeSearchUriAsync(Message message, string keyword)
         {
             Console.WriteLine($"Requested search by {keyword}!");
 
+            var originalKeyword = keyword;
+
+            var categoryId = await DecodeCategoryIdAsync(keyword);
+            if (categoryId > 0)
+                keyword = string.Join("+", keyword.Split(' ').Skip(1));
+
             const int pageSize = 3;
             var page = 1;
-            if (Session.ContainsKey(message.From))
-                page = Session[message.From].Item2;
+            if (Session.Contains(message.From.ToString()))
+                page = ((Tuple<string, int>)Session[message.From.ToString()]).Item2;
 
-            var parameters = $"{Settings["buscapeAppToken"]}/BR?results={pageSize}&page={page}&keyword={keyword}&format=json";
-            var uri = $"http://sandbox.buscape.com.br/service/findProductList/lomadee/{parameters}";
-            Session[message.From] = new Tuple<string, int>(keyword, page + 1);
+            var parameters = $"{Settings["buscapeAppToken"]}/BR?results={pageSize}&page={page}&keyword={keyword}&format=json&sort=price";
+            if (categoryId > 0)
+                parameters += $"&categoryId={categoryId}";
+
+            var uri = $"http://sandbox.buscape.com.br/service/findProductList/{parameters}";
+
+            if (Session.Contains(message.From.ToString()))
+                Session.Remove(message.From.ToString());
+
+            Session.Add(message.From.ToString(), new Tuple<string, int>(originalKeyword, page + 1), new CacheItemPolicy
+            {
+                AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(5)
+            });
+
             return uri;
+        }
+
+        private async Task<int> DecodeCategoryIdAsync(string keyword)
+        {
+            try
+            {
+                var keywords = keyword.Split(' ');
+                if (keywords.Length > 1)
+                {
+                    var category = keywords[0];
+                    var categoryParameters = $"{Settings["buscapeAppToken"]}/BR?keyword={category}&format=json";
+                    var categoryUri = $"http://sandbox.buscape.com.br/service/findCategoryList/{categoryParameters}";
+                    using (var request = new HttpRequestMessage(HttpMethod.Get, categoryUri))
+                    {
+                        using (var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
+                        {
+                            var buscapeResponse = await WebClient.SendAsync(request, cancellationTokenSource.Token);
+                            if (buscapeResponse.StatusCode != HttpStatusCode.OK)
+                                return 0;
+                            var resultJson = await buscapeResponse.Content.ReadAsStringAsync();
+                            var responseMessage = JsonConvert.DeserializeObject<JObject>(resultJson);
+                            return responseMessage["subcategory"][0]["subcategory"]["id"].Value<int>();
+                        }
+                    }
+                }
+                return 0;
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
         }
 
         private async Task ExecuteSearchAsync(Message message, string uri)
@@ -163,12 +211,13 @@ namespace Buscape
                                 }
                                 catch (Exception e)
                                 {
-                                    Console.Error.WriteLine($"Exception parsing product: {e}");
+                                    Console.WriteLine($"Exception parsing product: {e}");
                                 }
                             }
                         }
-                        catch (Exception)
+                        catch (Exception e)
                         {
+                            Console.WriteLine($"Exception parsing response from Buscapé: {e}");
                             await EnvelopeSender.SendMessageAsync("Nenhum resultado encontrado", message.From);
                             return;
                         }
@@ -233,6 +282,11 @@ namespace Buscape
             document.Add(nameof(attachments), attachments);
 
             return document;
+        }
+
+        public void Dispose()
+        {
+            Session.Dispose();
         }
     }
 }
