@@ -25,18 +25,22 @@ namespace Takenet.MessagingHub.Client.Host
             {                
                 var applicationFileName = Bootstrapper.DefaultApplicationFileName;
                 if (args.Length > 0)
-                {                    
-                    applicationFileName = args[0];
-                    if (applicationFileName.Trim('-', '/').Equals("help", StringComparison.OrdinalIgnoreCase))
+                {
+                    applicationFileName = "application.json";
+                    if (!File.Exists(applicationFileName))
                     {
-                        WriteLine();
-                        WriteLine("Messaging Hub client host");
-                        WriteLine();
-                        WriteLine("Usage: mhh <path>");
-                        WriteLine();
-                        WriteLine("- path: The path of the application host JSON file");
-                        WriteLine();
-                        return;
+                        applicationFileName = args[0];
+                        if (applicationFileName.Trim('-', '/').Equals("help", StringComparison.OrdinalIgnoreCase))
+                        {
+                            WriteLine();
+                            WriteLine("Messaging Hub client host");
+                            WriteLine();
+                            WriteLine("Usage: mhh <path>");
+                            WriteLine();
+                            WriteLine("- path: The path of the application host JSON file");
+                            WriteLine();
+                            return;
+                        }
                     }
                 }
 

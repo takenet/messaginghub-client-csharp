@@ -43,7 +43,6 @@ namespace Buscape
         public MessageReceiver(IDictionary<string, object> settings)
         {
             Settings = settings;
-            Console.WriteLine("Listening...");
         }
 
         public override async Task ReceiveAsync(Message message)
@@ -68,11 +67,7 @@ namespace Buscape
 
         private async Task ProcessMessagesAsync(Message message)
         {
-            if (HandleChatState(message)) return;
-
-            if (await HandleInvalidMessageTypeAsync(message)) return;
-
-            var keyword = ((PlainText)message.Content)?.Text;
+            var keyword = message.Content.ToString();
 
             if (await HandleStartMessageAsync(message, keyword)) return;
 
@@ -85,29 +80,6 @@ namespace Buscape
             var uri = ComposeSearchUri(message, keyword);
 
             await ExecuteSearchAsync(message, uri);
-        }
-
-        private static bool HandleChatState(Message message)
-        {
-            var chatState = message.Content as ChatState;
-            if (chatState != null)
-            {
-                Console.WriteLine($"ChatState received and ignored: {chatState}");
-                return true;
-            }
-            return false;
-        }
-
-        private async Task<bool> HandleInvalidMessageTypeAsync(Message message)
-        {
-            if (!(message.Content is PlainText))
-            {
-                Console.WriteLine($"Tipo de mensagem não suportada: {message.Content.GetType().Name}!");
-                await
-                    EnvelopeSender.SendMessageAsync("Apenas mensagens de texto são suportadas!", message.From);
-                return true;
-            }
-            return false;
         }
 
         private async Task<bool> HandleStartMessageAsync(Message message, string keyword)
@@ -125,7 +97,7 @@ namespace Buscape
         {
             if (keyword == FinishMessage)
             {
-                await EnvelopeSender.SendMessageAsync(@"Obrigado por usar o Buscapé!", message.From);
+                await EnvelopeSender.SendMessageAsync(@"Obrigado por usar o aplicativo OMNI!", message.From);
                 return true;
             }
             return false;
