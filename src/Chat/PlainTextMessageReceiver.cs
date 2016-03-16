@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Receivers;
+using System.Text;
 
 namespace Chat
 {
@@ -11,11 +12,12 @@ namespace Chat
     {
         private static string _targetPostmaster = "postmaster@0mn.io/#awirisomni1";
         private static string _targetGroupDomain = "groups.0mn.io";
-        private static string _groupPrefix = "chatSC_";
+        private static string _groupPrefix = "omniChat_";
 
         private static string _helpCommand = "ajuda";
-        private static string _helpMessage = "Envie #assunto para entrar em um chat";
-        
+        private static string _listCommand = "listar";
+        private static string _helpMessage = "Envie # + tema para entrar em um chat ou listar para exibir os chats já existentes";
+
         private static Identity GroupIdentity(string groupName) => new Identity($"{_groupPrefix}{groupName}", _targetGroupDomain);
 
         public async override Task ReceiveAsync(Message message)
@@ -34,6 +36,14 @@ namespace Chat
 
             var messageText = message.Content.ToString();
             
+            if(messageText.Equals(_listCommand, StringComparison.InvariantCultureIgnoreCase))
+            {
+                var groups = await ListGroups();
+
+                await NotifyAndExplain(message, groups);
+                return;
+            }
+
             if (!messageText.StartsWith("#") || messageText.Equals(_helpCommand, StringComparison.InvariantCultureIgnoreCase))
             {
                 await NotifyAndExplain(message, _helpMessage);
@@ -93,6 +103,38 @@ namespace Chat
             await EnvelopeSender.SendNotificationAsync(new Notification { Id = message.Id, To = sender, Event = Event.Consumed  });
         }
 
+        private async Task<string> ListGroups()
+        {
+            var listResponse = await EnvelopeSender.SendCommandAsync(BuildListGroupCommand());
+
+            if(listResponse.Status == CommandStatus.Failure)
+            {
+                return string.Empty;
+            }
+
+            var documents = (DocumentCollection)listResponse.Resource;
+
+            var stringBuilder = new StringBuilder();
+            var groupsPerLine = 1;
+            var counter = 0;
+
+            foreach(var document in documents.Items.Take(50))
+            {
+                if (counter == groupsPerLine)
+                {
+                    stringBuilder.AppendLine();
+                    counter = 0;
+                }
+
+                var group = (Lime.Messaging.Resources.Group)document;
+
+                stringBuilder.Append($"#{group.Name} ");
+                counter++;
+            }
+
+            return stringBuilder.ToString();
+        }
+
         private static Command BuildCreateGroupCommand(string groupName)
         {
             return new Command
@@ -131,6 +173,16 @@ namespace Chat
                 Method = CommandMethod.Get,
                 To = Node.Parse(_targetPostmaster),
                 Uri = new LimeUri($"/groups/{GroupIdentity(groupName)}"),
+            };
+        }
+
+        private Command BuildListGroupCommand()
+        {
+            return new Command
+            {
+                Method = CommandMethod.Get,
+                To = Node.Parse(_targetPostmaster),
+                Uri = new LimeUri($"/groups?role=owner"),
             };
         }
 
