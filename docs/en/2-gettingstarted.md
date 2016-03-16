@@ -5,7 +5,7 @@ To run this samples you will need your MessagingHub Login and AccessKey.
 
 From the Package Manager Console, install it using:
 
-    PM> Install-Package Takenet.MessagingHub.Client
+    Install-Package Takenet.MessagingHub.Client
 
 *Note*: this package targets framework 4.6.1, so change your project target framework accordingly.
 

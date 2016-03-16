@@ -5,7 +5,7 @@ Para executar os exemplos, você vai precisar do seu Login e de sua AccessKey.
 
 A partir do *Package Manager Console*, instale o SDK usando:
 
-    PM> Install-Package Takenet.MessagingHub.Client
+    Install-Package Takenet.MessagingHub.Client
 
 *Observação*: este pacote tem como *target* o *framework* 4.6.1, então altere o *target framework* do seu projeto.
 

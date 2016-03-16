@@ -230,30 +230,35 @@ namespace Takenet.MessagingHub.Client.Host
                 // Check the type constructors
                 try
                 {
-                    var serviceConstructor = serviceType
-                        .GetConstructors()
-                        .OrderByDescending(c => c.GetParameters().Length)
-                        .First();
+                var serviceConstructor = serviceType
+                    .GetConstructors()
+                    .OrderByDescending(c => c.GetParameters().Length)
+                    .FirstOrDefault();
 
-                    var parameters = serviceConstructor.GetParameters();
-                    var serviceArgs = new object[parameters.Length];
-                    for (int i = 0; i < parameters.Length; i++)
-                    {
-                        var parameter = parameters[i];
-
-                        var arg = args.FirstOrDefault(p => parameter.ParameterType.IsInstanceOfType(p));
-                        if (arg != null)
-                        {
-                            serviceArgs[i] = arg;
-                        }
-                        else
-                        {
-                            serviceArgs[i] = serviceProvider.GetService(parameter.ParameterType);
-                        }
-                    }
-
-                    return Activator.CreateInstance(serviceType, serviceArgs);
+                if (serviceConstructor == null)
+                {
+                    throw new ArgumentException($"The  type '{serviceType}' doesn't have a public constructor", nameof(serviceType));
                 }
+
+                var parameters = serviceConstructor.GetParameters();
+                var serviceArgs = new object[parameters.Length];
+                for (int i = 0; i < parameters.Length; i++)
+                {
+                    var parameter = parameters[i];
+
+                    var arg = args.FirstOrDefault(p => parameter.ParameterType.IsInstanceOfType(p));
+                    if (arg != null)
+                    {
+                        serviceArgs[i] = arg;
+                    }
+                    else
+                    {
+                        serviceArgs[i] = serviceProvider.GetService(parameter.ParameterType);
+                    }
+                }
+
+                return Activator.CreateInstance(serviceType, serviceArgs);
+            }
                 catch (Exception e)
                 {
                     throw new ArgumentException($"Could not instantiate type {serviceType.FullName}!", e);

@@ -50,18 +50,19 @@ namespace Takenet.MessagingHub.Client.Host
                     return;
                 }
 
+                WriteLine("Starting application...", ConsoleColor.Blue);
                 ConfigureWorkingDirectory(applicationFileName);
-
                 var application = Application.ParseFromJsonFile(applicationFileName);
-
                 var stopabble = await Bootstrapper.StartAsync(application);
                 WriteLine("Application started. Press any key to stop.", ConsoleColor.Blue);
                 Console.Read();
+                WriteLine("Stopping application...", ConsoleColor.Blue);
                 await stopabble.StopAsync();
+                WriteLine("Application stopped.", ConsoleColor.Blue);
             }
             catch (Exception ex)
             {
-                WriteLine("Application start failed:");
+                WriteLine("Application failed:");
                 WriteLine(ex.ToString(), ConsoleColor.Red);
 #if DEBUG
                 Console.ReadKey(true);
@@ -95,6 +96,7 @@ namespace Takenet.MessagingHub.Client.Host
             Console.ForegroundColor = color;
             Console.WriteLine(value);
             Console.ForegroundColor = foregroundColor;
+            Console.Out.Flush();
         }
     }
 }
