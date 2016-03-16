@@ -36,8 +36,8 @@
       <HintPath>..\packages\Lime.Messaging.0.4.10\lib\net461\Lime.Messaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Protocol, Version=0.4.10.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Protocol.0.4.10\lib\net461\Lime.Protocol.dll</HintPath>
+    <Reference Include="Lime.Protocol, Version=0.4.12.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Protocol.0.4.12\lib\net461\Lime.Protocol.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Lime.Protocol.Serialization.Newtonsoft, Version=0.4.10.0, Culture=neutral, processorArchitecture=MSIL">
@@ -50,10 +50,6 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="nunit.framework, Version=3.0.5813.39031, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.0.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -74,10 +70,21 @@
     <Compile Include="EnvelopeListenerExtensions.cs" />
     <Compile Include="EnvelopeListenerRegistrar.cs" />
     <Compile Include="EnvelopeReceivedHandler.cs" />
+    <Compile Include="Host\Application.cs" />
+    <Compile Include="Host\ApplicationActivator.cs" />
+    <Compile Include="Host\Job .cs" />
+    <Compile Include="Host\NotificationApplicationReceiver.cs" />
+    <Compile Include="Host\ApplicationReceiver.cs" />
+    <Compile Include="Host\MessageApplicationReceiver.cs" />
+    <Compile Include="Host\IFactory.cs" />
+    <Compile Include="Host\Bootstrapper.cs" />
+    <Compile Include="Host\ServiceProviderExtensions.cs" />
+    <Compile Include="Host\Win32.cs" />
     <Compile Include="IEnvelopeListener.cs" />
     <Compile Include="IEnvelopeReceiver.cs" />
     <Compile Include="IEnvelopeSender.cs" />
     <Compile Include="IMessagingHubSender.cs" />
+    <Compile Include="IStartable.cs" />
     <Compile Include="IStoppable.cs" />
     <Compile Include="IWorker.cs" />
     <Compile Include="LimeProtocol\IOnDemandClientChannelFactory.cs" />
@@ -97,10 +104,14 @@
     <Compile Include="MessageExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Receivers\BlackholeNotificationReceiver.cs" />
+    <Compile Include="Receivers\TextResponseMessageReceiver.cs" />
+    <Compile Include="Receivers\TextResponseMessageReceiverFactory.cs" />
     <Compile Include="Receivers\UnsupportedMessageReceiver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="application.json" />
+    <None Include="Host\application.json" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

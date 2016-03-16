@@ -42,6 +42,29 @@ namespace Takenet.MessagingHub.Client
             return this;
         }
 
+
+        public MessagingHubSenderBuilder AddMessageReceiver(IMessageReceiver messageReceiver, Predicate<Message> messagePredicate)
+        {
+            return AddMessageReceiver(() => messageReceiver, messagePredicate);            
+        }
+
+        public MessagingHubSenderBuilder AddMessageReceiver(Func<IMessageReceiver> messageReceiver, Predicate<Message> messagePredicate)
+        {
+            EnvelopeRegistrar.AddMessageReceiver(messageReceiver, messagePredicate);
+            return this;
+        }
+
+        public MessagingHubSenderBuilder AddNotificationReceiver(INotificationReceiver notificationReceiver, Predicate<Notification> notificationPredicate)
+        {
+            return AddNotificationReceiver(() => notificationReceiver, notificationPredicate);
+        }
+
+        public MessagingHubSenderBuilder AddNotificationReceiver(Func<INotificationReceiver> notificationReceiver, Predicate<Notification> notificationPredicate)
+        {
+            EnvelopeRegistrar.AddNotificationReceiver(notificationReceiver, notificationPredicate);
+            return this;
+        }
+
         public IMessagingHubSender Build() => _clientBuilder.Build();
     }
 }

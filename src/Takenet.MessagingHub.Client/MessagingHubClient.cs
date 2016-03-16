@@ -12,6 +12,7 @@ using Lime.Transport.Tcp;
 using Lime.Protocol.Network;
 using Lime.Protocol.Serialization.Newtonsoft;
 using Lime.Protocol.Network.Modules;
+using Lime.Protocol.Util;
 
 namespace Takenet.MessagingHub.Client
 {
@@ -22,12 +23,14 @@ namespace Takenet.MessagingHub.Client
     {
         private readonly SemaphoreSlim _semaphore;
         private readonly TimeSpan _sendTimeout;
-        private readonly EnvelopeListenerRegistrar _listenerRegistrar;
+        private readonly EnvelopeListenerRegistrar _listenerRegistrar;        
+        private readonly IEstablishedClientChannelBuilder _establishedClientChannelBuilder;
+        private readonly IOnDemandClientChannelFactory _onDemandClientChannelFactory;
+
         private IOnDemandClientChannel _onDemandClientChannel;
-        private IEstablishedClientChannelBuilder _establishedClientChannelBuilder;
-        private IOnDemandClientChannelFactory _onDemandClientChannelFactory;
         private ChannelListener _channelListener;
-        private static TimeSpan _channelDiscardedDelay = TimeSpan.FromMilliseconds(300);
+
+        private static readonly TimeSpan ChannelDiscardedDelay = TimeSpan.FromMilliseconds(300);
 
         internal MessagingHubClient(IEstablishedClientChannelBuilder establishedClientChannelBuilder, IOnDemandClientChannelFactory onDemandClientChannelFactory, TimeSpan sendTimeout, EnvelopeListenerRegistrar listenerRegistrar)
         {
@@ -142,17 +145,24 @@ namespace Takenet.MessagingHub.Client
 
                 using (var cancellationTokenSource = new CancellationTokenSource(_sendTimeout))
                 {
-                    await _onDemandClientChannel.FinishAsync(cancellationTokenSource.Token);
+                    await _onDemandClientChannel.FinishAsync(cancellationTokenSource.Token).ConfigureAwait(false);
                 }
 
                 if (_channelListener != null)
                 {
                     _channelListener.Stop();
+
+                    // TODO: Signal to the listener to stop consuming the envelopes.
+                    //await Task.WhenAll(
+                    //    _channelListener.CommandListenerTask, 
+                    //    _channelListener.MessageListenerTask,
+                    //    _channelListener.NotificationListenerTask)
+                    //    .ConfigureAwait(false);
+
                     _channelListener.DisposeIfDisposable();
                 }
 
                 _onDemandClientChannel.DisposeIfDisposable();
-
                 Started = false;
             }
             finally
@@ -163,7 +173,7 @@ namespace Takenet.MessagingHub.Client
 
         private Task ChannelDiscarded(ChannelInformation channelInformation)
         {
-            return Task.Delay(_channelDiscardedDelay);
+            return Task.Delay(ChannelDiscardedDelay);
         }
 
         private async Task SetPresenceAsync(IClientChannel clientChannel, CancellationToken cancellationToken)
@@ -174,8 +184,6 @@ namespace Takenet.MessagingHub.Client
                     cancellationToken)
                     .ConfigureAwait(false);
         }
-        
-        
 
         private void StartEnvelopeListeners()
         {
@@ -183,9 +191,8 @@ namespace Takenet.MessagingHub.Client
             _channelListener = new ChannelListener(
                 handler.HandleAsync,
                 handler.HandleAsync,
-                c => true.AsCompletedTask());
+                c => TaskUtil.FalseCompletedTask);
             _channelListener.Start(_onDemandClientChannel);
-        }
-        
+        }        
     }
 }

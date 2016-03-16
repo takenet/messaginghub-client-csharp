@@ -1,6 +1,15 @@
 Este guia de como começar irá apresentar a você o uso das funcionalidades básicas do cliente do Messaging Hub.
 Para executar os exemplos, você vai precisar do seu Login e de sua AccessKey.
 
+## Instalação
+
+A partir do *Package Manager Console*, instale o SDK usando:
+
+    Install-Package Takenet.MessagingHub.Client
+
+*Observação*: este pacote tem como *target* o *framework* 4.6.1, então altere o *target framework* do seu projeto.
+
+
 ## Enviando uma mensagem
 
 Uma mensagem é disparada para o usuário "otherUser" com o conteúdo "Hello World".
