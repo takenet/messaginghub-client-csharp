@@ -71,12 +71,15 @@
     <Compile Include="EnvelopeListenerRegistrar.cs" />
     <Compile Include="EnvelopeReceivedHandler.cs" />
     <Compile Include="Host\Application.cs" />
+    <Compile Include="Host\ApplicationActivator.cs" />
+    <Compile Include="Host\Job .cs" />
     <Compile Include="Host\NotificationApplicationReceiver.cs" />
     <Compile Include="Host\ApplicationReceiver.cs" />
     <Compile Include="Host\MessageApplicationReceiver.cs" />
     <Compile Include="Host\IFactory.cs" />
     <Compile Include="Host\Bootstrapper.cs" />
     <Compile Include="Host\ServiceProviderExtensions.cs" />
+    <Compile Include="Host\Win32.cs" />
     <Compile Include="IEnvelopeListener.cs" />
     <Compile Include="IEnvelopeReceiver.cs" />
     <Compile Include="IEnvelopeSender.cs" />

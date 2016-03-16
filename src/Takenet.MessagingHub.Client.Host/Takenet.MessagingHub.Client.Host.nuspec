@@ -3,12 +3,12 @@
   <metadata>
     <id>Takenet.MessagingHub.Client.Host</id>
     <version>$version$</version>
-    <title>MessagingHub Client Console Host</title>
+    <title>MessagingHub Client Host</title>
     <authors>Takenet</authors>
     <owners>takenet</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>MessagingHub Client console host starter pack</description>
-    <summary>A base console host implementation for quick starting with MessagingHub SDK</summary>
+    <description>MessagingHub Client host</description>
+    <summary>A host implementation to run on a Library project for MessagingHub SDK</summary>
     <copyright>Copyright © 2016 Curupira S/A</copyright>
     <tags>messagingHub</tags>
     <dependencies>
