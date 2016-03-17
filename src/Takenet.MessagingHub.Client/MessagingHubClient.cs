@@ -117,24 +117,59 @@ namespace Takenet.MessagingHub.Client
 
             try
             {
-                if (Started) throw new InvalidOperationException("The client is already started");
+                if (Started)
+                    throw new InvalidOperationException("The client is already started");
                 
                 _onDemandClientChannel = _onDemandClientChannelFactory.Create(_establishedClientChannelBuilder);
                 _onDemandClientChannel.ChannelDiscardedHandlers.Add(ChannelDiscarded);
 
                 if (_listenerRegistrar.HasRegisteredReceivers)
-                {
                     StartEnvelopeListeners();
+
+                for (var i = 0; i < 3; i++)
+                {
+                    if (await EnsureConnectionIsOkayAsync()) 
+                    {
+                        Started = true;
+                        return;
+                    }
+                    await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, i)));
                 }
 
-                Started = true;
+                throw new TimeoutException("Could not connected to server!");
             }
             finally
             {
                 _semaphore.Release();
             }
         }
-        
+
+        private async Task<bool> EnsureConnectionIsOkayAsync()
+        {
+            try
+            {
+                using (var cancellationTokenSource = new CancellationTokenSource(_sendTimeout))
+                {
+                    var command = new Command
+                    {
+                        Method = CommandMethod.Get,
+                        Resource = new Ping(),
+                        Uri = new LimeUri(UriTemplates.PING)
+                    };
+
+                    var result =
+                        await
+                            _onDemandClientChannel.ProcessCommandAsync(command, cancellationTokenSource.Token)
+                                .ConfigureAwait(false);
+                    return result.Status == CommandStatus.Success;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public virtual async Task StopAsync()
         {
             await _semaphore.WaitAsync().ConfigureAwait(false);
