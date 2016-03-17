@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,8 +8,9 @@ namespace Chat
 {
     class Program
     {
-        private const string ApplicationIdentifier = "<yout application id>";
-        private const string AccessKey = "<yout access key>";
+        private const string Login = "";
+        private const string AccessKey = "";
+        
 
         static void Main(string[] args)
         {
@@ -19,7 +20,7 @@ namespace Chat
         static async Task MainAsync(string[] args)
         {
             var client = new MessagingHubClientBuilder()
-                .UsingAccessKey(ApplicationIdentifier, AccessKey)
+                .UsingAccessKey(Login, AccessKey)
                 .AddMessageReceiver(new PlainTextMessageReceiver(), forMimeType: MediaTypes.PlainText)
                 .Build();
 
