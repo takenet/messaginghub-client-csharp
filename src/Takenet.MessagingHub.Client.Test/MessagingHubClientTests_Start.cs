@@ -24,7 +24,7 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        [Ignore("Needs real server connection")]
+        [Ignore("Requires real server connection")]
         public async Task StartSuccessfully()
         {
             var client = new MessagingHubClientBuilder()
