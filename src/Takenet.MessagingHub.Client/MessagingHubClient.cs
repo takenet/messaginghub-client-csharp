@@ -126,15 +126,15 @@ namespace Takenet.MessagingHub.Client
                 if (_listenerRegistrar.HasRegisteredReceivers)
                     StartEnvelopeListeners();
 
-//                for (var i = 0; i < 3; i++)
-                //{
+                for (var i = 0; i < 3; i++)
+                {
                     if (await EnsureConnectionIsOkayAsync()) 
                     {
                         Started = true;
                         return;
                     }
-                    //await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, i)));
-//                }
+                    await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, i)));
+                }
 
                 throw new TimeoutException("Could not connect to server!");
             }

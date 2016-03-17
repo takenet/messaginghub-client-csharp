@@ -27,8 +27,6 @@ namespace Takenet.MessagingHub.Client.Test
         public async Task StartSuccessfully()
         {
             var client = new MessagingHubClientBuilder()
-                //.UsingAccount("probe", Encoding.UTF8.GetString(Convert.FromBase64String("S21WMzRDUGxqR1ByemN4")))
-                .UsingHostName("localhost")
                 .UsingGuest()
                 .Build();
 
