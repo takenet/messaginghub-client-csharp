@@ -33,6 +33,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
 
         [Test]
+        [Ignore("Requires real server connection")]
         public async Task Create_With_No_Credential_And_No_Receiver_Should_Return_Instance()
         {
             // Arrange
@@ -50,6 +51,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
 
         [Test]
+        [Ignore("Requires real server connection")]
         public async Task Create_With_Passowrd_And_No_Receiver_Should_Return_Instance()
         {
             // Arrange
@@ -68,6 +70,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
 
         [Test]
+        [Ignore("Requires real server connection")]
         public async Task Create_With_AccessKey_And_No_Receiver_Should_Return_Instance()
         {
             // Arrange
@@ -86,6 +89,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
 
         [Test]
+        [Ignore("Requires real server connection")]
         public async Task Create_With_StartupType_And_No_Receiver_Should_Return_Instance()
         {
             // Arrange
@@ -105,6 +109,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
 
         [Test]
+        [Ignore("Requires real server connection")]
         public async Task Create_With_StartupType_And_Settings_And_No_Receiver_Should_Return_Instance()
         {
             // Arrange
@@ -131,6 +136,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
 
         [Test]
+        [Ignore("Requires real server connection")]
         public async Task Create_With_StartupFactoryType_And_No_Receiver_Should_Return_Instance()
         {
             // Arrange
@@ -152,6 +158,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
 
         [Test]
+        [Ignore("Requires real server connection")]
         public async Task Create_With_StartupFactoryType_And_Setings_And_No_Receiver_Should_Return_Instance()
         {
             // Arrange
@@ -178,6 +185,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
 
         [Test]
+        [Ignore("Requires real server connection")]
         public async Task Create_With_MessageReceiverType_Should_Return_Instance()
         {
             // Arrange
@@ -213,6 +221,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
 
         [Test]
+        [Ignore("Requires real server connection")]
         public async Task Create_With_MessageReceiverType_With_Settings_Should_Return_Instance()
         {
             // Arrange
@@ -258,6 +267,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
 
         [Test]
+        [Ignore("Requires real server connection")]
         public async Task Create_With_NotificationReceiverType_Should_Return_Instance()
         {
             // Arrange
