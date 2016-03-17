@@ -126,15 +126,15 @@ namespace Takenet.MessagingHub.Client
                 if (_listenerRegistrar.HasRegisteredReceivers)
                     StartEnvelopeListeners();
 
-                for (var i = 0; i < 3; i++)
-                {
+//                for (var i = 0; i < 3; i++)
+                //{
                     if (await EnsureConnectionIsOkayAsync()) 
                     {
                         Started = true;
                         return;
                     }
-                    await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, i)));
-                }
+                    //await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, i)));
+//                }
 
                 throw new TimeoutException("Could not connect to server!");
             }
@@ -153,7 +153,6 @@ namespace Takenet.MessagingHub.Client
                     var command = new Command
                     {
                         Method = CommandMethod.Get,
-                        Resource = new Ping(),
                         Uri = new LimeUri(UriTemplates.PING)
                     };
 
@@ -213,11 +212,18 @@ namespace Takenet.MessagingHub.Client
 
         private async Task SetPresenceAsync(IClientChannel clientChannel, CancellationToken cancellationToken)
         {
-            await clientChannel.SetResourceAsync(
-                    LimeUri.Parse(UriTemplates.PRESENCE),
-                    new Presence { Status = PresenceStatus.Available, RoutingRule = RoutingRule.Identity, RoundRobin = true },
-                    cancellationToken)
-                    .ConfigureAwait(false);
+            if (!IsGuest(clientChannel.LocalNode.Name))
+                await clientChannel.SetResourceAsync(
+                        LimeUri.Parse(UriTemplates.PRESENCE),
+                        new Presence { Status = PresenceStatus.Available, RoutingRule = RoutingRule.Identity, RoundRobin = true },
+                        cancellationToken)
+                        .ConfigureAwait(false);
+        }
+
+        public static bool IsGuest(string name)
+        {
+            Guid g;
+            return Guid.TryParse(name, out g);
         }
 
         private void StartEnvelopeListeners()
