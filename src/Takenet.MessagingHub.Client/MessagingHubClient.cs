@@ -136,7 +136,7 @@ namespace Takenet.MessagingHub.Client
                     await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, i)));
                 }
 
-                throw new TimeoutException("Could not connected to server!");
+                throw new TimeoutException("Could not connect to server!");
             }
             finally
             {
