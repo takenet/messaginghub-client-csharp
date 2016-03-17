@@ -1,13 +1,38 @@
-## Testes
+## Aplica√ß√£o console
 
-Para facilitar o esforÁo para testar sua aplicaÁ„o, existe um pacote inicial para um *host* em uma *Console Application*.
+Uma maneira r√°pida de come√ßar a desenvolver √© utilizando o pacote inicial para um *host* em uma *Console Application* do Visual Studio.
 
 Adicione um novo projeto de um *Console Application* e a partir do *Package Manager Console*, instale-o usando:
 
     Install-Package Takenet.MessagingHub.Client.ConsoleHost
 
-*ObservaÁ„o*: este pacote tem como *target* o *framework* 4.6.1, ent„o altere o *target framework* do seu projeto.
+*Observa√ß√£o*: este pacote tem como *target* o *framework* 4.6.1, ent√£o altere o *target framework* do seu projeto.
 
-## ProduÁ„o
 
-Em ambientes de produÁ„o uma soluÁ„o mais robusta, como um *Windows Service*, deve ser utilizada.
+## Utilizando o Messaging Hub Host
+
+O Messaging Hub oferece o utilit√°rio `mmh.exe` que realiza o *host* de aplica√ß√µes definidas em um arquivo `application.json`. Este arquivo permite a constru√ß√£o do cliente do Messaging Hub de forma declarativa.
+
+Abaixo um exemplo de um arquivo `application.json`:
+
+```json
+{
+  "login": "myapplication",
+  "accessKey": "MTIzNDU2",
+  "messageReceivers": [
+    {
+      "type": "PlainTextMessageReceiver",
+      "mediaType": "text/plain"
+    }
+  ]
+}
+```
+
+Neste exemplo, o cliente est√° sendo configurado utilizando o login `myapplication` e access key `MTIzNDU2`, al√©m de estar registrando um **MessageReceiver** do tipo `PlainTextMessageReceiver`, com um filtro pelo **media type** `text/plain`. A mesma defini√ß√£o utilizando C# seria:
+
+```csharp
+var client = new MessagingHubClientBuilder()
+    .UsingAccessKey("myapplication", "MTIzNDU2")
+    .AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
+    .Build();
+```
