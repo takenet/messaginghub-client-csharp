@@ -117,24 +117,58 @@ namespace Takenet.MessagingHub.Client
 
             try
             {
-                if (Started) throw new InvalidOperationException("The client is already started");
+                if (Started)
+                    throw new InvalidOperationException("The client is already started");
                 
                 _onDemandClientChannel = _onDemandClientChannelFactory.Create(_establishedClientChannelBuilder);
                 _onDemandClientChannel.ChannelDiscardedHandlers.Add(ChannelDiscarded);
 
                 if (_listenerRegistrar.HasRegisteredReceivers)
-                {
                     StartEnvelopeListeners();
+
+                for (var i = 0; i < 3; i++)
+                {
+                    if (await EnsureConnectionIsOkayAsync()) 
+                    {
+                        Started = true;
+                        return;
+                    }
+                    await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, i)));
                 }
 
-                Started = true;
+                throw new TimeoutException("Could not connect to server!");
             }
             finally
             {
                 _semaphore.Release();
             }
         }
-        
+
+        private async Task<bool> EnsureConnectionIsOkayAsync()
+        {
+            try
+            {
+                using (var cancellationTokenSource = new CancellationTokenSource(_sendTimeout))
+                {
+                    var command = new Command
+                    {
+                        Method = CommandMethod.Get,
+                        Uri = new LimeUri(UriTemplates.PING)
+                    };
+
+                    var result =
+                        await
+                            _onDemandClientChannel.ProcessCommandAsync(command, cancellationTokenSource.Token)
+                                .ConfigureAwait(false);
+                    return result.Status == CommandStatus.Success;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public virtual async Task StopAsync()
         {
             await _semaphore.WaitAsync().ConfigureAwait(false);
@@ -178,11 +212,18 @@ namespace Takenet.MessagingHub.Client
 
         private async Task SetPresenceAsync(IClientChannel clientChannel, CancellationToken cancellationToken)
         {
-            await clientChannel.SetResourceAsync(
-                    LimeUri.Parse(UriTemplates.PRESENCE),
-                    new Presence { Status = PresenceStatus.Available, RoutingRule = RoutingRule.Identity, RoundRobin = true },
-                    cancellationToken)
-                    .ConfigureAwait(false);
+            if (!IsGuest(clientChannel.LocalNode.Name))
+                await clientChannel.SetResourceAsync(
+                        LimeUri.Parse(UriTemplates.PRESENCE),
+                        new Presence { Status = PresenceStatus.Available, RoutingRule = RoutingRule.Identity, RoundRobin = true },
+                        cancellationToken)
+                        .ConfigureAwait(false);
+        }
+
+        public static bool IsGuest(string name)
+        {
+            Guid g;
+            return Guid.TryParse(name, out g);
         }
 
         private void StartEnvelopeListeners()

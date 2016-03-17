@@ -41,6 +41,11 @@ namespace Takenet.MessagingHub.Client.Test
             OnDemandClientChannel.ReceiveMessageAsync(CancellationToken.None).ReturnsForAnyArgs(callInfo => MessageProducer.Take());
             OnDemandClientChannel.ReceiveNotificationAsync(CancellationToken.None).ReturnsForAnyArgs(callInfo => NotificationProducer.Take());
             OnDemandClientChannel.ReceiveCommandAsync(CancellationToken.None).ReturnsForAnyArgs(callInfo => CommandProducer.Take());
+
+            OnDemandClientChannel.ProcessCommandAsync(null, CancellationToken.None).ReturnsForAnyArgs(Task.FromResult(new Command
+            {
+                Status = CommandStatus.Success
+            }));
         }
 
         private void SubstituteEstablishedClientChannelBuilder()

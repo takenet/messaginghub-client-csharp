@@ -8,7 +8,6 @@ namespace Takenet.MessagingHub.Client
     public class MessagingHubClientBuilder
     {
         public const string DEFAULT_DOMAIN = "msging.net";
-        private const string GUEST = "guest";        
         private string _login;
         private string _password;
         private string _accessKey;
@@ -44,7 +43,7 @@ namespace Takenet.MessagingHub.Client
 
         public MessagingHubClientBuilder UsingGuest()
         {
-            _login = GUEST;
+            _login = Guid.NewGuid().ToString();
             return this;
         }
 
@@ -142,7 +141,7 @@ namespace Takenet.MessagingHub.Client
         {
             Authentication result = null;
 
-            if (_login == GUEST)
+            if (MessagingHubClient.IsGuest(_login))
             {
                 var guestAuthentication = new GuestAuthentication();
                 result = guestAuthentication;

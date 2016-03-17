@@ -15,7 +15,7 @@ using Takenet.MessagingHub.Client.Receivers;
 
 namespace Buscape
 {
-    public sealed class MessageReceiver : MessageReceiverBase, IDisposable
+    public sealed class PlainTextMessageReceiver : MessageReceiverBase, IDisposable
     {
         private const string StartMessage = "Iniciar";
         private const string FinishMessage = "ENCERRAR";
@@ -41,7 +41,7 @@ namespace Buscape
 
         private readonly MemoryCache Session = new MemoryCache(nameof(Buscape));
 
-        public MessageReceiver(IDictionary<string, object> settings)
+        public PlainTextMessageReceiver(IDictionary<string, object> settings)
         {
             Settings = settings;
             
