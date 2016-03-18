@@ -12,15 +12,16 @@ This package will prepare your brand new Console Application with the boilerplat
 
 ## Using the Messaging Hub Host
 
-O Messaging Hub oferece o utilitário `mmh.exe` que realiza o *host* de aplicações definidas em um arquivo `application.json`. Este arquivo permite a construção do cliente do Messaging Hub de forma declarativa.
+The Messaging Hub offers the utility `mmh.exe` which *hosts* applications defined in an `application.json` file. This file allows the creation of Messaging Hub client application in a declarative way.
 
-Para utilizá-lo, crie um projeto no Visual Studio do tipo **Class library** e instale o pacote com o comando:
+To use it, create a Visual Studio *Class Library* project and install the package using the folllowing command:
 
     Install-Package Takenet.MessagingHub.Client.Host
 
-Após a instalação, serão adicionados alguns arquivos no projeto, dentre eles o `application.json` com alguns valores padrão definidos. Para a aplicação funcionar, é necessário complementá-lo com algumas informações, como o login e access key.
+After the installation, some files will be added to your project, among them the `application.json` with some default values defined.
+In order to the application to work, it is necessary to complement it with some information, suche as your application login and access key.
 
-Abaixo um exemplo:
+Here follows an example:
 
 ```json
 {
@@ -35,7 +36,7 @@ Abaixo um exemplo:
 }
 ```
 
-Neste exemplo, o cliente está sendo configurado utilizando o login `myapplication` e access key `MTIzNDU2`, além de estar registrando um **MessageReceiver** do tipo `PlainTextMessageReceiver`, com um filtro pelo **media type** `text/plain`. A mesma definição utilizando C# seria:
+In this example, the client is configured using the application login `myapplication` and the access key `MTIzNDU2`. Besides, it is also registering a **MessageReceiver** of type `PlainTextMessageReceiver`, with a filter of **media type** `text/plain`. The same definition using C# would be:
 
 ```csharp
 var client = new MessagingHubClientBuilder()
@@ -44,16 +45,15 @@ var client = new MessagingHubClientBuilder()
     .Build();
 ```
 
-Através do arquivo `application.json`, o desenvolvedor tem acesso a todas as propriedades do `MessagingHubClientBuilder`, além de permitir a inicialização de forma transparente dos tipos utilizados pela aplicação. Isso significa que não é necessário se preocupar como a aplicação sera construída para funcionar, já que isso é tratado pelo utilitário `mhh.exe` instalado junto ao pacote. 
+Through the `application.json` file, the developer has access to all properties of the `MessagingHubClientBuilder`, also allowing him to initialize, in a transparent maner, the data type used by his application. This means it is not necessary to worry about how the application will be build in order to work, since it is already handled by the `mhh.exe` utility, installed with the package.
 
-Para testar sua aplicação, no Visual Studio, defina o projeto *Class Library* criado como projeto de inicialização. Para isso, na janela **Solution Explorer**, clique com o botão direto no projeto e escolha a opção **Set as StartUp Project**. Depois disso, basta iniciá-la clicando em **Start** ou pressionando F5.
+To test your application, in Visual Studio, define the *Class Library* project as startup project. To do that, in the **Solution Explorer** window, right click your *Class Library* project and choose the option **Set as StartUp Project**. After that, just click *Start* or press F5.
 
 
 ### Application.json
+Here follows all properties defined in the `application.json` file:
 
-Abaixo, todas as propriedades que podem ser definidas no arquivo `application.json`:
-
-| Propriedade | Descrição                                                                        | Exemplo                 |
+| Property    | Description                                                                      | Example                 |
 |-------------|----------------------------------------------------------------------------------|-------------------------|
 | login       | O login da aplicação no Messaging Hub, gerado através do portal messaginghub.io. | myapplication           |
 | domain      | O domínio **lime** para conexão. Atualmente o único valor suportado é `msging.net`.| msging.net              |
