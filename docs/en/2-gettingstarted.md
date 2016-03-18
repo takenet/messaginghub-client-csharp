@@ -13,9 +13,6 @@ From the Package Manager Console, install it using:
 This will send a message to "otherUser" with the content "Hello world".
 
 ```csharp
-const string login = "user";
-const string accessKey = "myAccessKey";
-
 const string login = "xpto"; //Application identifier
 const string accessKey = "cXkzT1Rp"; //Access key of the application
 
