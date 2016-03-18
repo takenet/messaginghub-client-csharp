@@ -1,6 +1,6 @@
 ## Aplicação console
 
-Uma maneira rápida de começar a desenvolver é utilizando o pacote inicial para um *host* em uma **Console Application** do Visual Studio.
+Uma maneira rápida de começar a desenvolver é utilizando o pacote inicial para um *ConsoleHost* em uma **Console Application** do Visual Studio.
 
 Adicione um novo projeto de um **Console Application** e a partir do **Package Manager Console**, instale-o usando:
 
