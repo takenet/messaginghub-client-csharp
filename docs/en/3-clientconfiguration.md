@@ -10,7 +10,7 @@ var client = new MessagingHubClientBuilder()
 ```
 
 Besides the host name and domain, an authentication is mandatory. 
-The authentication requires your login and access key:
+The authentication requires identifier and access key of the application:
 
 ```csharp
 const string login = "xpto"; //Application identifier
