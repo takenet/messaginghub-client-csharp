@@ -1,6 +1,6 @@
 Este cliente do Messaging Hub foi desenvolvido para tornar mais fácil o trabalho com o [protocolo Lime](http://limeprotocol.org) para troca de mensanges entre as aplicações e serviços de mensageria integrados ao Messaging Hub através de interface fluente.
 
-Está disponível em algumas linguagens de programações com a mesma semântica, como [C#](https://github.com/takenet/messaginghub-client-csharp) e [Javascript](https://github.com/takenet/messaginghub-client-js).
+Está disponível em algumas linguagens de programação com a mesma semântica, como [C#](https://github.com/takenet/messaginghub-client-csharp) e [Javascript](https://github.com/takenet/messaginghub-client-js).
 
 ## Trabalhando com o cliente do Messaging Hub
 
