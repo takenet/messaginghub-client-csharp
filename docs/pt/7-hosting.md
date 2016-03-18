@@ -18,14 +18,14 @@ Para utilizá-lo, crie um projeto no Visual Studio do tipo **Class library** e i
 
     Install-Package Takenet.MessagingHub.Client.Host
 
-Após a instalação, serão adicionados alguns arquivos no projeto, dentre eles o `application.json` com alguns valores padrão definidos. Para a aplicação funcionar, é necessário complementá-lo com algumas informações, como o identificar da sua aplicação (login) e sua chave de acesso (access key).
+Após a instalação, serão adicionados alguns arquivos no projeto, dentre eles o `application.json` com alguns valores padrão definidos. Para a aplicação funcionar, é necessário complementá-lo com algumas informações, como o identificador da sua aplicação (login) e sua chave de acesso (access key).
 
 Abaixo um exemplo:
 
 ```json
 {
-  "login": "myapplication",
-  "accessKey": "MTIzNDU2",
+  "login": "xpto",
+  "accessKey": "cXkzT1Rp",
   "messageReceivers": [
     {
       "type": "PlainTextMessageReceiver",
@@ -35,11 +35,11 @@ Abaixo um exemplo:
 }
 ```
 
-Neste exemplo, o cliente está sendo configurado utilizando o login `myapplication` e access key `MTIzNDU2`, além de estar registrando um **MessageReceiver** do tipo `PlainTextMessageReceiver`, com um filtro pelo **media type** `text/plain`. A mesma definição utilizando C# seria:
+Neste exemplo, o cliente está sendo configurado utilizando o login `xpto` e access key `cXkzT1Rp`, além de estar registrando um **MessageReceiver** do tipo `PlainTextMessageReceiver`, com um filtro pelo **media type** `text/plain`. A mesma definição utilizando C# seria:
 
 ```csharp
 var client = new MessagingHubClientBuilder()
-    .UsingAccessKey("myapplication", "MTIzNDU2")
+    .UsingAccessKey("xpto", "cXkzT1Rp")
     .AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
     .Build();
 ```
