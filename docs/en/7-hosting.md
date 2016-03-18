@@ -55,16 +55,16 @@ Here follows all properties defined in the `application.json` file:
 
 | Property    | Description                                                                      | Example                 |
 |-------------|----------------------------------------------------------------------------------|-------------------------|
-| login       | O login da aplicação no Messaging Hub, gerado através do portal messaginghub.io. | myapplication           |
-| domain      | O domínio **lime** para conexão. Atualmente o único valor suportado é `msging.net`.| msging.net              |
-| hostName    | O endereço do host para conexão com o servidor.                                  | msging.net              |
-| accessKey   | A chave de acesso da aplicação para autenticação, no formato **base64**.         | MTIzNDU2                |
-| password    | A senha da aplicação para autenticação, no formato **base64**.                   | MTIzNDU2                |
-| sendTimeout | O timeout para envio de mensagens, em milisegundos.                              | 30000                   |
-| startupType | Nome do tipo .NET que deve ser ativado quando o cliente foi inicializado. O mesmo deve implementar a interface `IStartable`. Pode ser o nome simples do tipo (se estiver na mesma **assembly** do arquivo `application.json`) ou o nome qualificado com **assembly**.    | Startup     |
-| settings    | Configurações gerais da aplicação, no formato chave-valor. Este valor é  injetado nos tipos criados, sejam **receivers** ou o **startupType**. Para receber os valores, os tipos devem esperar uma instância do tipo `IDictionary<string, object>` no construtor dos mesmos. | { "myApiKey": "abcd1234" }   |
-| messageReceivers | Array de **message receivers**, que são tipos especializados para recebimento de mensagens. | *Veja abaixo* |
-| notificationReceivers | Array de **notification receivers**, que são tipos especializados para recebimento de notificações. | *Veja abaixo* |
+| login       | The identifier of the Messaging Hub application, registered through the Portal [messaginghub.io](http://messaginghub.io). | myapplication           |
+| domain      | **lime** domain to connect. Currently, the only supported value is `msging.net`.| msging.net              |
+| hostName    | Address of the server.                                  | msging.net              |
+| accessKey   | Access key to authenticate your application, in **base64** format.         | MTIzNDU2                |
+| password    | Password to authenticate your application, in **base64** format.                   | MTIzNDU2                |
+| sendTimeout | Timeout to send messages, in milliseconds.                              | 30000                   |
+| startupType | Name of the .NET type that will be activated when your client is initialized. It must implement the `IStartable` interface. It may be its simple name (if it is found in the same assembly **assembly** as your `application.json` file) or a fully qualified name with **assembly** name.    | Startup     |
+| settings    | General settings for the application, in the key-value format. This value is injected in the instatiated types, such as **receivers** or the **startupType**. To receive values, such types must receive an instance of the type `IDictionary<string, object>` in their constructors. | { "myApiKey": "abcd1234" }   |
+| messageReceivers | Array of **message receivers**, that are types specialized in receiving messages. | *See below* |
+| notificationReceivers | Array of **notification receivers**, that are types specialized in receiving notifications. | *See below* |
 
 Cada **message receiver** pode possuir as seguintes propriedades:
 
