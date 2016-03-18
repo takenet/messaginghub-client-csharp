@@ -2,7 +2,7 @@ MessagingHub.Client é um cliente simples para o [Messaging Hub](http://messagin
 
 # Introdução
 
-O cliente do Messaging Hub foi desenvolvido para tornar mais fácil o trabalho com o cliente do [protocolo Lime](http://limeprotocol.org) para troca de mensanges, comandos e notificações entre as aplicações e serviços de mensageria integrados ao Messaging Hub.
+O cliente do Messaging Hub foi desenvolvido para tornar mais fácil o trabalho com o cliente do [protocolo Lime](http://limeprotocol.org) para troca de mensanges entre as aplicações e serviços de mensageria integrados ao Messaging Hub.
 
 O cliente está disponível em algumas linguagens de programações com a mesma semântica, como [C#](https://github.com/takenet/messaginghub-client-csharp) e [Javascript](https://github.com/takenet/messaginghub-client-js).
 
