@@ -115,7 +115,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
 
             // Assert
             actual.ShouldNotBeNull();
-            TestStartable._Started.ShouldBeTrue();
+            TestStartable._Started.ShouldBeTrue();            
         }
 
         [Test]        
@@ -143,6 +143,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
             SettingsTestStartable._Started.ShouldBeTrue();
             SettingsTestStartable.Settings.ShouldNotBeNull();
             SettingsTestStartable.Settings.ShouldBe(application.Settings);
+            SettingsTestStartable.Sender.ShouldNotBeNull();
         }
 
         [Test]        
@@ -327,15 +328,18 @@ namespace Takenet.MessagingHub.Client.Test.Host
     }
 
     public class SettingsTestStartable : IStartable
-    {      
-        public SettingsTestStartable(IDictionary<string, object> settings)
+    {        
+        public SettingsTestStartable(IMessagingHubSender sender, IDictionary<string, object> settings)
         {
+            Sender = sender;
             Settings = settings;
         }
 
         public bool Started => _Started;
 
         public static bool _Started;
+
+        public static IMessagingHubSender Sender;
 
         public static IDictionary<string, object> Settings;
 

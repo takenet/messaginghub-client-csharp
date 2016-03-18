@@ -20,11 +20,8 @@ namespace Takenet.MessagingHub.Client.Test
     {
         private readonly CancellationTokenSource _cts;
         private readonly TcpTransportListener _transportListener;
-        
 
-       
-
-
+        private static readonly SemaphoreSlim ListenerSemaphore = new SemaphoreSlim(1, 1);
 
         public DummyServer()
             : this(new Uri("net.tcp://localhost:55321"))
@@ -44,6 +41,8 @@ namespace Takenet.MessagingHub.Client.Test
 
         public async Task StartAsync()
         {
+            await ListenerSemaphore.WaitAsync();
+
             await _transportListener.StartAsync();
 #pragma warning disable 4014
             ProducerConsumer.CreateAsync(
@@ -102,7 +101,9 @@ namespace Takenet.MessagingHub.Client.Test
         public async Task StopAsync()
         {
             _cts?.Cancel();
-            await (_transportListener?.StopAsync() ?? Task.CompletedTask);            
+            await (_transportListener?.StopAsync() ?? Task.CompletedTask);
+
+            ListenerSemaphore.Release();
         }
 
         public void Dispose()

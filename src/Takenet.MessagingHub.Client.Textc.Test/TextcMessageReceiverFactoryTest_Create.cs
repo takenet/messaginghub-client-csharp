@@ -81,6 +81,7 @@ namespace Takenet.MessagingHub.Client.Textc.Test
                         }
                     }
                 },
+                StartupType = nameof(SettingsTestStartable),
                 HostName = Server.ListenerUri.Host
             };
 
@@ -89,8 +90,9 @@ namespace Takenet.MessagingHub.Client.Textc.Test
 
             // Assert
             actual.ShouldNotBeNull();
+            SettingsTestStartable.Sender.ShouldNotBeNull();
             TestCommandProcessor.Instantiated.ShouldBeTrue();
-            TestCommandProcessor.InstanceCount.ShouldBe(2);
+            TestCommandProcessor.InstanceCount.ShouldBe(2);            
         }
 
 
@@ -104,7 +106,7 @@ namespace Takenet.MessagingHub.Client.Textc.Test
             var application = Application.ParseFromJson(json);
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application, loadAssembliesFromWorkingDirectory: false);
+            var actual = await Bootstrapper.StartAsync(application);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -116,12 +118,14 @@ namespace Takenet.MessagingHub.Client.Textc.Test
 
     public class TestCommandProcessor
     {
+        public static IMessagingHubSender Sender;
         public static IDictionary<string, object> Settings;
         public static bool Instantiated;
         public static int InstanceCount;
 
-        public TestCommandProcessor(IDictionary<string, object> settings)
+        public TestCommandProcessor(IMessagingHubSender sender, IDictionary<string, object> settings)
         {
+            Sender = sender;
             Settings = settings;
             Instantiated = true;
             InstanceCount++;
@@ -147,4 +151,28 @@ namespace Takenet.MessagingHub.Client.Textc.Test
             return new JsonDocument();
         }
     }
+
+    public class SettingsTestStartable : IStartable
+    {
+        public SettingsTestStartable(IMessagingHubSender sender, IDictionary<string, object> settings)
+        {
+            Sender = sender;
+            Settings = settings;
+        }
+
+        public bool Started => _Started;
+
+        public static bool _Started;
+
+        public static IMessagingHubSender Sender;
+
+        public static IDictionary<string, object> Settings;
+
+        public Task StartAsync()
+        {
+            _Started = true;
+            return Task.CompletedTask;
+        }
+    }
+
 }
