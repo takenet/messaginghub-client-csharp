@@ -1,4 +1,4 @@
-MessagingHub.Client é um cliente simples para o [Messaging Hub](http://messaginghub.io/) que utiliza uma interface fluente para enviar e receber mensagens, comandos e notificações.
+MessagingHub.Client é um cliente simples para o [Messaging Hub](http://messaginghub.io/) que utiliza uma interface fluente.
 
 # Introdução
 
