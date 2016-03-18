@@ -18,7 +18,7 @@ Para utilizá-lo, crie um projeto no Visual Studio do tipo **Class library** e i
 
     Install-Package Takenet.MessagingHub.Client.Host
 
-Após a instalação, serão adicionados alguns arquivos no projeto, dentre eles o `application.json` com alguns valores padrão definidos. Para a aplicação funcionar, é necessário complementá-lo com algumas informações, como o login e access key.
+Após a instalação, serão adicionados alguns arquivos no projeto, dentre eles o `application.json` com alguns valores padrão definidos. Para a aplicação funcionar, é necessário complementá-lo com algumas informações, como o identificar da sua aplicação e sua chave de acesso.
 
 Abaixo um exemplo:
 
