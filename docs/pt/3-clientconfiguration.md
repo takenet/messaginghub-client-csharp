@@ -1,3 +1,14 @@
+## Chave de acesso
+
+Independente da linguagem de programação escolhida, você precisará do nome da aplicação e da chave de acesso.
+Para isso, siga os seguintes passos:
+- Acesse o [Console](http://messaginghub.io/home/console)
+- Clique em [Listar](http://messaginghub.io/application/list) na aba `Aplicações`
+- Encontre sua aplicação e clique em `Detalhes`
+- Pegue o `Identificador da aplicação` e a `chave de acesso` para utilização
+
+## Configuração
+
 O cliente do Messaging Hub foi projetado para ser simples e fácil de usar, deste modo poucas configurações estão disponíveis.
 
 Para se conectar ao Messaging Hub, o host padrão, `"msging.net"` e o domínio padrão, também `"msging.net"`, são usados por padrão. Caso queira especificar outro host ou domínio, você pode passa-los no builder do cliente, como exibido abaixo:  
