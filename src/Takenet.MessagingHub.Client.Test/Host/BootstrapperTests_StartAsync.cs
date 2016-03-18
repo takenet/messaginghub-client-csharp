@@ -1,10 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
+using Lime.Protocol.Security;
 using Lime.Protocol.Serialization;
+using Lime.Protocol.Serialization.Newtonsoft;
+using Lime.Protocol.Server;
+using Lime.Protocol.Util;
+using Lime.Transport.Tcp;
 using NSubstitute.Routing.Handlers;
 using NUnit.Core;
 using NUnit.Framework;
@@ -18,28 +26,30 @@ namespace Takenet.MessagingHub.Client.Test.Host
     [TestFixture]
     public class BootstrapperTests_StartAsync
     {
-        [TearDown]
-        public void TearDown()
+        public DummyServer Server;
+
+        [SetUp]
+        public async Task SetUpAsync()
         {
-            TestStartable._Started = false;
-            TestStartableFactory.Settings = null;
-            TestStartableFactory.ServiceProvider = null;
-            SettingsTestStartable._Started = false;
-            SettingsTestStartable.Settings = null;            
-            TestMessageReceiver.InstanceCount = 0;
-            TestMessageReceiver.Settings = null;
-            TestNotificationReceiver.InstanceCount = 0;
-            TestNotificationReceiver.Settings = null;            
+            Server = new DummyServer();
+            await Server.StartAsync();
         }
 
-        [Test]
-        [Ignore("Requires real server connection")]
+        [TearDown]
+        public async Task TearDownAsync()
+        {
+            await Server.StopAsync();
+            TestMessageReceiver.InstanceCount = 0;
+            TestNotificationReceiver.InstanceCount = 0;
+        }        
+        
+        [Test]        
         public async Task Create_With_No_Credential_And_No_Receiver_Should_Return_Instance()
         {
             // Arrange
             var application = new Application()
             {
-                
+                HostName = Server.ListenerUri.Host
             };
 
             // Act
@@ -51,14 +61,14 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
 
         [Test]
-        [Ignore("Requires real server connection")]
         public async Task Create_With_Passowrd_And_No_Receiver_Should_Return_Instance()
         {
             // Arrange
             var application = new Application()
             {
                 Login = "testlogin",
-                Password = "12345".ToBase64()
+                Password = "12345".ToBase64(),
+                HostName = Server.ListenerUri.Host
             };
 
             // Act
@@ -70,14 +80,14 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
 
         [Test]
-        [Ignore("Requires real server connection")]
         public async Task Create_With_AccessKey_And_No_Receiver_Should_Return_Instance()
         {
             // Arrange
             var application = new Application()
             {
                 Login = "testlogin",
-                AccessKey = "12345".ToBase64()
+                AccessKey = "12345".ToBase64(),
+                HostName = Server.ListenerUri.Host
             };
 
             // Act
@@ -88,8 +98,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
             
         }
 
-        [Test]
-        [Ignore("Requires real server connection")]
+        [Test]        
         public async Task Create_With_StartupType_And_No_Receiver_Should_Return_Instance()
         {
             // Arrange
@@ -97,7 +106,8 @@ namespace Takenet.MessagingHub.Client.Test.Host
             {
                 Login = "testlogin",
                 AccessKey = "12345".ToBase64(),
-                StartupType = typeof(TestStartable).Name
+                StartupType = typeof(TestStartable).Name,
+                HostName = Server.ListenerUri.Host
             };
 
             // Act
@@ -108,8 +118,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
             TestStartable._Started.ShouldBeTrue();
         }
 
-        [Test]
-        [Ignore("Requires real server connection")]
+        [Test]        
         public async Task Create_With_StartupType_And_Settings_And_No_Receiver_Should_Return_Instance()
         {
             // Arrange
@@ -122,7 +131,8 @@ namespace Takenet.MessagingHub.Client.Test.Host
                 {
                     { "setting1", "value1" },
                     { "setting2", 2 }
-                }
+                },
+                HostName = Server.ListenerUri.Host
             };
 
             // Act
@@ -135,8 +145,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
             SettingsTestStartable.Settings.ShouldBe(application.Settings);
         }
 
-        [Test]
-        [Ignore("Requires real server connection")]
+        [Test]        
         public async Task Create_With_StartupFactoryType_And_No_Receiver_Should_Return_Instance()
         {
             // Arrange
@@ -144,7 +153,8 @@ namespace Takenet.MessagingHub.Client.Test.Host
             {
                 Login = "testlogin",
                 AccessKey = "12345".ToBase64(),
-                StartupType = typeof(TestStartableFactory).AssemblyQualifiedName
+                StartupType = typeof(TestStartableFactory).AssemblyQualifiedName,
+                HostName = Server.ListenerUri.Host
             };
 
             // Act
@@ -158,7 +168,6 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
 
         [Test]
-        [Ignore("Requires real server connection")]
         public async Task Create_With_StartupFactoryType_And_Setings_And_No_Receiver_Should_Return_Instance()
         {
             // Arrange
@@ -171,7 +180,8 @@ namespace Takenet.MessagingHub.Client.Test.Host
                 {
                     { "setting1", "value1" },
                     { "setting2", 2 }
-                }
+                },
+                HostName = Server.ListenerUri.Host
             };
 
             // Act
@@ -185,7 +195,6 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
 
         [Test]
-        [Ignore("Requires real server connection")]
         public async Task Create_With_MessageReceiverType_Should_Return_Instance()
         {
             // Arrange
@@ -209,7 +218,8 @@ namespace Takenet.MessagingHub.Client.Test.Host
                     {
                         Type = typeof(TestMessageReceiver).AssemblyQualifiedName                        
                     }
-                }
+                },
+                HostName = Server.ListenerUri.Host
             };
 
             // Act
@@ -221,7 +231,6 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
 
         [Test]
-        [Ignore("Requires real server connection")]
         public async Task Create_With_MessageReceiverType_With_Settings_Should_Return_Instance()
         {
             // Arrange
@@ -249,7 +258,8 @@ namespace Takenet.MessagingHub.Client.Test.Host
                     { "setting1", "value1" },
                     { "setting2", 2 },
                     { "setting5", 5 }
-                }
+                },
+                HostName = Server.ListenerUri.Host
             };
 
             // Act
@@ -267,7 +277,6 @@ namespace Takenet.MessagingHub.Client.Test.Host
         }
 
         [Test]
-        [Ignore("Requires real server connection")]
         public async Task Create_With_NotificationReceiverType_Should_Return_Instance()
         {
             // Arrange
@@ -291,7 +300,8 @@ namespace Takenet.MessagingHub.Client.Test.Host
                     {
                         Type = typeof(TestNotificationReceiver).AssemblyQualifiedName
                     }
-                }
+                },
+                HostName = Server.ListenerUri.Host
             };
 
             // Act

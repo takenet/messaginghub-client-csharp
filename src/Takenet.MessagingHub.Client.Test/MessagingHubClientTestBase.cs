@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Client;
 using Lime.Protocol.Security;
+using Lime.Protocol.Serialization.Newtonsoft;
+using Lime.Protocol.Server;
+using Lime.Protocol.Util;
+using Lime.Transport.Tcp;
 using NSubstitute;
 using Takenet.MessagingHub.Client.LimeProtocol;
 
@@ -32,7 +36,16 @@ namespace Takenet.MessagingHub.Client.Test
             SubstituteEstablishedClientChannelBuilder();
             SubstituteOnDemandClientChannelFactory();
 
-            CreateActualMessageHubClient();
+            CreateActualMessageHubClient();            
+        }
+
+        protected virtual void TearDown()
+        {
+            MessageProducer.Dispose();
+            NotificationProducer.Dispose();
+            CommandProducer.Dispose();
+
+            if (MessagingHubClient.Started) MessagingHubClient.StopAsync().Wait();            
         }
 
         private void SubstituteOnDemandClientChannel()
@@ -59,15 +72,6 @@ namespace Takenet.MessagingHub.Client.Test
             OnDemandClientChannelFactory.Create(EstablishedClientChannelBuilder).Returns(OnDemandClientChannel);
         }
 
-        protected virtual void TearDown()
-        {
-            MessageProducer.Dispose();
-            NotificationProducer.Dispose();
-            CommandProducer.Dispose();
-
-            if (MessagingHubClient.Started) MessagingHubClient.StopAsync().Wait();
-        }
-
         private void CreateProducers()
         {
             MessageProducer = new BlockingCollection<Message>();
@@ -78,8 +82,9 @@ namespace Takenet.MessagingHub.Client.Test
         private void CreateActualMessageHubClient()
         {
             EnvelopeListenerRegistrar = new EnvelopeListenerRegistrar();
-            MessagingHubClient = new MessagingHubClient(EstablishedClientChannelBuilder, OnDemandClientChannelFactory, _sendTimeout, EnvelopeListenerRegistrar);
+            MessagingHubClient = new MessagingHubClient(EstablishedClientChannelBuilder, OnDemandClientChannelFactory, _sendTimeout, EnvelopeListenerRegistrar);            
         }
-        
+
+
     }
 }

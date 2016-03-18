@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Shouldly;
 using Takenet.MessagingHub.Client.Host;
+using Takenet.MessagingHub.Client.Test;
 using Takenet.Textc;
 
 namespace Takenet.MessagingHub.Client.Textc.Test
@@ -16,9 +17,19 @@ namespace Takenet.MessagingHub.Client.Textc.Test
     [TestFixture]
     public class TextcMessageReceiverFactoryTest_Create
     {
-        [TearDown]
-        public void TearDown()
+        public DummyServer Server;
+
+        [SetUp]
+        public async Task SetUpAsync()
         {
+            Server = new DummyServer();
+            await Server.StartAsync();
+        }
+
+        [TearDown]
+        public async Task TearDownAsync()
+        {
+            await Server.StopAsync();
             TestCommandProcessor.Instantiated = false;
             TestCommandProcessor.InstanceCount = 0;
         }
@@ -69,7 +80,8 @@ namespace Takenet.MessagingHub.Client.Textc.Test
                             }
                         }
                     }
-                }
+                },
+                HostName = Server.ListenerUri.Host
             };
 
             // Act
@@ -87,12 +99,12 @@ namespace Takenet.MessagingHub.Client.Textc.Test
         {
             // Arrange
             var json =
-                "{ \"login\": \"abcd1234\", \"accessKey\": \"xyz1234\", \"messageReceivers\": [ { \"type\": \"TextcMessageReceiverFactory\", \"settings\": { \"syntaxes\": [ { \"[:Word(mais,more,top) top:Integer? query+:Text]\": { \"processor\": \"TestCommandProcessor\", \"method\": \"GetImageDocumentAsync\" } }, { \"[query+:Text]\": { \"processor\": \"TestCommandProcessor\", \"method\": \"GetFirstImageDocumentAsync\" } } ], \"scorer\": \"MatchCountExpressionScorer\" } } ], \"settings\": { \"myApiKey\": \"askjakdaksjasjdalksjd\" } } ";
+                "{ \"login\": \"abcd1234\", \"accessKey\": \"xyz1234\", \"messageReceivers\": [ { \"type\": \"TextcMessageReceiverFactory\", \"settings\": { \"syntaxes\": [ { \"[:Word(mais,more,top) top:Integer? query+:Text]\": { \"processor\": \"TestCommandProcessor\", \"method\": \"GetImageDocumentAsync\" } }, { \"[query+:Text]\": { \"processor\": \"TestCommandProcessor\", \"method\": \"GetFirstImageDocumentAsync\" } } ], \"scorer\": \"MatchCountExpressionScorer\" } } ], \"settings\": { \"myApiKey\": \"askjakdaksjasjdalksjd\" }, \"hostName\": \"localhost\",  } ";
 
             var application = Application.ParseFromJson(json);
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(application, loadAssembliesFromWorkingDirectory: false);
 
             // Assert
             actual.ShouldNotBeNull();
