@@ -9,7 +9,7 @@ var client = new MessagingHubClientBuilder()
 ```
 
 Além do nome do host e do domínio, uma autenticação é obrigatória.
-Para autenticar você irá precisar de seu Login e AccessKey do Messaging Hub:
+Para autenticar você irá precisar do identificador e chave de acesso da sua aplicação:
 
 ```csharp
 const string login = "xpto"; //Identificador da aplicação
