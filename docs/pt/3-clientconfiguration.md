@@ -1,6 +1,6 @@
 ## Chave de acesso
 
-Independente da linguagem de programação escolhida, você precisará do nome da aplicação e da chave de acesso.
+Independente da linguagem de programação escolhida, você precisará do identificador da aplicação e chave de acesso.
 Para isso, siga os seguintes passos:
 - Acesse o [Console](http://messaginghub.io/home/console)
 - Clique em [Listar](http://messaginghub.io/application/list) na aba `Aplicações`
