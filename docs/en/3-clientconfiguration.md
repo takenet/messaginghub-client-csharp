@@ -13,8 +13,8 @@ Besides the host name and domain, an authentication is mandatory.
 The authentication requires your login and access key:
 
 ```csharp
-const string login = "user";
-const string accessKey = "accessKey";
+const string login = "xpto"; //Application identifier
+const string accessKey = "cXkzT1Rp"; //Access key of the application
 
 var client = new MessagingHubClientBuilder()
                 .UsingAccessKey(login, accessKey)
