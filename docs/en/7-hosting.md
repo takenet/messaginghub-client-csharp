@@ -25,7 +25,7 @@ Here follows an example:
 
 ```json
 {
-  "login": "v",
+  "login": "xpto",
   "accessKey": "cXkzT1Rp",
   "messageReceivers": [
     {
