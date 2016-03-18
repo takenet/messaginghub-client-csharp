@@ -6,7 +6,7 @@ Está disponível em algumas linguagens de programação com a mesma semântica,
 Independente da linguagem de programação escolhida, você precisará do nome da aplicação e da chave de acesso.
 Para isso, siga os seguintes passos:
 - Acesse o [Console](http://messaginghub.io/home/console)
-- Clique em [Listar](http://messaginghub.io/application/list) no menu `Aplicações`
+- Clique em [Listar](http://messaginghub.io/application/list) na aba `Aplicações`
 - Encontre sua aplicação e clique em `Detalhes`
 - Pegue o `nome da aplicação` e a `chave de acesso` para utilização
 
