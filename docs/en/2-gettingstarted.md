@@ -17,7 +17,7 @@ const string login = "user";
 const string accessKey = "myAccessKey";
 
 const string login = "xpto"; //Application identifier
-const string accessKey = "cXkzT1Rp";
+const string accessKey = "cXkzT1Rp"; //Access key of the application
 
 var client = new MessagingHubClientBuilder()
                  .UsingAccessKey(login, accessKey)
@@ -38,7 +38,7 @@ You can also use a [Receiver](http://messaginghub.io/docs/sdks/messages) to hand
 
 ```csharp
 const string login = "xpto"; //Application identifier
-const string accessKey = "cXkzT1Rp";
+const string accessKey = "cXkzT1Rp"; //Access key of the application
 
 var client = new MessagingHubClientBuilder()
                  .UsingAccessKey(login, accessKey)
