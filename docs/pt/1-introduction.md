@@ -1,25 +1,22 @@
-MessagingHub.Client é um cliente simples para o [Messaging Hub](https://messaginghub.io/) que usa uma interface fluente para enviar e receber mensagens, comandos e notificações.
+Este cliente do Messaging Hub foi desenvolvido para tornar mais fácil o trabalho com o [protocolo Lime](http://limeprotocol.org) para troca de mensanges entre as aplicações e serviços de mensageria integrados ao Messaging Hub através de interface fluente.
 
-# Introdução
+Está disponível em algumas linguagens de programação com a mesma semântica, como [C#](https://github.com/takenet/messaginghub-client-csharp) e [Javascript](https://github.com/takenet/messaginghub-client-js).
 
-O cliente do Messaging Hub foi desenvolvido para tornar mais fácil o trabalho com o cliente do protocolo lime para troca de mensanges, comandos e notificações entre as aplicações e serviços conectadas pelo Messaging Hub.
-
-O cliente está disponível em múltiplas linguagens de programações, como [C#](https://github.com/takenet/messaginghub-client-csharp) and [Javascript](https://github.com/takenet/messaginghub-client-js), e usa a mesma semântica em todas elas.
-
-Os códigos fonte estão disponíveis no [GitHub](https://github.com/takenet) e podem ser usados para referência e também para contribuição da comunidade. Se você deseja melhorar o cliente, fork o projeto e nos envie um pull request.
+## Chave de acesso
+Independente da linguagem de programação escolhida, você precisará do nome da aplicação e da chave de acesso.
+Para isso, siga os seguintes passos:
+- Acesse o [Console](http://messaginghub.io/home/console)
+- Clique em [Listar](http://messaginghub.io/application/list) na aba `Aplicações`
+- Encontre sua aplicação e clique em `Detalhes`
+- Pegue o `Identificador da aplicação` e a `chave de acesso` para utilização
 
 ## Trabalhando com o cliente do Messaging Hub
 
-As seguintes operações são suportados:
+Após referênciar o MessagingHub.Client no seu código e de posse dos dados para acesso, siga os passos descritos em [Como Começar?](http://messaginghub.io/docs/sdks/gettingstarted) para poder utilizar as seguintes operações:
+- Enviar e receber [mensagens](http://messaginghub.io/docs/sdks/messages)
+- Enviar e receber [notificações](http://messaginghub.io/docs/sdks/notifications)
+- Enviar [comandos](http://messaginghub.io/docs/sdks/commands)
 
-- Receber mensagens através do Messaging Hub;
+## Contribuições
 
-- Enviar  mensagens através do Messaging Hub;
-
-- Receber notificações através do Messaging Hub;
-
-- Enviar notificações através do Messaging Hub;
-
-- Enviar comandos através do Messaging Hub;
-
-Para mais informações específicas de uso, veja a documentação detalheada para [Como Começar?](http://messaginghub.io/docs/sdks/gettingstarted), [Configuração do Cliente](http://messaginghub.io/docs/sdks/client-configuration), [Mensagens](http://messaginghub.io/docs/sdks/messages), [Notificações](http://messaginghub.io/docs/sdks/notifications) e [Comandos](http://messaginghub.io/docs/sdks/commands).
+Os códigos fonte estão disponíveis no [GitHub](https://github.com/takenet) e podem ser usados para referência e também para contribuição da comunidade. Se você deseja melhorar o cliente, fork o projeto e nos envie um pull request.

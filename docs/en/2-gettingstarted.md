@@ -1,5 +1,4 @@
 This getting started guide will show you how to use the basic functionalities of the Messaging Hub Client 
-To run this samples you will need your MessagingHub Login and AccessKey.
 
 ## Install
 
@@ -14,8 +13,8 @@ From the Package Manager Console, install it using:
 This will send a message to "otherUser" with the content "Hello world".
 
 ```csharp
-const string login = "user";
-const string accessKey = "myAccessKey";
+const string login = "xpto"; //Application identifier
+const string accessKey = "cXkzT1Rp"; //Access key of the application
 
 var client = new MessagingHubClientBuilder()
                  .UsingAccessKey(login, accessKey)
@@ -35,8 +34,8 @@ This code sample will wait for 30 seconds until a message is received.
 You can also use a [Receiver](http://messaginghub.io/docs/sdks/messages) to handle inbound messages.
 
 ```csharp
-const string login = "user";
-const string accessKey = "myAccessKey";
+const string login = "xpto"; //Application identifier
+const string accessKey = "cXkzT1Rp"; //Access key of the application
 
 var client = new MessagingHubClientBuilder()
                  .UsingAccessKey(login, accessKey)

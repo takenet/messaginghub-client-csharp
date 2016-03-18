@@ -1,3 +1,13 @@
+
+## Access key
+You need the application identifier and access key. To do so, follow these steps:
+- Access [Console](http://messaginghub.io/home/console)
+- Click [List](http://messaginghub.io/application/list) in `Applications` tab
+- Find your application and click the `Details` button
+- Get the `Application identifier` and `Access Key` to use
+
+## Configuration
+
 The Messaging Hub client is designed to be simple and easy to use, this way few configuration options are available.
 
 To connect to the Messaging Hub, the default host, `"msging.net"` and default domain, also `"msging.net"`, are used by default. 
@@ -10,11 +20,11 @@ var client = new MessagingHubClientBuilder()
 ```
 
 Besides the host name and domain, an authentication is mandatory. 
-The authentication requires your login and access key:
+The authentication requires identifier and access key of the application:
 
 ```csharp
-const string login = "user";
-const string accessKey = "accessKey";
+const string login = "xpto"; //Application identifier
+const string accessKey = "cXkzT1Rp"; //Access key of the application
 
 var client = new MessagingHubClientBuilder()
                 .UsingAccessKey(login, accessKey)
