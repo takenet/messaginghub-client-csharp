@@ -71,15 +71,15 @@ Each **message receiver** can have the following properties:
 | Property | Description                                                                        | Example                 |
 |-------------|----------------------------------------------------------------------------------|-------------------------|
 | type        | Name of the .NET type to receive messages. It must implement the interface `IMessageReceiver`. It can be a simple name (if it is located in the same **assembly** as the file `application.json`) or a fully qualified name with **assembly** name. | PlainTextMessageReceiver |
-| settings    | General settings fot the receiver, in the key-value format. Este valor é injected in the instantiated type. To receive values, the implementation must receive an instance of the type `IDictionary<string, object>` in its constructor. | { "mySetting": "xyzabcd" }   |
+| settings    | General settings for the receiver, in the key-value format. Este valor é injected in the instantiated type. To receive values, the implementation must receive an instance of the type `IDictionary<string, object>` in its constructor. | { "mySetting": "xyzabcd" }   |
 | mediaType   | Define a filter for the message type that the **receiver** will process. Only messages of the specified type will be delivered to the instantiated receiver. | text/plain |
 | content     | Define a regular expression to filter the content of the messages that the **receiver** will process. Only messages that match the expressionn will be delivered to the instantiated receiver. | Olá mundo |
-| sender     | Define a regular expression to fillter the origination of the messages that the **receiver** will process. Only messages sent from accounts that match the expressionn will be delivered to the instantiated receiver. | sender@domain.com |
+| sender     | Define a regular expression to fillter the origination of the messages that the **receiver** will process. Only messages sent from accounts that match the expression will be delivered to the instantiated receiver. | sender@domain.com |
 
-Cada **notification receiver** pode possuir as seguintes propriedades:
+Each **notification receiver** will have the following properties:
 
-| Propriedade | Descrição                                                                        | Exemplo                 |
+| Property | Description                                                                        | Example                 |
 |-------------|----------------------------------------------------------------------------------|-------------------------|
-| type        | Nome do tipo .NET para recebimento de notificações. O mesmo deve implementar a interface `INotificationReceiver`. Pode ser o nome simples do tipo (se estiver na mesma **assembly** do arquivo `application.json`) ou o nome qualificado com **assembly**. | PlainTextMessageReceiver |
-| settings    | Configurações gerais do receiver, no formato chave-valor. Este valor é  injetado na instância criada. Para receber os valores, a implementação deve esperar uma instância do tipo `IDictionary<string, object>` no construtor. | { "mySetting": "xyzabcd" }   |
-| eventType   | Define um filtro de tipo de eventos que o **receiver** pode processar. Apenas notificações do evento especificado serão entregues a instância criada. | received |
+| type        | Name of the .NET to reveice notifications. It must implement the interface `INotificationReceiver`. (if it is located in the same **assembly** as the file `application.json`) or a fully qualified name with **assembly** name. | NotificationReceiver |
+| settings    | General settings for the receiver,  in the key-value format. Este valor é injected in the instantiated type. To receive values, the implementation must receive an instance of the type `IDictionary<string, object>` in its constructor. | { "mySetting": "xyzabcd" }   |
+| eventType   | Define a fillter for the event type the **receiver** will process. Only notifications of the specified event type will be delivered to the instantiated receiver. | received |
