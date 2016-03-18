@@ -12,6 +12,13 @@ var client = new MessagingHubClientBuilder()
 Besides the host name and domain, an authentication is mandatory. 
 The authentication requires identifier and access key of the application:
 
+## Access key
+You need the application name and access key. To do so, follow these steps:
+- Access [Console](http://messaginghub.io/home/console)
+- Click [List](http://messaginghub.io/application/list) in `Applications` tab
+- Find your application and click the `Details` button
+- Get the `Application name` and `Access Key` to use
+
 ```csharp
 const string login = "xpto"; //Application identifier
 const string accessKey = "cXkzT1Rp"; //Access key of the application
