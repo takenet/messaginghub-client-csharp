@@ -3,7 +3,7 @@ The Messaging Hub Client was designed to make it easy to work with the [Lime pro
 It is available in some programming languages with the same semantics, like [C#](https://github.com/takenet/messaginghub-client-csharp) and [Javascript](https://github.com/takenet/messaginghub-client-js).
 
 ## Access key
-You need the application name and access key. To do so, follow these steps:
+You need the application identifier and access key. To do so, follow these steps:
 - Access [Console](http://messaginghub.io/home/console)
 - Click [List](http://messaginghub.io/application/list) in `Applications` tab
 - Find your application and click the `Details` button
