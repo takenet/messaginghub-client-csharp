@@ -1,4 +1,4 @@
-MessagingHub.Client é um cliente simples para o [Messaging Hub](https://messaginghub.io/) que usa uma interface fluente para enviar e receber mensagens, comandos e notificações.
+MessagingHub.Client é um cliente simples para o [Messaging Hub](http://messaginghub.io/) que utiliza uma interface fluente para enviar e receber mensagens, comandos e notificações.
 
 # Introdução
 
@@ -10,16 +10,7 @@ Os códigos fonte estão disponíveis no [GitHub](https://github.com/takenet) e 
 
 ## Trabalhando com o cliente do Messaging Hub
 
-As seguintes operações são suportados:
-
-- Receber mensagens através do Messaging Hub;
-
-- Enviar  mensagens através do Messaging Hub;
-
-- Receber notificações através do Messaging Hub;
-
-- Enviar notificações através do Messaging Hub;
-
-- Enviar comandos através do Messaging Hub;
-
-Para mais informações específicas de uso, veja a documentação detalheada para [Como Começar?](http://messaginghub.io/docs/sdks/gettingstarted), [Configuração do Cliente](http://messaginghub.io/docs/sdks/client-configuration), [Mensagens](http://messaginghub.io/docs/sdks/messages), [Notificações](http://messaginghub.io/docs/sdks/notifications) e [Comandos](http://messaginghub.io/docs/sdks/commands).
+Após referênciar o MessagingHub.Client no seu código-fonte, siga os passos descritos em [Como Começar?](http://messaginghub.io/docs/sdks/gettingstarted) para poder utilizar as seguintes operações:
+- Enviar e receber [mensagens](http://messaginghub.io/docs/sdks/messages)
+- Enviar e receber [notificações](http://messaginghub.io/docs/sdks/notifications)
+* Enviar [comandos](http://messaginghub.io/docs/sdks/commands)
