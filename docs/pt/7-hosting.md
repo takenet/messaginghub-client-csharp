@@ -55,7 +55,7 @@ Abaixo, todas as propriedades que podem ser definidas no arquivo `application.js
 
 | Propriedade | Descrição                                                                        | Exemplo                 |
 |-------------|----------------------------------------------------------------------------------|-------------------------|
-| login       | O login da aplicação no Messaging Hub, gerado através do portal messaginghub.io. | myapplication           |
+| login       | O login da aplicação no Messaging Hub, gerado através do portal [messaginghub.io](http://messaginghub.io). | myapplication           |
 | domain      | O domínio **lime** para conexão. Atualmente o único valor suportado é `msging.net`.| msging.net              |
 | hostName    | O endereço do host para conexão com o servidor.                                  | msging.net              |
 | accessKey   | A chave de acesso da aplicação para autenticação, no formato **base64**.         | MTIzNDU2                |
@@ -80,6 +80,6 @@ Cada **notification receiver** pode possuir as seguintes propriedades:
 
 | Propriedade | Descrição                                                                        | Exemplo                 |
 |-------------|----------------------------------------------------------------------------------|-------------------------|
-| type        | Nome do tipo .NET para recebimento de notificações. O mesmo deve implementar a interface `INotificationReceiver`. Pode ser o nome simples do tipo (se estiver na mesma **assembly** do arquivo `application.json`) ou o nome qualificado com **assembly**. | PlainTextMessageReceiver |
+| type        | Nome do tipo .NET para recebimento de notificações. O mesmo deve implementar a interface `INotificationReceiver`. Pode ser o nome simples do tipo (se estiver na mesma **assembly** do arquivo `application.json`) ou o nome qualificado com **assembly**. | NotificationReceiver |
 | settings    | Configurações gerais do receiver, no formato chave-valor. Este valor é  injetado na instância criada. Para receber os valores, a implementação deve esperar uma instância do tipo `IDictionary<string, object>` no construtor. | { "mySetting": "xyzabcd" }   |
 | eventType   | Define um filtro de tipo de eventos que o **receiver** pode processar. Apenas notificações do evento especificado serão entregues a instância criada. | received |
