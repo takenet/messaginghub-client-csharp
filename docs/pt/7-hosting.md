@@ -1,8 +1,8 @@
 ## Aplicação console
 
-Uma maneira rápida de começar a desenvolver é utilizando o pacote inicial para um *ConsoleHost* em uma **Console Application** do Visual Studio.
+Uma maneira rápida de começar a desenvolver uma aplicação conectada ao Messaging Hub é utilizar o pacote *ConsoleHost* em um **Console Application** do Visual Studio.
 
-Adicione um novo projeto de um **Console Application** e a partir do **Package Manager Console**, instale-o usando:
+Crie um novo projeto do tipo **Console Application** e a partir do **Package Manager Console**, instale o pacote usando o seguinte comando:
 
     Install-Package Takenet.MessagingHub.Client.ConsoleHost
 
