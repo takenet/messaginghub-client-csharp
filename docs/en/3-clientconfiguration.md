@@ -1,6 +1,6 @@
 
 ## Access key
-You need the application name and access key. To do so, follow these steps:
+You need the application identifier and access key. To do so, follow these steps:
 - Access [Console](http://messaginghub.io/home/console)
 - Click [List](http://messaginghub.io/application/list) in `Applications` tab
 - Find your application and click the `Details` button
