@@ -121,6 +121,7 @@ namespace Takenet.MessagingHub.Client
                     throw new InvalidOperationException("The client is already started");
                 
                 _onDemandClientChannel = _onDemandClientChannelFactory.Create(_establishedClientChannelBuilder);
+                _onDemandClientChannel.ChannelCreationFailedHandlers.Add(StopOnLimeExceptionAsync);
                 _onDemandClientChannel.ChannelDiscardedHandlers.Add(ChannelDiscarded);
 
                 if (_listenerRegistrar.HasRegisteredReceivers)
@@ -141,31 +142,6 @@ namespace Takenet.MessagingHub.Client
             finally
             {
                 _semaphore.Release();
-            }
-        }
-
-        private async Task<bool> EnsureConnectionIsOkayAsync()
-        {
-            try
-            {
-                using (var cancellationTokenSource = new CancellationTokenSource(_sendTimeout))
-                {
-                    var command = new Command
-                    {
-                        Method = CommandMethod.Get,
-                        Uri = new LimeUri(UriTemplates.PING)
-                    };
-
-                    var result =
-                        await
-                            _onDemandClientChannel.ProcessCommandAsync(command, cancellationTokenSource.Token)
-                                .ConfigureAwait(false);
-                    return result.Status == CommandStatus.Success;
-                }
-            }
-            catch (Exception)
-            {
-                return false;
             }
         }
 
@@ -205,6 +181,49 @@ namespace Takenet.MessagingHub.Client
             }
         }
 
+        public static bool IsGuest(string name)
+        {
+            Guid g;
+            return Guid.TryParse(name, out g);
+        }
+
+        /// <summary>
+        /// In this context, a LimeException usually means that some credential information is wrong, 
+        /// and should be checked.
+        /// </summary>
+        private Task<bool> StopOnLimeExceptionAsync(FailedChannelInformation failedChannelInformation)
+        {
+            return (!(failedChannelInformation.Exception is LimeException)).AsCompletedTask();
+        }
+
+        private async Task<bool> EnsureConnectionIsOkayAsync()
+        {
+            try
+            {
+                using (var cancellationTokenSource = new CancellationTokenSource(_sendTimeout))
+                {
+                    var command = new Command
+                    {
+                        Method = CommandMethod.Get,
+                        Uri = new LimeUri(UriTemplates.PING)
+                    };
+
+                    var result = await _onDemandClientChannel.ProcessCommandAsync(command, cancellationTokenSource.Token)
+                                    .ConfigureAwait(false);
+                    return result.Status == CommandStatus.Success;
+                }
+            }
+            catch(LimeException)
+            {
+                // A LimeException usually means that some credential information is wrong, so throw it to allow client to check
+                throw;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         private Task ChannelDiscarded(ChannelInformation channelInformation)
         {
             return Task.Delay(ChannelDiscardedDelay);
@@ -220,19 +239,13 @@ namespace Takenet.MessagingHub.Client
                         .ConfigureAwait(false);
         }
 
-        public static bool IsGuest(string name)
-        {
-            Guid g;
-            return Guid.TryParse(name, out g);
-        }
-
         private void StartEnvelopeListeners()
         {
             var handler = new EnvelopeReceivedHandler(this, _listenerRegistrar);
             _channelListener = new ChannelListener(
                 handler.HandleAsync,
                 handler.HandleAsync,
-                c => TaskUtil.FalseCompletedTask);
+                c => TaskUtil.TrueCompletedTask);
             _channelListener.Start(_onDemandClientChannel);
         }        
     }

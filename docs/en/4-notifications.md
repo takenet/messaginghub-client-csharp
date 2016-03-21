@@ -1,8 +1,8 @@
-O cliente permite que você envie e receba notificações através do Messaging Hub.
+The client allow you to send and receive notifications through the Messaging Hub.
 
-## Recebendo Notificações
+## Receiving Notifications
 
-Para receber uma notificação você pode construir o cliente e chamar ReceiveNotificationAsync:
+To receive a notification, you can simply build the client and call ReceiveNotificationAsync:
 
 ```csharp
 const string login = "user";
@@ -22,7 +22,7 @@ using(var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(3
 await client.StopAsync();
 
 ```
-Você tambem pode construir um Receiver para tratar as notificações recebidas:
+You can also create a Receiver class that will handle the inbound notifications:
 
 ```csharp
 public class MyNotificationReceiver : NotificationReceiverBase
@@ -35,7 +35,7 @@ public class MyNotificationReceiver : NotificationReceiverBase
 }
 
 ```
-E adicionar no builder:
+And then set it in the builder:
 
 ```csharp
 const string login = "user";
@@ -48,21 +48,22 @@ var client = new MessagingHubClientBuilder()
 
 await client.StartAsync();
 ```
-Também é possível passar um factory method para construir o receptor:
+
+It is also possible to pass a factory method to construct the receiver:
 
 ```csharp
 AddNotificationReceiver(() => new MyNotificationReceiver());
 ```
 
-E você pode especificar um `event type` para filtrar suas notificações:
+And you can specify an event type to filter your notifications
 
 ```csharp
 AddNotificationReceiver(() => new MyNotificationReceiver(), Event.Received);
 ```
 
-## Enviando Notificações
+## Sending Notifications
 
-Para enviar uma notificação, você pode usar o seguinte método:
+To send a notification, you can use the following method:
 
 ```csharp
 var notification = new Notification
@@ -74,9 +75,9 @@ var notification = new Notification
 await client.SendNotificationAsync(notification);
 ```
 
-Ou você pode usar um destes métodos de extensão para construir e enviar sua notificação:
+Or you can use these extension methods to construct and send your notification:
 
-```csharp 
+```csharp
 await client.SendNotificationAsync(notification.ToReceivedNotification());
 
 await client.SendNotificationAsync(notification.ToConsumedNotification());
