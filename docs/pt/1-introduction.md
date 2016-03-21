@@ -13,7 +13,7 @@ A partir do *Package Manager Console*, instale o SDK usando:
 
 ## Configurações do cliente
 Para trabalhar com o Messaging Hub você precisará passar pelo processo de autenticação. 
-Veja mais detalhes em [Configuração do Cliente](http://messaginghub.io/docs/sdks/clientconfiguration).
+Veja mais detalhes em [Configurações do Cliente](http://messaginghub.io/docs/sdks/clientconfiguration).
 
 ## Trabalhando com Messaging Hub
 
