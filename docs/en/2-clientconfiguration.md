@@ -9,17 +9,6 @@ You need the application identifier and access key. To do so, follow these steps
 ## Configuration
 
 The Messaging Hub client is designed to be simple and easy to use, this way few configuration options are available.
-
-To connect to the Messaging Hub, the default host, `"msging.net"` and default domain, also `"msging.net"`, are used by default. 
-If you want to specify another host name or domain, you can pass them in the builder of the client, as shown below:
-
-```csharp
-var client = new MessagingHubClientBuilder()
-                 .UsingHostName("iris.0mn")
-                 .UsingDomain("0mn")
-```
-
-Besides the host name and domain, an authentication is mandatory. 
 The authentication requires identifier and access key of the application:
 
 ```csharp
