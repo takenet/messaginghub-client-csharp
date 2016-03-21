@@ -11,7 +11,7 @@ A partir do *Package Manager Console*, instale o SDK usando:
 *Observação*: este pacote tem como *target* o *framework* 4.6.1, então altere o *target framework* do seu projeto.
 
 
-## Configuração
+## Configurações do cliente
 Para trabalhar com o Messaging Hub você precisará passar pelo processo de autenticação. 
 Veja mais detalhes em [Configuração do Cliente](http://messaginghub.io/docs/sdks/clientconfiguration).
 
