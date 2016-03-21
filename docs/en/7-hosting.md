@@ -83,3 +83,18 @@ Each **notification receiver** will have the following properties:
 | type        | Name of the .NET to reveice notifications. It must implement the interface `INotificationReceiver`. (if it is located in the same **assembly** as the file `application.json`) or a fully qualified name with **assembly** name. | NotificationReceiver |
 | settings    | General settings for the receiver,  in the key-value format. This value is injected in the instantiated type. To receive values, the implementation must receive an instance of the type `IDictionary<string, object>` in its constructor. | { "mySetting": "xyzabcd" }   |
 | eventType   | Define a fillter for the event type the **receiver** will process. Only notifications of the specified event type will be delivered to the instantiated receiver. | received |
+
+## Publishing your application
+
+In order to have your application hosted, you need to publish it in a server running the *Messaging Hub Application Activator* service.
+This service will scan a *MessagingHubApplications* folder and execute a *mhh.exe* process for each subfolder found. In this way, if your application is named *MyApp* and a MyApp folder exists in the *MessagingHubApplications* folder, containing your *Class Library* and your *application.json* file, when any chances are detected in the *application.json* file, your application will be reloaded. A fille named *output.txt* will be created and updated in that folder to reflect the console output of your application.
+
+### Manually publishing your application
+
+To manually publish you application, just rename and copy your *\bin\Release* folder to the *MessagingHubApplications* folder in a server running the *Messaging Hub Application Activator* service.
+
+To update a published application, just overwrite your application folder with the new files and the service will detect the changes and reload your application.
+
+### Publishing your application using the command line interface.
+
+***TO BE IMPLEMENTED***
