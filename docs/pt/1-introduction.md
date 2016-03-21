@@ -2,6 +2,14 @@ Este cliente do Messaging Hub foi desenvolvido para tornar mais fácil o trabalh
 
 Está disponível em algumas linguagens de programação com a mesma semântica, como [C#](https://github.com/takenet/messaginghub-client-csharp) e [Javascript](https://github.com/takenet/messaginghub-client-js).
 
+## Instalação
+
+A partir do *Package Manager Console*, instale o SDK usando:
+
+    Install-Package Takenet.MessagingHub.Client
+
+*Observação*: este pacote tem como *target* o *framework* 4.6.1, então altere o *target framework* do seu projeto.
+
 
 ## Configuração
 Para trabalhar com o Messaging Hub você precisará passar pelo processo de autenticação. 
