@@ -19,13 +19,5 @@ namespace Takenet.MessagingHub.Client.Host
         /// The text regex.
         /// </value>
         public string Content { get; set; }
-
-        /// <summary>
-        /// Gets or sets the sender filter. It can be a regex.
-        /// </summary>
-        /// <value>
-        /// From.
-        /// </value>
-        public string Sender { get; set; }
     }
 }

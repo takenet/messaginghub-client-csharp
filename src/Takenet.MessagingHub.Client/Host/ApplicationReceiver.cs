@@ -15,6 +15,22 @@ namespace Takenet.MessagingHub.Client.Host
         public string Type { get; set; }
 
         /// <summary>
+        /// Gets or sets the sender filter. It can be a regex.
+        /// </summary>
+        /// <value>
+        /// From.
+        /// </value>
+        public string Sender { get; set; }
+
+        /// <summary>
+        /// Gets or sets the destination filter. It can be a regex.
+        /// </summary>
+        /// <value>
+        /// From.
+        /// </value>
+        public string Destination { get; set; }
+
+        /// <summary>
         /// Gets or sets the settings to be injected to the startup and receivers types.
         /// </summary>
         /// <value>

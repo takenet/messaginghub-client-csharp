@@ -55,7 +55,7 @@ namespace Takenet.MessagingHub.Client.Textc
             }
             finally
             {
-                await EnvelopeSender.SendNotificationAsync(message.ToConsumedNotification());
+                await EnvelopeSender.SendNotificationAsync(message.ToConsumedNotification()).ConfigureAwait(false);
             }
         }
     }

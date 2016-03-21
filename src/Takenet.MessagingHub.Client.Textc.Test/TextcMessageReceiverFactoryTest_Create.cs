@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Shouldly;
 using Takenet.MessagingHub.Client.Host;
+using Takenet.MessagingHub.Client.Test;
 using Takenet.Textc;
 
 namespace Takenet.MessagingHub.Client.Textc.Test
@@ -16,9 +17,20 @@ namespace Takenet.MessagingHub.Client.Textc.Test
     [TestFixture]
     public class TextcMessageReceiverFactoryTest_Create
     {
-        [TearDown]
-        public void TearDown()
+        public DummyServer Server;
+
+        [SetUp]
+        public async Task SetUpAsync()
         {
+            Server = new DummyServer();
+            await Server.StartAsync();
+        }
+
+        [TearDown]
+        public async Task TearDownAsync()
+        {
+            await Server.StopAsync();
+            Server.Dispose();
             TestCommandProcessor.Instantiated = false;
             TestCommandProcessor.InstanceCount = 0;
         }
@@ -69,7 +81,9 @@ namespace Takenet.MessagingHub.Client.Textc.Test
                             }
                         }
                     }
-                }
+                },
+                StartupType = nameof(SettingsTestStartable),
+                HostName = Server.ListenerUri.Host
             };
 
             // Act
@@ -77,8 +91,9 @@ namespace Takenet.MessagingHub.Client.Textc.Test
 
             // Assert
             actual.ShouldNotBeNull();
+            SettingsTestStartable.Sender.ShouldNotBeNull();
             TestCommandProcessor.Instantiated.ShouldBeTrue();
-            TestCommandProcessor.InstanceCount.ShouldBe(2);
+            TestCommandProcessor.InstanceCount.ShouldBe(2);            
         }
 
 
@@ -87,7 +102,7 @@ namespace Takenet.MessagingHub.Client.Textc.Test
         {
             // Arrange
             var json =
-                "{ \"login\": \"abcd1234\", \"accessKey\": \"xyz1234\", \"messageReceivers\": [ { \"type\": \"TextcMessageReceiverFactory\", \"settings\": { \"syntaxes\": [ { \"[:Word(mais,more,top) top:Integer? query+:Text]\": { \"processor\": \"TestCommandProcessor\", \"method\": \"GetImageDocumentAsync\" } }, { \"[query+:Text]\": { \"processor\": \"TestCommandProcessor\", \"method\": \"GetFirstImageDocumentAsync\" } } ], \"scorer\": \"MatchCountExpressionScorer\" } } ], \"settings\": { \"myApiKey\": \"askjakdaksjasjdalksjd\" } } ";
+                "{ \"login\": \"abcd1234\", \"accessKey\": \"xyz1234\", \"messageReceivers\": [ { \"type\": \"TextcMessageReceiverFactory\", \"settings\": { \"syntaxes\": [ { \"[:Word(mais,more,top) top:Integer? query+:Text]\": { \"processor\": \"TestCommandProcessor\", \"method\": \"GetImageDocumentAsync\" } }, { \"[query+:Text]\": { \"processor\": \"TestCommandProcessor\", \"method\": \"GetFirstImageDocumentAsync\" } } ], \"scorer\": \"MatchCountExpressionScorer\" } } ], \"settings\": { \"myApiKey\": \"askjakdaksjasjdalksjd\" }, \"hostName\": \"localhost\",  } ";
 
             var application = Application.ParseFromJson(json);
 
@@ -104,12 +119,14 @@ namespace Takenet.MessagingHub.Client.Textc.Test
 
     public class TestCommandProcessor
     {
+        public static IMessagingHubSender Sender;
         public static IDictionary<string, object> Settings;
         public static bool Instantiated;
         public static int InstanceCount;
 
-        public TestCommandProcessor(IDictionary<string, object> settings)
+        public TestCommandProcessor(IMessagingHubSender sender, IDictionary<string, object> settings)
         {
+            Sender = sender;
             Settings = settings;
             Instantiated = true;
             InstanceCount++;
@@ -135,4 +152,28 @@ namespace Takenet.MessagingHub.Client.Textc.Test
             return new JsonDocument();
         }
     }
+
+    public class SettingsTestStartable : IStartable
+    {
+        public SettingsTestStartable(IMessagingHubSender sender, IDictionary<string, object> settings)
+        {
+            Sender = sender;
+            Settings = settings;
+        }
+
+        public bool Started => _Started;
+
+        public static bool _Started;
+
+        public static IMessagingHubSender Sender;
+
+        public static IDictionary<string, object> Settings;
+
+        public Task StartAsync()
+        {
+            _Started = true;
+            return Task.CompletedTask;
+        }
+    }
+
 }

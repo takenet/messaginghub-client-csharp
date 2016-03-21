@@ -126,7 +126,14 @@ namespace Takenet.MessagingHub.Client.Host
                         var senderRegex = new Regex(applicationReceiver.Sender, RegexOptions.Compiled | RegexOptions.IgnoreCase);
                         messagePredicate = m => currentMessagePredicate(m) && senderRegex.IsMatch(m.GetSender().ToString());
                     }
-                    
+
+                    if (applicationReceiver.Destination != null)
+                    {
+                        var currentMessagePredicate = messagePredicate;
+                        var destinationRegex = new Regex(applicationReceiver.Destination, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                        messagePredicate = m => currentMessagePredicate(m) && destinationRegex.IsMatch(m.To.ToString());
+                    }
+
                     senderBuilder = senderBuilder.AddMessageReceiver(receiver, messagePredicate);
                 }
             }
@@ -139,7 +146,31 @@ namespace Takenet.MessagingHub.Client.Host
                         await
                             CreateAsync<INotificationReceiver>(applicationReceiver.Type, localServiceProvider, MergeSettings(application, applicationReceiver))
                                 .ConfigureAwait(false);
-                    senderBuilder = senderBuilder.AddNotificationReceiver(receiver, applicationReceiver.EventType);
+
+
+                    Predicate<Notification> notificationPredicate = n => n != null;
+
+                    if (applicationReceiver.EventType != null)
+                    {
+                        var currentNotificationPredicate = notificationPredicate;
+                        notificationPredicate = n => currentNotificationPredicate(n) && n.Event.Equals(applicationReceiver.EventType);
+                    }
+
+                    if (applicationReceiver.Sender != null)
+                    {
+                        var currentNotificationPredicate = notificationPredicate;
+                        var senderRegex = new Regex(applicationReceiver.Sender, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                        notificationPredicate = n => currentNotificationPredicate(n) && senderRegex.IsMatch(n.GetSender().ToString());
+                    }
+
+                    if (applicationReceiver.Destination != null)
+                    {
+                        var currentNotificationPredicate = notificationPredicate;
+                        var destinationRegex = new Regex(applicationReceiver.Destination, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                        notificationPredicate = n => currentNotificationPredicate(n) && destinationRegex.IsMatch(n.To.ToString());
+                    }
+
+                    senderBuilder = senderBuilder.AddNotificationReceiver(receiver, notificationPredicate);
                 }
             }
             return senderBuilder;
