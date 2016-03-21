@@ -232,7 +232,7 @@ namespace Takenet.MessagingHub.Client
             _channelListener = new ChannelListener(
                 handler.HandleAsync,
                 handler.HandleAsync,
-                c => TaskUtil.FalseCompletedTask);
+                c => TaskUtil.TrueCompletedTask);
             _channelListener.Start(_onDemandClientChannel);
         }        
     }
