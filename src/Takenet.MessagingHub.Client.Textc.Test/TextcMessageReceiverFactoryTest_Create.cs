@@ -30,6 +30,7 @@ namespace Takenet.MessagingHub.Client.Textc.Test
         public async Task TearDownAsync()
         {
             await Server.StopAsync();
+            Server.Dispose();
             TestCommandProcessor.Instantiated = false;
             TestCommandProcessor.InstanceCount = 0;
         }

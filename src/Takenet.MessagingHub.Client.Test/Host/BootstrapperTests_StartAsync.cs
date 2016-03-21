@@ -39,6 +39,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
         public async Task TearDownAsync()
         {
             await Server.StopAsync();
+            Server.Dispose();
             TestMessageReceiver.InstanceCount = 0;
             TestNotificationReceiver.InstanceCount = 0;
         }        
