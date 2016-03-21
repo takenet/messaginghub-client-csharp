@@ -12,13 +12,13 @@
     <copyright>Copyright © 2016 Curupira S/A</copyright>
     <tags>messagingHub</tags>
     <dependencies>
-      <dependency id="Lime.Messaging" version="0.4.11" />
-      <dependency id="Lime.Protocol" version="0.4.11" />
-      <dependency id="Lime.Protocol.Serialization.Newtonsoft" version="0.4.11" />
-      <dependency id="Lime.Transport.Tcp" version="0.4.11" />
+      <dependency id="Lime.Messaging" version="0.4.20" />
+      <dependency id="Lime.Protocol" version="0.4.20" />
+      <dependency id="Lime.Protocol.Serialization.Newtonsoft" version="0.4.20" />
+      <dependency id="Lime.Transport.Tcp" version="0.4.20" />
       <dependency id="Microsoft.Tpl.Dataflow" version="4.5.24" />
-      <dependency id="Newtonsoft.Json" version="8.0.2" />
-      <dependency id="Takenet.MessagingHub.Client" version="0.2.13" />
+      <dependency id="Newtonsoft.Json" version="8.0.3" />
+      <dependency id="Takenet.MessagingHub.Client" version="$version$" />
     </dependencies>
   </metadata>
   <files>
