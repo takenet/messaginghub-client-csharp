@@ -12,7 +12,7 @@ This package will prepare your brand new Console Application with the boilerplat
 
 ## Using the Messaging Hub Host
 
-The Messaging Hub offers the utility `mmh.exe` which *hosts* applications defined in an `application.json` file. This file allows the creation of Messaging Hub client application in a declarative way.
+The Messaging Hub offers the utility `mhh.exe` which *hosts* applications defined in an `application.json` file. This file allows the creation of Messaging Hub client application in a declarative way.
 
 To use it, create a Visual Studio *Class Library* project and install the package using the folllowing command:
 
