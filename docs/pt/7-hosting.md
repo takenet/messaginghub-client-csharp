@@ -12,7 +12,7 @@ Este pacote irá preparar a sua aplicação console recém criada com o template
 
 ## Utilizando o Messaging Hub Host
 
-O Messaging Hub oferece o utilitário `mmh.exe` que realiza o *host* de aplicações definidas em um arquivo `application.json`. Este arquivo permite a construção do cliente do Messaging Hub de forma declarativa.
+O Messaging Hub oferece o utilitário `mhh.exe` que realiza o *host* de aplicações definidas em um arquivo `application.json`. Este arquivo permite a construção do cliente do Messaging Hub de forma declarativa.
 
 Para utilizá-lo, crie um projeto no Visual Studio do tipo **Class library** e instale o pacote com o comando:
 
