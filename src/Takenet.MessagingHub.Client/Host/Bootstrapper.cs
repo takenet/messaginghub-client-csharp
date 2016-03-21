@@ -201,11 +201,13 @@ namespace Takenet.MessagingHub.Client.Host
         public static Task<T> CreateAsync<T>(string typeName, IServiceProvider serviceProvider, IDictionary<string, object> settings) where T : class
         {
             if (typeName == null) throw new ArgumentNullException(nameof(typeName));
+            var type = ParseTypeName(typeName);
+            return CreateAsync<T>(type, serviceProvider, settings);
+        }
 
-            var type = TypeUtil
-                .GetAllLoadedTypes()
-                .FirstOrDefault(t => t.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase)) ?? Type.GetType(typeName, true, true);
-
+        public static Task<T> CreateAsync<T>(Type type, IServiceProvider serviceProvider, IDictionary<string, object> settings) where T : class
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
             IFactory<T> factory;
             if (typeof(IFactory<T>).IsAssignableFrom(type))
             {
@@ -217,6 +219,14 @@ namespace Takenet.MessagingHub.Client.Host
             }
 
             return factory.CreateAsync(serviceProvider, settings);
+        }
+
+        public static Type ParseTypeName(string typeName)
+        {
+            return TypeUtil
+                .GetAllLoadedTypes()
+                .FirstOrDefault(t => t.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase)) ??
+                       Type.GetType(typeName, true, true);
         }
 
         private class ServiceProvider : IServiceProvider
@@ -251,8 +261,7 @@ namespace Takenet.MessagingHub.Client.Host
 
             public Task<T> CreateAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings)
             {
-                var service = serviceProvider.GetService(_type) as T;
-                if (service == null) service = (T) GetService(_type, serviceProvider, settings);                
+                var service = serviceProvider.GetService(_type) as T ?? (T) GetService(_type, serviceProvider, settings);
                 return Task.FromResult(service);
             }
 

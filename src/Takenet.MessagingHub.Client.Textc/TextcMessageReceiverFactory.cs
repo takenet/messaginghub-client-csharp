@@ -2,107 +2,126 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using Takenet.MessagingHub.Client.Host;
 using Takenet.MessagingHub.Client.Receivers;
 using Takenet.Textc.Csdl;
 using Takenet.Textc.Processors;
 using Takenet.Textc.Scorers;
-using TypeUtil = Lime.Protocol.Serialization.TypeUtil;
 
 namespace Takenet.MessagingHub.Client.Textc
 {
     public class TextcMessageReceiverFactory : IFactory<IMessageReceiver>
     {
+        public static IDictionary<Type, object> ProcessorInstancesDictionary = new Dictionary<Type, object>();
+
         public async Task<IMessageReceiver> CreateAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings)
         {
             var builder = new TextcMessageReceiverBuilder(serviceProvider.GetService<MessagingHubSenderBuilder>());
             if (settings != null)
             {
-                if (settings.ContainsKey("syntaxes"))
+                var textcMessageReceiverSettings = TextcMessageReceiverSettings.ParseFromSettings(settings);
+                if (textcMessageReceiverSettings.Commands != null)
                 {
-                    builder = SetupSyntaxes(serviceProvider, settings, builder);
-                }                
+                    builder = SetupCommands(serviceProvider, settings, textcMessageReceiverSettings.Commands, builder);
+                }
 
-                if (settings.ContainsKey("scorer"))
+                if (textcMessageReceiverSettings.ScorerType != null)
                 {
-                    builder = await SetupScorerAsync(serviceProvider, settings, builder).ConfigureAwait(false);
+                    builder = await SetupScorerAsync(serviceProvider, settings, textcMessageReceiverSettings.ScorerType, builder).ConfigureAwait(false);
                 }
             }
 
             return builder.Build();
         }
 
-        private static TextcMessageReceiverBuilder SetupSyntaxes(IServiceProvider serviceProvider, IDictionary<string, object> settings, 
-            TextcMessageReceiverBuilder builder)
+        private static TextcMessageReceiverBuilder SetupCommands(IServiceProvider serviceProvider, IDictionary<string, object> settings, TextcMessageReceiverCommandSettings[] commandSettings, TextcMessageReceiverBuilder builder)
         {
-            var syntaxes = GetArrayFromJson<IDictionary<string, object>>(settings["syntaxes"]);
-
-            foreach (var syntaxDictionary in syntaxes)
+            foreach (var commandSetting in commandSettings)
             {
-                var syntaxSetting = syntaxDictionary.First();
-
-                var syntax = CsdlParser.Parse(syntaxSetting.Key);
-                builder = builder
-                    .ForSyntax(syntax)
-                    .ProcessWith(o =>
-                    {
-                        var dictionary = GetDictionaryFromJson(syntaxSetting.Value);
-                        if (dictionary?["processor"] == null || dictionary["method"] == null)
+                var syntaxes = commandSetting.Syntaxes.Select(CsdlParser.Parse).ToArray();
+                if (syntaxes.Length > 0)
+                {
+                    builder = builder
+                        .ForSyntaxes(syntaxes)
+                        .ProcessWith(o =>
                         {
-                            throw new ArgumentException(
-                                "The syntax values must be a dictionary with the 'processor' and 'method' keys");
-                        }
-                        var processorTypeName = (string) dictionary["processor"];
-                        var methodName = (string) dictionary["method"];                        
-                        var processor = Bootstrapper.CreateAsync<object>(processorTypeName, serviceProvider, settings).Result;                        
-                        var method = processor.GetType().GetMethod(methodName);
-                        if (method == null || method.ReturnType != typeof (Task))
-                        {
-                            return new ReflectionCommandProcessor(processor, methodName, true, o, syntax);
-                        }
+                            var processorTypeName = commandSetting.ProcessorType;
+                            var methodName = commandSetting.Method;
+                            var processorType = Bootstrapper.ParseTypeName(processorTypeName);
+                            object processor;
+                            if (!ProcessorInstancesDictionary.TryGetValue(processorType, out processor))
+                            {
+                                processor =
+                                    Bootstrapper.CreateAsync<object>(processorType, serviceProvider, settings).Result;
+                                ProcessorInstancesDictionary.Add(processorType, processor);
+                            }
 
-                        return new ReflectionCommandProcessor(processor, methodName, true, syntaxes: syntax);
-                    });
+                            var method = processorType.GetMethod(methodName);
+                            if (method == null || method.ReturnType != typeof (Task))
+                            {
+                                return new ReflectionCommandProcessor(processor, methodName, true, o, syntaxes);
+                            }
+
+                            return new ReflectionCommandProcessor(processor, methodName, true, syntaxes: syntaxes);
+                        });
+                }
             }
             return builder;
         }
 
         private static async Task<TextcMessageReceiverBuilder> SetupScorerAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings,
-            TextcMessageReceiverBuilder builder)
+            string scorerType, TextcMessageReceiverBuilder builder)
         {
-            var scorerTypeName = (string) settings["scorer"];
-
             IExpressionScorer scorer;
-            if (scorerTypeName.Equals(nameof(MatchCountExpressionScorer)))
+            if (scorerType.Equals(nameof(MatchCountExpressionScorer)))
             {
                 scorer = new MatchCountExpressionScorer();
             }
-            else if (scorerTypeName.Equals(nameof(RatioExpressionScorer)))
+            else if (scorerType.Equals(nameof(RatioExpressionScorer)))
             {
                 scorer = new RatioExpressionScorer();
             }
             else
             {
-                scorer = await Bootstrapper.CreateAsync<IExpressionScorer>(scorerTypeName, serviceProvider, settings).ConfigureAwait(false);
+                scorer = await Bootstrapper.CreateAsync<IExpressionScorer>(scorerType, serviceProvider, settings).ConfigureAwait(false);
             }
             builder = builder.WithExpressionScorer(scorer);
             return builder;
         }
+    }
 
-        private static T[] GetArrayFromJson<T>(object value)
+    public class TextcMessageReceiverSettings
+    {
+        private static readonly JsonSerializer _serializer;
+
+        static TextcMessageReceiverSettings()
         {
-            var jArray = value as JArray;
-            if (jArray != null) return jArray.ToObject<T[]>();
-            return value as T[];
+            _serializer = JsonSerializer.Create(new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
         }
 
-        private static IDictionary<string, object> GetDictionaryFromJson(object value)
-        {
-            var jObject = value as JObject;
-            if (jObject != null) return jObject.ToObject<Dictionary<string, object>>();
-            return value as IDictionary<string, object>;
+        public TextcMessageReceiverCommandSettings[] Commands { get; set; }
 
+        public string ScorerType { get; set; }
+
+        public static TextcMessageReceiverSettings ParseFromSettings(IDictionary<string, object> settings)
+        {
+            var jObject = JObject.FromObject(settings);
+            return jObject.ToObject<TextcMessageReceiverSettings>(_serializer);
         }
+    }
+
+    public class TextcMessageReceiverCommandSettings
+    {
+        public string[] Syntaxes { get; set; }
+
+        public string ProcessorType { get; set; }
+
+        public string Method { get; set; }
     }
 }
