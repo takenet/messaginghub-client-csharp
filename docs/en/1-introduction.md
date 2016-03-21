@@ -2,6 +2,14 @@ The Messaging Hub Client was designed to make it easy to work with the [Lime pro
 
 It is available in some programming languages with the same semantics, like [C#](https://github.com/takenet/messaginghub-client-csharp) and [Javascript](https://github.com/takenet/messaginghub-client-js).
 
+## Install
+
+From the Package Manager Console, install it using:
+
+    Install-Package Takenet.MessagingHub.Client
+
+*Note*: this package targets framework 4.6.1, so change your project target framework accordingly.
+
 ## Configuration
 
 To work with the Messaging Hub you need perform the authentication process.
