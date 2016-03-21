@@ -2,19 +2,32 @@ The Messaging Hub Client was designed to make it easy to work with the [Lime pro
 
 It is available in some programming languages with the same semantics, like [C#](https://github.com/takenet/messaginghub-client-csharp) and [Javascript](https://github.com/takenet/messaginghub-client-js).
 
-## Access key
-You need the application identifier and access key. To do so, follow these steps:
-- Access [Console](http://messaginghub.io/home/console)
-- Click [List](http://messaginghub.io/application/list) in `Applications` tab
-- Find your application and click the `Details` button
-- Get the `Application name` and `Access Key` to use
+## Install
 
-## Working with the Messaging Hub Client
+From the Package Manager Console, install it using:
+
+    Install-Package Takenet.MessagingHub.Client
+
+*Note*: this package targets framework 4.6.1, so change your project target framework accordingly.
+
+## Configuration
+
+To work with the Messaging Hub you need perform the authentication process.
+See more in [Client Configuration](http://messaginghub.io/docs/sdks/clientconfiguration).
+
+
+## Working with the Messaging Hub
 
 After reference the Messaging Hub.Client in your code and have the data to access, follow the steps in [Getting Started](http://messaginghub.io/docs/sdks/gettingstarted) in order to use the following operations:
 - Send and receive [messages](http://messaginghub.io/docs/sdks/messages)
 - Send and receive [notifications](http://messaginghub.io/docs/sdks/notifications)
 - Send [commands](http://messaginghub.io/docs/sdks/commands)
+
+
+## Hosting
+
+Finally, you can host your code with us for his work with Messaging Hub is always available.
+See more in [Hosting](http://messaginghub.io/docs/sdks/hosting).
 
 ## Contributions
 

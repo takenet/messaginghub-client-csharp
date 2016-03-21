@@ -83,3 +83,19 @@ Cada **notification receiver** pode possuir as seguintes propriedades:
 | type        | Nome do tipo .NET para recebimento de notificações. O mesmo deve implementar a interface `INotificationReceiver`. Pode ser o nome simples do tipo (se estiver na mesma **assembly** do arquivo `application.json`) ou o nome qualificado com **assembly**. | NotificationReceiver |
 | settings    | Configurações gerais do receiver, no formato chave-valor. Este valor é  injetado na instância criada. Para receber os valores, a implementação deve esperar uma instância do tipo `IDictionary<string, object>` no construtor. | { "mySetting": "xyzabcd" }   |
 | eventType   | Define um filtro de tipo de eventos que o **receiver** pode processar. Apenas notificações do evento especificado serão entregues a instância criada. | received |
+
+## Publicando sua aplicação
+
+Para ter a sua aplicação carregada, você precisa publicá-la em um servidor que tenha o serviço *Messaging Hub Application Activator* em execução.
+Esse serviço irá escanear uma pasta nomeada *MessagingHubApplications* e executar o processo *mhh.exe* para cada subpasta encontrada. Dessa forma, se sua aplicação se chamar *MyApp* e existir uma pasta MyApp na pasta *MessagingHubApplications*, contendo sua *Class library* e seu arquivo *aplication.json*, quando qualquer mudança for detectada no arquivo *application.json*, sua aplicação será recarregada.
+Um arquivo nomeado *output.txt* será criado e atualizado para refletir a saída do console da sua aplicação.
+
+### Publicando sua aplicação manualmente
+
+Para publicar sua aplicação manualmente, basta renomear e copiar a pasta *\bin\Release* para a pasta *MessagingHubApplications* de um servidor em que o serviço *Messaging Hub Application Activator* esteja sendo executado.
+
+Para atualizar uma aplicação já publicada, basta sobrescrever a pasta da sua aplicação com os novos arquivos e o serviço irá detectar as mudanças e recarregar a sua aplicação.
+
+### Publicando a sua aplicação usando a interface de linha de comando.
+
+***AINDA NÃO IMPLEMENTADO***
