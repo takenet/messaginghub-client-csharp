@@ -14,6 +14,11 @@ Após referênciar o MessagingHub.Client no seu código e de posse dos dados par
 - Enviar e receber [notificações](http://messaginghub.io/docs/sdks/notifications)
 - Enviar [comandos](http://messaginghub.io/docs/sdks/commands)
 
+## Hospedagem
+
+Por fim, você pode hospedar seu código conosco para que seu trabalho com o Messaging Hub esteja sempre disponível.
+Veja mais detalhes em [Hospedagem](http://messaginghub.io/docs/sdks/hosting).
+
 ## Contribuições
 
 Os códigos fonte estão disponíveis no [GitHub](https://github.com/takenet) e podem ser usados para referência e também para contribuição da comunidade. Se você deseja melhorar o cliente, fork o projeto e nos envie um pull request.
