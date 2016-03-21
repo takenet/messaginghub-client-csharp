@@ -10,7 +10,7 @@ From the Package Manager Console, install it using:
 
 *Note*: this package targets framework 4.6.1, so change your project target framework accordingly.
 
-## Configuration
+## Client Configuration
 
 To work with the Messaging Hub you need perform the authentication process.
 See more in [Client Configuration](http://messaginghub.io/docs/sdks/clientconfiguration).
