@@ -87,7 +87,8 @@ Each **notification receiver** will have the following properties:
 ## Publishing your application
 
 In order to have your application hosted, you need to publish it in a server running the *Messaging Hub Application Activator* service.
-This service will scan a *MessagingHubApplications* folder and execute a *mhh.exe* process for each subfolder found. In this way, if your application is named *MyApp* and a MyApp folder exists in the *MessagingHubApplications* folder, containing your *Class Library* and your *application.json* file, when any chances are detected in the *application.json* file, your application will be reloaded. A fille named *output.txt* will be created and updated in that folder to reflect the console output of your application.
+This service will scan a *MessagingHubApplications* folder and execute a *mhh.exe* process for each subfolder found. In this way, if your application is named *MyApp* and a MyApp folder exists in the *MessagingHubApplications* folder, containing your *Class library* and your *application.json* file, when any chances are detected in the *application.json* file, your application will be reloaded.
+A file named *output.txt* will be created and updated in that folder to reflect the console output of your application.
 
 ### Manually publishing your application
 
