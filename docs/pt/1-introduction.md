@@ -2,15 +2,12 @@ Este cliente do Messaging Hub foi desenvolvido para tornar mais fácil o trabalh
 
 Está disponível em algumas linguagens de programação com a mesma semântica, como [C#](https://github.com/takenet/messaginghub-client-csharp) e [Javascript](https://github.com/takenet/messaginghub-client-js).
 
-## Chave de acesso
-Independente da linguagem de programação escolhida, você precisará do nome da aplicação e da chave de acesso.
-Para isso, siga os seguintes passos:
-- Acesse o [Console](http://messaginghub.io/home/console)
-- Clique em [Listar](http://messaginghub.io/application/list) na aba `Aplicações`
-- Encontre sua aplicação e clique em `Detalhes`
-- Pegue o `Identificador da aplicação` e a `chave de acesso` para utilização
 
-## Trabalhando com o cliente do Messaging Hub
+## Configuração
+Para trabalhar com o Messaging Hub você precisará passar pelo processo de autenticação. 
+Veja mais detalhes em [Configuração do Cliente](http://messaginghub.io/docs/sdks/clientconfiguration).
+
+## Trabalhando com Messaging Hub
 
 Após referênciar o MessagingHub.Client no seu código e de posse dos dados para acesso, siga os passos descritos em [Como Começar?](http://messaginghub.io/docs/sdks/gettingstarted) para poder utilizar as seguintes operações:
 - Enviar e receber [mensagens](http://messaginghub.io/docs/sdks/messages)
