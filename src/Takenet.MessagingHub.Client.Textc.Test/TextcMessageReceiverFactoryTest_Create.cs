@@ -57,13 +57,40 @@ namespace Takenet.MessagingHub.Client.Textc.Test
                                     {
                                         Syntaxes = new[] { "value1:Word value2:Integer" },
                                         ProcessorType = typeof(TestCommandProcessor).Name,
-                                        Method = nameof(TestCommandProcessor.ProcessAsync)
+                                        Method = nameof(TestCommandProcessor.ProcessAsync),
+                                        ReturnText = default(string),
+                                        ReturnJson  = default(Dictionary<string, object>),
+                                        ReturnJsonMediaType  = default(string)
                                     },
                                     new
                                     {
                                         Syntaxes = new[] { "value1:Word value2:Integer value3:Word" },
                                         ProcessorType = typeof(TestCommandProcessor).AssemblyQualifiedName,
-                                        Method = nameof(TestCommandProcessor.ProcessWithResultAsync)
+                                        Method = nameof(TestCommandProcessor.ProcessWithResultAsync),
+                                        ReturnText = default(string),
+                                        ReturnJson  = default(Dictionary<string, object>),
+                                        ReturnJsonMediaType  = default(string)
+                                    },
+                                    new
+                                    {
+                                        Syntaxes = new[] { "value1:Word value2:Integer value3:Integer value4:Word(a,b,c)" },
+                                        ProcessorType = default(string),
+                                        Method = default(string),
+                                        ReturnText = "This is an response",
+                                        ReturnJson  = default(Dictionary<string, object>),
+                                        ReturnJsonMediaType  = default(string)
+                                    },
+                                    new
+                                    {
+                                        Syntaxes = new[] { "value1:Word value2:Integer value3:Integer value4:Word(a,b,c) value5:Word(x,y,z)" },
+                                        ProcessorType = default(string),
+                                        Method = default(string),
+                                        ReturnText = default(string),
+                                        ReturnJson = new Dictionary<string, object>()
+                                        {
+                                            { "state", "composing" }
+                                        },
+                                        ReturnJsonMediaType  = "application/vnd.lime.chatState+json"
                                     }
                                 }
                             }
@@ -89,7 +116,7 @@ namespace Takenet.MessagingHub.Client.Textc.Test
         {
             // Arrange
             var json =
-                "{\"login\":\"image.search\",\"accessKey\":\"Z09SNXdt\",\"messageReceivers\":[{\"type\":\"TextcMessageReceiverFactory\",\"mediaType\":\"text/plain\",\"settings\":{\"commands\":[{\"syntaxes\":[\"[:Word(mais,more,top) top:Integer? query+:Text]\"],\"processorType\":\"TestCommandProcessor\",\"method\":\"GetImageDocumentAsync\"},{\"syntaxes\":[\"[query+:Text]\"],\"processorType\":\"TestCommandProcessor\",\"method\":\"GetFirstImageDocumentAsync\"}],\"scorerType\":\"MatchCountExpressionScorer\"}}],\"startupType\":\"SettingsTestStartable\",\"settings\":{\"bingApiKey\":\"z1f6I3djqJy0sWG/0HxxwjbrVrQZMF1JbTK+a5U9oNU=\"}}";
+                "{\"login\":\"image.search\",\"accessKey\":\"Z09SNXdt\",\"messageReceivers\":[{\"type\":\"TextcMessageReceiverFactory\",\"mediaType\":\"text/plain\",\"settings\":{\"commands\":[{\"syntaxes\":[\"[:Word(mais,more,top) top:Integer? query+:Text]\"],\"processorType\":\"TestCommandProcessor\",\"method\":\"GetImageDocumentAsync\"},{\"syntaxes\":[\"[query+:Text]\"],\"processorType\":\"TestCommandProcessor\",\"method\":\"GetFirstImageDocumentAsync\"},{\"syntaxes\":[\"[query+:Text option1:Word(a,b,c,d)]\"],\"returnText\":\"This is an return value\"},{\"syntaxes\":[\"[query+:Text option1:Word(x,y,z]\"],\"returnJson\":{\"key\":\"value1\"}}],\"scorerType\":\"MatchCountExpressionScorer\"}}],\"startupType\":\"SettingsTestStartable\",\"settings\":{\"bingApiKey\":\"z1f6I3djqJy0sWG/0HxxwjbrVrQZMF1JbTK+a5U9oNU=\"}}";
 
             var application = Application.ParseFromJson(json);
 

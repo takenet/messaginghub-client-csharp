@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
+using Lime.Protocol;
 using Takenet.MessagingHub.Client.Host;
 using Takenet.MessagingHub.Client.Receivers;
 using Takenet.Textc.Csdl;
@@ -44,29 +42,45 @@ namespace Takenet.MessagingHub.Client.Textc
                 var syntaxes = commandSetting.Syntaxes.Select(CsdlParser.Parse).ToArray();
                 if (syntaxes.Length > 0)
                 {
-                    builder = builder
-                        .ForSyntaxes(syntaxes)
-                        .ProcessWith(o =>
-                        {
-                            var processorTypeName = commandSetting.ProcessorType;
-                            var methodName = commandSetting.Method;
-                            var processorType = Bootstrapper.ParseTypeName(processorTypeName);
-                            object processor;
-                            if (!ProcessorInstancesDictionary.TryGetValue(processorType, out processor))
-                            {
-                                processor =
-                                    Bootstrapper.CreateAsync<object>(processorType, serviceProvider, settings).Result;
-                                ProcessorInstancesDictionary.Add(processorType, processor);
-                            }
+                    var syntaxBuilder = builder
+                        .ForSyntaxes(syntaxes);
 
-                            var method = processorType.GetMethod(methodName);
-                            if (method == null || method.ReturnType != typeof (Task))
+                    if (!string.IsNullOrEmpty(commandSetting.ReturnText))
+                    {
+                        builder = syntaxBuilder.Return(() => commandSetting.ReturnText.AsCompletedTask());
+                    }
+                    else if (commandSetting.ReturnJson != null)
+                    {
+                        var mediaType = MediaType.Parse(commandSetting.ReturnJsonMediaType ?? "application/json");
+                        var document = new JsonDocument(commandSetting.ReturnJson, mediaType);
+                        builder = syntaxBuilder.Return(() => document.AsCompletedTask());
+                    }
+                    else if (!string.IsNullOrEmpty(commandSetting.ProcessorType) && !string.IsNullOrEmpty(commandSetting.Method))
+                    {
+                        builder = syntaxBuilder
+                            .ProcessWith(o =>
                             {
-                                return new ReflectionCommandProcessor(processor, methodName, true, o, syntaxes);
-                            }
+                                var processorTypeName = commandSetting.ProcessorType;
+                                var methodName = commandSetting.Method;
+                                var processorType = Bootstrapper.ParseTypeName(processorTypeName);
+                                object processor;
+                                if (!ProcessorInstancesDictionary.TryGetValue(processorType, out processor))
+                                {
+                                    processor =
+                                        Bootstrapper.CreateAsync<object>(processorType, serviceProvider, settings)
+                                            .Result;
+                                    ProcessorInstancesDictionary.Add(processorType, processor);
+                                }
 
-                            return new ReflectionCommandProcessor(processor, methodName, true, syntaxes: syntaxes);
-                        });
+                                var method = processorType.GetMethod(methodName);
+                                if (method == null || method.ReturnType != typeof (Task))
+                                {
+                                    return new ReflectionCommandProcessor(processor, methodName, true, o, syntaxes);
+                                }
+
+                                return new ReflectionCommandProcessor(processor, methodName, true, syntaxes: syntaxes);
+                            });
+                    }
                 }
             }
             return builder;
@@ -91,37 +105,5 @@ namespace Takenet.MessagingHub.Client.Textc
             builder = builder.WithExpressionScorer(scorer);
             return builder;
         }
-    }
-
-    public class TextcMessageReceiverSettings
-    {
-        private static readonly JsonSerializer _serializer;
-
-        static TextcMessageReceiverSettings()
-        {
-            _serializer = JsonSerializer.Create(new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            });
-        }
-
-        public TextcMessageReceiverCommandSettings[] Commands { get; set; }
-
-        public string ScorerType { get; set; }
-
-        public static TextcMessageReceiverSettings ParseFromSettings(IDictionary<string, object> settings)
-        {
-            var jObject = JObject.FromObject(settings);
-            return jObject.ToObject<TextcMessageReceiverSettings>(_serializer);
-        }
-    }
-
-    public class TextcMessageReceiverCommandSettings
-    {
-        public string[] Syntaxes { get; set; }
-
-        public string ProcessorType { get; set; }
-
-        public string Method { get; set; }
     }
 }
