@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Takenet.MessagingHub.Client.Host;
 using Takenet.MessagingHub.Client.Receivers;
+using Takenet.Textc;
 using Takenet.Textc.Csdl;
 using Takenet.Textc.Processors;
 using Takenet.Textc.Scorers;
@@ -35,6 +37,8 @@ namespace Takenet.MessagingHub.Client.Textc
             return builder.Build();
         }
 
+        private static readonly Regex ReturnVariablesRegex = new Regex("{[a-zA-Z0-9]+}", RegexOptions.Compiled);
+
         private static TextcMessageReceiverBuilder SetupCommands(IServiceProvider serviceProvider, IDictionary<string, object> settings, TextcMessageReceiverCommandSettings[] commandSettings, TextcMessageReceiverBuilder builder)
         {
             foreach (var commandSetting in commandSettings)
@@ -47,7 +51,26 @@ namespace Takenet.MessagingHub.Client.Textc
 
                     if (!string.IsNullOrEmpty(commandSetting.ReturnText))
                     {
-                        builder = syntaxBuilder.Return(() => commandSetting.ReturnText.AsCompletedTask());
+                        var returnVariables = new List<string>();
+
+                        var returnTextVariableMatches = ReturnVariablesRegex.Matches(commandSetting.ReturnText);
+                        if (returnTextVariableMatches.Count > 0)
+                        {
+                            returnVariables.AddRange(returnTextVariableMatches.Cast<Match>().Select(m => m.Value));
+                        }
+
+                        builder = syntaxBuilder.Return((IRequestContext context) =>
+                        {
+                            var returnText = commandSetting.ReturnText;
+                            foreach (var returnVariable in returnVariables)
+                            {
+                                var returnVariableValue = context
+                                    .GetVariable(returnVariable.TrimStart('{').TrimEnd('}'))?.ToString() ?? "";                                
+                                returnText = returnText.Replace(returnVariable, returnVariableValue);                                
+                            }
+
+                            return returnText.AsCompletedTask();
+                        });
                     }
                     else if (commandSetting.ReturnJson != null)
                     {

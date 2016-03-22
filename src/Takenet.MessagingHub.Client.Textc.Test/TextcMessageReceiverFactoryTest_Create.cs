@@ -76,7 +76,7 @@ namespace Takenet.MessagingHub.Client.Textc.Test
                                         Syntaxes = new[] { "value1:Word value2:Integer value3:Integer value4:Word(a,b,c)" },
                                         ProcessorType = default(string),
                                         Method = default(string),
-                                        ReturnText = "This is an response",
+                                        ReturnText = "This is an response {value1} and {value2}",
                                         ReturnJson  = default(Dictionary<string, object>),
                                         ReturnJsonMediaType  = default(string)
                                     },
