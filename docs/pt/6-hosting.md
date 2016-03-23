@@ -1,15 +1,3 @@
-## Utilizando o Console Host
-
-Uma maneira rápida de começar a desenvolver uma aplicação conectada ao Messaging Hub é utilizar o pacote *ConsoleHost* em um **Console Application** do Visual Studio.
-
-Crie um novo projeto do tipo **Console Application** e a partir do **Package Manager Console**, instale o pacote usando o seguinte comando:
-
-    Install-Package Takenet.MessagingHub.Client.ConsoleHost
-
-Este pacote irá preparar a sua aplicação console recém criada com o template de código necessário para se conectar ao Messaging Hub.
-
-*Observação*: este pacote tem como *target* o *framework* 4.6.1, então altere o *target framework* do seu projeto.
-
 ## Utilizando o Messaging Hub Host
 
 O Messaging Hub oferece o utilitário `mhh.exe` que realiza o *host* de aplicações definidas em um arquivo `application.json`. Este arquivo permite a construção do cliente do Messaging Hub de forma declarativa.
