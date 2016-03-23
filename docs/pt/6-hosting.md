@@ -98,12 +98,12 @@ Para atualizar uma aplicação já publicada, basta sobrescrever a pasta da sua 
 
 ### Publicando sua aplicação usando a API
 
-Também é possível publicar sua aplicação nos servidores do *Messaging Hub* usando a *API do Messaging Hub*. Para isso, você precisa fazer um POST contendo o array de bytes que representa a pasta de binários da sua aplicação, zipada, para o endereço http://api.messaginghub.io/Application/{yourappname}/publish. Veja a [documentação da API ](http://hmg.api.messaginghub.io/swagger/ui/index#!/Application/Application_PublishAsync) para maiores detalhes.
+Também é possível publicar sua aplicação nos servidores do *Messaging Hub* usando a *API do Messaging Hub*. Para isso, você precisa fazer um POST contendo o array de bytes que representa a pasta de binários da sua aplicação, zipada, para o endereço http://api.messaginghub.io/Application/{yourappname}/publish. Veja a [documentação da API ](http://api.messaginghub.io/swagger/ui/index#!/Application/Application_PublishAsync) para maiores detalhes.
 
 O arquivo zip deve conter uma única pasta dentro, a qual deve conter todas as *dlls* da sua aplicação e seu arquivo *application.json*. A API irá rejeitar submissões que não passem nesses critérios.
 
 ### Publicando sua aplicação usando o Portal
 
-Apesar dos métodos descritos acima, o método **recomendado** para publicar sua aplicação é usar o *Portal do Messaging Hub*. Basta acessar o [Portal](http://messaginghub.io), [listar suas aplicações](http://hmg.messaginghub.io/application/list), ir para a página de *detalhes* da aplicação desejada e no painel *Situação*, enviar o arquivo zip contendo sua aplicação.
+Apesar dos métodos descritos acima, o método **recomendado** para publicar sua aplicação é usar o *Portal do Messaging Hub*. Basta acessar o [Portal](http://messaginghub.io), [listar suas aplicações](http://messaginghub.io/application/list), ir para a página de *detalhes* da aplicação desejada e no painel *Situação*, enviar o arquivo zip contendo sua aplicação.
 
 Once your application is uploaded, it will be detected by the *Messaging Hub Application Activator* service and (re)loaded.
