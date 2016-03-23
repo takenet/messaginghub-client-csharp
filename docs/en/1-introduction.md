@@ -1,20 +1,19 @@
 The Messaging Hub Client was designed to make it easy to work with the [Lime protocol](http://limeprotocol.org) client to exchange messages among the applications and services connected through fluent interface.
 
-It is available in some programming languages with the same semantics, like [C#](https://github.com/takenet/messaginghub-client-csharp) and [Javascript](https://github.com/takenet/messaginghub-client-js).
+It is available for the C# programming language in our [GitHub](https://github.com/takenet/messaginghub-client-csharp).
 
-## Install
+## Preparing the project
 
-From the Package Manager Console, install it using:
+To get started, create a new *Client library* using the *Visual Studio 2015 Update 1* and the *.NET Framework 4.6.1*.
 
-    Install-Package Takenet.MessagingHub.Client
+From the Package Manager Console, install the application template using:
 
-*Note*: this package targets framework 4.6.1, so change your project target framework accordingly.
+    Install-Package Takenet.MessagingHub.Client.Host
 
 ## Client Configuration
 
 To work with the Messaging Hub you need perform the authentication process.
 See more in [Client Configuration](http://messaginghub.io/docs/sdks/clientconfiguration).
-
 
 ## Working with the Messaging Hub
 
@@ -23,10 +22,9 @@ After reference the Messaging Hub.Client in your code and have the data to acces
 - Send and receive [notifications](http://messaginghub.io/docs/sdks/notifications)
 - Send [commands](http://messaginghub.io/docs/sdks/commands)
 
-
 ## Hosting
 
-Finally, you can host your code with us for his work with Messaging Hub is always available.
+Finally, you can host your code with us so that your work with the Messaging Hub will always be available.
 See more in [Hosting](http://messaginghub.io/docs/sdks/hosting).
 
 ## Contributions
