@@ -8,7 +8,10 @@ To send a message, you can use the following method:
 var message = new Message
 {
     To = Node.Parse("user"),
-    Content = "Message Text"
+    Content = new PlainText()
+    {
+        Text = "Message Text"
+    }
 };
 
 await client.SendMessageAsync(message);
