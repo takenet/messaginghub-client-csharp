@@ -4,7 +4,7 @@ It is available for the C# programming language in our [GitHub](https://github.c
 
 ## Preparing the project
 
-To get started, create a new *Client library* using the *Visual Studio 2015 Update 1* and the *.NET Framework 4.6.1*.
+To get started, create a new *Class library* using the *Visual Studio 2015 Update 1* and the *.NET Framework 4.6.1*.
 
 From the Package Manager Console, install the application template using:
 
