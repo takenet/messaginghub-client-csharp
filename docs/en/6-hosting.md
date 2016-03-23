@@ -104,6 +104,6 @@ The zip file must contain a single folder inside, which in turn must contain all
 
 ### Publishing your application using the Portal
 
-Despite the methods described above, the **recommended** way to publish your application is to use the *Messaging Hub Portal*. Just access the [Portal](http://messaginghub.io), list your applications, go to the *details* page of the desired application and in the *Status* panel, upload the zip file containing your application.
+Despite the methods described above, the **recommended** way to publish your application is to use the *Messaging Hub Portal*. Just access the [Portal](http://messaginghub.io), [list your applications](http://hmg.messaginghub.io/application/list), go to the *details* page of the desired application and in the *Status* panel, upload the zip file containing your application.
 
 Once your application is uploaded, it will be detected by the *Messaging Hub Application Activator* service and (re)loaded.
