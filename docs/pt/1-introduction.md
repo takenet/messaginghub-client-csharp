@@ -4,7 +4,7 @@ Ele está disponível para a linguagens de programação C# em nosso [GitHub](ht
 
 ## Preparando o projeto
 
-Para começar, crie uma nova *Client library* usando o *Visual Studio 2015 Update 1* e o *.NET Framework 4.6.1*.
+Para começar, crie uma nova *Class library* usando o *Visual Studio 2015 Update 1* e o *.NET Framework 4.6.1*.
 
 A partir do Package Manager Console, instale o template de aplicações usando:
 
