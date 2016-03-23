@@ -98,12 +98,12 @@ To update a published application, just overwrite your application folder with t
 
 ### Publishing your application using the API
 
-It is also possible to publish your application in the default *Messaging Hub* servers using the *Messaging Hub API*. To do so, you need to POST the byte array that represents your application binaries folder, zipped, to the http://api.messaginghub.io/Application/{yourappname}/publish endpoint. See the [API documentation](http://hmg.api.messaginghub.io/swagger/ui/index#!/Application/Application_PublishAsync) for more details.
+It is also possible to publish your application in the default *Messaging Hub* servers using the *Messaging Hub API*. To do so, you need to POST the byte array that represents your application binaries folder, zipped, to the http://api.messaginghub.io/Application/{yourappname}/publish endpoint. See the [API documentation](http://api.messaginghub.io/swagger/ui/index#!/Application/Application_PublishAsync) for more details.
 
 The zip file must contain a single folder inside, which in turn must contain all your application *dlls* and your *application.json* file. The API will reject uploads that do not match this criteria.
 
 ### Publishing your application using the Portal
 
-Despite the methods described above, the **recommended** way to publish your application is to use the *Messaging Hub Portal*. Just access the [Portal](http://messaginghub.io), [list your applications](http://hmg.messaginghub.io/application/list), go to the *details* page of the desired application and in the *Status* panel, upload the zip file containing your application.
+Despite the methods described above, the **recommended** way to publish your application is to use the *Messaging Hub Portal*. Just access the [Portal](http://messaginghub.io), [list your applications](http://messaginghub.io/application/list), go to the *details* page of the desired application and in the *Status* panel, upload the zip file containing your application.
 
 Once your application is uploaded, it will be detected by the *Messaging Hub Application Activator* service and (re)loaded.
