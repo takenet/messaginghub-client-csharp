@@ -26,9 +26,13 @@ await client.SendMessageAsync("Message Text", to: "user");
 await client.SendMessageAsync("Message Text", Node.Parse("user"));
 ```
 
+To send messages inside a **receiver**, you should use the **EnvelopeSender** property defined in the base class.
+
 ## Receiving Messages
 
-To receive a message, you can simply build the client and call ReceiveMessageAsync:
+If you are using the Messaging Hub host package, your application receives messages through a **message receiver** registered in the `application.json` file. For more details, please refer to the **Hosting** section.
+
+To receive a message directly from the client, you should call ReceiveMessageAsync method as bellow:
 
 ```csharp
 const string login = "user";
@@ -40,7 +44,7 @@ var client = new MessagingHubClientBuilder()
 
 await client.StartAsync();
 
-using(var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
+using (var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
 {
     var message = await client.ReceiveMessageAsync(cancellationToken.Token);
 }
