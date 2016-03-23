@@ -25,6 +25,8 @@ await client.SendMessageAsync("Texto da Mensagem", to: "user");
 await client.SendMessageAsync("Texto da Mensagem", Node.Parse("user"));
 ```
 
+Para enviar mensagens a partir de um **receiver**, utilize a propriedade **EnvelopeSender** definido na classe base.
+
 ## Recebendo Mensagens
 
 Caso esteja utilizando o host do Messaging Hub, o recebimento é feito através do registro de um **Message Receiver** no arquivo `application.json`. Para maiores detalhes, consulte a seção **Hospedagem**.
