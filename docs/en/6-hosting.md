@@ -96,6 +96,14 @@ To manually publish you application, just rename and copy your *\bin\Release* fo
 
 To update a published application, just overwrite your application folder with the new files and the service will detect the changes and reload your application.
 
-### Publishing your application using the command line interface.
+### Publishing your application using the API
 
-***TO BE IMPLEMENTED***
+It is also possible to publish your application in the default *Messaging Hub* servers using the *Messaging Hub API*. To do so, you need to POST the byte array that represents your application binaries folder, zipped, to the http://api.messaginghub.io/Application/{yourappname}/publish endpoint. See the [API documentation](http://hmg.api.messaginghub.io/swagger/ui/index#!/Application/Application_PublishAsync) for more details.
+
+The zip file must contain a single folder inside, which in turn must contain all your application *dlls* and your *application.json* file. The API will reject uploads that do not match this criteria.
+
+### Publishing your application using the Portal
+
+Despite the methods described above, the **recommended** way to publish your application is to use the *Messaging Hub Portal*. Just access the [Portal](http://messaginghub.io), list your applications, go to the *details* page of the desired application and in the *Status* panel, upload the zip file containing your application.
+
+Once your application is uploaded, it will be detected by the *Messaging Hub Application Activator* service and (re)loaded.
