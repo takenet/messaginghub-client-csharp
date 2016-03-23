@@ -18,7 +18,7 @@ See more in [Client Configuration](http://messaginghub.io/docs/sdks/clientconfig
 
 ## Working with the Messaging Hub
 
-After reference the Messaging Hub.Client in your code and have the data to access, follow the steps in [Getting Started](http://messaginghub.io/docs/sdks/gettingstarted) in order to use the following operations:
+After reference the Messaging Hub.Client in your code and have the data to access, use the following operations:
 - Send and receive [messages](http://messaginghub.io/docs/sdks/messages)
 - Send and receive [notifications](http://messaginghub.io/docs/sdks/notifications)
 - Send [commands](http://messaginghub.io/docs/sdks/commands)
