@@ -8,15 +8,15 @@ using System.Text;
 
 namespace Chat
 {
-    public class PlainTextMessageReceiver : MessageReceiverBase
+    public class ChatMessageReceiver : MessageReceiverBase
     {
-        private static string _targetPostmaster = "postmaster@0mn.io/#awirisomni1";
+        private static string _targetPostmaster = "postmaster@0mn.io/#irisomni1";
         private static string _targetGroupDomain = "groups.0mn.io";
         private static string _groupPrefix = "omniChat_";
 
         private static string _helpCommand = "ajuda";
         private static string _listCommand = "listar";
-        private static string _helpMessage = "Envie # + tema para entrar em um chat ou listar para exibir os chats já existentes";
+        private static string _helpMessage = "Envie # + tema para entrar em um grupo ou listar para exibir os grupos já existentes";
 
         private static Identity GroupIdentity(string groupName) => new Identity($"{_groupPrefix}{groupName}", _targetGroupDomain);
 
@@ -68,13 +68,13 @@ namespace Chat
 
                     if(createResponse.Status == CommandStatus.Failure)
                     {
-                        await NotifyAndExplain(message, "Erro ao criar o chat. Tente novamente mais tarde");
+                        await NotifyAndExplain(message, "Erro ao criar o grupo. Tente novamente mais tarde");
                         return;
                     }
                 }
                 else
                 {
-                    await NotifyAndExplain(message, "Erro ao verificar existência do chat. Tente novamente mais tarde");
+                    await NotifyAndExplain(message, "Erro ao verificar existência do grupo. Tente novamente mais tarde");
                     return;
                 }
             }
@@ -83,11 +83,11 @@ namespace Chat
 
             if(insertMemberResponse.Status == CommandStatus.Failure)
             {
-                await NotifyAndExplain(message, "Erro ao inserir usuário no chat. Tente novamente mais tarde");
+                await NotifyAndExplain(message, "Erro ao inserir usuário no grupo. Tente novamente mais tarde");
                 return;
             }
 
-            await NotifyAndExplain(message, $"Você agora faz parte do chat #{groupName}");
+            await NotifyAndExplain(message, $"Você foi inserido no grupo #{groupName}");
         }
         
         private async Task NotifyAndExplain(Message message, string helpMessage)
@@ -111,7 +111,7 @@ namespace Chat
             {
                 return string.Empty;
             }
-
+            
             var documents = (DocumentCollection)listResponse.Resource;
 
             var stringBuilder = new StringBuilder();
