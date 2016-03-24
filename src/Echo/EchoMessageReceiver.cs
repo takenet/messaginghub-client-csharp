@@ -10,7 +10,7 @@ namespace Echo
     {
         public override async Task ReceiveAsync(Message message)
         {
-            var sender = message.Pp ?? message.From;
+            var sender = message.From;
             var id = message.Id;
 
             //Client is sending received notifications automatically
