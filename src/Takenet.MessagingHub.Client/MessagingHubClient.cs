@@ -41,7 +41,13 @@ namespace Takenet.MessagingHub.Client
             _semaphore = new SemaphoreSlim(1);
         }
 
-        public MessagingHubClient(Identity identity, Authentication authentication, Uri endPoint, TimeSpan sendTimeout, EnvelopeListenerRegistrar listenerRegistrar)
+        public MessagingHubClient(Identity identity, 
+            Authentication authentication, 
+            Uri endPoint, 
+            TimeSpan sendTimeout, 
+            EnvelopeListenerRegistrar listenerRegistrar,
+            SessionCompression sessionCompression = SessionCompression.None,
+            SessionEncryption sessionEncryption = SessionEncryption.TLS)
         {
             _semaphore = new SemaphoreSlim(1);
             _listenerRegistrar = listenerRegistrar;
@@ -56,9 +62,9 @@ namespace Takenet.MessagingHub.Client
             _establishedClientChannelBuilder = new EstablishedClientChannelBuilder(channelBuilder)
                                                 .WithIdentity(identity)
                                                 .WithAuthentication(authentication)
-                                                .WithCompression(SessionCompression.None)
+                                                .WithCompression(sessionCompression)
                                                 .AddEstablishedHandler(SetPresenceAsync)
-                                                .WithEncryption(SessionEncryption.TLS);
+                                                .WithEncryption(sessionEncryption);
             
             _onDemandClientChannelFactory = new OnDemandClientChannelFactory();
         }
