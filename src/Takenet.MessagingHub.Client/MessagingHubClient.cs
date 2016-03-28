@@ -49,6 +49,7 @@ namespace Takenet.MessagingHub.Client
 
             var channelBuilder = ClientChannelBuilder.Create(() => new TcpTransport(traceWriter: new TraceWriter(), envelopeSerializer: new JsonNetSerializer()), endPoint)
                                  .WithSendTimeout(sendTimeout)
+                                 .WithBuffersLimit(100)
                                  .AddMessageModule(c => new NotifyReceiptChannelModule(c))
                                  .AddCommandModule(c => new ReplyPingChannelModule(c));
 
