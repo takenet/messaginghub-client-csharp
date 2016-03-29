@@ -71,6 +71,9 @@ namespace Buscape
         {
             var keyword = message.Content.ToString();
 
+            if (keyword.First() == '#')
+                keyword = keyword.Substring(Math.Min(keyword.Length, 5)).Trim();
+
             if (await HandleStartMessageAsync(message, keyword)) return;
 
             if (await HandleEndOfSearchAsync(message, keyword)) return;
@@ -223,6 +226,7 @@ namespace Buscape
                         }
                         await Task.Delay(TimeSpan.FromSeconds(2), cancellationTokenSource.Token);
                         await EnvelopeSender.SendMessageAsync($"Envie: {FinishMessage}; {MoreResultsMessage}", message.From);
+                        Console.WriteLine($"Response sent!");
                     }
                 }
             }

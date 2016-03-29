@@ -57,6 +57,7 @@ namespace Takenet.MessagingHub.Client
                                                 .WithAuthentication(authentication)
                                                 .WithCompression(SessionCompression.None)
                                                 .AddEstablishedHandler(SetPresenceAsync)
+                                                .AddEstablishedHandler(SetReceiptAsync)
                                                 .WithEncryption(SessionEncryption.TLS);
             
             _onDemandClientChannelFactory = new OnDemandClientChannelFactory();
@@ -235,6 +236,16 @@ namespace Takenet.MessagingHub.Client
                 await clientChannel.SetResourceAsync(
                         LimeUri.Parse(UriTemplates.PRESENCE),
                         new Presence { Status = PresenceStatus.Available, RoutingRule = RoutingRule.Identity, RoundRobin = true },
+                        cancellationToken)
+                        .ConfigureAwait(false);
+        }
+
+        private async Task SetReceiptAsync(IClientChannel clientChannel, CancellationToken cancellationToken)
+        {
+            if (!IsGuest(clientChannel.LocalNode.Name))
+                await clientChannel.SetResourceAsync(
+                        LimeUri.Parse(UriTemplates.RECEIPT),
+                        new Receipt { Events = new [] { Event.Accepted, Event.Dispatched, Event.Received, Event.Consumed, Event.Failed }},
                         cancellationToken)
                         .ConfigureAwait(false);
         }
