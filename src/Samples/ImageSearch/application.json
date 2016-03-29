@@ -6,21 +6,23 @@
       "type": "TextcMessageReceiverFactory",
       "mediaType": "text/plain",
       "settings": {
-        "syntaxes": [
+        "commands": [
           {
-            "[:Word(mais,more,top) top:Integer? query+:Text]": {
-              "processor": "ImageProcessor",
-              "method": "GetImageDocumentAsync"
-            }
+            "syntaxes": [
+              "[:Word(mais,more,top) top:Integer? query+:Text]"
+            ],
+            "processorType": "ImageProcessor",
+            "method": "GetImageDocumentAsync"
           },
           {
-            "[query+:Text]": {
-              "processor": "ImageProcessor",
-              "method": "GetFirstImageDocumentAsync"
-            }
+            "syntaxes": [
+              "[query+:Text]"
+            ],
+            "processorType": "ImageProcessor",
+            "method": "GetFirstImageDocumentAsync"
           }
         ],
-        "scorer": "MatchCountExpressionScorer"
+        "scorerType": "MatchCountExpressionScorer"
       }
     }
   ],

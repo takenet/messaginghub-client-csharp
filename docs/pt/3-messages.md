@@ -8,7 +8,10 @@ Para enviar uma mensagem, você pode usar o seguinte método:
 var message = new Message
 {
     To = Node.Parse("user"),
-    Content = "Texto da Mensagem"
+    Content = new PlainText()
+    {
+        Text = "Message Text"
+    }
 };
 
 await client.SendMessageAsync(message);
@@ -22,9 +25,13 @@ await client.SendMessageAsync("Texto da Mensagem", to: "user");
 await client.SendMessageAsync("Texto da Mensagem", Node.Parse("user"));
 ```
 
+Para enviar mensagens a partir de um **receiver**, utilize a propriedade **EnvelopeSender** definido na classe base.
+
 ## Recebendo Mensagens
 
-Para receber uma mensagem você pode construir o cliente e chamar ReceiveMessageAsync:
+Caso esteja utilizando o host do Messaging Hub, o recebimento é feito através do registro de um **Message Receiver** no arquivo `application.json`. Para maiores detalhes, consulte a seção **Hospedagem**.
+
+Para receber uma mensagem diretamente através do client, utilize o método **ReceiveMessageAsync**:
 
 ```csharp
 const string login = "user";
@@ -36,7 +43,7 @@ var client = new MessagingHubClientBuilder()
 
 await client.StartAsync();
 
-using(var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
+using (var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
 {
     var message = await client.ReceiveMessageAsync(cancellationToken.Token);
 }
@@ -45,7 +52,7 @@ await client.StopAsync();
 
 ```
 
-Você tambem pode construir um Receiver para tratar as mensagens recebidas:
+Você tambem pode definir um **receiver** para tratar as mensagens recebidas:
 
 ```csharp
 public class MyMessageReceiver : MessageReceiverBase

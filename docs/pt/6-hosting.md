@@ -1,15 +1,3 @@
-## Utilizando o Console Host
-
-Uma maneira rápida de começar a desenvolver uma aplicação conectada ao Messaging Hub é utilizar o pacote *ConsoleHost* em um **Console Application** do Visual Studio.
-
-Crie um novo projeto do tipo **Console Application** e a partir do **Package Manager Console**, instale o pacote usando o seguinte comando:
-
-    Install-Package Takenet.MessagingHub.Client.ConsoleHost
-
-Este pacote irá preparar a sua aplicação console recém criada com o template de código necessário para se conectar ao Messaging Hub.
-
-*Observação*: este pacote tem como *target* o *framework* 4.6.1, então altere o *target framework* do seu projeto.
-
 ## Utilizando o Messaging Hub Host
 
 O Messaging Hub oferece o utilitário `mhh.exe` que realiza o *host* de aplicações definidas em um arquivo `application.json`. Este arquivo permite a construção do cliente do Messaging Hub de forma declarativa.
@@ -96,6 +84,14 @@ Para publicar sua aplicação manualmente, basta renomear e copiar a pasta *\bin
 
 Para atualizar uma aplicação já publicada, basta sobrescrever a pasta da sua aplicação com os novos arquivos e o serviço irá detectar as mudanças e recarregar a sua aplicação.
 
-### Publicando a sua aplicação usando a interface de linha de comando.
+### Publicando sua aplicação usando a API
 
-***AINDA NÃO IMPLEMENTADO***
+Também é possível publicar sua aplicação nos servidores do *Messaging Hub* usando a *API do Messaging Hub*. Para isso, você precisa fazer um POST contendo o array de bytes que representa a pasta de binários da sua aplicação, zipada, para o endereço http://api.messaginghub.io/Application/{yourappname}/publish. Veja a [documentação da API ](http://api.messaginghub.io/swagger/ui/index#!/Application/Application_PublishAsync) para maiores detalhes.
+
+O arquivo zip deve conter uma única pasta dentro, a qual deve conter todas as *dlls* da sua aplicação e seu arquivo *application.json*. A API irá rejeitar submissões que não passem nesses critérios.
+
+### Publicando sua aplicação usando o Portal
+
+Apesar dos métodos descritos acima, o método **recomendado** para publicar sua aplicação é usar o *Portal do Messaging Hub*. Basta acessar o [Portal](http://messaginghub.io), [listar suas aplicações](http://messaginghub.io/application/list), ir para a página de *detalhes* da aplicação desejada e no painel *Situação*, enviar o arquivo zip contendo sua aplicação.
+
+Once your application is uploaded, it will be detected by the *Messaging Hub Application Activator* service and (re)loaded.

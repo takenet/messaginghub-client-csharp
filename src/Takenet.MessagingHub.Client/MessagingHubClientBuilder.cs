@@ -14,6 +14,8 @@ namespace Takenet.MessagingHub.Client
         private TimeSpan _sendTimeout;
         private string _domain;
         private string _hostName;
+        private SessionCompression _sessionCompression = SessionCompression.None;
+        private SessionEncryption _sessionEncryption = SessionEncryption.TLS;
 
         internal readonly MessagingHubSenderBuilder SenderBuilder;
 
@@ -74,6 +76,18 @@ namespace Takenet.MessagingHub.Client
             return this;
         }
 
+        public MessagingHubClientBuilder UsingEncryption(SessionEncryption sessionEncryption)
+        {
+            _sessionEncryption = sessionEncryption;
+            return this;
+        }
+
+        public MessagingHubClientBuilder UsingCompression(SessionCompression sessionCompression)
+        {
+            _sessionCompression = sessionCompression;
+            return this;
+        }
+
         public MessagingHubClientBuilder WithSendTimeout(TimeSpan timeout)
         {
             _sendTimeout = timeout;
@@ -131,7 +145,7 @@ namespace Takenet.MessagingHub.Client
 
         public IMessagingHubClient Build()
         {
-            MessagingHubClient = new MessagingHubClient(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout, SenderBuilder.EnvelopeRegistrar);
+            MessagingHubClient = new MessagingHubClient(_identity, GetAuthenticationScheme(), _endPoint, _sendTimeout, SenderBuilder.EnvelopeRegistrar, _sessionCompression, _sessionEncryption);
             return MessagingHubClient;
         }
 

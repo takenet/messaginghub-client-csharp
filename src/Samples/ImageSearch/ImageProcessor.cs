@@ -47,8 +47,6 @@ namespace ImageSearch
                 .AddQueryOption($"${nameof(top)}", top)
                 .AddQueryOption($"${nameof(skip)}", skip);
 
-            //document.Add("text", "Envie MAIS");
-
             var result = await Task.Factory.FromAsync(
                 (c, s) => imageQuery.BeginExecute(c, s), r => imageQuery.EndExecute(r), null);
 

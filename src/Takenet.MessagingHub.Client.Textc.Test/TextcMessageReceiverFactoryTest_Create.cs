@@ -31,6 +31,7 @@ namespace Takenet.MessagingHub.Client.Textc.Test
         {
             await Server.StopAsync();
             Server.Dispose();
+            TextcMessageReceiverFactory.ProcessorInstancesDictionary.Clear();
             TestCommandProcessor.Instantiated = false;
             TestCommandProcessor.InstanceCount = 0;
         }
@@ -49,33 +50,47 @@ namespace Takenet.MessagingHub.Client.Textc.Test
                         Settings = new Dictionary<string, object>
                         {
                             {
-                                "syntaxes",
+                                "commands",
                                 new[]
                                 {
-                                    new Dictionary<string, object>
+                                    new
                                     {
-                                        {
-                                            "value1:Word value2:Integer",
-                                            new JObject()
-                                            {
-                                                { "processor", typeof(TestCommandProcessor).Name },
-                                                { "method", nameof(TestCommandProcessor.ProcessAsync) }
-
-                                            }
-                                        },
-
+                                        Syntaxes = new[] { "value1:Word value2:Integer" },
+                                        ProcessorType = typeof(TestCommandProcessor).Name,
+                                        Method = nameof(TestCommandProcessor.ProcessAsync),
+                                        ReturnText = default(string),
+                                        ReturnJson  = default(Dictionary<string, object>),
+                                        ReturnJsonMediaType  = default(string)
                                     },
-                                    new Dictionary<string, object>
+                                    new
                                     {
+                                        Syntaxes = new[] { "value1:Word value2:Integer value3:Word" },
+                                        ProcessorType = typeof(TestCommandProcessor).AssemblyQualifiedName,
+                                        Method = nameof(TestCommandProcessor.ProcessWithResultAsync),
+                                        ReturnText = default(string),
+                                        ReturnJson  = default(Dictionary<string, object>),
+                                        ReturnJsonMediaType  = default(string)
+                                    },
+                                    new
+                                    {
+                                        Syntaxes = new[] { "value1:Word value2:Integer value3:Integer value4:Word(a,b,c)" },
+                                        ProcessorType = default(string),
+                                        Method = default(string),
+                                        ReturnText = "This is an response {value1} and {value2}",
+                                        ReturnJson  = default(Dictionary<string, object>),
+                                        ReturnJsonMediaType  = default(string)
+                                    },
+                                    new
+                                    {
+                                        Syntaxes = new[] { "value1:Word value2:Integer value3:Integer value4:Word(a,b,c) value5:Word(x,y,z)" },
+                                        ProcessorType = default(string),
+                                        Method = default(string),
+                                        ReturnText = default(string),
+                                        ReturnJson = new Dictionary<string, object>()
                                         {
-                                            "value1:Word value2:Integer value3:Word",
-                                            new JObject()
-                                            {
-                                                { "processor", typeof(TestCommandProcessor).AssemblyQualifiedName },
-                                                { "method", nameof(TestCommandProcessor.ProcessWithResultAsync) }
-
-                                            }
-                                        }
+                                            { "state", "composing" }
+                                        },
+                                        ReturnJsonMediaType  = "application/vnd.lime.chatState+json"
                                     }
                                 }
                             }
@@ -93,16 +108,15 @@ namespace Takenet.MessagingHub.Client.Textc.Test
             actual.ShouldNotBeNull();
             SettingsTestStartable.Sender.ShouldNotBeNull();
             TestCommandProcessor.Instantiated.ShouldBeTrue();
-            TestCommandProcessor.InstanceCount.ShouldBe(2);            
+            TestCommandProcessor.InstanceCount.ShouldBe(1);            
         }
-
 
         [Test]
         public async Task Create_With_Json_Single_Multiple_Syntaxes_Should_Create_Processor()
         {
             // Arrange
             var json =
-                "{ \"login\": \"abcd1234\", \"accessKey\": \"xyz1234\", \"messageReceivers\": [ { \"type\": \"TextcMessageReceiverFactory\", \"settings\": { \"syntaxes\": [ { \"[:Word(mais,more,top) top:Integer? query+:Text]\": { \"processor\": \"TestCommandProcessor\", \"method\": \"GetImageDocumentAsync\" } }, { \"[query+:Text]\": { \"processor\": \"TestCommandProcessor\", \"method\": \"GetFirstImageDocumentAsync\" } } ], \"scorer\": \"MatchCountExpressionScorer\" } } ], \"settings\": { \"myApiKey\": \"askjakdaksjasjdalksjd\" }, \"hostName\": \"localhost\",  } ";
+                "{\"login\":\"image.search\",\"accessKey\":\"Z09SNXdt\",\"messageReceivers\":[{\"type\":\"TextcMessageReceiverFactory\",\"mediaType\":\"text/plain\",\"settings\":{\"commands\":[{\"syntaxes\":[\"[:Word(mais,more,top) top:Integer? query+:Text]\"],\"processorType\":\"TestCommandProcessor\",\"method\":\"GetImageDocumentAsync\"},{\"syntaxes\":[\"[query+:Text]\"],\"processorType\":\"TestCommandProcessor\",\"method\":\"GetFirstImageDocumentAsync\"},{\"syntaxes\":[\"[query+:Text option1:Word(a,b,c,d)]\"],\"returnText\":\"This is an return value\"},{\"syntaxes\":[\"[query+:Text option1:Word(x,y,z]\"],\"returnJson\":{\"key\":\"value1\"}}],\"scorerType\":\"MatchCountExpressionScorer\"}}],\"startupType\":\"SettingsTestStartable\",\"settings\":{\"bingApiKey\":\"z1f6I3djqJy0sWG/0HxxwjbrVrQZMF1JbTK+a5U9oNU=\"}}";
 
             var application = Application.ParseFromJson(json);
 
@@ -112,9 +126,8 @@ namespace Takenet.MessagingHub.Client.Textc.Test
             // Assert
             actual.ShouldNotBeNull();
             TestCommandProcessor.Instantiated.ShouldBeTrue();
-            TestCommandProcessor.InstanceCount.ShouldBe(2);
+            TestCommandProcessor.InstanceCount.ShouldBe(1);
         }
-
     }
 
     public class TestCommandProcessor

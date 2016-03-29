@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3C9160B2-315C-4787-BA3F-8D4E5A378228}</ProjectGuid>
+    <ProjectGuid>{320DB5D6-983A-4A8C-812D-C60734793625}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Chat</RootNamespace>
-    <AssemblyName>Chat</AssemblyName>
+    <RootNamespace>Reminder</RootNamespace>
+    <AssemblyName>Reminder</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,16 +22,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Lime.Messaging, Version=0.4.20.0, Culture=neutral, processorArchitecture=MSIL">
@@ -59,7 +53,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
@@ -68,32 +62,28 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Takenet.MessagingHub.Client, Version=0.2.131.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Takenet.MessagingHub.Client.0.2.131\lib\net461\Takenet.MessagingHub.Client.dll</HintPath>
+    <Reference Include="Takenet.MessagingHub.Client, Version=0.2.130.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.MessagingHub.Client.0.2.130\lib\net461\Takenet.MessagingHub.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Takenet.MessagingHub.Client.Textc, Version=0.2.131.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Takenet.MessagingHub.Client.Textc.0.2.131\lib\net45\Takenet.MessagingHub.Client.Textc.dll</HintPath>
+    <Reference Include="Takenet.MessagingHub.Client.Textc, Version=0.2.130.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.MessagingHub.Client.Textc.0.2.130\lib\net45\Takenet.MessagingHub.Client.Textc.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Takenet.Textc, Version=0.2.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Takenet.Textc.0.2.7.0\lib\net451\Takenet.Textc.dll</HintPath>
+    <Reference Include="Takenet.Textc, Version=0.2.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.Textc.0.2.5.0\lib\net451\Takenet.Textc.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChatMessageReceiver.cs" />
+    <Compile Include="ReminderProcessor.cs" />
+    <Compile Include="PlainTextMessageReceiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="application.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

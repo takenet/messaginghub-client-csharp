@@ -22,12 +22,8 @@ namespace Takenet.MessagingHub.Client.Textc
             cancellationToken.ThrowIfCancellationRequested();
 
             var to = context.GetMessagePp() ?? context.GetMessageFrom();
-
-            if (to == null)
-            {
-                throw new InvalidOperationException("Could not determine the message sender");
-            }
-
+            if (to == null)  throw new ArgumentException("Could not determine the message sender", nameof(context));
+                        
             var content = output as Document;
             if (content != null)
             {

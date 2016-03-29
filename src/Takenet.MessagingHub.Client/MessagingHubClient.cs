@@ -41,7 +41,13 @@ namespace Takenet.MessagingHub.Client
             _semaphore = new SemaphoreSlim(1);
         }
 
-        public MessagingHubClient(Identity identity, Authentication authentication, Uri endPoint, TimeSpan sendTimeout, EnvelopeListenerRegistrar listenerRegistrar)
+        public MessagingHubClient(Identity identity, 
+            Authentication authentication, 
+            Uri endPoint, 
+            TimeSpan sendTimeout, 
+            EnvelopeListenerRegistrar listenerRegistrar,
+            SessionCompression sessionCompression = SessionCompression.None,
+            SessionEncryption sessionEncryption = SessionEncryption.TLS)
         {
             _semaphore = new SemaphoreSlim(1);
             _listenerRegistrar = listenerRegistrar;
@@ -49,16 +55,17 @@ namespace Takenet.MessagingHub.Client
 
             var channelBuilder = ClientChannelBuilder.Create(() => new TcpTransport(traceWriter: new TraceWriter(), envelopeSerializer: new JsonNetSerializer()), endPoint)
                                  .WithSendTimeout(sendTimeout)
+                                 .WithBuffersLimit(100)
                                  .AddMessageModule(c => new NotifyReceiptChannelModule(c))
                                  .AddCommandModule(c => new ReplyPingChannelModule(c));
 
             _establishedClientChannelBuilder = new EstablishedClientChannelBuilder(channelBuilder)
                                                 .WithIdentity(identity)
                                                 .WithAuthentication(authentication)
-                                                .WithCompression(SessionCompression.None)
+                                                .WithCompression(sessionCompression)
                                                 .AddEstablishedHandler(SetPresenceAsync)
                                                 .AddEstablishedHandler(SetReceiptAsync)
-                                                .WithEncryption(SessionEncryption.TLS);
+                                                .WithEncryption(sessionEncryption);
             
             _onDemandClientChannelFactory = new OnDemandClientChannelFactory();
         }

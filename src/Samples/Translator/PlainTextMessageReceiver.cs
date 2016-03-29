@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Receivers;
 
-namespace ImageSearch
+namespace Translator
 {
     public class PlainTextMessageReceiver : MessageReceiverBase
     {
