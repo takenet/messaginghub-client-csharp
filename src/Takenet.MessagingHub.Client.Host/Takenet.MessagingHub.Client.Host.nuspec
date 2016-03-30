@@ -8,7 +8,7 @@
     <owners>takenet</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>MessagingHub Client host</description>
-    <summary>A host implementation to run on a Library project for MessagingHub SDK</summary>
+    <summary>A host implementation to run a library using MessagingHub SDK</summary>
     <copyright>Copyright © 2016 Curupira S/A</copyright>
     <tags>messagingHub</tags>
     <dependencies>
