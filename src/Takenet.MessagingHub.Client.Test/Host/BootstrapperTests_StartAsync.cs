@@ -14,7 +14,6 @@ using Lime.Protocol.Server;
 using Lime.Protocol.Util;
 using Lime.Transport.Tcp;
 using NSubstitute.Routing.Handlers;
-using NUnit.Core;
 using NUnit.Framework;
 using Shouldly;
 using Takenet.MessagingHub.Client.Host;
