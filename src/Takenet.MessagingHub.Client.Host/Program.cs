@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using Lime.Protocol.Serialization;
 
 namespace Takenet.MessagingHub.Client.Host
 {
@@ -50,15 +46,17 @@ namespace Takenet.MessagingHub.Client.Host
                     return;
                 }
 
-                WriteLine("Starting application...", ConsoleColor.Blue);
+                const ConsoleColor highlightColor = ConsoleColor.DarkCyan;
+
+                WriteLine("Starting application...", highlightColor);
                 ConfigureWorkingDirectory(applicationFileName);
                 var application = Application.ParseFromJsonFile(applicationFileName);
                 var stopabble = await Bootstrapper.StartAsync(application);
-                WriteLine("Application started. Press any key to stop.", ConsoleColor.Blue);
+                WriteLine("Application started. Press any key to stop.", highlightColor);
                 Console.Read();
-                WriteLine("Stopping application...", ConsoleColor.Blue);
+                WriteLine("Stopping application...", highlightColor);
                 await stopabble.StopAsync();
-                WriteLine("Application stopped.", ConsoleColor.Blue);
+                WriteLine("Application stopped.", highlightColor);
             }
             catch (Exception ex)
             {
