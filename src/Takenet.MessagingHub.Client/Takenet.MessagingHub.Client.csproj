@@ -114,7 +114,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="application.json" />
     <None Include="Host\application.json" />
     <None Include="packages.config">
       <SubType>Designer</SubType>

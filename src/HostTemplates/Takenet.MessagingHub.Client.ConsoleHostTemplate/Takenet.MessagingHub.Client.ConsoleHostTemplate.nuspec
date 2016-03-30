@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
-    <id>Takenet.MessagingHub.Client.ConsoleHost</id>
+    <id>Takenet.MessagingHub.Client.ConsoleHostTemplate</id>
     <version>0.0.1</version>
-    <title>MessagingHub Client Console Host</title>
+    <title>MessagingHub Client Console Host Template</title>
     <authors>Takenet</authors>
     <owners>takenet</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>MessagingHub Client console host starter pack</description>
-    <summary>A base console host implementation for quick starting with MessagingHub SDK</summary>
+    <description>MessagingHub Client console host template</description>
+    <summary>A simple console host implementation for quick starting with MessagingHub SDK</summary>
     <copyright>Copyright © 2016 Curupira S/A</copyright>
     <tags>messagingHub</tags>
     <dependencies>
