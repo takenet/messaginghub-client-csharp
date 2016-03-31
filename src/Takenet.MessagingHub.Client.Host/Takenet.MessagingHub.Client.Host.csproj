@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Install.ps1" />
     <None Include="packages.config" />
     <None Include="Takenet.MessagingHub.Client.Host.nuspec">
       <SubType>Designer</SubType>
