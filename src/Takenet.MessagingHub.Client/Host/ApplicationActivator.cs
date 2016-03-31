@@ -162,9 +162,16 @@ namespace Takenet.MessagingHub.Client.Host
             var outputPath = Path.Combine(applicationDirectory, "Output.log");
             process.OutputDataReceived += (sender, e) =>
             {
-                using (var writer = File.AppendText(outputPath))
+                try
                 {
-                    writer.WriteLine("{0} - {1}", DateTime.UtcNow, e.Data);
+                    using (var writer = File.AppendText(outputPath))
+                    {
+                        writer.WriteLine("{0} - {1}", DateTime.UtcNow, e.Data);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Trace.TraceError($"Could not write to {outputPath}\nData: {e.Data}\nException: {exception}");
                 }
             };
 
