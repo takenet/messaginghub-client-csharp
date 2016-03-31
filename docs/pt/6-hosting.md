@@ -4,7 +4,7 @@ O Messaging Hub oferece o utilitário `mhh.exe` que realiza o *host* de aplicaç
 
 Para utilizá-lo, crie um projeto no Visual Studio do tipo **Class library** e instale o pacote com o comando:
 
-    Install-Package Takenet.MessagingHub.Client.Host
+    Install-Package Takenet.MessagingHub.Client.HostTemplate
 
 Após a instalação, serão adicionados alguns arquivos no projeto, dentre eles o `application.json` com alguns valores padrão definidos. Para a aplicação funcionar, é necessário complementá-lo com algumas informações, como o identificador da sua aplicação (login) e sua chave de acesso (access key).
 

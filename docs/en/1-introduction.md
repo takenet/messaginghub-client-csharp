@@ -8,7 +8,7 @@ To get started, create a new *Class library* using the *Visual Studio 2015 Updat
 
 From the Package Manager Console, install the application template using:
 
-    Install-Package Takenet.MessagingHub.Client.Host
+    Install-Package Takenet.MessagingHub.Client.HostTemplate
 
 ## Client Configuration
 
