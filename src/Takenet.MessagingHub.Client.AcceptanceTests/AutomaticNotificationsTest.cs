@@ -25,7 +25,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             try
             {
                 await client1.SendMessageAsync(Beat, appShortName2);
-                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken());
+                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Accepted
 
                 notification.ShouldNotBeNull();
                 notification.Event.ShouldBe(Event.Accepted);
@@ -47,8 +47,8 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             {
                 await client1.SendMessageAsync(Beat, appShortName2);
 
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken());
-                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken());
+                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Accepted
+                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Dispatched
 
                 notification.ShouldNotBeNull();
                 notification.Event.ShouldBe(Event.Dispatched);
@@ -71,9 +71,9 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
                 await client1.SendMessageAsync(Beat, appShortName2);
                 await client2.ReceiveMessageAsync(GetNewReceiveTimeoutCancellationToken());
 
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken());
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken());
-                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken());
+                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Accepted
+                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Dispatched
+                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Received
 
                 notification.ShouldNotBeNull();
                 notification.Event.ShouldBe(Event.Received);
@@ -94,9 +94,11 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             try
             {
                 await client1.SendMessageAsync(Beat, appShortName2);
-                await client2.ReceiveMessageAsync(GetNewReceiveTimeoutCancellationToken());
 
-                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken());
+                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Accepted
+                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Dispatched
+                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Received
+                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Failed
 
                 notification.ShouldNotBeNull();
                 notification.Event.ShouldBe(Event.Failed);
@@ -119,10 +121,10 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
                 await client1.SendMessageAsync(Beat, appShortName2);
                 await client2.ReceiveMessageAsync(GetNewReceiveTimeoutCancellationToken());
 
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken());
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken());
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken());
-                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken());
+                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Accepted
+                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Dispatched
+                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Received
+                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Consumed
 
                 notification.ShouldNotBeNull();
                 notification.Event.ShouldBe(Event.Consumed);
@@ -138,7 +140,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
 
         private static CancellationToken GetNewReceiveTimeoutCancellationToken()
         {
-            return new CancellationTokenSource(TimeSpan.FromSeconds(2)).Token;
+            return new CancellationTokenSource(Timeout).Token;
         }
 
         private static IMessagingHubClient GetClientForNewApplication(out string appShortName, Action<Message> onMessageReceived = null)
@@ -154,7 +156,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             var builder = new MessagingHubClientBuilder()
                 .UsingHostName("hmg.msging.net")
                 .UsingAccessKey(appShortName, appAccessKey)
-                .WithSendTimeout(TimeSpan.FromSeconds(2));
+                .WithSendTimeout(Timeout);
 
             if (onMessageReceived != null)
                 builder.AddMessageReceiver(new LambdaMessageReceiver(onMessageReceived));
@@ -162,6 +164,11 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             var client = builder.Build();
             await client.StartAsync();
             return client;
+        }
+
+        private static TimeSpan Timeout
+        {
+            get { return TimeSpan.FromSeconds(5); }
         }
 
         private static HttpClient _httpClient;
