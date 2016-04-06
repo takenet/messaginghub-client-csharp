@@ -9,6 +9,7 @@ using Lime.Protocol;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
+using Takenet.MessagingHub.Client.Receivers;
 
 namespace Takenet.MessagingHub.Client.AcceptanceTests
 {
@@ -23,7 +24,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             var client2 = GetClientForNewApplication(out appShortName2);
             try
             {
-                await client1.SendMessageAsync("Ping!", appShortName2);
+                await client1.SendMessageAsync(Beat, appShortName2);
                 var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken());
 
                 notification.ShouldNotBeNull();
@@ -44,7 +45,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             var client2 = GetClientForNewApplication(out appShortName2);
             try
             {
-                await client1.SendMessageAsync("Ping!", appShortName2);
+                await client1.SendMessageAsync(Beat, appShortName2);
 
                 await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken());
                 var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken());
@@ -67,7 +68,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             var client2 = GetClientForNewApplication(out appShortName2);
             try
             {
-                await client1.SendMessageAsync("Ping!", appShortName2);
+                await client1.SendMessageAsync(Beat, appShortName2);
                 await client2.ReceiveMessageAsync(GetNewReceiveTimeoutCancellationToken());
 
                 await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken());
@@ -85,6 +86,29 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         }
 
         [Test]
+        public async Task TestFailedNotificationIsSentAfterMessageIsReceived()
+        {
+            string appShortName1, appShortName2;
+            var client1 = GetClientForNewApplication(out appShortName1);
+            var client2 = GetClientForNewApplication(out appShortName2, m => { throw new Exception(); });
+            try
+            {
+                await client1.SendMessageAsync(Beat, appShortName2);
+                await client2.ReceiveMessageAsync(GetNewReceiveTimeoutCancellationToken());
+
+                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken());
+
+                notification.ShouldNotBeNull();
+                notification.Event.ShouldBe(Event.Failed);
+            }
+            finally
+            {
+                await client1.StopAsync();
+                await client2.StopAsync();
+            }
+        }
+
+        [Test]
         public async Task TestConsumedNotificationIsSentAfterMessageIsReceived()
         {
             string appShortName1, appShortName2;
@@ -92,7 +116,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             var client2 = GetClientForNewApplication(out appShortName2);
             try
             {
-                await client1.SendMessageAsync("Ping!", appShortName2);
+                await client1.SendMessageAsync(Beat, appShortName2);
                 await client2.ReceiveMessageAsync(GetNewReceiveTimeoutCancellationToken());
 
                 await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken());
@@ -110,26 +134,32 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             }
         }
 
+        private const string Beat = "Beat";
+
         private static CancellationToken GetNewReceiveTimeoutCancellationToken()
         {
             return new CancellationTokenSource(TimeSpan.FromSeconds(2)).Token;
         }
 
-        private static IMessagingHubClient GetClientForNewApplication(out string appShortName)
+        private static IMessagingHubClient GetClientForNewApplication(out string appShortName, Action<Message> onMessageReceived = null)
         {
             appShortName = CreateAndRegisterApplicationAsync().Result;
             var appAccessKey = GetApplicationAccessKeyAsync(appShortName).Result;
-            var client = GetClientForApplicationAsync(appShortName, appAccessKey).Result;
+            var client = GetClientForApplicationAsync(appShortName, appAccessKey, onMessageReceived).Result;
             return client;
         }
 
-        private static async Task<IMessagingHubClient> GetClientForApplicationAsync(string appShortName, string appAccessKey)
+        private static async Task<IMessagingHubClient> GetClientForApplicationAsync(string appShortName, string appAccessKey, Action<Message> onMessageReceived = null)
         {
-            var client = new MessagingHubClientBuilder()
+            var builder = new MessagingHubClientBuilder()
                 .UsingHostName("hmg.msging.net")
                 .UsingAccessKey(appShortName, appAccessKey)
-                .WithSendTimeout(TimeSpan.FromSeconds(2))
-                .Build();
+                .WithSendTimeout(TimeSpan.FromSeconds(2));
+
+            if (onMessageReceived != null)
+                builder.AddMessageReceiver(new LambdaMessageReceiver(onMessageReceived));
+
+            var client = builder.Build();
             await client.StartAsync();
             return client;
         }
@@ -180,6 +210,22 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
                 shortName = id,
                 name = id
             };
+        }
+    }
+
+    internal class LambdaMessageReceiver : MessageReceiverBase
+    {
+        public Action<Message> OnMessageReceived { get; set; }
+
+        public LambdaMessageReceiver(Action<Message> onMessageReceived)
+        {
+            OnMessageReceived = onMessageReceived;
+        }
+
+        public override Task ReceiveAsync(Message message)
+        {
+            OnMessageReceived?.Invoke(message);
+            return Task.CompletedTask;
         }
     }
 }
