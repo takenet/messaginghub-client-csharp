@@ -13,7 +13,7 @@
     <copyright>Copyright ©  2015 Curupira S/A</copyright>
     <tags>lime messaginghub</tags>
     <dependencies>
-      <dependency id="Lime.Protocol" version="0.4.20" />
+      <dependency id="Lime.Protocol" version="0.4.25" />
     </dependencies>
   </metadata>
   <files>
