@@ -7,7 +7,7 @@ using Takenet.MessagingHub.Client.Receivers;
 
 namespace Takenet.MessagingHub.Client
 {
-    internal class EnvelopeReceivedHandler
+    internal abstract class EnvelopeReceivedHandler
     {
         private readonly EnvelopeListenerRegistrar _registrar;
         private readonly IEnvelopeSender _envelopeSender;
@@ -38,11 +38,17 @@ namespace Takenet.MessagingHub.Client
             }
         }
 
-        private static Task CallReceiver<TEnvelope>(IEnvelopeSender envelopeSender,
+        private Task CallReceiver<TEnvelope>(IEnvelopeSender envelopeSender,
             IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope)
             where TEnvelope : Envelope
         {
             InjectSenders(envelopeSender, envelopeReceiver);
+            return ReceiveAsync(envelopeReceiver, envelopeSender, envelope);
+        }
+
+        protected virtual Task ReceiveAsync<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, IEnvelopeSender envelopeSender, TEnvelope envelope)
+            where TEnvelope : Envelope
+        {
             return envelopeReceiver.ReceiveAsync(envelope);
         }
 
@@ -56,4 +62,44 @@ namespace Takenet.MessagingHub.Client
         }
     }
 
+    internal class MessageReceivedHandler : EnvelopeReceivedHandler
+    {
+        public MessageReceivedHandler(IEnvelopeSender envelopeSender, EnvelopeListenerRegistrar registrar) : base(envelopeSender, registrar)
+        {
+        }
+
+        protected override Task ReceiveAsync<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, IEnvelopeSender envelopeSender, TEnvelope envelope)
+        {
+            var message = envelope as Message;
+            try
+            {
+                base.ReceiveAsync(envelopeReceiver, envelopeSender, envelope);
+                return envelopeSender.SendNotificationAsync(message.ToConsumedNotification());
+            }
+            catch (Exception e)
+            {
+                envelopeSender.SendNotificationAsync(
+                    message.ToFailedNotification(new Reason
+                    {
+                        Code = ReasonCodes.APPLICATION_ERROR,
+                        Description = e.Message
+                    }));
+                throw;
+            }
+        }
+    }
+
+    internal class NotificationReceivedHandler : EnvelopeReceivedHandler
+    {
+        public NotificationReceivedHandler(IEnvelopeSender envelopeSender, EnvelopeListenerRegistrar registrar) : base(envelopeSender, registrar)
+        {
+        }
+    }
+
+    internal class CommandReceivedHandler : EnvelopeReceivedHandler
+    {
+        public CommandReceivedHandler(IEnvelopeSender envelopeSender, EnvelopeListenerRegistrar registrar) : base(envelopeSender, registrar)
+        {
+        }
+    }
 }

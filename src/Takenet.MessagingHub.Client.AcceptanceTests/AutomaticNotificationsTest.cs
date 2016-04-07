@@ -61,7 +61,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         }
 
         [Test]
-        public async Task TestReceivedNotificationIsSentAfterMessageIsReceived()
+        public async Task TestReceivedNotificationIsSentAfterMessageIsReceivedUsingReceiveMessageAsyncMethod()
         {
             string appShortName1, appShortName2;
             var client1 = GetClientForNewApplication(out appShortName1);
@@ -70,6 +70,30 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             {
                 await client1.SendMessageAsync(Beat, appShortName2);
                 await client2.ReceiveMessageAsync(GetNewReceiveTimeoutCancellationToken());
+
+                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Accepted
+                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Dispatched
+                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Received
+
+                notification.ShouldNotBeNull();
+                notification.Event.ShouldBe(Event.Received);
+            }
+            finally
+            {
+                await client1.StopAsync();
+                await client2.StopAsync();
+            }
+        }
+
+        [Test]
+        public async Task TestReceivedNotificationIsSentAfterMessageIsReceivedUsingMessageReceiver()
+        {
+            string appShortName1, appShortName2;
+            var client1 = GetClientForNewApplication(out appShortName1);
+            var client2 = GetClientForNewApplication(out appShortName2, m => { });
+            try
+            {
+                await client1.SendMessageAsync(Beat, appShortName2);
 
                 await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Accepted
                 await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Dispatched
@@ -115,12 +139,11 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         {
             string appShortName1, appShortName2;
             var client1 = GetClientForNewApplication(out appShortName1);
-            var client2 = GetClientForNewApplication(out appShortName2);
+            var client2 = GetClientForNewApplication(out appShortName2, m => { });
             try
             {
                 await client1.SendMessageAsync(Beat, appShortName2);
-                await client2.ReceiveMessageAsync(GetNewReceiveTimeoutCancellationToken());
-
+                
                 await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Accepted
                 await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Dispatched
                 await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Received

@@ -259,11 +259,13 @@ namespace Takenet.MessagingHub.Client
 
         private void StartEnvelopeListeners()
         {
-            var handler = new EnvelopeReceivedHandler(this, _listenerRegistrar);
+            var messageHandler = new MessageReceivedHandler(this, _listenerRegistrar);
+            var notificationHandler = new NotificationReceivedHandler(this, _listenerRegistrar);
+            var commandHandler = new CommandReceivedHandler(this, _listenerRegistrar);
             _channelListener = new ChannelListener(
-                handler.HandleAsync,
-                handler.HandleAsync,
-                c => TaskUtil.TrueCompletedTask);
+                messageHandler.HandleAsync,
+                notificationHandler.HandleAsync,
+                commandHandler.HandleAsync);
             _channelListener.Start(_onDemandClientChannel);
         }        
     }
