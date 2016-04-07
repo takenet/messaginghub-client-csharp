@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 using Lime.Messaging.Resources;
 using Lime.Protocol;
 using Takenet.MessagingHub.Client.LimeProtocol;
-using Lime.Protocol.Listeners;
 using Lime.Protocol.Client;
 using Lime.Protocol.Network;
 
+
 namespace Takenet.MessagingHub.Client.Connection
 {
-    public class MessagingHubConnection
+    public sealed class MessagingHubConnection
     {
         public TimeSpan SendTimeout { get; }
         internal IOnDemandClientChannel OnDemandClientChannel { get; private set; }
@@ -34,7 +34,7 @@ namespace Takenet.MessagingHub.Client.Connection
 
         public bool IsConnected { get; private set; }
 
-        public virtual async Task ConnectAsync()
+        public async Task ConnectAsync()
         {
             await _semaphore.WaitAsync().ConfigureAwait(false);
 
@@ -65,7 +65,7 @@ namespace Takenet.MessagingHub.Client.Connection
             }
         }
 
-        public virtual async Task DisconnectAsync()
+        public async Task DisconnectAsync()
         {
             await _semaphore.WaitAsync().ConfigureAwait(false);
 

@@ -6,16 +6,16 @@ using Takenet.MessagingHub.Client.Connection;
 
 namespace Takenet.MessagingHub.Client.Sender
 {
-    public class MessagingHubSender : IMessagingHubSender
+    public sealed class MessagingHubSender : IMessagingHubSender
     {
         public MessagingHubConnection Connection { get; set; }
 
-        internal MessagingHubSender(MessagingHubConnection connection)
+        public MessagingHubSender(MessagingHubConnection connection)
         {
             Connection = connection;
         }
 
-        public virtual async Task<Command> SendCommandAsync(Command command, CancellationToken token)
+        public async Task<Command> SendCommandAsync(Command command, CancellationToken token)
         {
             if (!Connection.IsConnected)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation");
@@ -34,7 +34,7 @@ namespace Takenet.MessagingHub.Client.Sender
             }
         }
 
-        public virtual async Task SendMessageAsync(Message message, CancellationToken token)
+        public async Task SendMessageAsync(Message message, CancellationToken token)
         {
             if (!Connection.IsConnected)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation");
@@ -52,7 +52,7 @@ namespace Takenet.MessagingHub.Client.Sender
             }
         }
 
-        public virtual async Task SendNotificationAsync(Notification notification, CancellationToken token)
+        public async Task SendNotificationAsync(Notification notification, CancellationToken token)
         {
             if (!Connection.IsConnected)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation!");

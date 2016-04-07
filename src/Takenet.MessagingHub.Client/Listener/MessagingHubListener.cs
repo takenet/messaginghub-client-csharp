@@ -8,17 +8,25 @@ using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
-    public class MessagingHubListener
+    public sealed class MessagingHubListener
     {
         private MessagingHubConnection Connection { get; }
+
+        private Sender.IMessagingHubSender Sender { get; }
 
         internal EnvelopeListenerRegistrar EnvelopeRegistrar { get; }
 
         private ChannelListener ChannelListener { get; set; }
 
         public MessagingHubListener(MessagingHubConnection connection)
+            : this(connection, new MessagingHubSender(connection))
+        {
+        }
+
+        public MessagingHubListener(MessagingHubConnection connection, Sender.IMessagingHubSender sender)
         {
             Connection = connection;
+            Sender = sender;
             EnvelopeRegistrar = new EnvelopeListenerRegistrar();
         }
 
@@ -76,10 +84,9 @@ namespace Takenet.MessagingHub.Client.Listener
 
         private void StartEnvelopeListeners()
         {
-            var sender = new MessagingHubSender(Connection);
-            var messageHandler = new MessageReceivedHandler(sender, EnvelopeRegistrar);
-            var notificationHandler = new NotificationReceivedHandler(sender, EnvelopeRegistrar);
-            var commandHandler = new CommandReceivedHandler(sender, EnvelopeRegistrar);
+            var messageHandler = new MessageReceivedHandler(Sender, EnvelopeRegistrar);
+            var notificationHandler = new NotificationReceivedHandler(Sender, EnvelopeRegistrar);
+            var commandHandler = new CommandReceivedHandler(Sender, EnvelopeRegistrar);
             ChannelListener = new ChannelListener(
                 messageHandler.HandleAsync,
                 notificationHandler.HandleAsync,

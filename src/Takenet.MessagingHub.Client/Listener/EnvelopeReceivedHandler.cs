@@ -11,9 +11,9 @@ namespace Takenet.MessagingHub.Client.Listener
     {
         private readonly EnvelopeListenerRegistrar _registrar;
 
-        protected Sender.MessagingHubSender Sender { get; }
+        protected Sender.IMessagingHubSender Sender { get; }
 
-        protected EnvelopeReceivedHandler(Sender.MessagingHubSender sender, EnvelopeListenerRegistrar registrar)
+        protected EnvelopeReceivedHandler(Sender.IMessagingHubSender sender, EnvelopeListenerRegistrar registrar)
         {
             Sender = sender;
             _registrar = registrar;
@@ -64,7 +64,7 @@ namespace Takenet.MessagingHub.Client.Listener
 
     internal class MessageReceivedHandler : EnvelopeReceivedHandler
     {
-        public MessageReceivedHandler(Sender.MessagingHubSender sender, EnvelopeListenerRegistrar registrar) : base(sender, registrar)
+        public MessageReceivedHandler(Sender.IMessagingHubSender sender, EnvelopeListenerRegistrar registrar) : base(sender, registrar)
         {
         }
 
@@ -92,14 +92,14 @@ namespace Takenet.MessagingHub.Client.Listener
 
     internal class NotificationReceivedHandler : EnvelopeReceivedHandler
     {
-        public NotificationReceivedHandler(Sender.MessagingHubSender sender, EnvelopeListenerRegistrar registrar) : base(sender, registrar)
+        public NotificationReceivedHandler(Sender.IMessagingHubSender sender, EnvelopeListenerRegistrar registrar) : base(sender, registrar)
         {
         }
     }
 
     internal class CommandReceivedHandler : EnvelopeReceivedHandler
     {
-        public CommandReceivedHandler(Sender.MessagingHubSender sender, EnvelopeListenerRegistrar registrar) : base(sender, registrar)
+        public CommandReceivedHandler(Sender.IMessagingHubSender sender, EnvelopeListenerRegistrar registrar) : base(sender, registrar)
         {
         }
     }
