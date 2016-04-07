@@ -143,7 +143,7 @@ namespace Takenet.MessagingHub.Client.Connection
             return result;
         }
 
-        public IMessagingHubConnection Build()
+        public MessagingHubConnection Build()
         {
             if (_onDemandClientChannelFactory == null)
                 _onDemandClientChannelFactory = new OnDemandClientChannelFactory();

@@ -66,7 +66,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Connection\IMessagingHubConnection.cs" />
     <Compile Include="Connection\MessagingHubConnection.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="EnvelopeListenerExtensions.cs" />
@@ -110,6 +109,8 @@
     <Compile Include="Receivers\TextResponseMessageReceiver.cs" />
     <Compile Include="Receivers\TextResponseMessageReceiverFactory.cs" />
     <Compile Include="Receivers\UnsupportedMessageReceiver.cs" />
+    <Compile Include="Sender\IMessagingHubSender.cs" />
+    <Compile Include="Sender\MessagingHubSender.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -10,17 +10,15 @@ using Lime.Protocol.Network;
 
 namespace Takenet.MessagingHub.Client.Connection
 {
-    /// <summary>
-    ///     Default implementation for <see cref="IMessagingHubConnection" /> class.
-    /// </summary>
-    public class MessagingHubConnection : IMessagingHubConnection
+    public class MessagingHubConnection : IWorker
     {
+        public TimeSpan SendTimeout { get; }
+        internal IOnDemandClientChannel OnDemandClientChannel { get; private set; }
+
         private readonly SemaphoreSlim _semaphore;
-        private readonly TimeSpan _sendTimeout;
         private readonly IEstablishedClientChannelBuilder _establishedClientChannelBuilder;
         private readonly IOnDemandClientChannelFactory _onDemandClientChannelFactory;
 
-        private IOnDemandClientChannel _onDemandClientChannel;
         private ChannelListener _channelListener;
 
         private static readonly TimeSpan ChannelDiscardedDelay = TimeSpan.FromMilliseconds(300);
@@ -31,7 +29,7 @@ namespace Takenet.MessagingHub.Client.Connection
             IEstablishedClientChannelBuilder establishedClientChannelBuilder)
         {
             _semaphore = new SemaphoreSlim(1);
-            _sendTimeout = sendTimeout;
+            SendTimeout = sendTimeout;
             _establishedClientChannelBuilder = establishedClientChannelBuilder;
             _onDemandClientChannelFactory = onDemandClientChannelFactory;
         }
@@ -47,9 +45,9 @@ namespace Takenet.MessagingHub.Client.Connection
                 if (Started)
                     throw new InvalidOperationException("The client is already started");
                 
-                _onDemandClientChannel = _onDemandClientChannelFactory.Create(_establishedClientChannelBuilder);
-                _onDemandClientChannel.ChannelCreationFailedHandlers.Add(StopOnLimeExceptionAsync);
-                _onDemandClientChannel.ChannelDiscardedHandlers.Add(ChannelDiscarded);
+                OnDemandClientChannel = _onDemandClientChannelFactory.Create(_establishedClientChannelBuilder);
+                OnDemandClientChannel.ChannelCreationFailedHandlers.Add(StopOnLimeExceptionAsync);
+                OnDemandClientChannel.ChannelDiscardedHandlers.Add(ChannelDiscarded);
 
                 for (var i = 0; i < 3; i++)
                 {
@@ -77,9 +75,9 @@ namespace Takenet.MessagingHub.Client.Connection
             {
                 if (!Started) throw new InvalidOperationException("The client is not started");
 
-                using (var cancellationTokenSource = new CancellationTokenSource(_sendTimeout))
+                using (var cancellationTokenSource = new CancellationTokenSource(SendTimeout))
                 {
-                    await _onDemandClientChannel.FinishAsync(cancellationTokenSource.Token).ConfigureAwait(false);
+                    await OnDemandClientChannel.FinishAsync(cancellationTokenSource.Token).ConfigureAwait(false);
                 }
 
                 if (_channelListener != null)
@@ -96,7 +94,7 @@ namespace Takenet.MessagingHub.Client.Connection
                     _channelListener.DisposeIfDisposable();
                 }
 
-                _onDemandClientChannel.DisposeIfDisposable();
+                OnDemandClientChannel.DisposeIfDisposable();
                 Started = false;
             }
             finally
@@ -119,7 +117,7 @@ namespace Takenet.MessagingHub.Client.Connection
         {
             try
             {
-                using (var cancellationTokenSource = new CancellationTokenSource(_sendTimeout))
+                using (var cancellationTokenSource = new CancellationTokenSource(SendTimeout))
                 {
                     var command = new Command
                     {
@@ -127,7 +125,7 @@ namespace Takenet.MessagingHub.Client.Connection
                         Uri = new LimeUri(UriTemplates.PING)
                     };
 
-                    var result = await _onDemandClientChannel.ProcessCommandAsync(command, cancellationTokenSource.Token).ConfigureAwait(false);
+                    var result = await OnDemandClientChannel.ProcessCommandAsync(command, cancellationTokenSource.Token).ConfigureAwait(false);
                     return result.Status == CommandStatus.Success;
                 }
             }
