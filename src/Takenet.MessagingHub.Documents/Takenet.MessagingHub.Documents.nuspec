@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Takenet.MessagingHub.Documents</id>
+    <version>$version$</version>
+    <title>Takenet.MessagingHub.Documents</title>
+    <authors>takenet</authors>
+    <owners>takenet</owners>
+    <projectUrl>https://github.com/takenet/messaginghub-client-csharp</projectUrl>
+    <licenseUrl>https://raw.githubusercontent.com/takenet/messaginghub-client-csharp/master/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Supported document types for Messaging Hub C# SDK</description>
+    <copyright>Copyright ©  2015 Curupira S/A</copyright>
+    <tags>lime messaginghub</tags>
+    <dependencies>
+      <dependency id="Lime.Protocol" version="0.4.20" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\Takenet.MessagingHub.Documents.dll" target="lib\net461\Takenet.MessagingHub.Documents.dll" />
+    <file src="bin\Release\Takenet.MessagingHub.Documents.xml" target="lib\net461\Takenet.MessagingHub.Documents.xml" />
+  </files>
+</package>
