@@ -6,11 +6,11 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Serialization;
-using Takenet.MessagingHub.Client.Connection;
-using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Deprecated.Receivers;
 
-namespace Takenet.MessagingHub.Client.Host
+namespace Takenet.MessagingHub.Client.Deprecated.Host
 {
+    [Obsolete]
     public static class Bootstrapper
     {
         public const string DefaultApplicationFileName = "application.json";
@@ -19,11 +19,11 @@ namespace Takenet.MessagingHub.Client.Host
         /// Creates ans starts an application with the given settings.
         /// </summary>
         /// <param name="application">The application instance. If not defined, the class will look for an application.json file in the current directory.</param>
-        /// <param name="serviceProvider">The service provider to be used when building the type instances. It not provided, the only injected types will be the <see cref="Sender.IMessagingHubSender" /> and the settings instances.</param>
+        /// <param name="serviceProvider">The service provider to be used when building the type instances. It not provided, the only injected types will be the <see cref="IMessagingHubSender" /> and the settings instances.</param>
         /// <param name="loadAssembliesFromWorkingDirectory">if set to <c>true</c> indicates to the bootstrapper to load all assemblies from the current working directory.</param>
         /// <returns></returns>
-        /// <exception cref="FileNotFoundException"></exception>
-        /// <exception cref="ArgumentException">At least an access key or password must be defined</exception>
+        /// <exception cref="System.IO.FileNotFoundException"></exception>
+        /// <exception cref="System.ArgumentException">At least an access key or password must be defined</exception>
         /// <exception cref="FileNotFoundException">Could not find the 'application.json' file</exception>
         /// <exception cref="ArgumentException">At least an access key or password must be defined</exception>
         public static async Task<IStoppable> StartAsync(Application application = null, IServiceProvider serviceProvider = null, bool loadAssembliesFromWorkingDirectory = true)
@@ -39,16 +39,16 @@ namespace Takenet.MessagingHub.Client.Host
                 TypeUtil.LoadAssembliesAndReferences(".", assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter);
             }
 
-            var connectionBuilder = new MessagingHubConnectionBuilder();
+            var clientBuilder = new MessagingHubClientBuilder();
             if (application.Login != null)
             {
                 if (application.Password != null)
                 {
-                    connectionBuilder = connectionBuilder.UsingAccount(application.Login, application.Password);
+                    clientBuilder = clientBuilder.UsingAccount(application.Login, application.Password);
                 }
                 else if (application.AccessKey != null)
                 {
-                    connectionBuilder = connectionBuilder.UsingAccessKey(application.Login, application.AccessKey);
+                    clientBuilder = clientBuilder.UsingAccessKey(application.Login, application.AccessKey);
                 }
                 else
                 {
@@ -57,23 +57,22 @@ namespace Takenet.MessagingHub.Client.Host
             }
             else
             {
-                connectionBuilder = connectionBuilder.UsingGuest();
+                clientBuilder = clientBuilder.UsingGuest();
             }
 
-            if (application.Domain != null) connectionBuilder = connectionBuilder.UsingDomain(application.Domain);
-            if (application.HostName != null) connectionBuilder = connectionBuilder.UsingHostName(application.HostName);
-            if (application.SendTimeout != 0) connectionBuilder = connectionBuilder.WithSendTimeout(TimeSpan.FromMilliseconds(application.SendTimeout));
+            if (application.Domain != null) clientBuilder = clientBuilder.UsingDomain(application.Domain);
+            if (application.HostName != null) clientBuilder = clientBuilder.UsingHostName(application.HostName);
+            if (application.SendTimeout != 0) clientBuilder = clientBuilder.WithSendTimeout(TimeSpan.FromMilliseconds(application.SendTimeout));
 
             var localServiceProvider = new ServiceProvider(serviceProvider);
+            var senderBuilder = await BuildSenderAsync(application, clientBuilder, localServiceProvider);
 
-            var connection = connectionBuilder.Build();
-            await connection.ConnectAsync().ConfigureAwait(false);
-
-            var listener = await BuildMessagingHubListenerAsync(application, connection, localServiceProvider);
-            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubListener), listener);
+            var sender = senderBuilder.Build();
+            localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubSender), sender);
+            await sender.StartAsync().ConfigureAwait(false);
 
             var stoppables = new IStoppable[2];
-            stoppables[0] = listener;
+            stoppables[0] = sender;
             if (application.StartupType != null)
             {
                 var startable = await CreateAsync<IStartable>(
@@ -87,9 +86,12 @@ namespace Takenet.MessagingHub.Client.Host
             return new StoppableWrapper(stoppables);
         }
 
-        private static async Task<MessagingHubListener> BuildMessagingHubListenerAsync(Application application, MessagingHubConnection connection, ServiceProvider localServiceProvider)
+        private static async Task<MessagingHubSenderBuilder> BuildSenderAsync(Application application, MessagingHubClientBuilder clientBuilder,
+            ServiceProvider localServiceProvider)
         {
-            var listener = new MessagingHubListener(connection);
+            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubClientBuilder), clientBuilder);            
+            var senderBuilder = clientBuilder.SenderBuilder;
+            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubSenderBuilder), senderBuilder);            
 
             if (application.MessageReceivers != null && application.MessageReceivers.Length > 0)
             {
@@ -130,7 +132,7 @@ namespace Takenet.MessagingHub.Client.Host
                         messagePredicate = m => currentMessagePredicate(m) && destinationRegex.IsMatch(m.To.ToString());
                     }
 
-                    listener.AddMessageReceiver(receiver, messagePredicate);
+                    senderBuilder = senderBuilder.AddMessageReceiver(receiver, messagePredicate);
                 }
             }
 
@@ -166,11 +168,10 @@ namespace Takenet.MessagingHub.Client.Host
                         notificationPredicate = n => currentNotificationPredicate(n) && destinationRegex.IsMatch(n.To.ToString());
                     }
 
-                    listener.AddNotificationReceiver(receiver, notificationPredicate);
+                    senderBuilder = senderBuilder.AddNotificationReceiver(receiver, notificationPredicate);
                 }
             }
-
-            return listener;
+            return senderBuilder;
         }
 
         private static IDictionary<string, object> MergeSettings(Application application, ApplicationReceiver applicationReceiver)

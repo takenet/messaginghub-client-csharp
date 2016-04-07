@@ -5,8 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace Takenet.MessagingHub.Client.Host
+namespace Takenet.MessagingHub.Client.Deprecated.Host
 {
+    [Obsolete]
     public sealed class ApplicationActivator : IDisposable
     {
         private readonly string _basePath;

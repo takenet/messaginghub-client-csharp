@@ -1,7 +1,9 @@
+using System;
 using Lime.Protocol;
 
-namespace Takenet.MessagingHub.Client.Host
+namespace Takenet.MessagingHub.Client.Deprecated.Host
 {
+    [Obsolete]
     public class NotificationApplicationReceiver : ApplicationReceiver
     {
         /// <summary>

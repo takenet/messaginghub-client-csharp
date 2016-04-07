@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Takenet.MessagingHub.Client.Host
+namespace Takenet.MessagingHub.Client.Deprecated.Host
 {
+    [Obsolete]
     public static class Win32
     {
         [DllImport("kernel32.dll", SetLastError = true)]

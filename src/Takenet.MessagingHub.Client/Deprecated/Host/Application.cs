@@ -4,11 +4,12 @@ using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Takenet.MessagingHub.Client.Host
+namespace Takenet.MessagingHub.Client.Deprecated.Host
 {
     /// <summary>
     /// Defines the configuration type for the application.json file.
     /// </summary>
+    [Obsolete]
     public class Application
     {
         /// <summary>

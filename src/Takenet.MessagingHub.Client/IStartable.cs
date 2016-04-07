@@ -1,9 +1,7 @@
-using System;
 using System.Threading.Tasks;
 
-namespace Takenet.MessagingHub.Client.Deprecated
+namespace Takenet.MessagingHub.Client
 {
-    [Obsolete]
     public interface IStartable
     {
         Task StartAsync();

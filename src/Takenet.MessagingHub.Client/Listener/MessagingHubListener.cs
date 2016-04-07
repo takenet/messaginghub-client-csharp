@@ -8,7 +8,7 @@ using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
-    public sealed class MessagingHubListener
+    public sealed class MessagingHubListener : IWorker
     {
         private MessagingHubConnection Connection { get; }
 
