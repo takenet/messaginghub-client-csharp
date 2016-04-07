@@ -10,7 +10,7 @@ using Lime.Protocol.Network;
 
 namespace Takenet.MessagingHub.Client.Connection
 {
-    public class MessagingHubConnection : IWorker
+    public class MessagingHubConnection
     {
         public TimeSpan SendTimeout { get; }
         internal IOnDemandClientChannel OnDemandClientChannel { get; private set; }
@@ -18,8 +18,6 @@ namespace Takenet.MessagingHub.Client.Connection
         private readonly SemaphoreSlim _semaphore;
         private readonly IEstablishedClientChannelBuilder _establishedClientChannelBuilder;
         private readonly IOnDemandClientChannelFactory _onDemandClientChannelFactory;
-
-        private ChannelListener _channelListener;
 
         private static readonly TimeSpan ChannelDiscardedDelay = TimeSpan.FromMilliseconds(300);
 
@@ -34,15 +32,15 @@ namespace Takenet.MessagingHub.Client.Connection
             _onDemandClientChannelFactory = onDemandClientChannelFactory;
         }
 
-        public bool Started { get; private set; }
+        public bool IsConnected { get; private set; }
 
-        public virtual async Task StartAsync()
+        public virtual async Task ConnectAsync()
         {
             await _semaphore.WaitAsync().ConfigureAwait(false);
 
             try
             {
-                if (Started)
+                if (IsConnected)
                     throw new InvalidOperationException("The client is already started");
                 
                 OnDemandClientChannel = _onDemandClientChannelFactory.Create(_establishedClientChannelBuilder);
@@ -53,7 +51,7 @@ namespace Takenet.MessagingHub.Client.Connection
                 {
                     if (await EnsureConnectionIsOkayAsync()) 
                     {
-                        Started = true;
+                        IsConnected = true;
                         return;
                     }
                     await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, i)));
@@ -67,35 +65,21 @@ namespace Takenet.MessagingHub.Client.Connection
             }
         }
 
-        public virtual async Task StopAsync()
+        public virtual async Task DisconnectAsync()
         {
             await _semaphore.WaitAsync().ConfigureAwait(false);
 
             try
             {
-                if (!Started) throw new InvalidOperationException("The client is not started");
+                if (!IsConnected) throw new InvalidOperationException("The client is not started");
 
                 using (var cancellationTokenSource = new CancellationTokenSource(SendTimeout))
                 {
                     await OnDemandClientChannel.FinishAsync(cancellationTokenSource.Token).ConfigureAwait(false);
                 }
 
-                if (_channelListener != null)
-                {
-                    _channelListener.Stop();
-
-                    // TODO: Signal to the listener to stop consuming the envelopes.
-                    //await Task.WhenAll(
-                    //    _channelListener.CommandListenerTask, 
-                    //    _channelListener.MessageListenerTask,
-                    //    _channelListener.NotificationListenerTask)
-                    //    .ConfigureAwait(false);
-
-                    _channelListener.DisposeIfDisposable();
-                }
-
                 OnDemandClientChannel.DisposeIfDisposable();
-                Started = false;
+                IsConnected = false;
             }
             finally
             {

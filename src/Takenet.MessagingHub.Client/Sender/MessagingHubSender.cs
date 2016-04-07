@@ -17,7 +17,7 @@ namespace Takenet.MessagingHub.Client.Sender
 
         public virtual async Task<Command> SendCommandAsync(Command command, CancellationToken token)
         {
-            if (!Connection.Started)
+            if (!Connection.IsConnected)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation");
 
             using (var timeoutTokenSource = new CancellationTokenSource(Connection.SendTimeout))
@@ -36,7 +36,7 @@ namespace Takenet.MessagingHub.Client.Sender
 
         public virtual async Task SendMessageAsync(Message message, CancellationToken token)
         {
-            if (!Connection.Started)
+            if (!Connection.IsConnected)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation");
 
             using (var timeoutTokenSource = new CancellationTokenSource(Connection.SendTimeout))
@@ -54,7 +54,7 @@ namespace Takenet.MessagingHub.Client.Sender
 
         public virtual async Task SendNotificationAsync(Notification notification, CancellationToken token)
         {
-            if (!Connection.Started)
+            if (!Connection.IsConnected)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation!");
 
             using (var timeoutTokenSource = new CancellationTokenSource(Connection.SendTimeout))
