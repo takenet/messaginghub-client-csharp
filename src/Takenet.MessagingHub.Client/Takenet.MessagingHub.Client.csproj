@@ -91,6 +91,17 @@
     <Compile Include="LimeProtocol\IOnDemandClientChannelFactory.cs" />
     <Compile Include="LimeProtocol\OnDemandClientChannelFactory.cs" />
     <Compile Include="Connection\MessagingHubConnectionBuilder.cs" />
+    <Compile Include="Listener\BlackholeNotificationReceiver.cs" />
+    <Compile Include="Listener\EnvelopeListenerRegistrar.cs" />
+    <Compile Include="Listener\EnvelopeReceivedHandler.cs" />
+    <Compile Include="Listener\EnvelopeReceiverBase.cs" />
+    <Compile Include="Listener\IEnvelopeListener.cs" />
+    <Compile Include="Listener\IEnvelopeReceiver.cs" />
+    <Compile Include="Listener\IMessageReceiver.cs" />
+    <Compile Include="Listener\INotificationReceiver.cs" />
+    <Compile Include="Listener\MessageReceiverBase.cs" />
+    <Compile Include="Listener\MessagingHubListener.cs" />
+    <Compile Include="Listener\UnsupportedMessageReceiver.cs" />
     <Compile Include="MessagingHubSenderBuilder.cs" />
     <Compile Include="MessageSenderExtensions.cs" />
     <Compile Include="MessagingHubClientBuilder.cs" />

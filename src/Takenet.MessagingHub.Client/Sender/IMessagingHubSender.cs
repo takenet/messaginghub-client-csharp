@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Lime.Protocol;
 
 namespace Takenet.MessagingHub.Client.Sender
@@ -10,20 +11,20 @@ namespace Takenet.MessagingHub.Client.Sender
         /// </summary>
         /// <param name="command">Command to be sent</param>
         /// <returns>A task representing the sending operation. When completed, it will contain the command response</returns>
-        Task<Command> SendCommandAsync(Command command);
+        Task<Command> SendCommandAsync(Command command, CancellationToken token);
 
         /// <summary>
         /// Send a message through the Messaging Hub
         /// </summary>
         /// <param name="message">Message to be sent</param>
         /// <returns>A task representing the sending operation</returns>
-        Task SendMessageAsync(Message message);
+        Task SendMessageAsync(Message message, CancellationToken token);
 
         /// <summary>
         /// Send a notification through the Messaging Hub
         /// </summary>
         /// <param name="notification">Notification to be sent</param>
         /// <returns>A task representing the sending operation</returns>
-        Task SendNotificationAsync(Notification notification);
+        Task SendNotificationAsync(Notification notification, CancellationToken token);
     }
 }

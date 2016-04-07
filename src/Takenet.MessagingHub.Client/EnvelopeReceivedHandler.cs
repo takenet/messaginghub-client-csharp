@@ -12,7 +12,7 @@ namespace Takenet.MessagingHub.Client
         private readonly EnvelopeListenerRegistrar _registrar;
         private readonly IEnvelopeSender _envelopeSender;
 
-        public EnvelopeReceivedHandler(IEnvelopeSender envelopeSender, EnvelopeListenerRegistrar registrar)
+        protected EnvelopeReceivedHandler(IEnvelopeSender envelopeSender, EnvelopeListenerRegistrar registrar)
         {
             _envelopeSender = envelopeSender;
             _registrar = registrar;
