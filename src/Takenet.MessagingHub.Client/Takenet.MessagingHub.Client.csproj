@@ -99,6 +99,8 @@
     <Compile Include="Listener\IEnvelopeReceiver.cs" />
     <Compile Include="Listener\IMessageReceiver.cs" />
     <Compile Include="Listener\INotificationReceiver.cs" />
+    <Compile Include="Listener\LambdaNotificationReceiver.cs" />
+    <Compile Include="Listener\LambdaMessageReceiver.cs" />
     <Compile Include="Listener\MessageReceiverBase.cs" />
     <Compile Include="Listener\MessagingHubListener.cs" />
     <Compile Include="Listener\UnsupportedMessageReceiver.cs" />

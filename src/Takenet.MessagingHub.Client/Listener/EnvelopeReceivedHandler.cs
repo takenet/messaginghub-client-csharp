@@ -58,7 +58,7 @@ namespace Takenet.MessagingHub.Client.Listener
                 return;
 
             var receiverBase = ((EnvelopeReceiverBase)receiver);
-            receiverBase.EnvelopeSender = Sender;
+            receiverBase.Sender = Sender;
         }
     }
 

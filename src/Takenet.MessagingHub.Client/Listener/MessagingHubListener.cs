@@ -1,5 +1,6 @@
 ﻿using Lime.Protocol;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol.Listeners;
 using Takenet.MessagingHub.Client.Connection;
@@ -9,7 +10,7 @@ namespace Takenet.MessagingHub.Client.Listener
 {
     public class MessagingHubListener : IWorker
     {
-        public MessagingHubConnection Connection { get; }
+        private MessagingHubConnection Connection { get; }
 
         internal EnvelopeListenerRegistrar EnvelopeRegistrar { get; }
 
@@ -39,6 +40,26 @@ namespace Takenet.MessagingHub.Client.Listener
         public void AddNotificationReceiver(INotificationReceiver notificationReceiver, Predicate<Notification> notificationFilter)
         {
             EnvelopeRegistrar.AddNotificationReceiver(() => notificationReceiver, notificationFilter);
+        }
+
+        public void AddMessageReceiver(Action<Message, CancellationToken> onMessageReceived, MediaType forMimeType = null)
+        {
+            EnvelopeRegistrar.AddMessageReceiver(() => new LambdaMessageReceiver(onMessageReceived), m => Equals(m.Type, forMimeType));
+        }
+
+        public void AddNotificationReceiver(Action<Notification, CancellationToken> onNotificationReceived, Event? forEventType = null)
+        {
+            EnvelopeRegistrar.AddNotificationReceiver(() => new LambdaNotificationReceiver(onNotificationReceived), n => n.Event == forEventType);
+        }
+
+        public void AddMessageReceiver(Action<Message, CancellationToken> onMessageReceived, Predicate<Message> messageFilter)
+        {
+            EnvelopeRegistrar.AddMessageReceiver(() => new LambdaMessageReceiver(onMessageReceived), messageFilter);
+        }
+
+        public void AddNotificationReceiver(Action<Notification, CancellationToken> onNotificationReceived, Predicate<Notification> notificationFilter)
+        {
+            EnvelopeRegistrar.AddNotificationReceiver(() => new LambdaNotificationReceiver(onNotificationReceived), notificationFilter);
         }
 
         public Task StartAsync()

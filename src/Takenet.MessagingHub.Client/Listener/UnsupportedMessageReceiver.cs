@@ -16,7 +16,7 @@ namespace Takenet.MessagingHub.Client.Listener
                 Code = ReasonCodes.MESSAGE_UNSUPPORTED_CONTENT_TYPE,
                 Description = $"{message.Type} messages are not supported"
             };
-            return EnvelopeSender.SendNotificationAsync(message.ToFailedNotification(reason), token);
+            return Sender.SendNotificationAsync(message.ToFailedNotification(reason), token);
         }
     }
 }
