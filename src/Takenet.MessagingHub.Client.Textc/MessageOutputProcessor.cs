@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
-using Takenet.MessagingHub.Client.Deprecated;
+using Takenet.MessagingHub.Client.Sender;
 using Takenet.Textc;
 using Takenet.Textc.Processors;
 
@@ -10,9 +10,9 @@ namespace Takenet.MessagingHub.Client.Textc
 {
     public sealed class MessageOutputProcessor : IOutputProcessor
     {
-        private readonly Func<IEnvelopeSender> _envelopeSenderFactory;
+        private readonly Func<IMessagingHubSender> _envelopeSenderFactory;
 
-        public MessageOutputProcessor(Func<IEnvelopeSender> envelopeSenderFactory)
+        public MessageOutputProcessor(Func<IMessagingHubSender> envelopeSenderFactory)
         {
             if (envelopeSenderFactory == null) throw new ArgumentNullException(nameof(envelopeSenderFactory));
             _envelopeSenderFactory = envelopeSenderFactory;
@@ -27,10 +27,9 @@ namespace Takenet.MessagingHub.Client.Textc
                         
             var content = output as Document;
             if (content != null)
-            {
-                return _envelopeSenderFactory().SendMessageAsync(content, to);
-            }
-            return _envelopeSenderFactory().SendMessageAsync(output.ToString(), to);
+                return _envelopeSenderFactory().SendMessageAsync(content, to, cancellationToken);
+
+            return _envelopeSenderFactory().SendMessageAsync(output.ToString(), to, cancellationToken);
         }
     }
 }

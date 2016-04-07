@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Text;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Lime.Messaging.Resources;
-using Lime.Protocol;
 using Shouldly;
-using Takenet.MessagingHub.Client.Deprecated;
+using Takenet.MessagingHub.Client.Connection;
 
 namespace Takenet.MessagingHub.Client.Test
 {
@@ -28,23 +25,23 @@ namespace Takenet.MessagingHub.Client.Test
         [Ignore("Requires real server connection")]
         public async Task StartSuccessfully()
         {
-            var client = new MessagingHubClientBuilder()
+            var connection = new MessagingHubConnectionBuilder()
                 .UsingGuest()
                 .Build();
 
-            await client.StartAsync().ConfigureAwait(false);
+            await connection.ConnectAsync().ConfigureAwait(false);
         }
 
         [Test]
         [Ignore("Taking too long")]
         public void TryToStartConnectionWithInvalidServer()
         {
-            var client = new MessagingHubClientBuilder()
+            var connection = new MessagingHubConnectionBuilder()
                 .UsingHostName("invalid.iris.io")
                 .UsingGuest()
                 .Build();
 
-            Should.ThrowAsync<TimeoutException>(async () => await client.StartAsync().ConfigureAwait(false)).Wait();
+            Should.ThrowAsync<TimeoutException>(async () => await connection.ConnectAsync().ConfigureAwait(false)).Wait();
         }
     }
 }

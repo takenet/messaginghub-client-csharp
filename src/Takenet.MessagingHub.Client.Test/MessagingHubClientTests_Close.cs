@@ -27,10 +27,10 @@ namespace Takenet.MessagingHub.Client.Test
         public async Task Start_Then_Stop_Should_Finish_OnDemandClientChannel()
         {
             //Arrange
-            await MessagingHubClient.StartAsync(); 
+            await MessagingHubConnection.ConnectAsync(); 
 
             // Act
-            await MessagingHubClient.StopAsync();
+            await MessagingHubConnection.DisconnectAsync();
 
             // Assert
             OnDemandClientChannel.ReceivedWithAnyArgs(1).FinishAsync(CancellationToken.None).Wait();
@@ -40,7 +40,7 @@ namespace Takenet.MessagingHub.Client.Test
         public void Stop_Without_Start_Should_Throw_Exception()
         {
             // Act // Assert
-            Should.ThrowAsync<InvalidOperationException>(async () => await MessagingHubClient.StopAsync()).Wait();
+            Should.ThrowAsync<InvalidOperationException>(async () => await MessagingHubConnection.DisconnectAsync()).Wait();
         }
         
     }

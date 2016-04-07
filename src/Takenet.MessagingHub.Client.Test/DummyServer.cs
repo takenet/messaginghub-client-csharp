@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using Lime.Protocol;
 using Lime.Protocol.Listeners;
 using Lime.Protocol.Security;
@@ -13,7 +8,6 @@ using Lime.Protocol.Serialization.Newtonsoft;
 using Lime.Protocol.Server;
 using Lime.Protocol.Util;
 using Lime.Transport.Tcp;
-using Takenet.MessagingHub.Client.Deprecated;
 
 namespace Takenet.MessagingHub.Client.Test
 {

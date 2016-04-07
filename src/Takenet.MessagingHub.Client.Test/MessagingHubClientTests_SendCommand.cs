@@ -35,10 +35,10 @@ namespace Takenet.MessagingHub.Client.Test
             };
 
             OnDemandClientChannel.ProcessCommandAsync(null, CancellationToken.None).ReturnsForAnyArgs(commandResponse);
-            await MessagingHubClient.StartAsync();
+            await MessagingHubConnection.ConnectAsync();
 
             //Act
-            var result = await MessagingHubClient.SendCommandAsync(new Command { Id = commandId });
+            var result = await MessagingHubSender.SendCommandAsync(new Command { Id = commandId }, CancellationToken.None);
             await Task.Delay(TIME_OUT);
 
             //Assert
@@ -51,7 +51,7 @@ namespace Takenet.MessagingHub.Client.Test
         public void Send_Command_Without_Start_Should_Throw_Exception()
         {
             //Act / Assert
-            Should.ThrowAsync<InvalidOperationException>(async () => await MessagingHubClient.SendCommandAsync(Arg.Any<Command>()).ConfigureAwait(false)).Wait();
+            Should.ThrowAsync<InvalidOperationException>(async () => await MessagingHubSender.SendCommandAsync(Arg.Any<Command>(), CancellationToken.None).ConfigureAwait(false)).Wait();
         }
     }
 }

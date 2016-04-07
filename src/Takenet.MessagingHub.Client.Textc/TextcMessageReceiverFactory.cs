@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Lime.Protocol;
-using Takenet.MessagingHub.Client.Deprecated;
-using Takenet.MessagingHub.Client.Deprecated.Receivers;
+using Takenet.MessagingHub.Client.Connection;
 using Takenet.MessagingHub.Client.Host;
+using Takenet.MessagingHub.Client.Listener;
 using Takenet.Textc;
 using Takenet.Textc.Csdl;
 using Takenet.Textc.Processors;
@@ -20,7 +20,7 @@ namespace Takenet.MessagingHub.Client.Textc
 
         public async Task<IMessageReceiver> CreateAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings)
         {
-            var builder = new TextcMessageReceiverBuilder(serviceProvider.GetService<MessagingHubSenderBuilder>());
+            var builder = new TextcMessageReceiverBuilder(serviceProvider.GetService<MessagingHubConnectionBuilder>());
             if (settings != null)
             {
                 var textcMessageReceiverSettings = TextcMessageReceiverSettings.ParseFromSettings(settings);

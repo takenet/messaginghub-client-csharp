@@ -1,11 +1,10 @@
-﻿using Lime.Protocol;
+﻿using System.Threading;
+using Lime.Protocol;
 using NSubstitute;
 using NUnit.Framework;
 using Shouldly;
-using System.Threading;
 using System.Threading.Tasks;
-using Takenet.MessagingHub.Client.Deprecated;
-using Takenet.MessagingHub.Client.Deprecated.Receivers;
+using Takenet.MessagingHub.Client.Listener;
 
 namespace Takenet.MessagingHub.Client.Test
 {
@@ -32,31 +31,33 @@ namespace Takenet.MessagingHub.Client.Test
         public async Task Add_NotificationReceiver_And_Process_Notification_With_Success()
         {
             //Arrange
-            EnvelopeListenerRegistrar.AddNotificationReceiver(_notificationReceiver);
-            await MessagingHubClient.StartAsync();
+            MessagingHubListener.AddNotificationReceiver(_notificationReceiver);
+            await MessagingHubConnection.ConnectAsync();
+            await MessagingHubListener.StartAsync();
 
             //Act
             DispatchNotification();
             await Task.Delay(TIME_OUT);
 
             //Assert
-            _notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
+            _notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, CancellationToken.None);
         }
 
         [Test]
         public async Task Add_Specific_NotificationReceiver_And_Process_Notification_With_Success()
         {
             //Arrange
-            EnvelopeListenerRegistrar.AddNotificationReceiver(_notificationReceiver, Event.Accepted);
+            MessagingHubListener.AddNotificationReceiver(_notificationReceiver, Event.Accepted);
             SomeNotification.Event = Event.Accepted;
-            await MessagingHubClient.StartAsync();
+            await MessagingHubConnection.ConnectAsync();
+            await MessagingHubListener.StartAsync();
 
             //Act
             DispatchNotification();
             await Task.Delay(TIME_OUT);
 
             //Assert
-            _notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
+            _notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, CancellationToken.None);
         }
 
 
@@ -64,17 +65,17 @@ namespace Takenet.MessagingHub.Client.Test
         public async Task Add_Base_NotificationReceiver_And_Process_Notification_With_Success()
         {
             //Arrange
-            var notificationReceiver = Substitute.For<NotificationReceiverBase>();
-            EnvelopeListenerRegistrar.AddNotificationReceiver(notificationReceiver);
-            await MessagingHubClient.StartAsync();
+            var notificationReceiver = Substitute.For<INotificationReceiver>();
+            MessagingHubListener.AddNotificationReceiver(notificationReceiver);
+            await MessagingHubConnection.ConnectAsync();
+            await MessagingHubListener.StartAsync();
 
             //Act
             DispatchNotification();
             await Task.Delay(TIME_OUT);
 
             //Assert
-            notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
-            notificationReceiver.EnvelopeSender.ShouldNotBeNull();
+            notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, CancellationToken.None);
         }
 
         private void DispatchNotification()

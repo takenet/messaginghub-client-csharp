@@ -1,16 +1,17 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
-using Takenet.MessagingHub.Client.Deprecated.Receivers;
+using Takenet.MessagingHub.Client.Listener;
 
-namespace Takenet.MessagingHub.Client.Playground
+namespace Playground
 {
     /// <summary>
     /// Example of a notification receiver
     /// </summary>
     public class PrintNotificationReceiver : NotificationReceiverBase
     {
-        public override Task ReceiveAsync(Notification notification)
+        public override Task ReceiveAsync(Notification notification, CancellationToken token)
         {
             Console.WriteLine("Notification of {0} event received. Reason: {1}", notification.Event, notification.Reason);
             return Task.FromResult(0);

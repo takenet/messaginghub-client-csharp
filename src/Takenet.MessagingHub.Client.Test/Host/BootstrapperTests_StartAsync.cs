@@ -1,24 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
-using Lime.Protocol.Security;
 using Lime.Protocol.Serialization;
-using Lime.Protocol.Serialization.Newtonsoft;
-using Lime.Protocol.Server;
-using Lime.Protocol.Util;
-using Lime.Transport.Tcp;
-using NSubstitute.Routing.Handlers;
 using NUnit.Framework;
 using Shouldly;
-using Takenet.MessagingHub.Client.Deprecated;
-using Takenet.MessagingHub.Client.Deprecated.Receivers;
 using Takenet.MessagingHub.Client.Host;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 using Event = Lime.Protocol.Event;
 
 namespace Takenet.MessagingHub.Client.Test.Host
@@ -378,7 +368,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
             Settings = settings;
         }
 
-        public Task ReceiveAsync(Message envelope)
+        public Task ReceiveAsync(Message envelope, CancellationToken token)
         {
             throw new NotImplementedException();
         }
@@ -395,7 +385,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
             Settings = settings;
         }
 
-        public Task ReceiveAsync(Notification envelope)
+        public Task ReceiveAsync(Notification envelope, CancellationToken token)
         {
             throw new NotImplementedException();
         }

@@ -1,22 +1,21 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
-using Takenet.MessagingHub.Client.Deprecated;
-using Takenet.MessagingHub.Client.Deprecated.Receivers;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 
-namespace Takenet.MessagingHub.Client.Playground
+namespace Playground
 {
     /// <summary>
     /// Example of a plain text message receiver
     /// </summary>
     public class PlainTextMessageReceiver : MessageReceiverBase
     {
-        public override async Task ReceiveAsync(Message message)
+        public override async Task ReceiveAsync(Message message, CancellationToken token)
         {
             Console.WriteLine(message.Content.ToString());
-            await EnvelopeSender.SendMessageAsync("Thanks for your message!", message.From);
+            await Sender.SendMessageAsync("Thanks for your message!", message.From, token);
         }
-
-
     }
 }

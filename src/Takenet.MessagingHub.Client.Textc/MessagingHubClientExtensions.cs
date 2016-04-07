@@ -1,4 +1,4 @@
-using Takenet.MessagingHub.Client.Deprecated;
+using Takenet.MessagingHub.Client.Connection;
 using Takenet.MessagingHub.Client.Textc;
 using Takenet.Textc.Processors;
 
@@ -13,14 +13,9 @@ namespace Takenet.MessagingHub.Client
         /// <param name="senderBuilder"></param>
         /// <param name="outputProcessor"></param>
         /// <returns></returns>
-        public static TextcMessageReceiverBuilder NewTextcMessageReceiverBuilder(this MessagingHubSenderBuilder senderBuilder, IOutputProcessor outputProcessor = null)
+        public static TextcMessageReceiverBuilder NewTextcMessageReceiverBuilder(this MessagingHubConnectionBuilder senderBuilder, IOutputProcessor outputProcessor = null)
         {
             return new TextcMessageReceiverBuilder(senderBuilder, outputProcessor);
-        }
-
-        public static TextcMessageReceiverBuilder NewTextcMessageReceiverBuilder(this MessagingHubClientBuilder clientBuilder, IOutputProcessor outputProcessor = null)
-        {
-            return new TextcMessageReceiverBuilder(clientBuilder.AsMessagingSenderBuilder(), outputProcessor);
         }
     }
 }

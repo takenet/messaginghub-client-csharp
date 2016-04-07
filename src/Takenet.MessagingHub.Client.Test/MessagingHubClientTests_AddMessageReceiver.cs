@@ -3,11 +3,7 @@ using System.Threading.Tasks;
 using Lime.Protocol;
 using NSubstitute;
 using NUnit.Framework;
-using Shouldly;
-using System.Collections.Concurrent;
-using System;
-using Takenet.MessagingHub.Client.Deprecated;
-using Takenet.MessagingHub.Client.Deprecated.Receivers;
+using Takenet.MessagingHub.Client.Listener;
 
 namespace Takenet.MessagingHub.Client.Test
 {
@@ -35,32 +31,35 @@ namespace Takenet.MessagingHub.Client.Test
         public async Task Add_MessageReceiver_And_Process_Message_With_Success()
         {
             //Arrange
-            EnvelopeListenerRegistrar.AddMessageReceiver(_messageReceiver);
-            await MessagingHubClient.StartAsync();
+            MessagingHubListener.AddMessageReceiver(_messageReceiver);
+            await MessagingHubConnection.ConnectAsync();
+            await MessagingHubListener.StartAsync();
 
             //Act
             DispatchMessage();
             await Task.Delay(TIME_OUT);
 
             //Assert
-            _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
+            _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, CancellationToken.None);
         }
 
         [Test]
         public async Task Add_MessageReceiver_Process_Message_And_Stop_With_Success()
         {
             //Arrange
-            EnvelopeListenerRegistrar.AddMessageReceiver(_messageReceiver);
+            MessagingHubListener.AddMessageReceiver(_messageReceiver);
 
-            await MessagingHubClient.StartAsync();
+            await MessagingHubConnection.ConnectAsync();
+            await MessagingHubListener.StartAsync();
             DispatchMessage();
             await Task.Delay(TIME_OUT);
 
             //Act
-            await MessagingHubClient.StopAsync();
+            await MessagingHubListener.StopAsync();
+            await MessagingHubConnection.DisconnectAsync();
 
             //Assert
-            _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
+            _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, CancellationToken.None);
         }
 
         [Test]
@@ -68,16 +67,16 @@ namespace Takenet.MessagingHub.Client.Test
         {
             //Arrange
             var messageReceiver = Substitute.For<MessageReceiverBase>();
-            EnvelopeListenerRegistrar.AddMessageReceiver(messageReceiver);
-            await MessagingHubClient.StartAsync();
+            MessagingHubListener.AddMessageReceiver(messageReceiver);
+            await MessagingHubConnection.ConnectAsync();
+            await MessagingHubListener.StartAsync();
 
             //Act
             DispatchMessage();
             await Task.Delay(TIME_OUT);
 
             //Assert
-            messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
-            messageReceiver.EnvelopeSender.ShouldNotBeNull();
+            messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, CancellationToken.None);
         }
 
         [Test]
@@ -85,18 +84,19 @@ namespace Takenet.MessagingHub.Client.Test
         {
             //Arrange
             var otherMessageReceiver = Substitute.For<IMessageReceiver>();
-            EnvelopeListenerRegistrar.AddMessageReceiver(_messageReceiver);
-            EnvelopeListenerRegistrar.AddMessageReceiver(otherMessageReceiver);
+            MessagingHubListener.AddMessageReceiver(_messageReceiver);
+            MessagingHubListener.AddMessageReceiver(otherMessageReceiver);
 
-            await MessagingHubClient.StartAsync();
+            await MessagingHubConnection.ConnectAsync();
+            await MessagingHubListener.StartAsync();
 
             //Act
             DispatchMessage();
             await Task.Delay(TIME_OUT);
 
             //Assert
-            _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
-            otherMessageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null);
+            _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, CancellationToken.None);
+            otherMessageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, CancellationToken.None);
         }
 
         private void DispatchMessage()

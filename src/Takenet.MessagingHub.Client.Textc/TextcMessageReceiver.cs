@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
-using Takenet.MessagingHub.Client.Deprecated.Receivers;
+using Takenet.MessagingHub.Client.Listener;
 using Takenet.Textc;
 
 namespace Takenet.MessagingHub.Client.Textc
@@ -26,7 +26,7 @@ namespace Takenet.MessagingHub.Client.Textc
             _processTimeout = processTimeout ?? DefaultProcessTimeout;
         }
 
-        public override async Task ReceiveAsync(Message message)
+        public override async Task ReceiveAsync(Message message, CancellationToken token)
         {
             try
             {
@@ -55,7 +55,7 @@ namespace Takenet.MessagingHub.Client.Textc
             }
             finally
             {
-                await EnvelopeSender.SendNotificationAsync(message.ToConsumedNotification()).ConfigureAwait(false);
+                await Sender.SendNotificationAsync(message.ToConsumedNotification(), token).ConfigureAwait(false);
             }
         }
     }

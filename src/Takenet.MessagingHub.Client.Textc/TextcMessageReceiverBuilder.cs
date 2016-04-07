@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
-using Takenet.MessagingHub.Client.Deprecated;
-using Takenet.MessagingHub.Client.Deprecated.Receivers;
+using Takenet.MessagingHub.Client.Connection;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 using Takenet.Textc;
 using Takenet.Textc.Csdl;
 using Takenet.Textc.Processors;
@@ -18,7 +20,9 @@ namespace Takenet.MessagingHub.Client.Textc
     /// </summary>
     public sealed class TextcMessageReceiverBuilder
     {
-        private readonly MessagingHubSenderBuilder _senderBuilder;
+        private readonly MessagingHubConnectionBuilder _connectionBuilder;
+        private readonly MessagingHubConnection _connection;
+        private readonly MessagingHubSender _sender;
         private IContextProvider _contextProvider;
         private Func<Message, MessageReceiverBase, Task> _matchNotFoundHandler;
 
@@ -28,12 +32,13 @@ namespace Takenet.MessagingHub.Client.Textc
         private ICultureProvider _cultureProvider;
         private readonly List<Func<IOutputProcessor, ICommandProcessor>> _commandProcessorFactories;
         
-        public TextcMessageReceiverBuilder(MessagingHubSenderBuilder senderBuilder, IOutputProcessor outputProcessor = null, ISyntaxParser syntaxParser = null,
+        public TextcMessageReceiverBuilder(MessagingHubConnectionBuilder connectionBuilder, IOutputProcessor outputProcessor = null, ISyntaxParser syntaxParser = null,
             IExpressionScorer expressionScorer = null, ICultureProvider cultureProvider = null)
         {
-            if (senderBuilder == null) throw new ArgumentNullException(nameof(senderBuilder));
-            _senderBuilder = senderBuilder;                        
-            _outputProcessor = outputProcessor ?? new MessageOutputProcessor(() => _senderBuilder.EnvelopeSender);
+            if (connectionBuilder == null) throw new ArgumentNullException(nameof(connectionBuilder));
+            _connectionBuilder = connectionBuilder;
+            _connection = _connectionBuilder.Build();
+            _outputProcessor = outputProcessor ?? new MessageOutputProcessor(() => new MessagingHubSender(_connection));
             _syntaxParser = syntaxParser ?? new SyntaxParser();
             _expressionScorer = expressionScorer ?? new RatioExpressionScorer();
             _cultureProvider = cultureProvider ?? new DefaultCultureProvider(CultureInfo.InvariantCulture);
@@ -101,7 +106,7 @@ namespace Takenet.MessagingHub.Client.Textc
         public TextcMessageReceiverBuilder WithMatchNotFoundMessage(string matchNotFoundMessage) => 
             WithMatchNotFoundHandler(
                 (message, receiver) =>
-                    receiver.EnvelopeSender.SendMessageAsync(matchNotFoundMessage, message.Pp ?? message.From));
+                    receiver.Sender.SendMessageAsync(matchNotFoundMessage, message.Pp ?? message.From, CancellationToken.None));
 
         /// <summary>
         /// Sets a handler to be called in case of no match of the user input.
@@ -192,10 +197,11 @@ namespace Takenet.MessagingHub.Client.Textc
         /// Builds a new instance of <see cref="TextcMessageReceiver"/> using the defined configurations and adds it to the associated <see cref="MessagingHubClient"/> instance.
         /// </summary>
         /// <returns></returns>
-        public MessagingHubSenderBuilder BuildAndAddTextcMessageReceiver()
+        public MessagingHubConnection BuildAndAddTextcMessageReceiver()
         {
-            _senderBuilder.AddMessageReceiver(Build(), MediaTypes.PlainText);
-            return _senderBuilder;
+            var listener = new MessagingHubListener(_connection);
+            listener.AddMessageReceiver(Build(), MediaTypes.PlainText);
+            return _connection;
         }
     }
 }

@@ -67,20 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Connection\MessagingHubConnection.cs" />
-    <Compile Include="Deprecated\Host\Application.cs" />
-    <Compile Include="Deprecated\Host\ApplicationActivator.cs" />
-    <Compile Include="Deprecated\Host\ApplicationReceiver.cs" />
-    <Compile Include="Deprecated\Host\Bootstrapper.cs" />
-    <Compile Include="Deprecated\Host\IFactory.cs" />
-    <Compile Include="Deprecated\Host\Job .cs" />
-    <Compile Include="Deprecated\Host\MessageApplicationReceiver.cs" />
-    <Compile Include="Deprecated\Host\NotificationApplicationReceiver.cs" />
-    <Compile Include="Deprecated\Host\ServiceProviderExtensions.cs" />
-    <Compile Include="Deprecated\Host\Win32.cs" />
     <Compile Include="EnumerableExtensions.cs" />
-    <Compile Include="Deprecated\EnvelopeListenerExtensions.cs" />
-    <Compile Include="Deprecated\EnvelopeListenerRegistrar.cs" />
-    <Compile Include="Deprecated\EnvelopeReceivedHandler.cs" />
     <Compile Include="Host\Application.cs" />
     <Compile Include="Host\ApplicationActivator.cs" />
     <Compile Include="Host\Job .cs" />
@@ -91,10 +78,6 @@
     <Compile Include="Host\Bootstrapper.cs" />
     <Compile Include="Host\ServiceProviderExtensions.cs" />
     <Compile Include="Host\Win32.cs" />
-    <Compile Include="Deprecated\IEnvelopeListener.cs" />
-    <Compile Include="Deprecated\IEnvelopeReceiver.cs" />
-    <Compile Include="Deprecated\IEnvelopeSender.cs" />
-    <Compile Include="Deprecated\IMessagingHubSender.cs" />
     <Compile Include="IStartable.cs" />
     <Compile Include="IStoppable.cs" />
     <Compile Include="IWorker.cs" />
@@ -111,34 +94,19 @@
     <Compile Include="Listener\INotificationReceiver.cs" />
     <Compile Include="Listener\LambdaNotificationReceiver.cs" />
     <Compile Include="Listener\LambdaMessageReceiver.cs" />
+    <Compile Include="Listener\NotificationReceiverBase.cs" />
     <Compile Include="Listener\MessageReceiverBase.cs" />
     <Compile Include="Listener\MessagingHubListener.cs" />
     <Compile Include="Listener\UnsupportedMessageReceiver.cs" />
-    <Compile Include="Deprecated\MessagingHubSenderBuilder.cs" />
-    <Compile Include="Deprecated\MessageSenderExtensions.cs" />
-    <Compile Include="Deprecated\MessagingHubClientBuilder.cs" />
-    <Compile Include="Deprecated\Receivers\INotificationReceiver.cs" />
-    <Compile Include="Deprecated\Receivers\IEnvelopeReceiver.cs" />
-    <Compile Include="Deprecated\Receivers\NotificationReceiverBase.cs" />
-    <Compile Include="Deprecated\Receivers\EnvelopeReceiverBase.cs" />
-    <Compile Include="Deprecated\Receivers\IMessageReceiver.cs" />
-    <Compile Include="Deprecated\IMessagingHubClient.cs" />
     <Compile Include="MediaTypes.cs" />
-    <Compile Include="Deprecated\Receivers\MessageReceiverBase.cs" />
-    <Compile Include="Deprecated\MessagingHubClient.cs" />
     <Compile Include="MessageExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Deprecated\Receivers\BlackholeNotificationReceiver.cs" />
-    <Compile Include="Deprecated\Receivers\TextResponseMessageReceiver.cs" />
-    <Compile Include="Deprecated\Receivers\TextResponseMessageReceiverFactory.cs" />
-    <Compile Include="Deprecated\Receivers\UnsupportedMessageReceiver.cs" />
     <Compile Include="Sender\IMessagingHubSender.cs" />
     <Compile Include="Sender\MessagingHubSenderExtensions.cs" />
     <Compile Include="Sender\MessagingHubSender.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Deprecated\Host\application.json" />
     <None Include="Host\application.json" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
