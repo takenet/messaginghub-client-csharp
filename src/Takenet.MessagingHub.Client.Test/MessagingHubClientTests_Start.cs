@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Lime.Messaging.Resources;
 using Lime.Protocol;
 using Shouldly;
+using Takenet.MessagingHub.Client.Deprecated;
 
 namespace Takenet.MessagingHub.Client.Test
 {

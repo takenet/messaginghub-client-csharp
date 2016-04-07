@@ -1,3 +1,4 @@
+using Takenet.MessagingHub.Client.Deprecated;
 using Takenet.MessagingHub.Client.Textc;
 using Takenet.Textc.Processors;
 

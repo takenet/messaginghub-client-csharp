@@ -1,5 +1,7 @@
 ﻿
-namespace Takenet.MessagingHub.Client.Receivers
+using System;
+
+namespace Takenet.MessagingHub.Client.Deprecated.Receivers
 {
     /// <summary>
     /// Base envelope receiver
@@ -7,6 +9,7 @@ namespace Takenet.MessagingHub.Client.Receivers
     /// <remarks>
     /// Senders are automatically injected by MessagingHubClient
     /// </remarks>
+    [Obsolete]
     public abstract class EnvelopeReceiverBase
     {
         public IEnvelopeSender EnvelopeSender { get; internal set; }

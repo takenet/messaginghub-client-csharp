@@ -1,8 +1,10 @@
-﻿using Lime.Protocol;
+﻿using System;
 using System.Threading.Tasks;
+using Lime.Protocol;
 
-namespace Takenet.MessagingHub.Client
+namespace Takenet.MessagingHub.Client.Deprecated
 {
+    [Obsolete]
     public interface IEnvelopeSender
     {
         /// <summary>

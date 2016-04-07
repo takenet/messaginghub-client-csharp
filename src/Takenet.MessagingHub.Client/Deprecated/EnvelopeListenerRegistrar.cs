@@ -1,11 +1,12 @@
-﻿using Lime.Protocol;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Takenet.MessagingHub.Client.Receivers;
+using Lime.Protocol;
+using Takenet.MessagingHub.Client.Deprecated.Receivers;
 
-namespace Takenet.MessagingHub.Client
+namespace Takenet.MessagingHub.Client.Deprecated
 {
+    [Obsolete]
     public class EnvelopeListenerRegistrar : IEnvelopeListener
     {
         private readonly IList<ReceiverFactoryPredicate<Message>> _messageReceivers;

@@ -1,9 +1,10 @@
-﻿using Lime.Protocol;
-using System;
-using Takenet.MessagingHub.Client.Receivers;
+﻿using System;
+using Lime.Protocol;
+using Takenet.MessagingHub.Client.Deprecated.Receivers;
 
-namespace Takenet.MessagingHub.Client
+namespace Takenet.MessagingHub.Client.Deprecated
 {
+    [Obsolete]
     public class MessagingHubSenderBuilder
     {
         private readonly MessagingHubClientBuilder _clientBuilder;

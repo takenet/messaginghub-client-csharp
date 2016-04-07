@@ -16,8 +16,9 @@ using Lime.Transport.Tcp;
 using NSubstitute.Routing.Handlers;
 using NUnit.Framework;
 using Shouldly;
+using Takenet.MessagingHub.Client.Deprecated;
+using Takenet.MessagingHub.Client.Deprecated.Receivers;
 using Takenet.MessagingHub.Client.Host;
-using Takenet.MessagingHub.Client.Receivers;
 using Event = Lime.Protocol.Event;
 
 namespace Takenet.MessagingHub.Client.Test.Host

@@ -3,22 +3,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using Lime.Messaging.Resources;
 using Lime.Protocol;
-using Lime.Protocol.Security;
-using Takenet.MessagingHub.Client.LimeProtocol;
-using Takenet.MessagingHub.Client.Receivers;
-using Lime.Protocol.Listeners;
 using Lime.Protocol.Client;
-using Lime.Transport.Tcp;
+using Lime.Protocol.Listeners;
 using Lime.Protocol.Network;
-using Lime.Protocol.Serialization.Newtonsoft;
 using Lime.Protocol.Network.Modules;
-using Lime.Protocol.Util;
+using Lime.Protocol.Security;
+using Lime.Protocol.Serialization.Newtonsoft;
+using Lime.Transport.Tcp;
+using Takenet.MessagingHub.Client.LimeProtocol;
 
-namespace Takenet.MessagingHub.Client
+namespace Takenet.MessagingHub.Client.Deprecated
 {
     /// <summary>
     ///     Default implementation for <see cref="IMessagingHubClient" /> class.
     /// </summary>
+    [Obsolete]
     public class MessagingHubClient : IMessagingHubClient
     {
         private readonly SemaphoreSlim _semaphore;

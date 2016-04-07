@@ -1,11 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Lime.Protocol;
 
-namespace Takenet.MessagingHub.Client.Receivers
+namespace Takenet.MessagingHub.Client.Deprecated.Receivers
 {
     /// <summary>
     /// Message receiver that automatically respond to any message as an unsupported message
     /// </summary>
+    [Obsolete]
     public class UnsupportedMessageReceiver : MessageReceiverBase
     {
         public override Task ReceiveAsync(Message message)

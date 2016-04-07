@@ -4,7 +4,8 @@ using NUnit.Framework;
 using Shouldly;
 using System.Threading;
 using System.Threading.Tasks;
-using Takenet.MessagingHub.Client.Receivers;
+using Takenet.MessagingHub.Client.Deprecated;
+using Takenet.MessagingHub.Client.Deprecated.Receivers;
 
 namespace Takenet.MessagingHub.Client.Test
 {

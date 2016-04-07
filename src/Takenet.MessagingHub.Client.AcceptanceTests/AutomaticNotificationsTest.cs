@@ -9,7 +9,8 @@ using Lime.Protocol;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
-using Takenet.MessagingHub.Client.Receivers;
+using Takenet.MessagingHub.Client.Deprecated;
+using Takenet.MessagingHub.Client.Deprecated.Receivers;
 
 namespace Takenet.MessagingHub.Client.AcceptanceTests
 {

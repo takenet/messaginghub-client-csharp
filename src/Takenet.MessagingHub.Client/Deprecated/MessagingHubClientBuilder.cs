@@ -1,10 +1,11 @@
-﻿using Lime.Protocol;
+﻿using System;
+using Lime.Protocol;
 using Lime.Protocol.Security;
-using System;
-using Takenet.MessagingHub.Client.Receivers;
+using Takenet.MessagingHub.Client.Deprecated.Receivers;
 
-namespace Takenet.MessagingHub.Client
+namespace Takenet.MessagingHub.Client.Deprecated
 {
+    [Obsolete]
     public class MessagingHubClientBuilder
     {
         public const string DEFAULT_DOMAIN = "msging.net";

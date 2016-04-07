@@ -3,11 +3,12 @@ using System.Threading.Tasks;
 using Lime.Messaging.Contents;
 using Lime.Protocol;
 
-namespace Takenet.MessagingHub.Client
+namespace Takenet.MessagingHub.Client.Deprecated
 {
     /// <summary>
     /// Extension methods for <see cref="IEnvelopeSender"/>
     /// </summary>
+    [Obsolete]
     public static class EnvelopeSenderExtensions
     {
         public static Task SendMessageAsync(this IEnvelopeSender sender, string content, string to)

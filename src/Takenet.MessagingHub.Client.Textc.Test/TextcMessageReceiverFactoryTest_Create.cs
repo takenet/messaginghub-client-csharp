@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Shouldly;
+using Takenet.MessagingHub.Client.Deprecated;
 using Takenet.MessagingHub.Client.Host;
 using Takenet.MessagingHub.Client.Test;
 using Takenet.Textc;

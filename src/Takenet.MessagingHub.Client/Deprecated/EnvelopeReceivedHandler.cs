@@ -1,12 +1,13 @@
-﻿using Lime.Protocol;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Takenet.MessagingHub.Client.Receivers;
+using Lime.Protocol;
+using Takenet.MessagingHub.Client.Deprecated.Receivers;
 
-namespace Takenet.MessagingHub.Client
+namespace Takenet.MessagingHub.Client.Deprecated
 {
+    [Obsolete]
     internal abstract class EnvelopeReceivedHandler
     {
         private readonly EnvelopeListenerRegistrar _registrar;
@@ -62,6 +63,7 @@ namespace Takenet.MessagingHub.Client
         }
     }
 
+    [Obsolete]
     internal class MessageReceivedHandler : EnvelopeReceivedHandler
     {
         public MessageReceivedHandler(IEnvelopeSender envelopeSender, EnvelopeListenerRegistrar registrar) : base(envelopeSender, registrar)
@@ -89,6 +91,7 @@ namespace Takenet.MessagingHub.Client
         }
     }
 
+    [Obsolete]
     internal class NotificationReceivedHandler : EnvelopeReceivedHandler
     {
         public NotificationReceivedHandler(IEnvelopeSender envelopeSender, EnvelopeListenerRegistrar registrar) : base(envelopeSender, registrar)
@@ -96,6 +99,7 @@ namespace Takenet.MessagingHub.Client
         }
     }
 
+    [Obsolete]
     internal class CommandReceivedHandler : EnvelopeReceivedHandler
     {
         public CommandReceivedHandler(IEnvelopeSender envelopeSender, EnvelopeListenerRegistrar registrar) : base(envelopeSender, registrar)

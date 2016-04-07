@@ -10,6 +10,7 @@ using Lime.Protocol.Server;
 using Lime.Protocol.Util;
 using Lime.Transport.Tcp;
 using NSubstitute;
+using Takenet.MessagingHub.Client.Deprecated;
 using Takenet.MessagingHub.Client.LimeProtocol;
 
 namespace Takenet.MessagingHub.Client.Test

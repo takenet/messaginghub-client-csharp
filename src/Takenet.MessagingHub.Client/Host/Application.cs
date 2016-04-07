@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Takenet.MessagingHub.Client.Deprecated;
 
 namespace Takenet.MessagingHub.Client.Host
 {

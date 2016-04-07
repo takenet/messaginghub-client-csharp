@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Lime.Protocol;
-using Takenet.MessagingHub.Client.Receivers;
+using Takenet.MessagingHub.Client.Deprecated;
+using Takenet.MessagingHub.Client.Deprecated.Receivers;
 
 namespace Takenet.MessagingHub.Client.Playground
 {

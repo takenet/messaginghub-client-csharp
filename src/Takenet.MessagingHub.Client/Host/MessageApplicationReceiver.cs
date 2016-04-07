@@ -1,5 +1,3 @@
-using Takenet.MessagingHub.Client.Receivers;
-
 namespace Takenet.MessagingHub.Client.Host
 {
     public class MessageApplicationReceiver : ApplicationReceiver

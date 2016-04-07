@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Lime.Protocol;
 
-namespace Takenet.MessagingHub.Client.Receivers
+namespace Takenet.MessagingHub.Client.Deprecated.Receivers
 {
+    [Obsolete]
     public class TextResponseMessageReceiver : MessageReceiverBase
     {
         private static string _text;

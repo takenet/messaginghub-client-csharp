@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Lime.Protocol;
-using Takenet.MessagingHub.Client.Receivers;
 
 namespace Takenet.MessagingHub.Client.Host
 {

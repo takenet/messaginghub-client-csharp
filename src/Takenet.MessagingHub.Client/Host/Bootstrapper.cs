@@ -9,7 +9,8 @@ using Lime.Protocol;
 using Lime.Protocol.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Takenet.MessagingHub.Client.Receivers;
+using Takenet.MessagingHub.Client.Deprecated;
+using Takenet.MessagingHub.Client.Deprecated.Receivers;
 
 namespace Takenet.MessagingHub.Client.Host
 {

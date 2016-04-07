@@ -1,7 +1,7 @@
-﻿using Lime.Protocol;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Lime.Protocol;
 using Lime.Protocol.Listeners;
 using Takenet.MessagingHub.Client.Connection;
 using Takenet.MessagingHub.Client.Sender;
@@ -12,7 +12,7 @@ namespace Takenet.MessagingHub.Client.Listener
     {
         private MessagingHubConnection Connection { get; }
 
-        private Sender.IMessagingHubSender Sender { get; }
+        private IMessagingHubSender Sender { get; }
 
         internal EnvelopeListenerRegistrar EnvelopeRegistrar { get; }
 
@@ -23,7 +23,7 @@ namespace Takenet.MessagingHub.Client.Listener
         {
         }
 
-        public MessagingHubListener(MessagingHubConnection connection, Sender.IMessagingHubSender sender)
+        public MessagingHubListener(MessagingHubConnection connection, IMessagingHubSender sender)
         {
             Connection = connection;
             Sender = sender;

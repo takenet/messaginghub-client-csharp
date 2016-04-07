@@ -4,9 +4,10 @@ using Lime.Protocol;
 using NSubstitute;
 using NUnit.Framework;
 using Shouldly;
-using Takenet.MessagingHub.Client.Receivers;
 using System.Collections.Concurrent;
 using System;
+using Takenet.MessagingHub.Client.Deprecated;
+using Takenet.MessagingHub.Client.Deprecated.Receivers;
 
 namespace Takenet.MessagingHub.Client.Test
 {
