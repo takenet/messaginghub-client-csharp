@@ -66,6 +66,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connection\IMessagingHubConnection.cs" />
+    <Compile Include="Connection\MessagingHubConnection.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="EnvelopeListenerExtensions.cs" />
     <Compile Include="EnvelopeListenerRegistrar.cs" />
@@ -89,6 +91,7 @@
     <Compile Include="IWorker.cs" />
     <Compile Include="LimeProtocol\IOnDemandClientChannelFactory.cs" />
     <Compile Include="LimeProtocol\OnDemandClientChannelFactory.cs" />
+    <Compile Include="Connection\MessagingHubConnectionBuilder.cs" />
     <Compile Include="MessagingHubSenderBuilder.cs" />
     <Compile Include="MessageSenderExtensions.cs" />
     <Compile Include="MessagingHubClientBuilder.cs" />
