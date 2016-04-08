@@ -40,10 +40,10 @@ namespace Takenet.MessagingHub.Client.Listener
             }
         }
 
-        protected virtual async Task CallReceiverAsync<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken token)
+        protected virtual Task CallReceiverAsync<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken token)
             where TEnvelope : Envelope
         {
-            await envelopeReceiver.ReceiveAsync(Sender, envelope, token);
+            return envelopeReceiver.ReceiveAsync(Sender, envelope, token);
         }
     }
 
@@ -78,13 +78,6 @@ namespace Takenet.MessagingHub.Client.Listener
     internal class NotificationReceivedHandler : EnvelopeReceivedHandler
     {
         public NotificationReceivedHandler(IMessagingHubSender sender, EnvelopeListenerRegistrar registrar) : base(sender, registrar)
-        {
-        }
-    }
-
-    internal class CommandReceivedHandler : EnvelopeReceivedHandler
-    {
-        public CommandReceivedHandler(IMessagingHubSender sender, EnvelopeListenerRegistrar registrar) : base(sender, registrar)
         {
         }
     }

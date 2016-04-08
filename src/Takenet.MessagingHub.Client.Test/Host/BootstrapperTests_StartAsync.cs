@@ -369,7 +369,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
             Settings = settings;
         }
 
-        public Task ReceiveAsync(IMessagingHubSender channel, Message envelope, CancellationToken token)
+        public Task ReceiveAsync(IMessagingHubSender sender, Message envelope, CancellationToken token)
         {
             throw new NotImplementedException();
         }
@@ -386,7 +386,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
             Settings = settings;
         }
 
-        public Task ReceiveAsync(IMessagingHubSender channel, Notification envelope, CancellationToken token)
+        public Task ReceiveAsync(IMessagingHubSender sender, Notification envelope, CancellationToken token)
         {
             throw new NotImplementedException();
         }

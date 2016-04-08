@@ -36,7 +36,7 @@ namespace Takenet.MessagingHub.Client.Test
         public void TryToStartConnectionWithInvalidServer()
         {
             var connection = new MessagingHubConnectionBuilder()
-                .WithMaxConnectionRetries(0)
+                .WithMaxConnectionRetries(1)
                 .UsingHostName("invalid.iris.io")
                 .UsingGuest()
                 .Build();

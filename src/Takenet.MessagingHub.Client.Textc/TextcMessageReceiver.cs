@@ -27,7 +27,7 @@ namespace Takenet.MessagingHub.Client.Textc
             _processTimeout = processTimeout ?? DefaultProcessTimeout;
         }
 
-        public override async Task ReceiveAsync(IMessagingHubSender channel, Message message, CancellationToken token)
+        public override async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken token)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace Takenet.MessagingHub.Client.Textc
             }
             finally
             {
-                await channel.SendNotificationAsync(message.ToConsumedNotification(), token).ConfigureAwait(false);
+                await sender.SendNotificationAsync(message.ToConsumedNotification(), token).ConfigureAwait(false);
             }
         }
     }

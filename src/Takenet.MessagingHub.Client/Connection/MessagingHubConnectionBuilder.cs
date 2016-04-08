@@ -37,6 +37,7 @@ namespace Takenet.MessagingHub.Client.Connection
             _hostName = DEFAULT_DOMAIN;
             _domain = DEFAULT_DOMAIN;
             _sendTimeout = TimeSpan.FromSeconds(20);
+            _maxConnectionRetries = 3;
             _sessionCompression = SessionCompression.None;
             _sessionEncryption = SessionEncryption.TLS;
         }
@@ -117,7 +118,7 @@ namespace Takenet.MessagingHub.Client.Connection
 
         public MessagingHubConnectionBuilder WithMaxConnectionRetries(int maxConnectionRetries)
         {
-            if (maxConnectionRetries < 0) throw new ArgumentOutOfRangeException(nameof(maxConnectionRetries));
+            if (maxConnectionRetries < 1) throw new ArgumentOutOfRangeException(nameof(maxConnectionRetries));
             if (maxConnectionRetries > 5) throw new ArgumentOutOfRangeException(nameof(maxConnectionRetries));
 
             _maxConnectionRetries = maxConnectionRetries;

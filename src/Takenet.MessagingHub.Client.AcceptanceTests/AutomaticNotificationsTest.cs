@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -9,6 +10,9 @@ using Lime.Protocol;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
+using Takenet.MessagingHub.Client.Connection;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.AcceptanceTests
 {
@@ -18,180 +22,208 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         [Test]
         public async Task TestAcceptedNotificationIsSentAfterMessageIsReceived()
         {
-            string appShortName1, appShortName2;
-            var client1 = GetClientForNewApplication(out appShortName1);
-            var client2 = GetClientForNewApplication(out appShortName2);
+            var notifications = new Queue<Notification>();
+            string appShortName1 = null, appShortName2 = null;
+            var sender = GetSenderForApplication(ref appShortName1);
+            var listener1 = GetListenerForApplication(ref appShortName1, (m, c) => { }, (n, c) => notifications.Enqueue(n));
+            var listener2 = GetListenerForApplication(ref appShortName2, (m, c) => { }, (n, c) => { });
             try
             {
-                await client1.SendMessageAsync(Beat, appShortName2);
-                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Accepted
+                await listener1.StartAsync();
+                await listener2.StartAsync();
+
+                await sender.SendMessageAsync(Beat, appShortName2, CancellationToken.None);
+
+                await Task.Delay(Timeout, CancellationToken.None);
+
+                var notification = notifications.Dequeue(); //Accepted
 
                 notification.ShouldNotBeNull();
                 notification.Event.ShouldBe(Event.Accepted);
             }
             finally
             {
-                await client1.StopAsync();
-                await client2.StopAsync();
+                await listener2.StopAsync();
+                await listener1.StopAsync();
             }
         }
 
         [Test]
         public async Task TestDispatchedNotificationIsSentAfterMessageIsReceived()
         {
-            string appShortName1, appShortName2;
-            var client1 = GetClientForNewApplication(out appShortName1);
-            var client2 = GetClientForNewApplication(out appShortName2);
+            var notifications = new Queue<Notification>();
+            string appShortName1 = null, appShortName2 = null;
+            var sender = GetSenderForApplication(ref appShortName1);
+            var listener1 = GetListenerForApplication(ref appShortName1, (m, c) => { }, (n, c) => notifications.Enqueue(n));
+            var listener2 = GetListenerForApplication(ref appShortName2, (m, c) => { }, (n, c) => { });
             try
             {
-                await client1.SendMessageAsync(Beat, appShortName2);
+                await listener1.StartAsync();
+                await listener2.StartAsync();
 
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Accepted
-                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Dispatched
+                await sender.SendMessageAsync(Beat, appShortName2, CancellationToken.None);
+
+                await Task.Delay(Timeout, CancellationToken.None);
+
+                notifications.Dequeue(); //Accepted
+                var notification = notifications.Dequeue(); //Dispatched
 
                 notification.ShouldNotBeNull();
                 notification.Event.ShouldBe(Event.Dispatched);
             }
             finally
             {
-                await client1.StopAsync();
-                await client2.StopAsync();
+                await listener2.StopAsync();
+                await listener1.StopAsync();
             }
         }
 
         [Test]
         public async Task TestReceivedNotificationIsSentAfterMessageIsReceivedUsingReceiveMessageAsyncMethod()
         {
-            string appShortName1, appShortName2;
-            var client1 = GetClientForNewApplication(out appShortName1);
-            var client2 = GetClientForNewApplication(out appShortName2);
+            var notifications = new Queue<Notification>();
+            string appShortName1 = null, appShortName2 = null;
+            var sender = GetSenderForApplication(ref appShortName1);
+            var listener1 = GetListenerForApplication(ref appShortName1, (m, c) => { }, (n, c) => notifications.Enqueue(n));
+            var listener2 = GetListenerForApplication(ref appShortName2, (m, c) => { }, (n, c) => { });
             try
             {
-                await client1.SendMessageAsync(Beat, appShortName2);
-                await client2.ReceiveMessageAsync(GetNewReceiveTimeoutCancellationToken());
+                await listener1.StartAsync();
+                await listener2.StartAsync();
 
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Accepted
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Dispatched
-                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Received
+                await sender.SendMessageAsync(Beat, appShortName2, CancellationToken.None);
+
+                await Task.Delay(Timeout, CancellationToken.None);
+
+                notifications.Dequeue(); //Accepted
+                notifications.Dequeue(); //Dispatched
+                var notification = notifications.Dequeue(); //Received
 
                 notification.ShouldNotBeNull();
                 notification.Event.ShouldBe(Event.Received);
             }
             finally
             {
-                await client1.StopAsync();
-                await client2.StopAsync();
-            }
-        }
-
-        [Test]
-        public async Task TestReceivedNotificationIsSentAfterMessageIsReceivedUsingMessageReceiver()
-        {
-            string appShortName1, appShortName2;
-            var client1 = GetClientForNewApplication(out appShortName1);
-            var client2 = GetClientForNewApplication(out appShortName2, m => { });
-            try
-            {
-                await client1.SendMessageAsync(Beat, appShortName2);
-
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Accepted
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Dispatched
-                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Received
-
-                notification.ShouldNotBeNull();
-                notification.Event.ShouldBe(Event.Received);
-            }
-            finally
-            {
-                await client1.StopAsync();
-                await client2.StopAsync();
+                await listener2.StopAsync();
+                await listener1.StopAsync();
             }
         }
 
         [Test]
         public async Task TestFailedNotificationIsSentAfterMessageIsReceived()
         {
-            string appShortName1, appShortName2;
-            var client1 = GetClientForNewApplication(out appShortName1);
-            var client2 = GetClientForNewApplication(out appShortName2, m => { throw new Exception(); });
+            var notifications = new Queue<Notification>();
+            string appShortName1 = null, appShortName2 = null;
+            var sender = GetSenderForApplication(ref appShortName1);
+            var listener1 = GetListenerForApplication(ref appShortName1, (m, c) => { }, (n, c) => notifications.Enqueue(n));
+            var listener2 = GetListenerForApplication(ref appShortName2, (m, c) => { throw new Exception(); }, (n, c) => notifications.Enqueue(n));
             try
             {
-                await client1.SendMessageAsync(Beat, appShortName2);
+                await listener1.StartAsync();
+                await listener2.StartAsync();
 
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Accepted
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Dispatched
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Received
-                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Failed
+                await sender.SendMessageAsync(Beat, appShortName2, CancellationToken.None);
+
+                await Task.Delay(Timeout, CancellationToken.None);
+
+                notifications.Dequeue(); //Accepted
+                notifications.Dequeue(); //Dispatched
+                notifications.Dequeue(); //Received
+                var notification = notifications.Dequeue(); //Failed
 
                 notification.ShouldNotBeNull();
                 notification.Event.ShouldBe(Event.Failed);
             }
             finally
             {
-                await client1.StopAsync();
-                await client2.StopAsync();
+                await listener2.StopAsync();
+                await listener1.StopAsync();
             }
         }
 
         [Test]
         public async Task TestConsumedNotificationIsSentAfterMessageIsReceived()
         {
-            string appShortName1, appShortName2;
-            var client1 = GetClientForNewApplication(out appShortName1);
-            var client2 = GetClientForNewApplication(out appShortName2, m => { });
+            var notifications = new Queue<Notification>();
+            string appShortName1 = null, appShortName2 = null;
+            var sender = GetSenderForApplication(ref appShortName1);
+            var listener1 = GetListenerForApplication(ref appShortName1, (m, c) => { }, (n, c) => notifications.Enqueue(n));
+            var listener2 = GetListenerForApplication(ref appShortName2, (m, c) => { }, (n, c) => { });
             try
             {
-                await client1.SendMessageAsync(Beat, appShortName2);
-                
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Accepted
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Dispatched
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Received
-                var notification = await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Consumed
+                await listener1.StartAsync();
+                await listener2.StartAsync();
+
+                await sender.SendMessageAsync(Beat, appShortName2, CancellationToken.None);
+
+                await Task.Delay(Timeout, CancellationToken.None);
+
+                notifications.Dequeue(); //Accepted
+                notifications.Dequeue(); //Dispatched
+                notifications.Dequeue(); //Received
+                var notification = notifications.Dequeue(); //Consumed
 
                 notification.ShouldNotBeNull();
                 notification.Event.ShouldBe(Event.Consumed);
             }
             finally
             {
-                await client1.StopAsync();
-                await client2.StopAsync();
+                await listener2.StopAsync();
+                await listener1.StopAsync();
             }
         }
 
         private const string Beat = "Beat";
 
-        private static CancellationToken GetNewReceiveTimeoutCancellationToken()
+        private static IMessagingHubSender GetSenderForApplication(ref string appShortName)
         {
-            return new CancellationTokenSource(Timeout).Token;
-        }
-
-        private static IMessagingHubClient GetClientForNewApplication(out string appShortName, Action<Message> onMessageReceived = null)
-        {
-            appShortName = CreateAndRegisterApplicationAsync().Result;
+            appShortName = appShortName ?? CreateAndRegisterApplicationAsync().Result;
             var appAccessKey = GetApplicationAccessKeyAsync(appShortName).Result;
-            var client = GetClientForApplicationAsync(appShortName, appAccessKey, onMessageReceived).Result;
-            return client;
+            var sender = GetSenderForApplicationAsync(appShortName, appAccessKey).Result;
+            return sender;
         }
 
-        private static async Task<IMessagingHubClient> GetClientForApplicationAsync(string appShortName, string appAccessKey, Action<Message> onMessageReceived = null)
+        private static MessagingHubListener GetListenerForApplication(ref string appShortName, Action<Message, CancellationToken> onMessageReceived, Action<Notification, CancellationToken> onNotificationReceived)
         {
-            var builder = new MessagingHubClientBuilder()
+            appShortName = appShortName ?? CreateAndRegisterApplicationAsync().Result;
+            var appAccessKey = GetApplicationAccessKeyAsync(appShortName).Result;
+            var listener = GetListenerForApplicationAsync(appShortName, appAccessKey, onMessageReceived, onNotificationReceived).Result;
+            return listener;
+        }
+
+        private static async Task<MessagingHubListener> GetListenerForApplicationAsync(string appShortName, string appAccessKey, Action<Message, CancellationToken> onMessageReceived, Action<Notification, CancellationToken> onNotificationReceived)
+        {
+            var connection = new MessagingHubConnectionBuilder()
                 .UsingHostName("hmg.msging.net")
                 .UsingAccessKey(appShortName, appAccessKey)
-                .WithSendTimeout(Timeout);
+                //.WithSendTimeout(Timeout)
+                .Build();
 
-            if (onMessageReceived != null)
-                builder.AddMessageReceiver(new LambdaMessageReceiver(onMessageReceived));
+            var listener = new MessagingHubListener(connection);
 
-            var client = builder.Build();
-            await client.StartAsync();
-            return client;
+            await connection.ConnectAsync();
+
+            listener.AddMessageReceiver(onMessageReceived);
+            listener.AddNotificationReceiver(onNotificationReceived);
+
+            return listener;
         }
 
-        private static TimeSpan Timeout
+        private static async Task<IMessagingHubSender> GetSenderForApplicationAsync(string appShortName, string appAccessKey)
         {
-            get { return TimeSpan.FromSeconds(5); }
+            var connection = new MessagingHubConnectionBuilder()
+                .UsingHostName("hmg.msging.net")
+                .UsingAccessKey(appShortName, appAccessKey)
+                .WithSendTimeout(Timeout)
+                .Build();
+
+            await connection.ConnectAsync();
+
+            var sender = new MessagingHubSender(connection);
+            return sender;
         }
+
+        private static TimeSpan Timeout => TimeSpan.FromSeconds(5);
 
         private static HttpClient _httpClient;
         private static HttpClient HttpClient
@@ -239,22 +271,6 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
                 shortName = id,
                 name = id
             };
-        }
-    }
-
-    internal class LambdaMessageReceiver : MessageReceiverBase
-    {
-        public Action<Message> OnMessageReceived { get; set; }
-
-        public LambdaMessageReceiver(Action<Message> onMessageReceived)
-        {
-            OnMessageReceived = onMessageReceived;
-        }
-
-        public override Task ReceiveAsync(Message message)
-        {
-            OnMessageReceived?.Invoke(message);
-            return Task.CompletedTask;
         }
     }
 }

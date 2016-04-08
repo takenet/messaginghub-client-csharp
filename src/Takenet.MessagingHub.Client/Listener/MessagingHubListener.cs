@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Listeners;
+using Lime.Protocol.Util;
 using Takenet.MessagingHub.Client.Connection;
 using Takenet.MessagingHub.Client.Sender;
 
@@ -19,14 +20,9 @@ namespace Takenet.MessagingHub.Client.Listener
         private ChannelListener ChannelListener { get; set; }
 
         public MessagingHubListener(MessagingHubConnection connection)
-            : this(connection, new MessagingHubSender(connection))
-        {
-        }
-
-        public MessagingHubListener(MessagingHubConnection connection, IMessagingHubSender sender)
         {
             Connection = connection;
-            Sender = sender;
+            Sender = new MessagingHubSender(connection);
             EnvelopeRegistrar = new EnvelopeListenerRegistrar();
         }
 
@@ -52,12 +48,12 @@ namespace Takenet.MessagingHub.Client.Listener
 
         public void AddMessageReceiver(Action<Message, CancellationToken> onMessageReceived, MediaType forMimeType = null)
         {
-            EnvelopeRegistrar.AddMessageReceiver(() => new LambdaMessageReceiver(onMessageReceived), m => Equals(m.Type, forMimeType));
+            EnvelopeRegistrar.AddMessageReceiver(() => new LambdaMessageReceiver(onMessageReceived), m => forMimeType == null || Equals(m.Type, forMimeType));
         }
 
         public void AddNotificationReceiver(Action<Notification, CancellationToken> onNotificationReceived, Event? forEventType = null)
         {
-            EnvelopeRegistrar.AddNotificationReceiver(() => new LambdaNotificationReceiver(onNotificationReceived), n => n.Event == forEventType);
+            EnvelopeRegistrar.AddNotificationReceiver(() => new LambdaNotificationReceiver(onNotificationReceived), n => forEventType == null || n.Event == forEventType);
         }
 
         public void AddMessageReceiver(Action<Message, CancellationToken> onMessageReceived, Predicate<Message> messageFilter)
@@ -86,11 +82,10 @@ namespace Takenet.MessagingHub.Client.Listener
         {
             var messageHandler = new MessageReceivedHandler(Sender, EnvelopeRegistrar);
             var notificationHandler = new NotificationReceivedHandler(Sender, EnvelopeRegistrar);
-            var commandHandler = new CommandReceivedHandler(Sender, EnvelopeRegistrar);
             ChannelListener = new ChannelListener(
                 messageHandler.HandleAsync,
                 notificationHandler.HandleAsync,
-                commandHandler.HandleAsync);
+                c => TaskUtil.TrueCompletedTask);
             ChannelListener.Start(Connection.OnDemandClientChannel);
         }
     }

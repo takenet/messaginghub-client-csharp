@@ -11,16 +11,16 @@ namespace Takenet.MessagingHub.Client.Sender
     /// </summary>
     public static class MessagingHubSenderExtensions
     {
-        public static Task SendMessageAsync(this IMessagingHubSender sender, string content, string to, CancellationToken token)
+        public static Task SendMessageAsync(this IMessagingHubSender sender, string content, string to, CancellationToken token = default(CancellationToken))
             => sender.SendMessageAsync(content, Node.Parse(to), token);
 
-        public static Task SendMessageAsync(this IMessagingHubSender sender, string content, Node to, CancellationToken token)
+        public static Task SendMessageAsync(this IMessagingHubSender sender, string content, Node to, CancellationToken token = default(CancellationToken))
             => sender.SendMessageAsync(CreatePlainTextContent(content), to, token);
 
-        public static Task SendMessageAsync(this IMessagingHubSender sender, Document content, string to, CancellationToken token)
+        public static Task SendMessageAsync(this IMessagingHubSender sender, Document content, string to, CancellationToken token = default(CancellationToken))
         => sender.SendMessageAsync(content, Node.Parse(to), token);
 
-        public static Task SendMessageAsync(this IMessagingHubSender sender, Document content, Node to, CancellationToken token)
+        public static Task SendMessageAsync(this IMessagingHubSender sender, Document content, Node to, CancellationToken token = default(CancellationToken))
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
             var message = new Message
