@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
@@ -14,7 +15,7 @@ namespace Takenet.MessagingHub.Client.Listener
             OnMessageReceived = onMessageReceived;
         }
 
-        public Task ReceiveAsync(Notification envelope, CancellationToken token)
+        public Task ReceiveAsync(IMessagingHubSender channel, Notification envelope, CancellationToken token)
         {
             return Task.Run(() => OnMessageReceived?.Invoke(envelope, token), token);
         }

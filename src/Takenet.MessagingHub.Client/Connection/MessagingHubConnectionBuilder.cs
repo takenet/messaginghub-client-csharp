@@ -20,6 +20,7 @@ namespace Takenet.MessagingHub.Client.Connection
         private string _password;
         private string _accessKey;
         private TimeSpan _sendTimeout;
+        private int _maxConnectionRetries;
         private string _domain;
         private string _hostName;
         private SessionCompression _sessionCompression;
@@ -114,6 +115,15 @@ namespace Takenet.MessagingHub.Client.Connection
             return this;
         }
 
+        public MessagingHubConnectionBuilder WithMaxConnectionRetries(int maxConnectionRetries)
+        {
+            if (maxConnectionRetries < 0) throw new ArgumentOutOfRangeException(nameof(maxConnectionRetries));
+            if (maxConnectionRetries > 5) throw new ArgumentOutOfRangeException(nameof(maxConnectionRetries));
+
+            _maxConnectionRetries = maxConnectionRetries;
+            return this;
+        }
+
         private Authentication GetAuthenticationScheme()
         {
             Authentication result = null;
@@ -165,7 +175,7 @@ namespace Takenet.MessagingHub.Client.Connection
                     .WithEncryption(_sessionEncryption);
             }
 
-            var connection = new MessagingHubConnection(_sendTimeout, _onDemandClientChannelFactory, _establishedClientChannelBuilder);
+            var connection = new MessagingHubConnection(_sendTimeout, _maxConnectionRetries, _onDemandClientChannelFactory, _establishedClientChannelBuilder);
             return connection;
         }
 

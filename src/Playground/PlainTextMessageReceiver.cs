@@ -12,10 +12,10 @@ namespace Playground
     /// </summary>
     public class PlainTextMessageReceiver : MessageReceiverBase
     {
-        public override async Task ReceiveAsync(Message message, CancellationToken token)
+        public override async Task ReceiveAsync(IMessagingHubSender channel, Message message, CancellationToken token)
         {
             Console.WriteLine(message.Content.ToString());
-            await Sender.SendMessageAsync("Thanks for your message!", message.From, token);
+            await channel.SendMessageAsync("Thanks for your message!", message.From, token);
         }
     }
 }

@@ -6,6 +6,7 @@ using Lime.Protocol;
 using Lime.Protocol.Serialization;
 using NUnit.Framework;
 using Shouldly;
+using Takenet.MessagingHub.Client.Connection;
 using Takenet.MessagingHub.Client.Host;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
@@ -319,7 +320,9 @@ namespace Takenet.MessagingHub.Client.Test.Host
     }
 
     public class SettingsTestStartable : IStartable
-    {        
+    {
+        public static IMessagingHubSender Sender { get; private set; }
+
         public SettingsTestStartable(IMessagingHubSender sender, IDictionary<string, object> settings)
         {
             Sender = sender;
@@ -329,8 +332,6 @@ namespace Takenet.MessagingHub.Client.Test.Host
         public bool Started => _Started;
 
         public static bool _Started;
-
-        public static IMessagingHubSender Sender;
 
         public static IDictionary<string, object> Settings;
 
@@ -368,7 +369,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
             Settings = settings;
         }
 
-        public Task ReceiveAsync(Message envelope, CancellationToken token)
+        public Task ReceiveAsync(IMessagingHubSender channel, Message envelope, CancellationToken token)
         {
             throw new NotImplementedException();
         }
@@ -385,7 +386,7 @@ namespace Takenet.MessagingHub.Client.Test.Host
             Settings = settings;
         }
 
-        public Task ReceiveAsync(Notification envelope, CancellationToken token)
+        public Task ReceiveAsync(IMessagingHubSender channel, Notification envelope, CancellationToken token)
         {
             throw new NotImplementedException();
         }

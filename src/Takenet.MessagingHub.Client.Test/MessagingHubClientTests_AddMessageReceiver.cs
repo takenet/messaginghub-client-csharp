@@ -40,7 +40,7 @@ namespace Takenet.MessagingHub.Client.Test
             await Task.Delay(TIME_OUT);
 
             //Assert
-            _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, CancellationToken.None);
+            _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, null, CancellationToken.None);
         }
 
         [Test]
@@ -59,7 +59,7 @@ namespace Takenet.MessagingHub.Client.Test
             await MessagingHubConnection.DisconnectAsync();
 
             //Assert
-            _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, CancellationToken.None);
+            _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, null, CancellationToken.None);
         }
 
         [Test]
@@ -76,7 +76,7 @@ namespace Takenet.MessagingHub.Client.Test
             await Task.Delay(TIME_OUT);
 
             //Assert
-            messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, CancellationToken.None);
+            messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, null, CancellationToken.None);
         }
 
         [Test]
@@ -95,8 +95,8 @@ namespace Takenet.MessagingHub.Client.Test
             await Task.Delay(TIME_OUT);
 
             //Assert
-            _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, CancellationToken.None);
-            otherMessageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, CancellationToken.None);
+            _messageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, null, CancellationToken.None);
+            otherMessageReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, null, CancellationToken.None);
         }
 
         private void DispatchMessage()

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
@@ -11,9 +12,9 @@ namespace Takenet.MessagingHub.Client.Listener
     {
         private readonly EnvelopeListenerRegistrar _registrar;
 
-        protected Sender.IMessagingHubSender Sender { get; }
+        protected IMessagingHubSender Sender { get; }
 
-        protected EnvelopeReceivedHandler(Sender.IMessagingHubSender sender, EnvelopeListenerRegistrar registrar)
+        protected EnvelopeReceivedHandler(IMessagingHubSender sender, EnvelopeListenerRegistrar registrar)
         {
             Sender = sender;
             _registrar = registrar;
@@ -27,7 +28,7 @@ namespace Takenet.MessagingHub.Client.Listener
                 await Task
                         .WhenAll(
                             _registrar.GetReceiversFor(envelope).Select(r =>
-                                CallReceiver(r, envelope, CancellationToken.None)))
+                                CallReceiverAsync(r, envelope, CancellationToken.None)))
                         .ConfigureAwait(false);
                 return true;
             }
@@ -39,41 +40,25 @@ namespace Takenet.MessagingHub.Client.Listener
             }
         }
 
-        private Task CallReceiver<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken token)
+        protected virtual async Task CallReceiverAsync<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken token)
             where TEnvelope : Envelope
         {
-            InjectSenders(envelopeReceiver);
-            return ReceiveAsync(envelopeReceiver, envelope, token);
-        }
-
-        protected virtual Task ReceiveAsync<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken token)
-            where TEnvelope : Envelope
-        {
-            return envelopeReceiver.ReceiveAsync(envelope, token);
-        }
-
-        private void InjectSenders(object receiver)
-        {
-            if (!(receiver is EnvelopeReceiverBase))
-                return;
-
-            var receiverBase = ((EnvelopeReceiverBase)receiver);
-            receiverBase.Sender = Sender;
+            await envelopeReceiver.ReceiveAsync(Sender, envelope, token);
         }
     }
 
     internal class MessageReceivedHandler : EnvelopeReceivedHandler
     {
-        public MessageReceivedHandler(Sender.IMessagingHubSender sender, EnvelopeListenerRegistrar registrar) : base(sender, registrar)
+        public MessageReceivedHandler(IMessagingHubSender sender, EnvelopeListenerRegistrar registrar) : base(sender, registrar)
         {
         }
 
-        protected override async Task ReceiveAsync<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken token)
+        protected override async Task CallReceiverAsync<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken token)
         {
             var message = envelope as Message;
             try
             {
-                await base.ReceiveAsync(envelopeReceiver, envelope, token);
+                await base.CallReceiverAsync(envelopeReceiver, envelope, token);
                 await Sender.SendNotificationAsync(message.ToConsumedNotification(), token);
             }
             catch (Exception e)
@@ -92,14 +77,14 @@ namespace Takenet.MessagingHub.Client.Listener
 
     internal class NotificationReceivedHandler : EnvelopeReceivedHandler
     {
-        public NotificationReceivedHandler(Sender.IMessagingHubSender sender, EnvelopeListenerRegistrar registrar) : base(sender, registrar)
+        public NotificationReceivedHandler(IMessagingHubSender sender, EnvelopeListenerRegistrar registrar) : base(sender, registrar)
         {
         }
     }
 
     internal class CommandReceivedHandler : EnvelopeReceivedHandler
     {
-        public CommandReceivedHandler(Sender.IMessagingHubSender sender, EnvelopeListenerRegistrar registrar) : base(sender, registrar)
+        public CommandReceivedHandler(IMessagingHubSender sender, EnvelopeListenerRegistrar registrar) : base(sender, registrar)
         {
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
@@ -9,7 +10,7 @@ namespace Takenet.MessagingHub.Client.Listener
     /// </summary>
     public class BlackholeNotificationReceiver : INotificationReceiver
     {
-        public Task ReceiveAsync(Notification notification, CancellationToken token)
+        public Task ReceiveAsync(IMessagingHubSender channel, Notification notification, CancellationToken token)
         {
             return Task.FromResult(0);
         }

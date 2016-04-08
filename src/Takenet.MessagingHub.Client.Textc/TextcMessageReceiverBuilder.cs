@@ -106,7 +106,7 @@ namespace Takenet.MessagingHub.Client.Textc
         public TextcMessageReceiverBuilder WithMatchNotFoundMessage(string matchNotFoundMessage) => 
             WithMatchNotFoundHandler(
                 (message, receiver) =>
-                    receiver.Sender.SendMessageAsync(matchNotFoundMessage, message.Pp ?? message.From, CancellationToken.None));
+                    _sender.SendMessageAsync(matchNotFoundMessage, message.Pp ?? message.From, CancellationToken.None));
 
         /// <summary>
         /// Sets a handler to be called in case of no match of the user input.

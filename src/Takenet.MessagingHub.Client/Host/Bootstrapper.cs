@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Serialization;
 using Takenet.MessagingHub.Client.Connection;
 using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Host
 {
@@ -36,7 +38,9 @@ namespace Takenet.MessagingHub.Client.Host
 
             if (loadAssembliesFromWorkingDirectory)
             {
-                TypeUtil.LoadAssembliesAndReferences(".", assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter);
+                var location = Assembly.GetExecutingAssembly().Location;
+                var path = new FileInfo(location).DirectoryName;
+                TypeUtil.LoadAssembliesAndReferences(path, assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter);
             }
 
             var connectionBuilder = new MessagingHubConnectionBuilder();
@@ -69,8 +73,14 @@ namespace Takenet.MessagingHub.Client.Host
             var connection = connectionBuilder.Build();
             await connection.ConnectAsync().ConfigureAwait(false);
 
+            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubConnectionBuilder), connectionBuilder);
+            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubConnection), connection);
+
             var listener = await BuildMessagingHubListenerAsync(application, connection, localServiceProvider);
             localServiceProvider.TypeDictionary.Add(typeof(MessagingHubListener), listener);
+
+            var sender = new MessagingHubSender(connection);
+            localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubSender), sender);
 
             var stoppables = new IStoppable[2];
             stoppables[0] = listener;

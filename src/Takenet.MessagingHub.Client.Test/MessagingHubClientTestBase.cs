@@ -23,7 +23,10 @@ namespace Takenet.MessagingHub.Client.Test
         protected BlockingCollection<Message> MessageProducer;
         protected BlockingCollection<Notification> NotificationProducer;
         protected BlockingCollection<Command> CommandProducer;
+
         private TimeSpan _sendTimeout = TimeSpan.FromSeconds(20);
+        private int _maxConnectionRetries = 1;
+
         protected MessagingHubListener MessagingHubListener { get; private set; }
         protected MessagingHubSender MessagingHubSender { get; private set; }
 
@@ -81,7 +84,7 @@ namespace Takenet.MessagingHub.Client.Test
         
         private void CreateActualMessageHubClient()
         {
-            MessagingHubConnection = new MessagingHubConnection(_sendTimeout, OnDemandClientChannelFactory, EstablishedClientChannelBuilder);
+            MessagingHubConnection = new MessagingHubConnection(_sendTimeout, _maxConnectionRetries, OnDemandClientChannelFactory, EstablishedClientChannelBuilder);
             MessagingHubListener = new MessagingHubListener(MessagingHubConnection);
             MessagingHubSender = new MessagingHubSender(MessagingHubConnection);
         }

@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
@@ -9,14 +10,14 @@ namespace Takenet.MessagingHub.Client.Listener
     /// </summary>
     public class UnsupportedMessageReceiver : MessageReceiverBase
     {
-        public override Task ReceiveAsync(Message message, CancellationToken token)
+        public override Task ReceiveAsync(IMessagingHubSender channel, Message message, CancellationToken token)
         {
             var reason = new Reason
             {
                 Code = ReasonCodes.MESSAGE_UNSUPPORTED_CONTENT_TYPE,
                 Description = $"{message.Type} messages are not supported"
             };
-            return Sender.SendNotificationAsync(message.ToFailedNotification(reason), token);
+            return channel.SendNotificationAsync(message.ToFailedNotification(reason), token);
         }
     }
 }

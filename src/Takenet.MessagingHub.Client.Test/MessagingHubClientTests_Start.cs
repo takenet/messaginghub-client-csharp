@@ -22,10 +22,10 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        [Ignore("Requires real server connection")]
         public async Task StartSuccessfully()
         {
             var connection = new MessagingHubConnectionBuilder()
+                .UsingHostName("hmg.msging.net")
                 .UsingGuest()
                 .Build();
 
@@ -33,10 +33,10 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        [Ignore("Taking too long")]
         public void TryToStartConnectionWithInvalidServer()
         {
             var connection = new MessagingHubConnectionBuilder()
+                .WithMaxConnectionRetries(0)
                 .UsingHostName("invalid.iris.io")
                 .UsingGuest()
                 .Build();

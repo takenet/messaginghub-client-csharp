@@ -32,12 +32,12 @@ namespace Takenet.MessagingHub.Client.Listener
 
         public void AddMessageReceiver(IMessageReceiver messageReceiver, MediaType forMimeType = null)
         {
-            EnvelopeRegistrar.AddMessageReceiver(() => messageReceiver, m => Equals(m.Type, forMimeType));
+            EnvelopeRegistrar.AddMessageReceiver(() => messageReceiver, m => forMimeType == null || Equals(m.Type, forMimeType));
         }
 
         public void AddNotificationReceiver(INotificationReceiver notificationReceiver, Event? forEventType = null)
         {
-            EnvelopeRegistrar.AddNotificationReceiver(() => notificationReceiver, n => n.Event == forEventType);
+            EnvelopeRegistrar.AddNotificationReceiver(() => notificationReceiver, n => forEventType == null || n.Event == forEventType);
         }
 
         public void AddMessageReceiver(IMessageReceiver messageReceiver, Predicate<Message> messageFilter)

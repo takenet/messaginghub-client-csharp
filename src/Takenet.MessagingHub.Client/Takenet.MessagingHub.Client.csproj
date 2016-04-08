@@ -87,7 +87,6 @@
     <Compile Include="Listener\BlackholeNotificationReceiver.cs" />
     <Compile Include="Listener\EnvelopeListenerRegistrar.cs" />
     <Compile Include="Listener\EnvelopeReceivedHandler.cs" />
-    <Compile Include="Listener\EnvelopeReceiverBase.cs" />
     <Compile Include="Listener\IEnvelopeListener.cs" />
     <Compile Include="Listener\IEnvelopeReceiver.cs" />
     <Compile Include="Listener\IMessageReceiver.cs" />

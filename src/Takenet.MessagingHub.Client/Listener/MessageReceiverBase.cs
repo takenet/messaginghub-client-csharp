@@ -1,14 +1,15 @@
 ﻿using System.Threading;
 using Lime.Protocol;
 using System.Threading.Tasks;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
     /// <summary>
     /// Base message receiver
     /// </summary>
-    public abstract class MessageReceiverBase : EnvelopeReceiverBase, IMessageReceiver
+    public abstract class MessageReceiverBase : IMessageReceiver
     {
-        public abstract Task ReceiveAsync(Message message, CancellationToken token);
+        public abstract Task ReceiveAsync(IMessagingHubSender channel, Message message, CancellationToken token);
     }
 }

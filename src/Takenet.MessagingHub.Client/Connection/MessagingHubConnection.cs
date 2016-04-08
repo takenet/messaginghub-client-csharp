@@ -13,6 +13,9 @@ namespace Takenet.MessagingHub.Client.Connection
     public sealed class MessagingHubConnection
     {
         public TimeSpan SendTimeout { get; }
+
+        public int MaxConnectionRetries { get; set; }
+
         internal IOnDemandClientChannel OnDemandClientChannel { get; private set; }
 
         private readonly SemaphoreSlim _semaphore;
@@ -23,10 +26,12 @@ namespace Takenet.MessagingHub.Client.Connection
 
         internal MessagingHubConnection(
             TimeSpan sendTimeout, 
+            int maxConnectionRetries,
             IOnDemandClientChannelFactory onDemandClientChannelFactory,
             IEstablishedClientChannelBuilder establishedClientChannelBuilder)
         {
             _semaphore = new SemaphoreSlim(1);
+            MaxConnectionRetries = maxConnectionRetries;
             SendTimeout = sendTimeout;
             _establishedClientChannelBuilder = establishedClientChannelBuilder;
             _onDemandClientChannelFactory = onDemandClientChannelFactory;
@@ -47,7 +52,7 @@ namespace Takenet.MessagingHub.Client.Connection
                 OnDemandClientChannel.ChannelCreationFailedHandlers.Add(StopOnLimeExceptionAsync);
                 OnDemandClientChannel.ChannelDiscardedHandlers.Add(ChannelDiscarded);
 
-                for (var i = 0; i < 3; i++)
+                for (var i = 0; i < MaxConnectionRetries; i++)
                 {
                     if (await EnsureConnectionIsOkayAsync()) 
                     {
