@@ -36,10 +36,6 @@
       <HintPath>..\packages\Lime.Messaging.0.4.25\lib\net461\Lime.Messaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Protocol, Version=0.4.25.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Protocol.0.4.25\lib\net461\Lime.Protocol.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Lime.Protocol.Serialization.Newtonsoft, Version=0.4.25.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lime.Protocol.Serialization.Newtonsoft.0.4.25\lib\net461\Lime.Protocol.Serialization.Newtonsoft.dll</HintPath>
       <Private>True</Private>
@@ -112,7 +108,12 @@
     </None>
     <None Include="Takenet.MessagingHub.Client.nuspec" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Lime.Protocol\Lime.Protocol.csproj">
+      <Project>{0cfee3a4-f914-4c45-be13-a344c9cfa134}</Project>
+      <Name>Lime.Protocol</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

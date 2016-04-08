@@ -79,7 +79,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         }
 
         [Test]
-        public async Task TestReceivedNotificationIsSentAfterMessageIsReceivedUsingReceiveMessageAsyncMethod()
+        public async Task TestReceivedNotificationIsSentAfterMessageIsReceived()
         {
             var notifications = new Queue<Notification>();
             string appShortName1 = null, appShortName2 = null;

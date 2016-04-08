@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.AcceptanceTests", "Takenet.MessagingHub.Client.AcceptanceTests\Takenet.MessagingHub.Client.AcceptanceTests.csproj", "{0E084BA2-10CC-4E60-9446-9FEA9B607A94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lime.Protocol", "Lime.Protocol\Lime.Protocol.csproj", "{0CFEE3A4-F914-4C45-BE13-A344C9CFA134}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,10 @@ Global
 		{0E084BA2-10CC-4E60-9446-9FEA9B607A94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E084BA2-10CC-4E60-9446-9FEA9B607A94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E084BA2-10CC-4E60-9446-9FEA9B607A94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CFEE3A4-F914-4C45-BE13-A344C9CFA134}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CFEE3A4-F914-4C45-BE13-A344C9CFA134}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CFEE3A4-F914-4C45-BE13-A344C9CFA134}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CFEE3A4-F914-4C45-BE13-A344C9CFA134}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
