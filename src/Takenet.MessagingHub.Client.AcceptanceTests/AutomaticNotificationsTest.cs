@@ -86,7 +86,37 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         }
 
         [Test]
-        public async Task TestReceivedNotificationIsSentAfterMessageIsReceivedUsingMessageReceiver()
+        public async Task TestReceivedNotificationIsSentAfterMessageIsReceivedUsingMessageReceiverAndNotificationReceiver()
+        {
+            Notification notification = null;
+            string appShortName1, appShortName2;
+            var client1 = GetClientForNewApplication(out appShortName1, m =>
+            {
+                
+            }, n =>
+            {
+                notification = n; /*Received*/
+            });
+            var client2 = GetClientForNewApplication(out appShortName2, m => { });
+            try
+            {
+                await client1.SendMessageAsync(Beat, appShortName2);
+
+                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Accepted
+                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Dispatched
+
+                notification.ShouldNotBeNull();
+                notification.Event.ShouldBe(Event.Received);
+            }
+            finally
+            {
+                await client1.StopAsync();
+                await client2.StopAsync();
+            }
+        }
+
+        [Test]
+        public async Task TestReceivedNotificationIsSentAfterMessageIsReceivedUsingMessageReceiverAndReceiveNotificationMethod()
         {
             string appShortName1, appShortName2;
             var client1 = GetClientForNewApplication(out appShortName1);
@@ -166,15 +196,15 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             return new CancellationTokenSource(Timeout).Token;
         }
 
-        private static IMessagingHubClient GetClientForNewApplication(out string appShortName, Action<Message> onMessageReceived = null)
+        private static IMessagingHubClient GetClientForNewApplication(out string appShortName, Action<Message> onMessageReceived = null, Action<Notification> onNotificationReceived = null)
         {
             appShortName = CreateAndRegisterApplicationAsync().Result;
             var appAccessKey = GetApplicationAccessKeyAsync(appShortName).Result;
-            var client = GetClientForApplicationAsync(appShortName, appAccessKey, onMessageReceived).Result;
+            var client = GetClientForApplicationAsync(appShortName, appAccessKey, onMessageReceived, onNotificationReceived).Result;
             return client;
         }
 
-        private static async Task<IMessagingHubClient> GetClientForApplicationAsync(string appShortName, string appAccessKey, Action<Message> onMessageReceived = null)
+        private static async Task<IMessagingHubClient> GetClientForApplicationAsync(string appShortName, string appAccessKey, Action<Message> onMessageReceived = null, Action<Notification> onNotificationReceived = null)
         {
             var builder = new MessagingHubClientBuilder()
                 .UsingHostName("hmg.msging.net")
@@ -183,6 +213,8 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
 
             if (onMessageReceived != null)
                 builder.AddMessageReceiver(new LambdaMessageReceiver(onMessageReceived));
+            if (onNotificationReceived != null)
+                builder.AddNotificationReceiver(new LambdaNotificationReceiver(onNotificationReceived));
 
             var client = builder.Build();
             await client.StartAsync();
@@ -255,6 +287,22 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         public override Task ReceiveAsync(Message message)
         {
             OnMessageReceived?.Invoke(message);
+            return Task.CompletedTask;
+        }
+    }
+
+    internal class LambdaNotificationReceiver : NotificationReceiverBase
+    {
+        public Action<Notification> OnNotificationReceived { get; set; }
+
+        public LambdaNotificationReceiver(Action<Notification> onNotificationReceived)
+        {
+            OnNotificationReceived = onNotificationReceived;
+        }
+
+        public override Task ReceiveAsync(Notification notification)
+        {
+            OnNotificationReceived?.Invoke(notification);
             return Task.CompletedTask;
         }
     }
