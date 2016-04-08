@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -86,25 +87,27 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         }
 
         [Test]
-        [Ignore("Not Working")]
         public async Task TestReceivedNotificationIsSentAfterMessageIsReceivedUsingMessageReceiverAndNotificationReceiver()
         {
-            Notification notification = null;
+            var notifications = new Queue<Notification>( );
             string appShortName1, appShortName2;
             var client1 = GetClientForNewApplication(out appShortName1, m =>
             {
                 
             }, n =>
             {
-                notification = n; /*Received*/
+                notifications.Enqueue(n);
             });
             var client2 = GetClientForNewApplication(out appShortName2, m => { });
             try
             {
                 await client1.SendMessageAsync(Beat, appShortName2);
 
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Accepted
-                await client1.ReceiveNotificationAsync(GetNewReceiveTimeoutCancellationToken()); //Dispatched
+                await Task.Delay(Timeout);
+
+                notifications.Dequeue(); //Accepted
+                notifications.Dequeue(); //Dispatched
+                var notification = notifications.Dequeue(); //Received
 
                 notification.ShouldNotBeNull();
                 notification.Event.ShouldBe(Event.Received);
