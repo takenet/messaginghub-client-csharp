@@ -10,9 +10,16 @@ namespace Takenet.MessagingHub.Client.Test
     internal class MessagingHubClientTests_Start : MessagingHubClientTestBase
     {
         [SetUp]
-        protected override void Setup()
+        public void TestSetUp()
         {
             base.Setup();
+            if (DateTime.Today.DayOfWeek == DayOfWeek.Saturday ||
+                DateTime.Today.DayOfWeek == DayOfWeek.Sunday ||
+                DateTime.Now.Hour < 6 ||
+                DateTime.Now.Hour > 19)
+            {
+                Assert.Ignore("As this test uses hmg server, it cannot be run out of worktime!");
+            }
         }
 
         [TearDown]
@@ -39,6 +46,7 @@ namespace Takenet.MessagingHub.Client.Test
                 .WithMaxConnectionRetries(1)
                 .UsingHostName("invalid.iris.io")
                 .UsingGuest()
+                .WithSendTimeout(TimeSpan.FromSeconds(2))
                 .Build();
 
             Should.ThrowAsync<TimeoutException>(async () => await connection.ConnectAsync().ConfigureAwait(false)).Wait();

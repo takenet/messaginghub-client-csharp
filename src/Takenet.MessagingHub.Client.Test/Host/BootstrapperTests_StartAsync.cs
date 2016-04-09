@@ -33,8 +33,22 @@ namespace Takenet.MessagingHub.Client.Test.Host
             Server.Dispose();
             TestMessageReceiver.InstanceCount = 0;
             TestNotificationReceiver.InstanceCount = 0;
-        }        
-        
+        }
+
+        [Test]
+        public void Ensure_Default_Application_Json_Values_Are_Correct()
+        {
+            // Arrange
+            var json = "{}";
+
+            // Act
+            var application = Application.ParseFromJson(json);
+
+            // Assert
+            application.SessionCompression.ShouldBe(null);
+            application.SessionEncryption.ShouldBe(null);
+        }
+
         [Test]        
         public async Task Create_With_No_Credential_And_No_Receiver_Should_Return_Instance()
         {
