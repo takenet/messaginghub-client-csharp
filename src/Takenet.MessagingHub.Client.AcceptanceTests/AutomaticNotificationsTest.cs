@@ -17,6 +17,18 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
     [TestFixture]
     internal class AutomaticNotificationsTest
     {
+        [SetUp]
+        public void TestSetUp()
+        {
+            if (DateTime.Today.DayOfWeek == DayOfWeek.Saturday ||
+                DateTime.Today.DayOfWeek == DayOfWeek.Sunday ||
+                DateTime.Now.Hour < 6 ||
+                DateTime.Now.Hour > 19)
+            {
+                Assert.Ignore("As this test uses hmg server, it cannot be run out of worktime!");
+            }
+        }
+
         [Test]
         public async Task TestAcceptedNotificationIsSentAfterMessageIsReceived()
         {
