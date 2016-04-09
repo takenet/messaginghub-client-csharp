@@ -38,7 +38,9 @@ namespace Takenet.MessagingHub.Client.Host
 
             if (loadAssembliesFromWorkingDirectory)
             {
-                TypeUtil.LoadAssembliesAndReferences(".", assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter);
+                var assembly = Assembly.GetExecutingAssembly();
+                var path = new FileInfo(assembly.Location).DirectoryName;
+                TypeUtil.LoadAssembliesAndReferences(path, assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter);
             }
 
             var clientBuilder = new MessagingHubClientBuilder();
@@ -65,6 +67,8 @@ namespace Takenet.MessagingHub.Client.Host
             if (application.Domain != null) clientBuilder = clientBuilder.UsingDomain(application.Domain);
             if (application.HostName != null) clientBuilder = clientBuilder.UsingHostName(application.HostName);
             if (application.SendTimeout != 0) clientBuilder = clientBuilder.WithSendTimeout(TimeSpan.FromMilliseconds(application.SendTimeout));
+            if (application.SessionEncryption.HasValue) clientBuilder = clientBuilder.UsingEncryption(application.SessionEncryption.Value);
+            if (application.SessionCompression.HasValue) clientBuilder = clientBuilder.UsingCompression(application.SessionCompression.Value);
 
             var localServiceProvider = new ServiceProvider(serviceProvider);
             var senderBuilder = await BuildSenderAsync(application, clientBuilder, localServiceProvider);

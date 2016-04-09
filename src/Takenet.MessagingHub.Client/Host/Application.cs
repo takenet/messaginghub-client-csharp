@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Lime.Protocol;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -91,6 +92,22 @@ namespace Takenet.MessagingHub.Client.Host
         /// The settings.
         /// </value>
         public IDictionary<string, object> Settings { get; set; }
+
+        /// <summary>
+        /// Gets or sets the session encryption mode to be used
+        /// </summary>
+        /// <value>
+        /// The encryption mode.
+        /// </value>
+        public SessionEncryption? SessionEncryption { get; set; }
+
+        /// <summary>
+        /// Gets or sets the session compression mode to be used
+        /// </summary>
+        /// <value>
+        /// The compression mode.
+        /// </value>
+        public SessionCompression? SessionCompression { get; set; }
 
         /// <summary>
         /// Creates an instance of <see cref="Application"/> from a JSON input.
