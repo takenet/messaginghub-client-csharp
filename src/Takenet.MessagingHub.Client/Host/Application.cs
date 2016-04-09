@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Lime.Protocol;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
 namespace Takenet.MessagingHub.Client.Host
@@ -117,12 +118,18 @@ namespace Takenet.MessagingHub.Client.Host
         public static Application ParseFromJson(string json)
         {
             if (json == null) throw new ArgumentNullException(nameof(json));
-            return JsonConvert.DeserializeObject<Application>(
-                json, 
-                new JsonSerializerSettings
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                });
+
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            };
+            settings.Converters.Add(new StringEnumConverter
+            {
+                CamelCaseText = true,
+                AllowIntegerValues = true
+            });
+
+            return JsonConvert.DeserializeObject<Application>(json, settings);
         }
 
         /// <summary>
