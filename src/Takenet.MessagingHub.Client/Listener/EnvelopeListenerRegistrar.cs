@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
-    internal class EnvelopeListenerRegistrar : IEnvelopeListener
+    internal class EnvelopeListenerRegistrar
     {
         private readonly MessagingHubListener _listener;
         private readonly IList<ReceiverFactoryPredicate<Message>> _messageReceivers;
@@ -21,11 +21,22 @@ namespace Takenet.MessagingHub.Client.Listener
             _notificationReceivers = new List<ReceiverFactoryPredicate<Notification>>();
         }
 
+        /// <summary>
+        /// Add a message receiver listener to handle received messages.
+        /// </summary>
+        /// <param name="receiverFactory">A function used to build the notification listener</param>
+        /// <param name="predicate">The message predicate used as a filter of messages received by listener. When not informed, only receives messages which no 'typed' receiver is registered.</param>
         public void AddMessageReceiver(Func<IMessageReceiver> receiverFactory, Predicate<Message> predicate)
         {
             AddEnvelopeReceiver(_messageReceivers, receiverFactory, predicate);
         }
 
+        ///// <summary>
+        ///// Add a notification receiver listener to handle received notifications.
+        ///// </summary>
+        ///// <param name="receiverFactory">A function used to build the notification listener</param>
+        ///// <param name="forEventType">EventType used as a filter of notification received by listener.</param>
+        ///// <returns></returns>
         public void AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Predicate<Notification> predicate)
         {
             AddEnvelopeReceiver(_notificationReceivers, receiverFactory, predicate);
