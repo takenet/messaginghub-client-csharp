@@ -13,6 +13,9 @@ using Takenet.MessagingHub.Client.LimeProtocol;
 
 namespace Takenet.MessagingHub.Client.Connection
 {
+    /// <summary>
+    /// Builds a connection with the Messaging Hub
+    /// </summary>
     public class MessagingHubConnectionBuilder
     {
         public const string DEFAULT_DOMAIN = "msging.net";
@@ -32,6 +35,9 @@ namespace Takenet.MessagingHub.Client.Connection
 
         private Uri _endPoint => new Uri($"net.tcp://{_hostName}:55321");
 
+        /// <summary>
+        /// Instantiate a connection builder using the default parameters
+        /// </summary>
         public MessagingHubConnectionBuilder()
         {
             _hostName = DEFAULT_DOMAIN;
@@ -42,6 +48,12 @@ namespace Takenet.MessagingHub.Client.Connection
             _sessionEncryption = SessionEncryption.TLS;
         }
 
+        /// <summary>
+        /// Inform an account to be used to connect to the Messaging Hub
+        /// </summary>
+        /// <param name="login">Account identifier</param>
+        /// <param name="password">Account password</param>
+        /// <returns>The same builder instance, configured to use the given account</returns>
         public MessagingHubConnectionBuilder UsingAccount(string login, string password)
         {
             if (string.IsNullOrEmpty(login)) throw new ArgumentNullException(nameof(login));
@@ -53,12 +65,22 @@ namespace Takenet.MessagingHub.Client.Connection
             return this;
         }
 
+        /// <summary>
+        /// Use the guest account to connect to the Messaging Hub
+        /// </summary>
+        /// <returns>The same builder instance, configured to use the guest account</returns>
         public MessagingHubConnectionBuilder UsingGuest()
         {
             _login = Guid.NewGuid().ToString();
             return this;
         }
 
+        /// <summary>
+        /// Inform an account to be used to connect to the Messaging Hub
+        /// </summary>
+        /// <param name="login">Account identifier</param>
+        /// <param name="accessKey">Account access key</param>
+        /// <returns>The same builder instance, configured to use the given account</returns>
         public MessagingHubConnectionBuilder UsingAccessKey(string login, string accessKey)
         {
             if (string.IsNullOrEmpty(login)) throw new ArgumentNullException(nameof(login));
@@ -70,6 +92,11 @@ namespace Takenet.MessagingHub.Client.Connection
             return this;
         }
 
+        /// <summary>
+        /// Overrides the default host name with the given one. It can be used to connect to an alternative instance of the Messaging Hub or another Lime endpoint
+        /// </summary>
+        /// <param name="hostName">The address of the host, without the protocol prefix and port number sufix</param>
+        /// <returns>The same builder instance, configured to use the given host name</returns>
         public MessagingHubConnectionBuilder UsingHostName(string hostName)
         {
             if (string.IsNullOrEmpty(hostName)) throw new ArgumentNullException(nameof(hostName));
@@ -78,6 +105,11 @@ namespace Takenet.MessagingHub.Client.Connection
             return this;
         }
 
+        /// <summary>
+        /// Overrides the default domain with the given one
+        /// </summary>
+        /// <param name="domain">The domain to be used</param>
+        /// <returns>The same builder instance, configured to use the given domain</returns>
         public MessagingHubConnectionBuilder UsingDomain(string domain)
         {
             if (string.IsNullOrEmpty(domain)) throw new ArgumentNullException(nameof(domain));
@@ -86,12 +118,22 @@ namespace Takenet.MessagingHub.Client.Connection
             return this;
         }
 
+        /// <summary>
+        /// Overrides the session encryption mode
+        /// </summary>
+        /// <param name="sessionEncryption">The desired <see cref="SessionEncryption">encryption mode</see></param>
+        /// <returns>The same builder instance, configured to use the given encryption mode</returns>
         public MessagingHubConnectionBuilder UsingEncryption(SessionEncryption sessionEncryption)
         {
             _sessionEncryption = sessionEncryption;
             return this;
         }
 
+        /// <summary>
+        /// Overrides the session compression mode
+        /// </summary>
+        /// <param name="sessionCompression">The desired <see cref="SessionCompression">compression mode</see></param>
+        /// <returns>The same builder instance, configured to use the given compression mode</returns>
         public MessagingHubConnectionBuilder UsingCompression(SessionCompression sessionCompression)
         {
             _sessionCompression = sessionCompression;
@@ -110,12 +152,22 @@ namespace Takenet.MessagingHub.Client.Connection
             return this;
         }
 
+        /// <summary>
+        /// Overrides the default <see cref="MessagingHubConnection.SendTimeout">send timeout</see>
+        /// </summary>
+        /// <param name="timeout">A timespan representing the desired send timeout</param>
+        /// <returns>The same builder instance, configured to use the given send timeout</returns>
         public MessagingHubConnectionBuilder WithSendTimeout(TimeSpan timeout)
         {
             _sendTimeout = timeout;
             return this;
         }
 
+        /// <summary>
+        /// Overrides the default <see cref="MessagingHubConnection.MaxConnectionRetries">maximum connection retries</see>
+        /// </summary>
+        /// <param name="maxConnectionRetries">The maximum number of connection retries. The number must be at least 1 and at most 5</param>
+        /// <returns>The same builder instance, configured to use the given maximum connection retries</returns>
         public MessagingHubConnectionBuilder WithMaxConnectionRetries(int maxConnectionRetries)
         {
             if (maxConnectionRetries < 1) throw new ArgumentOutOfRangeException(nameof(maxConnectionRetries));
@@ -154,6 +206,10 @@ namespace Takenet.MessagingHub.Client.Connection
             return result;
         }
 
+        /// <summary>
+        /// Builds a <see cref="MessagingHubConnection">connection</see> with the configured parameters
+        /// </summary>
+        /// <returns>An inactive connection with the Messaging Hub. Call <see cref="MessagingHubConnection.ConnectAsync"/> to activate it</returns>
         public MessagingHubConnection Build()
         {
             if (_onDemandClientChannelFactory == null)

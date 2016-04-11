@@ -7,14 +7,16 @@ namespace Takenet.MessagingHub.Client.Listener
 {
     internal class EnvelopeListenerRegistrar : IEnvelopeListener
     {
+        private readonly MessagingHubListener _listener;
         private readonly IList<ReceiverFactoryPredicate<Message>> _messageReceivers;
         private readonly IList<ReceiverFactoryPredicate<Notification>> _notificationReceivers;
 
         private static readonly IEnumerable<IMessageReceiver> DefaultMessageReceivers = new IMessageReceiver[] { new UnsupportedMessageReceiver() };
         private static readonly IEnumerable<INotificationReceiver> DefaultNotificationReceivers = new INotificationReceiver[] { new BlackholeNotificationReceiver() };
 
-        public EnvelopeListenerRegistrar()
+        internal EnvelopeListenerRegistrar(MessagingHubListener listener)
         {
+            _listener = listener;
             _messageReceivers = new List<ReceiverFactoryPredicate<Message>>();
             _notificationReceivers = new List<ReceiverFactoryPredicate<Notification>>();
         }
@@ -49,9 +51,11 @@ namespace Takenet.MessagingHub.Client.Listener
             return Enumerable.Empty<IEnvelopeReceiver<TEnvelope>>();
         }
 
-        private static void AddEnvelopeReceiver<T>(IList<ReceiverFactoryPredicate<T>> envelopeReceivers,
+        private void AddEnvelopeReceiver<T>(IList<ReceiverFactoryPredicate<T>> envelopeReceivers,
             Func<IEnvelopeReceiver<T>> receiverFactory, Predicate<T> predicate) where T : Envelope, new()
         {
+            if (_listener.Listening) throw new InvalidOperationException("Cannot add receivers when the listener is already started listening");
+
             if (receiverFactory == null) throw new ArgumentNullException(nameof(receiverFactory));
             if (predicate == null) throw new ArgumentNullException(nameof(predicate));
 
