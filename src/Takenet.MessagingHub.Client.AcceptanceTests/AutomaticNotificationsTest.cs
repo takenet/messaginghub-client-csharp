@@ -209,7 +209,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             var connection = new MessagingHubConnectionBuilder()
                 .UsingHostName("hmg.msging.net")
                 .UsingAccessKey(appShortName, appAccessKey)
-                //.WithSendTimeout(Timeout)
+                .WithSendTimeout(Timeout)
                 .Build();
             await connection.ConnectAsync();
             return connection;
