@@ -64,11 +64,11 @@ namespace Takenet.MessagingHub.Client.Host
                 connectionBuilder = connectionBuilder.UsingGuest();
             }
 
-            if (application.Domain != null) clientBuilder = clientBuilder.UsingDomain(application.Domain);
-            if (application.HostName != null) clientBuilder = clientBuilder.UsingHostName(application.HostName);
-            if (application.SendTimeout != 0) clientBuilder = clientBuilder.WithSendTimeout(TimeSpan.FromMilliseconds(application.SendTimeout));
-            if (application.SessionEncryption.HasValue) clientBuilder = clientBuilder.UsingEncryption(application.SessionEncryption.Value);
-            if (application.SessionCompression.HasValue) clientBuilder = clientBuilder.UsingCompression(application.SessionCompression.Value);
+            if (application.Domain != null) connectionBuilder = connectionBuilder.UsingDomain(application.Domain);
+            if (application.HostName != null) connectionBuilder = connectionBuilder.UsingHostName(application.HostName);
+            if (application.SendTimeout != 0) connectionBuilder = connectionBuilder.WithSendTimeout(TimeSpan.FromMilliseconds(application.SendTimeout));
+            if (application.SessionEncryption.HasValue) connectionBuilder = connectionBuilder.UsingEncryption(application.SessionEncryption.Value);
+            if (application.SessionCompression.HasValue) connectionBuilder = connectionBuilder.UsingCompression(application.SessionCompression.Value);
 
             var localServiceProvider = new ServiceProvider(serviceProvider);
 

@@ -131,7 +131,11 @@ namespace Lime.Protocol.Client
         /// <returns></returns>
         public Task<Notification> ReceiveNotificationAsync(CancellationToken cancellationToken)
         {
-            return ReceiveAsync(cancellationToken, (channel, token) => channel.ReceiveNotificationAsync(token));
+            return ReceiveAsync(cancellationToken, (channel, token) =>
+            {
+                var notificationTask = channel.ReceiveNotificationAsync(token);
+                return notificationTask;
+            });
         }
 
         /// <summary>
