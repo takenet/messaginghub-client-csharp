@@ -82,7 +82,7 @@ namespace Takenet.MessagingHub.Client.Host
             localServiceProvider.TypeDictionary.Add(typeof(MessagingHubListener), listener);
 
             var sender = new MessagingHubSender(connection);
-            localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubSender), sender);
+            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubSender), sender);
 
             var stoppables = new IStoppable[2];
             stoppables[0] = listener;

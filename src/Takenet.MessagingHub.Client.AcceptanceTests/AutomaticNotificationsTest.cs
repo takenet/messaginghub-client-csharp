@@ -225,7 +225,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             return listener;
         }
 
-        private static IMessagingHubSender GetSenderForApplication(MessagingHubConnection connection)
+        private static MessagingHubSender GetSenderForApplication(MessagingHubConnection connection)
         {
             var sender = new MessagingHubSender(connection);
             return sender;

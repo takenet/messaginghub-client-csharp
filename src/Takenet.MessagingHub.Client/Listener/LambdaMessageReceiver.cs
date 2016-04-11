@@ -15,7 +15,7 @@ namespace Takenet.MessagingHub.Client.Listener
             OnMessageReceived = onMessageReceived;
         }
 
-        public Task ReceiveAsync(IMessagingHubSender sender, Message envelope, CancellationToken token)
+        public Task ReceiveAsync(MessagingHubSender sender, Message envelope, CancellationToken token)
         {
             return Task.Run(() => OnMessageReceived?.Invoke(envelope, token), token);
         }

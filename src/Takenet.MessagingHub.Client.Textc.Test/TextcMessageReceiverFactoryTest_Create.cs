@@ -137,12 +137,12 @@ namespace Takenet.MessagingHub.Client.Textc.Test
 
     public class TestCommandProcessor
     {
-        public static IMessagingHubSender Sender;
+        public static MessagingHubSender Sender;
         public static IDictionary<string, object> Settings;
         public static bool Instantiated;
         public static int InstanceCount;
 
-        public TestCommandProcessor(IMessagingHubSender sender, IDictionary<string, object> settings)
+        public TestCommandProcessor(MessagingHubSender sender, IDictionary<string, object> settings)
         {
             Sender = sender;
             Settings = settings;
@@ -173,7 +173,7 @@ namespace Takenet.MessagingHub.Client.Textc.Test
 
     public class SettingsTestStartable : IStartable
     {
-        public SettingsTestStartable(IMessagingHubSender sender, IDictionary<string, object> settings)
+        public SettingsTestStartable(MessagingHubSender sender, IDictionary<string, object> settings)
         {
             Sender = sender;
             Settings = settings;
@@ -183,7 +183,7 @@ namespace Takenet.MessagingHub.Client.Textc.Test
 
         public static bool _Started;
 
-        public static IMessagingHubSender Sender;
+        public static MessagingHubSender Sender;
 
         public static IDictionary<string, object> Settings;
 
