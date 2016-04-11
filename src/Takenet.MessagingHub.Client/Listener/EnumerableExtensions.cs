@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Takenet.MessagingHub.Client
+namespace Takenet.MessagingHub.Client.Listener
 {
     public static class EnumerableExtensions
     {

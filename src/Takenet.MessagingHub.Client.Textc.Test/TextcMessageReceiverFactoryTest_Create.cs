@@ -5,6 +5,7 @@ using Lime.Protocol;
 using NUnit.Framework;
 using Shouldly;
 using Takenet.MessagingHub.Client.Host;
+using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
 using Takenet.MessagingHub.Client.Test;
 using Takenet.Textc;

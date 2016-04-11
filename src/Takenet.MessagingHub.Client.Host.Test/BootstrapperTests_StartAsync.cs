@@ -6,13 +6,11 @@ using Lime.Protocol;
 using Lime.Protocol.Serialization;
 using NUnit.Framework;
 using Shouldly;
-using Takenet.MessagingHub.Client.Connection;
-using Takenet.MessagingHub.Client.Host;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
-using Event = Lime.Protocol.Event;
+using Takenet.MessagingHub.Client.Test;
 
-namespace Takenet.MessagingHub.Client.Test.Host
+namespace Takenet.MessagingHub.Client.Host.Test
 {
     [TestFixture]
     public class BootstrapperTests_StartAsync

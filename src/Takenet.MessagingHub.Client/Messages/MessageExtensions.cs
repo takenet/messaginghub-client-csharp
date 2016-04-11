@@ -1,6 +1,6 @@
 ﻿using Lime.Protocol;
 
-namespace Takenet.MessagingHub.Client
+namespace Takenet.MessagingHub.Client.Messages
 {
     /// <summary>
     /// Extension methods for <see cref="Message"/>

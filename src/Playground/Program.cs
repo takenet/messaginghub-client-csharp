@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Connection;
 using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Messages;
 using Takenet.MessagingHub.Client.Sender;
 
 namespace Playground

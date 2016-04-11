@@ -5,6 +5,7 @@ using Lime.Protocol;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Takenet.MessagingHub.Client.Listener;
 
 namespace Takenet.MessagingHub.Client.Host
 {

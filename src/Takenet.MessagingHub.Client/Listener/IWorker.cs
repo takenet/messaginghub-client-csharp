@@ -1,4 +1,4 @@
-﻿namespace Takenet.MessagingHub.Client
+﻿namespace Takenet.MessagingHub.Client.Listener
 {
     public interface IWorker : IStartable, IStoppable
     {        

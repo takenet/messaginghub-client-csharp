@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Takenet.MessagingHub.Client
+namespace Takenet.MessagingHub.Client.Listener
 {
     public interface IStartable
     {

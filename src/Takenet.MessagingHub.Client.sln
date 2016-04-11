@@ -18,15 +18,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "Playground\Pl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.Textc.Test", "Takenet.MessagingHub.Client.Textc.Test\Takenet.MessagingHub.Client.Textc.Test.csproj", "{B2C7C0CF-62DC-4EE3-A7C3-56112AA54A07}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HostTemplates", "HostTemplates", "{E596DCFC-0A27-47AA-9FAA-44C06BEC7382}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{E596DCFC-0A27-47AA-9FAA-44C06BEC7382}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.Host", "Takenet.MessagingHub.Client.Host\Takenet.MessagingHub.Client.Host.csproj", "{288513C0-FCD1-47B0-9C98-00B34CE99B63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.ConsoleHostTemplate", "HostTemplates\Takenet.MessagingHub.Client.ConsoleHostTemplate\Takenet.MessagingHub.Client.ConsoleHostTemplate.csproj", "{726EC1F8-3E62-4BA3-B362-823C692AA2A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.ConsoleHostTemplate", "Templates\Takenet.MessagingHub.Client.ConsoleHostTemplate\Takenet.MessagingHub.Client.ConsoleHostTemplate.csproj", "{726EC1F8-3E62-4BA3-B362-823C692AA2A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.HostTemplate", "HostTemplates\Takenet.MessagingHub.Client.HostTemplate\Takenet.MessagingHub.Client.HostTemplate.csproj", "{A0D7C8F1-F807-4D00-BC5D-0A9E819E003C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.HostTemplate", "Templates\Takenet.MessagingHub.Client.HostTemplate\Takenet.MessagingHub.Client.HostTemplate.csproj", "{A0D7C8F1-F807-4D00-BC5D-0A9E819E003C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.AcceptanceTests", "Takenet.MessagingHub.Client.AcceptanceTests\Takenet.MessagingHub.Client.AcceptanceTests.csproj", "{0E084BA2-10CC-4E60-9446-9FEA9B607A94}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.Host.Test", "Takenet.MessagingHub.Client.Host.Test\Takenet.MessagingHub.Client.Host.Test.csproj", "{25E76FB7-BA36-4C3D-B180-69D84D4072BE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E328C70F-41C8-4CF5-ADFC-01DA7D793A08}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,12 +74,20 @@ Global
 		{0E084BA2-10CC-4E60-9446-9FEA9B607A94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E084BA2-10CC-4E60-9446-9FEA9B607A94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E084BA2-10CC-4E60-9446-9FEA9B607A94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25E76FB7-BA36-4C3D-B180-69D84D4072BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25E76FB7-BA36-4C3D-B180-69D84D4072BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25E76FB7-BA36-4C3D-B180-69D84D4072BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25E76FB7-BA36-4C3D-B180-69D84D4072BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{29853B17-4DFC-4617-B84A-C532F88667B5} = {E328C70F-41C8-4CF5-ADFC-01DA7D793A08}
+		{B2C7C0CF-62DC-4EE3-A7C3-56112AA54A07} = {E328C70F-41C8-4CF5-ADFC-01DA7D793A08}
 		{726EC1F8-3E62-4BA3-B362-823C692AA2A2} = {E596DCFC-0A27-47AA-9FAA-44C06BEC7382}
 		{A0D7C8F1-F807-4D00-BC5D-0A9E819E003C} = {E596DCFC-0A27-47AA-9FAA-44C06BEC7382}
+		{0E084BA2-10CC-4E60-9446-9FEA9B607A94} = {E328C70F-41C8-4CF5-ADFC-01DA7D793A08}
+		{25E76FB7-BA36-4C3D-B180-69D84D4072BE} = {E328C70F-41C8-4CF5-ADFC-01DA7D793A08}
 	EndGlobalSection
 EndGlobal

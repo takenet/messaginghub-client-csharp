@@ -4,6 +4,7 @@ using Lime.Protocol;
 using NSubstitute;
 using NUnit.Framework;
 using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Messages;
 
 namespace Takenet.MessagingHub.Client.Test
 {

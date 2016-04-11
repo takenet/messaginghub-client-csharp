@@ -8,6 +8,7 @@ using Lime.Protocol.Serialization.Newtonsoft;
 using Lime.Protocol.Server;
 using Lime.Protocol.Util;
 using Lime.Transport.Tcp;
+using Takenet.MessagingHub.Client.Listener;
 
 namespace Takenet.MessagingHub.Client.Test
 {

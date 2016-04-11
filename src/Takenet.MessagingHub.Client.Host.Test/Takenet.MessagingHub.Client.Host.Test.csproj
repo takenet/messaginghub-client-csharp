@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0E084BA2-10CC-4E60-9446-9FEA9B607A94}</ProjectGuid>
+    <ProjectGuid>{25E76FB7-BA36-4C3D-B180-69D84D4072BE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Takenet.MessagingHub.Client.AcceptanceTests</RootNamespace>
-    <AssemblyName>Takenet.MessagingHub.Client.AcceptanceTests</AssemblyName>
+    <RootNamespace>Takenet.MessagingHub.Client.Host.Test</RootNamespace>
+    <AssemblyName>Takenet.MessagingHub.Client.Host.Test</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -31,12 +31,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lime.Protocol, Version=0.4.25.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Lime.Protocol.0.4.25\lib\net461\Lime.Protocol.dll</HintPath>
+    <Reference Include="Lime.Messaging, Version=0.4.25.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Messaging.0.4.25\lib\net461\Lime.Messaging.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Lime.Protocol, Version=0.4.25.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Protocol.0.4.25\lib\net461\Lime.Protocol.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Lime.Protocol.Serialization.Newtonsoft, Version=0.4.25.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Protocol.Serialization.Newtonsoft.0.4.25\lib\net461\Lime.Protocol.Serialization.Newtonsoft.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Lime.Transport.Tcp, Version=0.4.25.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Transport.Tcp.0.4.25\lib\net461\Lime.Transport.Tcp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="nunit.framework, Version=3.2.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
@@ -49,25 +57,35 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutomaticNotificationsTest.cs" />
+    <Compile Include="BootstrapperTests_StartAsync.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Takenet.MessagingHub.Client.Host\Takenet.MessagingHub.Client.Host.csproj">
+      <Project>{288513c0-fcd1-47b0-9c98-00b34ce99b63}</Project>
+      <Name>Takenet.MessagingHub.Client.Host</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Takenet.MessagingHub.Client.Test\Takenet.MessagingHub.Client.Test.csproj">
+      <Project>{29853B17-4DFC-4617-B84A-C532F88667B5}</Project>
+      <Name>Takenet.MessagingHub.Client.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Takenet.MessagingHub.Client\Takenet.MessagingHub.Client.csproj">
       <Project>{628f8ee4-956a-49ce-b9d6-bd5f6800fe6f}</Project>
       <Name>Takenet.MessagingHub.Client</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
