@@ -51,15 +51,15 @@ namespace Takenet.MessagingHub.Client.Connection
         /// <summary>
         /// Inform an account to be used to connect to the Messaging Hub
         /// </summary>
-        /// <param name="login">Account identifier</param>
+        /// <param name="account">Account identifier</param>
         /// <param name="password">Account password</param>
         /// <returns>The same builder instance, configured to use the given account</returns>
-        public MessagingHubConnectionBuilder UsingAccount(string login, string password)
+        public MessagingHubConnectionBuilder UsingAccount(string account, string password)
         {
-            if (string.IsNullOrEmpty(login)) throw new ArgumentNullException(nameof(login));
+            if (string.IsNullOrEmpty(account)) throw new ArgumentNullException(nameof(account));
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
 
-            _login = login;
+            _login = account;
             _password = password;
 
             return this;
@@ -78,15 +78,15 @@ namespace Takenet.MessagingHub.Client.Connection
         /// <summary>
         /// Inform an account to be used to connect to the Messaging Hub
         /// </summary>
-        /// <param name="login">Account identifier</param>
+        /// <param name="account">Account identifier</param>
         /// <param name="accessKey">Account access key</param>
         /// <returns>The same builder instance, configured to use the given account</returns>
-        public MessagingHubConnectionBuilder UsingAccessKey(string login, string accessKey)
+        public MessagingHubConnectionBuilder UsingAccessKey(string account, string accessKey)
         {
-            if (string.IsNullOrEmpty(login)) throw new ArgumentNullException(nameof(login));
+            if (string.IsNullOrEmpty(account)) throw new ArgumentNullException(nameof(account));
             if (string.IsNullOrEmpty(accessKey)) throw new ArgumentNullException(nameof(accessKey));
 
-            _login = login;
+            _login = account;
             _accessKey = accessKey;
 
             return this;

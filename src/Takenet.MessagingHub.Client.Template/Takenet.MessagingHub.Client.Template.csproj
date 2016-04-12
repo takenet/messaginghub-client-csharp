@@ -7,7 +7,7 @@
     <ProjectGuid>{A0D7C8F1-F807-4D00-BC5D-0A9E819E003C}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Takenet.MessagingHub.Client.Host</RootNamespace>
+    <RootNamespace>Takenet.MessagingHub.Client.Template</RootNamespace>
     <AssemblyName>mhh</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -45,7 +45,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Takenet.MessagingHub.Client.HostTemplate.nuspec" />
+    <None Include="Takenet.MessagingHub.Client.Template.nuspec" />
     <None Include="uninstall.ps1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -65,11 +65,11 @@
     <None Include="Startup.cs.pp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Takenet.MessagingHub.Client.Host\Takenet.MessagingHub.Client.Host.csproj">
+    <ProjectReference Include="..\Takenet.MessagingHub.Client.Host\Takenet.MessagingHub.Client.Host.csproj">
       <Project>{288513c0-fcd1-47b0-9c98-00b34ce99b63}</Project>
       <Name>Takenet.MessagingHub.Client.Host</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Takenet.MessagingHub.Client\Takenet.MessagingHub.Client.csproj">
+    <ProjectReference Include="..\Takenet.MessagingHub.Client\Takenet.MessagingHub.Client.csproj">
       <Project>{628F8EE4-956A-49CE-B9D6-BD5F6800FE6F}</Project>
       <Name>Takenet.MessagingHub.Client</Name>
     </ProjectReference>

@@ -1,92 +1,75 @@
-The client allow you to send and receive messages through the Messaging Hub.
+Sending and receiving message is the main purpose of the Messaging Hub Client.
+
+## Establishing a connection
+
+If you are not using the *Takenet.MessagingHub.Client.Template* package, you need to establish a connection before sending or receiving messages.
+
+To establish a connection, use the `MessagingHubConnectionBuilder`:
+
+```csharp
+var connection = new MessagingHubConnectionBuilder()
+    .UsingAccessKey("xpto", "cXkzT1Rp")
+    .Build();
+
+await connection.ConnectAsync();
+```
+
+**Remark: If you are using the *Takenet.MessagingHub.Client.Template* package, the connection is automatically handled for you. See more in [Hosting](http://messaginghub.io/docs/sdks/hosting).**
 
 ## Sending Messages
 
-To send a message, you can use the following method:
+To send a message, you can use the following method, or any of its overloads and extensions:
 
 ```csharp
-var message = new Message
-{
-    To = Node.Parse("user"),
-    Content = new PlainText()
-    {
-        Text = "Message Text"
-    }
-};
-
-await client.SendMessageAsync(message);
-
+await client.SendMessageAsync("text", "destination");
 ```
 
-Or you can use these extension methods to construct and send your message:
-
-```csharp
-await client.SendMessageAsync("Message Text", to: "user");
-
-await client.SendMessageAsync("Message Text", Node.Parse("user"));
-```
-
-To send messages inside a **receiver**, you should use the **EnvelopeSender** property defined in the base class.
+To send messages inside a **MessageReceiver**, you should use the **sender** parameter in the *ReceiveAsync* method.
 
 ## Receiving Messages
 
-If you are using the Messaging Hub host package, your application receives messages through a **message receiver** registered in the `application.json` file. For more details, please refer to the **Hosting** section.
-
-To receive a message directly from the client, you should call ReceiveMessageAsync method as bellow:
+To receive a message, instantiate a listener and register a *MessageReceiver*:
 
 ```csharp
-const string login = "user";
-const string accessKey = "myAccessKey";
 
-var client = new MessagingHubClientBuilder()
-                 .UsingAccessKey(login, accessKey)
-                 .Build();
+var listener = new MessagingHubListener(connection);
+listener.AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText);
 
-await client.StartAsync();
-
-using (var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
-{
-    var message = await client.ReceiveMessageAsync(cancellationToken.Token);
-}
-
-await client.StopAsync();
-
+await listener.StartAsync();
 ```
 
-You can also create a Receiver class that will handle the inbound messages:
+**Remark: If you are using the *Takenet.MessagingHub.Client.Template* package, the listener is automatically handled for you. See more in [Hosting](http://messaginghub.io/docs/sdks/hosting).**
+
+Your *MessageReceiver* can be defined as follows:
 
 ```csharp
-public class MyMessageReceiver : MessageReceiverBase
+public class PlainTextMessageReceiver : MessageReceiverBase
 {
-    public override async Task ReceiveAsync(Message message)
+    public override async Task ReceiveAsync(MessagingHubSender sender, Message message, CancellationToken token)
     {
         // Write the received message to the console
         Console.WriteLine(message.Content.ToString());
     }
 }
-
 ```
-And then set it in the builder:
+
+And you can respond to the received messages using the *sender* parameter:
 
 ```csharp
-const string login = "user";
-const string accessKey = "myAccessKey";
-
-var client = new MessagingHubClientBuilder()
-                 .UsingAccessKey(login, accessKey)
-                 .AddMessageReceiver(new MyMessageReceiver())
-                 .Build();
-
-await client.StartAsync();
-```
-It is also possible to pass a factory method to construct the receiver:
-
-```csharp
-AddMessageReceiver(() => new MyMessageReceiver(), MediaTypes.PlainText);
+public class PlainTextMessageReceiver : MessageReceiverBase
+{
+    public override async Task ReceiveAsync(MessagingHubSender sender, Message message, CancellationToken token)
+    {
+        // Write the received message to the console
+        Console.WriteLine(message.Content.ToString());
+        // Responds to the received message
+        sender.SendMessageAsync("Hi. I just received your message!", message.From, token);
+    }
+}
 ```
 
-And you can specify a `media type` to filter your messages
+## Acknoledgement notifications
 
-```csharp
-AddMessageReceiver(() => new MyMessageReceiver(), new MediaType(MediaType.DiscreteTypes.Application, MediaType.SubTypes.JSON));
-```
+- Before the `ReceiveAsync` method is executed, a notification of type `Event.Received` is automatically sent to the peer who sent you the message.
+- After the `ReceiveAsync` method is executed, if no exception occurs, a notification of type `Event.Consumed` is automatically sent to the peer who sent you the message.
+- In case an exception occurs in the `ReceiveAsync` method, a notification of type `Event.Failed` is automatically sent to the peer who sent you the message.

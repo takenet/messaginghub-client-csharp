@@ -2,18 +2,18 @@
 
 The Messaging Hub offers the utility `mhh.exe` which *hosts* applications defined in an `application.json` file. This file allows the creation of Messaging Hub client application in a declarative way.
 
-To use it, create a Visual Studio *Class Library* project and install the package using the folllowing command:
+To use it, create a Visual Studio *Class Library* project and install the package using the following command:
 
-    Install-Package Takenet.MessagingHub.Client.HostTemplate
+    Install-Package Takenet.MessagingHub.Client.Template
 
 After the installation, some files will be added to your project, among them the `application.json` with some default values defined.
-In order to the application to work, it is necessary to complement it with some information, suche as your Identifier application (login) and access key.
+In order to the application to work, it is necessary to complement it with some information, such as your application identifier (account) and access key.
 
 Here follows an example:
 
 ```json
 {
-  "login": "xpto",
+  "account": "xpto",
   "accessKey": "cXkzT1Rp",
   "messageReceivers": [
     {
@@ -24,14 +24,21 @@ Here follows an example:
 }
 ```
 
-In this example, the client is configured using the identifier application `xpto` and the access key `cXkzT1Rp`. Besides, it is also registering a **MessageReceiver** of type `PlainTextMessageReceiver`, with a filter of **media type** `text/plain`. The same definition using C# would be:
+In this example, the client is configured using the application `xpto` and the access key `cXkzT1Rp`. Besides, it is also registering a **MessageReceiver** of type `PlainTextMessageReceiver`, with a filter of **media type** `text/plain`. The same definition using C# would be:
 
 ```csharp
-var client = new MessagingHubClientBuilder()
+var connection = new MessagingHubConnectionBuilder()
     .UsingAccessKey("xpto", "cXkzT1Rp")
-    .AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
     .Build();
+
+await connection.ConnectAsync();
+
+var listener = new MessagingHubListener(connection);
+listener.AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
+
+await listener.StartAsync();
 ```
+
 
 Through the `application.json` file, the developer has access to all properties of the `MessagingHubClientBuilder`, also allowing him to initialize, in a transparent maner, the data type used by his application. This means it is not necessary to worry about how the application will be build in order to work, since it is already handled by the `mhh.exe` utility, installed with the package.
 
@@ -43,12 +50,14 @@ Here follows all properties defined in the `application.json` file:
 
 | Property    | Description                                                                      | Example                 |
 |-------------|----------------------------------------------------------------------------------|-------------------------|
-| login       | The identifier of the Messaging Hub application, registered through the Portal [messaginghub.io](http://messaginghub.io). | myapplication           |
+| account     | The identifier of the Messaging Hub application, registered through the Portal [messaginghub.io](http://messaginghub.io). | myapplication           |
 | domain      | **lime** domain to connect. Currently, the only supported value is `msging.net`.| msging.net              |
 | hostName    | Address of the server.                                  | msging.net              |
 | accessKey   | Access key to authenticate your application, in **base64** format.         | MTIzNDU2                |
 | password    | Password to authenticate your application, in **base64** format.                   | MTIzNDU2                |
 | sendTimeout | Timeout to send messages, in milliseconds.                              | 30000                   |
+| sessionEncryption | Encryption mode to be used.                              | None/TLS                   |
+| sessionCompression | Encryption mode to be used.                              | None                   |
 | startupType | Name of the .NET type that will be activated when your client is initialized. It must implement the `IStartable` interface. It may be its simple name (if it is found in the same assembly **assembly** as the file `application.json` file) or a fully qualified name with **assembly** name.    | Startup     |
 | settings    | General settings for the application, in the key-value format. This value is injected in the instatiated types, such as **receivers** or the **startupType**. To receive values, such types must receive an instance of the type `IDictionary<string, object>` in their constructors. | { "myApiKey": "abcd1234" }   |
 | messageReceivers | Array of **message receivers**, that are types specialized in receiving messages. | *See below* |
@@ -62,7 +71,7 @@ Each **message receiver** can have the following properties:
 | settings    | General settings for the receiver, in the key-value format. Este valor é injected in the instantiated type. To receive values, the implementation must receive an instance of the type `IDictionary<string, object>` in its constructor. | { "mySetting": "xyzabcd" }   |
 | mediaType   | Define a filter for the message type that the **receiver** will process. Only messages of the specified type will be delivered to the instantiated receiver. | text/plain |
 | content     | Define a regular expression to filter the content of the messages that the **receiver** will process. Only messages that match the expressionn will be delivered to the instantiated receiver. | Hello world |
-| sender     | Define a regular expression to fillter the origination of the messages that the **receiver** will process. Only messages sent from accounts that match the expression will be delivered to the instantiated receiver. | sender@domain.com |
+| sender     | Define a regular expression to filter the origination of the messages that the **receiver** will process. Only messages sent from accounts that match the expression will be delivered to the instantiated receiver. | sender@domain.com |
 
 Each **notification receiver** will have the following properties:
 
@@ -70,7 +79,7 @@ Each **notification receiver** will have the following properties:
 |-------------|----------------------------------------------------------------------------------|-------------------------|
 | type        | Name of the .NET to reveice notifications. It must implement the interface `INotificationReceiver`. (if it is located in the same **assembly** as the file `application.json`) or a fully qualified name with **assembly** name. | NotificationReceiver |
 | settings    | General settings for the receiver,  in the key-value format. This value is injected in the instantiated type. To receive values, the implementation must receive an instance of the type `IDictionary<string, object>` in its constructor. | { "mySetting": "xyzabcd" }   |
-| eventType   | Define a fillter for the event type the **receiver** will process. Only notifications of the specified event type will be delivered to the instantiated receiver. | received |
+| eventType   | Define a filter for the event type the **receiver** will process. Only notifications of the specified event type will be delivered to the instantiated receiver. | received |
 
 ## Publishing your application
 

@@ -1,36 +1,27 @@
-using Lime.Protocol;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
-using Takenet.MessagingHub.Client;
-using Takenet.MessagingHub.Client.Receivers;
+using Lime.Protocol;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Echo
 {
     public class EchoMessageReceiver : MessageReceiverBase
     {
-        public override async Task ReceiveAsync(Message message)
+        public override async Task ReceiveAsync(MessagingHubSender sender, Message message, CancellationToken token)
         {
-            var sender = message.From;
-            var id = message.Id;
-
-            //Client is sending received notifications automatically
-            //await EnvelopeSender.SendNotificationAsync(new Notification { Event = Event.Received, To = sender, Id = id });
-
             //Fire and forget messages
-            if (Guid.Equals(id, Guid.Empty))
-            {
+            if (Guid.Equals(message.Id, Guid.Empty))
                 return;
-            }
             
             var echoMessage = message;
-            echoMessage.To = sender;
+            echoMessage.To = message.From;
             echoMessage.From = null;
             echoMessage.Pp = null;
             echoMessage.Id = Guid.NewGuid();
 
-            await EnvelopeSender.SendMessageAsync(echoMessage);
-            
-            await EnvelopeSender.SendNotificationAsync(new Notification { Event = Event.Consumed, To = sender, Id = id });
+            await sender.SendMessageAsync(echoMessage, token);
         }
     }
 }

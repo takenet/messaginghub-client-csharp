@@ -4,15 +4,15 @@ O Messaging Hub oferece o utilitário `mhh.exe` que realiza o *host* de aplicaç
 
 Para utilizá-lo, crie um projeto no Visual Studio do tipo **Class library** e instale o pacote com o comando:
 
-    Install-Package Takenet.MessagingHub.Client.HostTemplate
+    Install-Package Takenet.MessagingHub.Client.Template
 
-Após a instalação, serão adicionados alguns arquivos no projeto, dentre eles o `application.json` com alguns valores padrão definidos. Para a aplicação funcionar, é necessário complementá-lo com algumas informações, como o identificador da sua aplicação (login) e sua chave de acesso (access key).
+Após a instalação, serão adicionados alguns arquivos no projeto, dentre eles o `application.json` com alguns valores padrão definidos. Para a aplicação funcionar, é necessário complementá-lo com algumas informações, como o identificador da sua aplicação (account) e sua chave de acesso (access key).
 
 Abaixo um exemplo:
 
 ```json
 {
-  "login": "xpto",
+  "account": "xpto",
   "accessKey": "cXkzT1Rp",
   "messageReceivers": [
     {
@@ -23,13 +23,19 @@ Abaixo um exemplo:
 }
 ```
 
-Neste exemplo, o cliente está sendo configurado utilizando o login `xpto` e access key `cXkzT1Rp`, além de estar registrando um **MessageReceiver** do tipo `PlainTextMessageReceiver`, com um filtro pelo **media type** `text/plain`. A mesma definição utilizando C# seria:
+Neste exemplo, o cliente está sendo configurado utilizando a aplicação `xpto` e access key `cXkzT1Rp`, além de estar registrando um **MessageReceiver** do tipo `PlainTextMessageReceiver`, com um filtro pelo **media type** `text/plain`. A mesma definição utilizando C# seria:
 
 ```csharp
-var client = new MessagingHubClientBuilder()
+var connection = new MessagingHubConnectionBuilder()
     .UsingAccessKey("xpto", "cXkzT1Rp")
-    .AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
     .Build();
+
+await connection.ConnectAsync();
+
+var listener = new MessagingHubListener(connection);
+listener.AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
+
+await listener.StartAsync();
 ```
 
 Através do arquivo `application.json`, o desenvolvedor tem acesso a todas as propriedades do `MessagingHubClientBuilder`, além de permitir a inicialização de forma transparente dos tipos utilizados pela aplicação. Isso significa que não é necessário se preocupar como a aplicação sera construída para funcionar, já que isso é tratado pelo utilitário `mhh.exe` instalado junto ao pacote. 
@@ -43,12 +49,14 @@ Abaixo, todas as propriedades que podem ser definidas no arquivo `application.js
 
 | Propriedade | Descrição                                                                        | Exemplo                 |
 |-------------|----------------------------------------------------------------------------------|-------------------------|
-| login       | O login da aplicação no Messaging Hub, gerado através do portal [messaginghub.io](http://messaginghub.io). | myapplication           |
+| account     | O identificador da aplicação no Messaging Hub, gerado através do portal [messaginghub.io](http://messaginghub.io). | myapplication           |
 | domain      | O domínio **lime** para conexão. Atualmente o único valor suportado é `msging.net`.| msging.net              |
 | hostName    | O endereço do host para conexão com o servidor.                                  | msging.net              |
 | accessKey   | A chave de acesso da aplicação para autenticação, no formato **base64**.         | MTIzNDU2                |
 | password    | A senha da aplicação para autenticação, no formato **base64**.                   | MTIzNDU2                |
-| sendTimeout | O timeout para envio de mensagens, em milisegundos.                              | 30000                   |
+| sendTimeout | O timeout para envio de mensagens, em milissegundos.                              | 30000                   |
+| sessionEncryption | Modo de encriptação a ser usado.                              | None/TLS                   |
+| sessionCompression | Modo de compressão a ser usado.                              | None                   |
 | startupType | Nome do tipo .NET que deve ser ativado quando o cliente foi inicializado. O mesmo deve implementar a interface `IStartable`. Pode ser o nome simples do tipo (se estiver na mesma **assembly** do arquivo `application.json`) ou o nome qualificado com **assembly**.    | Startup     |
 | settings    | Configurações gerais da aplicação, no formato chave-valor. Este valor é  injetado nos tipos criados, sejam **receivers** ou o **startupType**. Para receber os valores, os tipos devem esperar uma instância do tipo `IDictionary<string, object>` no construtor dos mesmos. | { "myApiKey": "abcd1234" }   |
 | messageReceivers | Array de **message receivers**, que são tipos especializados para recebimento de mensagens. | *Veja abaixo* |

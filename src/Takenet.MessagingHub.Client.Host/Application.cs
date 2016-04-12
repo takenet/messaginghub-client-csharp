@@ -15,9 +15,9 @@ namespace Takenet.MessagingHub.Client.Host
     public class Application
     {
         /// <summary>
-        /// Gets or sets the login.
+        /// Gets or sets the account.
         /// </summary>
-        public string Login { get; set; }
+        public string Account { get; set; }
 
         /// <summary>
         /// Gets or sets the domain.

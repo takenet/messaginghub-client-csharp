@@ -1,36 +1,34 @@
-using Lime.Protocol;
 using System;
-using System.Threading.Tasks;
 using System.Linq;
-using Takenet.MessagingHub.Client;
-using Takenet.MessagingHub.Client.Receivers;
+using System.Threading.Tasks;
 using System.Text;
+using System.Threading;
+using Lime.Protocol;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Chat
 {
     public class ChatMessageReceiver : MessageReceiverBase
     {
-        private static string _targetPostmaster = "postmaster@0mn.io/#irisomni1";
-        private static string _targetGroupDomain = "groups.0mn.io";
-        private static string _groupPrefix = "omniChat_";
+        private const string _targetPostmaster = "postmaster@0mn.io/#irisomni1";
+        private const string _targetGroupDomain = "groups.0mn.io";
+        private const string _groupPrefix = "omniChat_";
 
-        private static string _helpCommand = "ajuda";
-        private static string _listCommand = "listar";
-        private static string _helpMessage = "Envie # + tema para entrar em um grupo ou listar para exibir os grupos já existentes";
+        private const string _helpCommand = "ajuda";
+        private const string _listCommand = "listar";
+        private const string _helpMessage = "Envie # + tema para entrar em um grupo ou listar para exibir os grupos já existentes";
 
         private static Identity GroupIdentity(string groupName) => new Identity($"{_groupPrefix}{groupName}", _targetGroupDomain);
 
-        public async override Task ReceiveAsync(Message message)
+        public override async Task ReceiveAsync(MessagingHubSender sender, Message message, CancellationToken token)
         {
             if(message.To.Domain.Equals(_targetGroupDomain, StringComparison.InvariantCultureIgnoreCase))
-            {
-                await SendConsumedNotification(message);
                 return;
-            }
 
             if(message.Content == null)
             {
-                await NotifyAndExplain(message, _helpMessage);
+                await sender.SendMessageAsync(_helpMessage, message.From, token);
                 return;
             }
 
@@ -38,74 +36,61 @@ namespace Chat
             
             if(messageText.Equals(_listCommand, StringComparison.InvariantCultureIgnoreCase))
             {
-                var groups = await ListGroups();
+                var groups = await ListGroupsAsync(sender, token);
 
-                await NotifyAndExplain(message, groups);
+                await sender.SendMessageAsync(_helpMessage, groups, token);
                 return;
             }
 
             if (!messageText.StartsWith("#") || messageText.Equals(_helpCommand, StringComparison.InvariantCultureIgnoreCase))
             {
-                await NotifyAndExplain(message, _helpMessage);
+                await sender.SendMessageAsync(_helpMessage, message.From, token);
                 return;
             }
 
-            string groupName = messageText.Substring(1);
+            var groupName = messageText.Substring(1);
 
             if (!IsValidGroupName(groupName))
             {
-                await NotifyAndExplain(message, $"Formato de assunto inválido. Evite caracteres especiais e acentuação");
+                await sender.SendMessageAsync("Formato de assunto inválido. Evite caracteres especiais e acentuação", message.From, token);
                 return;
             }
 
-            var getResponse = await EnvelopeSender.SendCommandAsync(BuildGetGroupCommand(groupName));
+            var getResponse = await sender.SendCommandAsync(BuildGetGroupCommand(groupName), token);
 
             if (getResponse.Status == CommandStatus.Failure)
             {
                 if (getResponse.Reason != null && getResponse.Reason.Code == ReasonCodes.COMMAND_RESOURCE_NOT_FOUND)
                 {
-                    var createResponse = await EnvelopeSender.SendCommandAsync(BuildCreateGroupCommand(groupName));
+                    var createResponse = await sender.SendCommandAsync(BuildCreateGroupCommand(groupName), token);
 
                     if(createResponse.Status == CommandStatus.Failure)
                     {
-                        await NotifyAndExplain(message, "Erro ao criar o grupo. Tente novamente mais tarde");
+                        await sender.SendMessageAsync("Erro ao criar o grupo. Tente novamente mais tarde", message.From, token);
                         return;
                     }
                 }
                 else
                 {
-                    await NotifyAndExplain(message, "Erro ao verificar existência do grupo. Tente novamente mais tarde");
+                    await sender.SendMessageAsync("Erro ao verificar existência do grupo. Tente novamente mais tarde", message.From, token);
                     return;
                 }
             }
 
-            var insertMemberResponse = await EnvelopeSender.SendCommandAsync(BuildInsertMemberCommand(groupName, message.From));
+            var insertMemberResponse = await sender.SendCommandAsync(BuildInsertMemberCommand(groupName, message.From), token);
 
             if(insertMemberResponse.Status == CommandStatus.Failure)
             {
-                await NotifyAndExplain(message, "Erro ao inserir usuário no grupo. Tente novamente mais tarde");
+                await sender.SendMessageAsync("Erro ao inserir usuário no grupo. Tente novamente mais tarde", message.From, token);
                 return;
             }
 
-            await NotifyAndExplain(message, $"Você foi inserido no grupo #{groupName}");
+            await sender.SendMessageAsync($"Você foi inserido no grupo #{groupName}", message.From, token);
         }
         
-        private async Task NotifyAndExplain(Message message, string helpMessage)
+        private static async Task<string> ListGroupsAsync(MessagingHubSender sender, CancellationToken token)
         {
-            await SendConsumedNotification(message);
-            await EnvelopeSender.SendMessageAsync(helpMessage, message.From);
-        }
-
-        private async Task SendConsumedNotification(Message message)
-        {
-            var sender = message.Pp ?? message.From;
-
-            await EnvelopeSender.SendNotificationAsync(new Notification { Id = message.Id, To = sender, Event = Event.Consumed  });
-        }
-
-        private async Task<string> ListGroups()
-        {
-            var listResponse = await EnvelopeSender.SendCommandAsync(BuildListGroupCommand());
+            var listResponse = await sender.SendCommandAsync(BuildListGroupCommand(), token);
 
             if(listResponse.Status == CommandStatus.Failure)
             {
@@ -151,7 +136,7 @@ namespace Chat
             };
         }
 
-        private Command BuildInsertMemberCommand(string groupName, Node member)
+        private static Command BuildInsertMemberCommand(string groupName, Node member)
         {
             return new Command
             {
@@ -166,7 +151,7 @@ namespace Chat
             };
         }
 
-        private Command BuildGetGroupCommand(string groupName)
+        private static Command BuildGetGroupCommand(string groupName)
         {
             return new Command
             {
@@ -176,7 +161,7 @@ namespace Chat
             };
         }
 
-        private Command BuildListGroupCommand()
+        private static Command BuildListGroupCommand()
         {
             return new Command
             {
@@ -193,7 +178,7 @@ namespace Chat
                 new LimeUri($"{groupName}");
                 return true;
             }
-            catch
+            catch (Exception)
             {
                 return false;
             }

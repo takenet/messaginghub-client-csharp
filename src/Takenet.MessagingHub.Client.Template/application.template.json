@@ -1,6 +1,6 @@
 ﻿{
-  /* Retrieve your application's login and access key at http://messaginghub.io */
-  "login": "",
+  /* Retrieve your application's account and access key at http://messaginghub.io */
+  "account": "",
   "accessKey": "",
   "messageReceivers": [
     {

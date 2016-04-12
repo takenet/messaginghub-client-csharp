@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using Bing;
 using Lime.Protocol;
@@ -23,7 +22,7 @@ namespace ImageSearch
             SearchContainer.Credentials = new NetworkCredential(bingApiKey, bingApiKey);
         }
 
-        public async Task<JsonDocument> GetFirstImageDocumentAsync(string query, IRequestContext context)
+        public static async Task<JsonDocument> GetFirstImageDocumentAsync(string query, IRequestContext context)
         {
             var lastQuery = context.GetVariable<string>(nameof(query));
             if (lastQuery == null || !lastQuery.Equals(query))
@@ -33,7 +32,7 @@ namespace ImageSearch
             return await GetImageDocumentAsync(1, query, context);
         }
 
-        public async Task<JsonDocument> GetImageDocumentAsync(int? top, string query, IRequestContext context)
+        public static async Task<JsonDocument> GetImageDocumentAsync(int? top, string query, IRequestContext context)
         {
             if (top == null) top = 1;
             int skip;

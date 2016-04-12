@@ -1,4 +1,4 @@
-O cliente do Messaging Hub foi desenvolvido para tornar mais fácil o trabalho com o [protocolo Lime](http://limeprotocol.org) para troca de mensanges entre as aplicações e serviços de mensageria integrados ao Messaging Hub através de interface fluente.
+O cliente do Messaging Hub foi desenvolvido para tornar mais fácil o trabalho com o [protocolo Lime](http://limeprotocol.org) para troca de mensagens entre as aplicações e serviços de mensageria integrados ao Messaging Hub através de interface fluente.
 
 Ele está disponível para a linguagens de programação C# em nosso [GitHub](https://github.com/takenet/messaginghub-client-csharp).
 
@@ -8,23 +8,25 @@ Para começar, crie uma nova *Class library* usando o *Visual Studio 2015 Update
 
 A partir do Package Manager Console, instale o template de aplicações usando:
 
-    Install-Package Takenet.MessagingHub.Client.HostTemplate
+    Install-Package Takenet.MessagingHub.Client.Template
 
-## Configurações do cliente
+## Obtendo sua chave de acesso
 
-Para trabalhar com o Messaging Hub você precisará passar pelo processo de autenticação. 
-Veja mais detalhes em [Configurações do Cliente](http://messaginghub.io/docs/sdks/clientconfiguration).
+Você precisará de um identificador e uma chave de acesso para sua aplicação, para poder interagir com o Messaging Hub. Para obtê-los, faça o seguinte:
+- Acesse o [Console](http://messaginghub.io/home/console) do Messaging Hub.
+- Na aba `Aplicações` clique em [Adicionar](http://messaginghub.io/application/add) para registrar a sua aplicação.
+- Após finalizar o registro, copie o `identificador` e a `chave de acesso` da sua aplicação e utilize-os para se conectar ao Messaging Hub.
 
 ## Trabalhando com Messaging Hub
 
-Após referênciar o MessagingHub.Client no seu código e de posse dos dados para acesso, poder utilize as seguintes operações:
+Você pode realizar as seguintes operações com o client do Messaging Hub:
 - Enviar e receber [mensagens](http://messaginghub.io/docs/sdks/messages)
 - Enviar e receber [notificações](http://messaginghub.io/docs/sdks/notifications)
 - Enviar [comandos](http://messaginghub.io/docs/sdks/commands)
 
 ## Hospedagem
 
-Por fim, você pode hospedar seu código conosco para que seu trabalho com o Messaging Hub esteja sempre disponível.
+Você também pode hospedar seu código conosco para que sua aplicação esteja sempre disponível.
 Veja mais detalhes em [Hospedagem](http://messaginghub.io/docs/sdks/hosting).
 
 ## Contribuições

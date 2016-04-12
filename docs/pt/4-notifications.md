@@ -1,66 +1,22 @@
-O cliente permite que você envie e receba notificações através do Messaging Hub.
+In most cases, you will not need to handle notifications. But if you do, this document might help.
 
-## Recebendo Notificações
+## Estabelecendo uma conexão
 
-Para receber uma notificação você pode construir o cliente e chamar ReceiveNotificationAsync:
+Se você não estiver usando o pacote *Takenet.MessagingHub.Client.Template*, você precisará estabelecer uma conexão antes de enviar ou receber notificações.
 
-```csharp
-const string login = "user";
-const string accessKey = "myAccessKey";
-
-var client = new MessagingHubClientBuilder()
-                 .UsingAccessKey(login, accessKey)
-                 .Build();
-
-await client.StartAsync();
-
-using(var cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
-{
-    var notification = await client.ReceiveNotificationAsync(cancellationToken.Token);
-}
-
-await client.StopAsync();
-
-```
-Você tambem pode construir um Receiver para tratar as notificações recebidas:
+Para estabelecer uma conexão, use o `MessagingHubConnectionBuilder`:
 
 ```csharp
-public class MyNotificationReceiver : NotificationReceiverBase
-{
-    public override async Task ReceiveAsync(Notification notification)
-    {
-        // Write the received notification to the console
-        Console.WriteLine(notification.ToString());
-    }
-}
+var connection = new MessagingHubConnectionBuilder()
+    .UsingAccessKey("xpto", "cXkzT1Rp")
+    .Build();
 
-```
-E adicionar no builder:
-
-```csharp
-const string login = "user";
-const string accessKey = "myAccessKey";
-
-var client = new MessagingHubClientBuilder()
-                 .UsingAccessKey(login, accessKey)
-                 .AddNotificationReceiver(new MyNotificationReceiver())
-                 .Build();
-
-await client.StartAsync();
-```
-Também é possível passar um factory method para construir o receptor:
-
-```csharp
-AddNotificationReceiver(() => new MyNotificationReceiver());
+await connection.ConnectAsync();
 ```
 
-E você pode especificar um `event type` para filtrar suas notificações:
+**Observação: Se você estiver usando o pacote *Takenet.MessagingHub.Client.Template*, a conexão é gerenciada automaticamente. Veja a sessão [hospedagem](http://messaginghub.io/docs/sdks/hosting). para mais detalhes**
 
-```csharp
-AddNotificationReceiver(() => new MyNotificationReceiver(), Event.Received);
-```
-
-## Enviando Notificações
+## Enviando notificações
 
 Para enviar uma notificação, você pode usar o seguinte método:
 
@@ -74,14 +30,47 @@ var notification = new Notification
 await client.SendNotificationAsync(notification);
 ```
 
-Ou você pode usar um destes métodos de extensão para construir e enviar sua notificação:
+Ou pode usar um destes métodos de extensão para construir suas notificações:
 
-```csharp 
-await client.SendNotificationAsync(notification.ToReceivedNotification());
+```csharp
+await client.SendNotificationAsync(message.ToReceivedNotification());
 
-await client.SendNotificationAsync(notification.ToConsumedNotification());
+await client.SendNotificationAsync(message.ToConsumedNotification());
 
-await client.SendNotificationAsync(notification.ToFailedNotification());
+await client.SendNotificationAsync(message.ToFailedNotification());
 
-await client.SendNotificationAsync(notification.ToNotification(Event.Received));
+await client.SendNotificationAsync(message.ToNotification(Event.Received));
 ```
+
+## Recebendo notificações
+
+Para receber notificações, instancie um listener e registre um *NotificationReceiver*:
+
+```csharp
+
+var listener = new MessagingHubListener(connection);
+listener.AddNotificationReceiver(new ConsumedNotificationReceiver(), Event.Consumed);
+
+await listener.StartAsync();
+```
+
+**Observação: Se você estiver usando o pacote *Takenet.MessagingHub.Client.Template*, o listener é gerenciado automaticamente. Veja a sessão [hospedagem](http://messaginghub.io/docs/sdks/hosting). para mais detalhes**
+
+Seu *NotificationReceiver* pode ser definido da seguinte forma:
+
+```csharp
+public class ConsumedNotificationReceiver : NotificationReceiverBase
+{
+    public override async Task ReceiveAsync(MessagingHubSender sender, Notification notification, CancellationToken token)
+    {
+        // Write the received notification to the console
+        Console.WriteLine(notification.ToString());
+    }
+}
+```
+
+## Notificações de reconhecimento
+
+- Antes de o método `ReceiveAsync` ser executado, uma notificação do tipo `Event.Received` é automaticamente enviada a quem lhe enviou a mensagem.
+- Após o método `ReceiveAsync` ser executado, caso nenhuma exceção tenha ocorrido, uma notificação do tipo `Event.Consumed` é automaticamente enviada a quem lhe enviou a mensagem.
+- Caso uma exceção tenha ocorrido no método `ReceiveAsync`, uma notificação do tipo `Event.Failed` é automaticamente enviada a quem lhe enviou a mensagem.

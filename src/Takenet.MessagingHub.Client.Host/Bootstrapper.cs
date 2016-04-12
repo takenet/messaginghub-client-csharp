@@ -21,7 +21,7 @@ namespace Takenet.MessagingHub.Client.Host
         /// Creates ans starts an application with the given settings.
         /// </summary>
         /// <param name="application">The application instance. If not defined, the class will look for an application.json file in the current directory.</param>
-        /// <param name="serviceProvider">The service provider to be used when building the type instances. It not provided, the only injected types will be the <see cref="Sender.IMessagingHubSender" /> and the settings instances.</param>
+        /// <param name="serviceProvider">The service provider to be used when building the type instances. It not provided, the only injected types will be the <see cref="MessagingHubSender" /> and the settings instances.</param>
         /// <param name="loadAssembliesFromWorkingDirectory">if set to <c>true</c> indicates to the bootstrapper to load all assemblies from the current working directory.</param>
         /// <returns></returns>
         /// <exception cref="FileNotFoundException"></exception>
@@ -44,15 +44,15 @@ namespace Takenet.MessagingHub.Client.Host
             }
 
             var connectionBuilder = new MessagingHubConnectionBuilder();
-            if (application.Login != null)
+            if (application.Account != null)
             {
                 if (application.Password != null)
                 {
-                    connectionBuilder = connectionBuilder.UsingAccount(application.Login, application.Password);
+                    connectionBuilder = connectionBuilder.UsingAccount(application.Account, application.Password);
                 }
                 else if (application.AccessKey != null)
                 {
-                    connectionBuilder = connectionBuilder.UsingAccessKey(application.Login, application.AccessKey);
+                    connectionBuilder = connectionBuilder.UsingAccessKey(application.Account, application.AccessKey);
                 }
                 else
                 {

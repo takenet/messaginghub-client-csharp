@@ -70,7 +70,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             // Arrange
             var application = new Application()
             {
-                Login = "testlogin",
+                Account = "testlogin",
                 Password = "12345".ToBase64(),
                 HostName = Server.ListenerUri.Host
             };
@@ -89,7 +89,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             // Arrange
             var application = new Application()
             {
-                Login = "testlogin",
+                Account = "testlogin",
                 AccessKey = "12345".ToBase64(),
                 HostName = Server.ListenerUri.Host
             };
@@ -108,7 +108,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             // Arrange
             var application = new Application()
             {
-                Login = "testlogin",
+                Account = "testlogin",
                 AccessKey = "12345".ToBase64(),
                 StartupType = typeof(TestStartable).Name,
                 HostName = Server.ListenerUri.Host
@@ -128,7 +128,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             // Arrange
             var application = new Application()
             {
-                Login = "testlogin",
+                Account = "testlogin",
                 AccessKey = "12345".ToBase64(),
                 StartupType = typeof(SettingsTestStartable).Name,
                 Settings = new Dictionary<string, object>()
@@ -156,7 +156,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             // Arrange
             var application = new Application()
             {
-                Login = "testlogin",
+                Account = "testlogin",
                 AccessKey = "12345".ToBase64(),
                 StartupType = typeof(TestStartableFactory).AssemblyQualifiedName,
                 HostName = Server.ListenerUri.Host
@@ -178,7 +178,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             // Arrange
             var application = new Application()
             {
-                Login = "testlogin",
+                Account = "testlogin",
                 AccessKey = "12345".ToBase64(),
                 StartupType = typeof(TestStartableFactory).AssemblyQualifiedName,
                 Settings = new Dictionary<string, object>()
@@ -205,7 +205,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             // Arrange
             var application = new Application()
             {
-                Login = "testlogin",
+                Account = "testlogin",
                 AccessKey = "12345".ToBase64(),
                 MessageReceivers = new []
                 {
@@ -241,7 +241,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             // Arrange
             var application = new Application()
             {
-                Login = "testlogin",
+                Account = "testlogin",
                 AccessKey = "12345".ToBase64(),
                 MessageReceivers = new[]
                 {
@@ -287,7 +287,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             // Arrange
             var application = new Application()
             {
-                Login = "testlogin",
+                Account = "testlogin",
                 AccessKey = "12345".ToBase64(),
                 NotificationReceivers = new[]
                 {
