@@ -21,7 +21,7 @@ namespace Chat
 
         private static Identity GroupIdentity(string groupName) => new Identity($"{_groupPrefix}{groupName}", _targetGroupDomain);
 
-        public override async Task ReceiveAsync(MessagingHubSender sender, Message message, CancellationToken token)
+        public override async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken token)
         {
             if(message.To.Domain.Equals(_targetGroupDomain, StringComparison.InvariantCultureIgnoreCase))
                 return;
@@ -88,7 +88,7 @@ namespace Chat
             await sender.SendMessageAsync($"Você foi inserido no grupo #{groupName}", message.From, token);
         }
         
-        private static async Task<string> ListGroupsAsync(MessagingHubSender sender, CancellationToken token)
+        private static async Task<string> ListGroupsAsync(IMessagingHubSender sender, CancellationToken token)
         {
             var listResponse = await sender.SendCommandAsync(BuildListGroupCommand(), token);
 

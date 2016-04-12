@@ -24,7 +24,7 @@ namespace Takenet.MessagingHub.Client.Listener
         /// <summary>
         /// A sender used to send responses to the envelopes received
         /// </summary>
-        MessagingHubSender Sender { get; }
+        IMessagingHubSender Sender { get; }
 
         /// <summary>
         /// Add a message receiver for messages that satisfy the given filter criteria

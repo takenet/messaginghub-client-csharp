@@ -11,7 +11,7 @@ namespace Takenet.MessagingHub.Client.Listener
     /// </summary>
     public class UnsupportedMessageReceiver : MessageReceiverBase
     {
-        public override Task ReceiveAsync(MessagingHubSender sender, Message message, CancellationToken token)
+        public override Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken token)
         {
             var reason = new Reason
             {

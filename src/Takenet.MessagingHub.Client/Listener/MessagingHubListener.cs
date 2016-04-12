@@ -13,7 +13,7 @@ namespace Takenet.MessagingHub.Client.Listener
     {
         public MessagingHubConnection Connection { get; }
 
-        public MessagingHubSender Sender { get; }
+        public IMessagingHubSender Sender { get; }
 
         internal EnvelopeListenerRegistrar EnvelopeRegistrar { get; }
 
@@ -21,10 +21,10 @@ namespace Takenet.MessagingHub.Client.Listener
 
         public bool Listening { get; private set; }
 
-        public MessagingHubListener(MessagingHubConnection connection)
+        public MessagingHubListener(MessagingHubConnection connection, IMessagingHubSender sender = null)
         {
             Connection = connection;
-            Sender = new MessagingHubSender(connection);
+            Sender = sender ?? new MessagingHubSender(connection);
             EnvelopeRegistrar = new EnvelopeListenerRegistrar(this);
         }
 

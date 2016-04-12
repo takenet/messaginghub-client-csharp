@@ -42,7 +42,7 @@ namespace GettingStarted
             Console.ReadKey();
         }
 
-        private static async Task ReceiveAsync(MessagingHubSender sender, Message message, CancellationToken token)
+        private static async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken token)
         {
             // Text messages sent to your application will be received here
             Console.WriteLine("MESSAGE RECEIVED");

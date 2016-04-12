@@ -28,7 +28,7 @@ namespace Takenet.MessagingHub.Client.Textc
             _processTimeout = processTimeout ?? DefaultProcessTimeout;
         }
 
-        public override async Task ReceiveAsync(MessagingHubSender sender, Message message, CancellationToken token)
+        public override async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken token)
         {
             try
             {

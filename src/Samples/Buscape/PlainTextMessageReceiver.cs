@@ -47,7 +47,7 @@ namespace Buscape
             
         }
 
-        public override async Task ReceiveAsync(MessagingHubSender sender, Message message, CancellationToken token)
+        public override async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken token)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace Buscape
             }
         }
 
-        private async Task ProcessMessagesAsync(MessagingHubSender sender, Message message, CancellationToken token)
+        private async Task ProcessMessagesAsync(IMessagingHubSender sender, Message message, CancellationToken token)
         {
             var keyword = message.Content.ToString();
 
@@ -80,7 +80,7 @@ namespace Buscape
             await ExecuteSearchAsync(sender, message, uri, token);
         }
 
-        private static async Task<bool> HandleStartMessageAsync(MessagingHubSender sender, Message message, string keyword, CancellationToken token)
+        private static async Task<bool> HandleStartMessageAsync(IMessagingHubSender sender, Message message, string keyword, CancellationToken token)
         {
             if (keyword != StartMessage)
                 return false;
@@ -90,7 +90,7 @@ namespace Buscape
             return true;
         }
 
-        private static async Task<bool> HandleEndOfSearchAsync(MessagingHubSender sender, Message message, string keyword, CancellationToken token)
+        private static async Task<bool> HandleEndOfSearchAsync(IMessagingHubSender sender, Message message, string keyword, CancellationToken token)
         {
             if (keyword != FinishMessage)
                 return false;
@@ -99,7 +99,7 @@ namespace Buscape
             return true;
         }
 
-        private async Task<bool> HandleNextPageRequestAsync(MessagingHubSender sender, Message message, string keyword, CancellationToken token)
+        private async Task<bool> HandleNextPageRequestAsync(IMessagingHubSender sender, Message message, string keyword, CancellationToken token)
         {
             if (keyword != MoreResultsMessage)
                 return false;
@@ -181,7 +181,7 @@ namespace Buscape
             }
         }
 
-        private async Task ExecuteSearchAsync(MessagingHubSender sender, Message message, string uri, CancellationToken token)
+        private async Task ExecuteSearchAsync(IMessagingHubSender sender, Message message, string uri, CancellationToken token)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Get, uri))
             {

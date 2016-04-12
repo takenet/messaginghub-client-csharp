@@ -8,14 +8,14 @@ namespace Takenet.MessagingHub.Client.Listener
 {
     public class LambdaMessageReceiver : IMessageReceiver
     {
-        public Func<MessagingHubSender, Message, CancellationToken, Task> OnMessageReceived { get; set; }
+        public Func<IMessagingHubSender, Message, CancellationToken, Task> OnMessageReceived { get; set; }
 
-        public LambdaMessageReceiver(Func<MessagingHubSender, Message, CancellationToken, Task> onMessageReceived)
+        public LambdaMessageReceiver(Func<IMessagingHubSender, Message, CancellationToken, Task> onMessageReceived)
         {
             OnMessageReceived = onMessageReceived;
         }
 
-        public Task ReceiveAsync(MessagingHubSender sender, Message envelope, CancellationToken token)
+        public Task ReceiveAsync(IMessagingHubSender sender, Message envelope, CancellationToken token)
         {
             return OnMessageReceived?.Invoke(sender, envelope, token);
         }

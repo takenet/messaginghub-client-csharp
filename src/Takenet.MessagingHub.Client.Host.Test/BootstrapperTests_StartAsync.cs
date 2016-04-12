@@ -333,9 +333,9 @@ namespace Takenet.MessagingHub.Client.Host.Test
 
     public class SettingsTestStartable : IStartable
     {
-        public static MessagingHubSender Sender { get; private set; }
+        public static IMessagingHubSender Sender { get; private set; }
 
-        public SettingsTestStartable(MessagingHubSender sender, IDictionary<string, object> settings)
+        public SettingsTestStartable(IMessagingHubSender sender, IDictionary<string, object> settings)
         {
             Sender = sender;
             Settings = settings;
@@ -381,7 +381,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             Settings = settings;
         }
 
-        public Task ReceiveAsync(MessagingHubSender sender, Message envelope, CancellationToken token)
+        public Task ReceiveAsync(IMessagingHubSender sender, Message envelope, CancellationToken token)
         {
             throw new NotImplementedException();
         }
@@ -398,7 +398,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             Settings = settings;
         }
 
-        public Task ReceiveAsync(MessagingHubSender sender, Notification envelope, CancellationToken token)
+        public Task ReceiveAsync(IMessagingHubSender sender, Notification envelope, CancellationToken token)
         {
             throw new NotImplementedException();
         }

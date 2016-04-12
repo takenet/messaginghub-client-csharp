@@ -10,7 +10,7 @@ namespace RssContact
 {
     public class PlainTextMessageReceiver : MessageReceiverBase
     {
-        public override async Task ReceiveAsync(MessagingHubSender sender, Message message, CancellationToken token)
+        public override async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken token)
         {
             Debug.WriteLine($"From: {message.From} \tContent: {message.Content}");
             try

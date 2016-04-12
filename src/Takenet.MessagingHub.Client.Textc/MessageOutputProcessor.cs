@@ -10,9 +10,9 @@ namespace Takenet.MessagingHub.Client.Textc
 {
     public sealed class MessageOutputProcessor : IOutputProcessor
     {
-        private readonly Func<MessagingHubSender> _envelopeSenderFactory;
+        private readonly Func<IMessagingHubSender> _envelopeSenderFactory;
 
-        public MessageOutputProcessor(Func<MessagingHubSender> envelopeSenderFactory)
+        public MessageOutputProcessor(Func<IMessagingHubSender> envelopeSenderFactory)
         {
             if (envelopeSenderFactory == null) throw new ArgumentNullException(nameof(envelopeSenderFactory));
             _envelopeSenderFactory = envelopeSenderFactory;

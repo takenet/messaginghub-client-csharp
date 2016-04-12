@@ -6,7 +6,7 @@ using Takenet.MessagingHub.Client.Connection;
 
 namespace Takenet.MessagingHub.Client.Sender
 {
-    public sealed class MessagingHubSender
+    public sealed class MessagingHubSender : IMessagingHubSender
     {
         public MessagingHubConnection Connection { get; set; }
 
@@ -15,12 +15,6 @@ namespace Takenet.MessagingHub.Client.Sender
             Connection = connection;
         }
 
-        /// <summary>
-        /// Send a command through the Messaging Hub
-        /// </summary>
-        /// <param name="command">Command to be sent</param>
-        /// <param name="token">A cancellation token to allow the task to be canceled</param>
-        /// <returns>A task representing the sending operation. When completed, it will contain the command response</returns>
         public async Task<Command> SendCommandAsync(Command command, CancellationToken token)
         {
             if (!Connection.IsConnected)
@@ -40,12 +34,6 @@ namespace Takenet.MessagingHub.Client.Sender
             }
         }
 
-        /// <summary>
-        /// Send a message through the Messaging Hub
-        /// </summary>
-        /// <param name="message">Message to be sent</param>
-        /// <param name="token">A cancellation token to allow the task to be canceled</param>
-        /// <returns>A task representing the sending operation</returns>
         public async Task SendMessageAsync(Message message, CancellationToken token)
         {
             if (!Connection.IsConnected)
@@ -64,12 +52,6 @@ namespace Takenet.MessagingHub.Client.Sender
             }
         }
 
-        /// <summary>
-        /// Send a notification through the Messaging Hub
-        /// </summary>
-        /// <param name="notification">Notification to be sent</param>
-        /// <param name="token">A cancellation token to allow the task to be canceled</param>
-        /// <returns>A task representing the sending operation</returns>
         public async Task SendNotificationAsync(Notification notification, CancellationToken token)
         {
             if (!Connection.IsConnected)

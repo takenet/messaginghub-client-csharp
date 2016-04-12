@@ -23,7 +23,7 @@ namespace Takenet.MessagingHub.Client.Textc
     {
         private readonly MessagingHubConnectionBuilder _connectionBuilder;
         private readonly MessagingHubConnection _connection;
-        private readonly MessagingHubSender _sender;
+        private readonly IMessagingHubSender _sender;
         private IContextProvider _contextProvider;
         private Func<Message, MessageReceiverBase, Task> _matchNotFoundHandler;
 
@@ -34,12 +34,12 @@ namespace Takenet.MessagingHub.Client.Textc
         private readonly List<Func<IOutputProcessor, ICommandProcessor>> _commandProcessorFactories;
         
         public TextcMessageReceiverBuilder(MessagingHubConnectionBuilder connectionBuilder, IOutputProcessor outputProcessor = null, ISyntaxParser syntaxParser = null,
-            IExpressionScorer expressionScorer = null, ICultureProvider cultureProvider = null)
+            IExpressionScorer expressionScorer = null, ICultureProvider cultureProvider = null, IMessagingHubSender sender = null)
         {
             if (connectionBuilder == null) throw new ArgumentNullException(nameof(connectionBuilder));
             _connectionBuilder = connectionBuilder;
             _connection = _connectionBuilder.Build();
-            _outputProcessor = outputProcessor ?? new MessageOutputProcessor(() => new MessagingHubSender(_connection));
+            _outputProcessor = outputProcessor ?? new MessageOutputProcessor(() => sender ?? new MessagingHubSender(_connection));
             _syntaxParser = syntaxParser ?? new SyntaxParser();
             _expressionScorer = expressionScorer ?? new RatioExpressionScorer();
             _cultureProvider = cultureProvider ?? new DefaultCultureProvider(CultureInfo.InvariantCulture);

@@ -7,10 +7,10 @@ namespace Chat
 {
     public class Startup : IStartable
     {
-        private readonly MessagingHubSender _sender;
+        private readonly IMessagingHubSender _sender;
         private readonly IDictionary<string, object> _settings;
 
-        public Startup(MessagingHubSender sender, IDictionary<string, object> settings)
+        public Startup(IMessagingHubSender sender, IDictionary<string, object> settings)
         {
             _sender = sender;
             _settings = settings;

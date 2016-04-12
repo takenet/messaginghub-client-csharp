@@ -28,7 +28,7 @@ namespace Takenet.MessagingHub.Client.Test
         private int _maxConnectionRetries = 1;
 
         protected IMessagingHubListener MessagingHubListener { get; private set; }
-        protected MessagingHubSender MessagingHubSender { get; private set; }
+        protected IMessagingHubSender MessagingHubSender { get; private set; }
 
         protected virtual void Setup()
         {

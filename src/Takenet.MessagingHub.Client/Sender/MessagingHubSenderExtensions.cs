@@ -18,7 +18,7 @@ namespace Takenet.MessagingHub.Client.Sender
         /// <param name="content">The content of the message</param>
         /// <param name="to">The destination of the message</param>
         /// <param name="token">A cancellation token to allow the task to be canceled</param>
-        public static Task SendMessageAsync(this MessagingHubSender sender, string content, string to, CancellationToken token = default(CancellationToken))
+        public static Task SendMessageAsync(this IMessagingHubSender sender, string content, string to, CancellationToken token = default(CancellationToken))
             => sender.SendMessageAsync(content, Node.Parse(to), token);
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Takenet.MessagingHub.Client.Sender
         /// <param name="content">The content of the message</param>
         /// <param name="to">The destination of the message</param>
         /// <param name="token">A cancellation token to allow the task to be canceled</param>
-        public static Task SendMessageAsync(this MessagingHubSender sender, string content, Node to, CancellationToken token = default(CancellationToken))
+        public static Task SendMessageAsync(this IMessagingHubSender sender, string content, Node to, CancellationToken token = default(CancellationToken))
             => sender.SendMessageAsync(CreatePlainTextContent(content), to, token);
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Takenet.MessagingHub.Client.Sender
         /// <param name="content">The content of the message</param>
         /// <param name="to">The destination of the message</param>
         /// <param name="token">A cancellation token to allow the task to be canceled</param>
-        public static Task SendMessageAsync(this MessagingHubSender sender, Document content, string to, CancellationToken token = default(CancellationToken))
+        public static Task SendMessageAsync(this IMessagingHubSender sender, Document content, string to, CancellationToken token = default(CancellationToken))
         => sender.SendMessageAsync(content, Node.Parse(to), token);
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Takenet.MessagingHub.Client.Sender
         /// <param name="content">The content of the message</param>
         /// <param name="to">The destination of the message</param>
         /// <param name="token">A cancellation token to allow the task to be canceled</param>
-        public static Task SendMessageAsync(this MessagingHubSender sender, Document content, Node to, CancellationToken token = default(CancellationToken))
+        public static Task SendMessageAsync(this IMessagingHubSender sender, Document content, Node to, CancellationToken token = default(CancellationToken))
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
             var message = new Message
