@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
+using Takenet.MessagingHub.Client.Listener;
 
 namespace $rootnamespace$
 {
