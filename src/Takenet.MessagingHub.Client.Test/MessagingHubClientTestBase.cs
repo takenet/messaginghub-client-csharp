@@ -27,7 +27,7 @@ namespace Takenet.MessagingHub.Client.Test
         private TimeSpan _sendTimeout = TimeSpan.FromSeconds(20);
         private int _maxConnectionRetries = 1;
 
-        protected MessagingHubListener MessagingHubListener { get; private set; }
+        protected IMessagingHubListener MessagingHubListener { get; private set; }
         protected MessagingHubSender MessagingHubSender { get; private set; }
 
         protected virtual void Setup()

@@ -79,7 +79,7 @@ namespace Takenet.MessagingHub.Client.Host
             localServiceProvider.TypeDictionary.Add(typeof(MessagingHubConnection), connection);
 
             var listener = await BuildMessagingHubListenerAsync(application, connection, localServiceProvider);
-            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubListener), listener);
+            localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubListener), listener);
 
             var sender = new MessagingHubSender(connection);
             localServiceProvider.TypeDictionary.Add(typeof(MessagingHubSender), sender);
@@ -99,7 +99,7 @@ namespace Takenet.MessagingHub.Client.Host
             return new StoppableWrapper(stoppables);
         }
 
-        private static async Task<MessagingHubListener> BuildMessagingHubListenerAsync(Application application, MessagingHubConnection connection, ServiceProvider localServiceProvider)
+        private static async Task<IMessagingHubListener> BuildMessagingHubListenerAsync(Application application, MessagingHubConnection connection, ServiceProvider localServiceProvider)
         {
             var listener = new MessagingHubListener(connection);
 

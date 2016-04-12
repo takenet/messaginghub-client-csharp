@@ -17,7 +17,7 @@ namespace Takenet.MessagingHub.Client.Listener
         /// <param name="listener">The listener to add the receivers to</param>
         /// <param name="messageReceiver">The message receiver that will be invoked when a message of the given mime type is received</param>
         /// <param name="forMimeType">The mime type used to filter the received messages</param>
-        public static void AddMessageReceiver(this MessagingHubListener listener, IMessageReceiver messageReceiver, MediaType forMimeType = null)
+        public static void AddMessageReceiver(this IMessagingHubListener listener, IMessageReceiver messageReceiver, MediaType forMimeType = null)
         {
             listener.AddMessageReceiver(messageReceiver, m => forMimeType == null || Equals(m.Type, forMimeType));
         }
@@ -28,7 +28,7 @@ namespace Takenet.MessagingHub.Client.Listener
         /// <param name="listener">The listener to add the receivers to</param>
         /// <param name="notificationReceiver">The notification receiver that will be invoked when a notification of the given event type is received</param>
         /// <param name="forEventType">The event type used to filter the received notifications</param>
-        public static void AddNotificationReceiver(this MessagingHubListener listener, INotificationReceiver notificationReceiver, Event? forEventType = null)
+        public static void AddNotificationReceiver(this IMessagingHubListener listener, INotificationReceiver notificationReceiver, Event? forEventType = null)
         {
             listener.AddNotificationReceiver(notificationReceiver, n => forEventType == null || n.Event == forEventType);
         }
@@ -39,7 +39,7 @@ namespace Takenet.MessagingHub.Client.Listener
         /// <param name="listener">The listener to add the receivers to</param>
         /// <param name="messageReceiver">The message receiver that will be invoked when a message that satisfy the given criteria is received</param>
         /// <param name="messageFilter">The criteria to filter the messages</param>
-        public static void AddMessageReceiver(this MessagingHubListener listener, IMessageReceiver messageReceiver, Predicate<Message> messageFilter)
+        public static void AddMessageReceiver(this IMessagingHubListener listener, IMessageReceiver messageReceiver, Predicate<Message> messageFilter)
         {
             listener.AddMessageReceiver(messageReceiver, messageFilter);
         }
@@ -50,7 +50,7 @@ namespace Takenet.MessagingHub.Client.Listener
         /// <param name="listener">The listener to add the receivers to</param>
         /// <param name="notificationReceiver">The notification receiver that will be invoked when a notification that satisfy the given criteria is received</param>
         /// <param name="notificationFilter">The criteria to filter the notifications</param>
-        public static void AddNotificationReceiver(this MessagingHubListener listener, INotificationReceiver notificationReceiver, Predicate<Notification> notificationFilter)
+        public static void AddNotificationReceiver(this IMessagingHubListener listener, INotificationReceiver notificationReceiver, Predicate<Notification> notificationFilter)
         {
             listener.AddNotificationReceiver(notificationReceiver, notificationFilter);
         }
@@ -61,7 +61,7 @@ namespace Takenet.MessagingHub.Client.Listener
         /// <param name="listener">The listener to add the receivers to</param>
         /// <param name="onMessageReceived">A callback method that will be invoked when a message of the given mime type is received</param>
         /// <param name="forMimeType">The mime type used to filter the received messages</param>
-        public static void AddMessageReceiver(this MessagingHubListener listener, Func<MessagingHubSender, Message, CancellationToken, Task> onMessageReceived, MediaType forMimeType = null)
+        public static void AddMessageReceiver(this IMessagingHubListener listener, Func<MessagingHubSender, Message, CancellationToken, Task> onMessageReceived, MediaType forMimeType = null)
         {
             listener.AddMessageReceiver(new LambdaMessageReceiver(onMessageReceived), m => forMimeType == null || Equals(m.Type, forMimeType));
         }
@@ -72,7 +72,7 @@ namespace Takenet.MessagingHub.Client.Listener
         /// <param name="listener">The listener to add the receivers to</param>
         /// <param name="onNotificationReceived">A callback method that will be invoked when a notification of the given event type is received</param>
         /// <param name="forEventType">The event type used to filter the received notifications</param>
-        public static void AddNotificationReceiver(this MessagingHubListener listener, Func<MessagingHubSender, Notification, CancellationToken, Task> onNotificationReceived, Event? forEventType = null)
+        public static void AddNotificationReceiver(this IMessagingHubListener listener, Func<MessagingHubSender, Notification, CancellationToken, Task> onNotificationReceived, Event? forEventType = null)
         {
             listener.AddNotificationReceiver(new LambdaNotificationReceiver(onNotificationReceived), n => forEventType == null || n.Event == forEventType);
         }
@@ -83,7 +83,7 @@ namespace Takenet.MessagingHub.Client.Listener
         /// <param name="listener">The listener to add the receivers to</param>
         /// <param name="onMessageReceived">A callback method that will be invoked when a message that satisfy the given criteria is received</param>
         /// <param name="messageFilter">The criteria to filter the messages</param>
-        public static void AddMessageReceiver(this MessagingHubListener listener, Func<MessagingHubSender, Message, CancellationToken, Task> onMessageReceived, Predicate<Message> messageFilter)
+        public static void AddMessageReceiver(this IMessagingHubListener listener, Func<MessagingHubSender, Message, CancellationToken, Task> onMessageReceived, Predicate<Message> messageFilter)
         {
             listener.AddMessageReceiver(new LambdaMessageReceiver(onMessageReceived), messageFilter);
         }
@@ -94,7 +94,7 @@ namespace Takenet.MessagingHub.Client.Listener
         /// <param name="listener">The listener to add the receivers to</param>
         /// <param name="onNotificationReceived">A callback method that will be invoked when a notification that satisfy the given criteria is received</param>
         /// <param name="notificationFilter">The criteria to filter the notifications</param>
-        public static void AddNotificationReceiver(this MessagingHubListener listener, Func<MessagingHubSender, Notification, CancellationToken, Task> onNotificationReceived, Predicate<Notification> notificationFilter)
+        public static void AddNotificationReceiver(this IMessagingHubListener listener, Func<MessagingHubSender, Notification, CancellationToken, Task> onNotificationReceived, Predicate<Notification> notificationFilter)
         {
             listener.AddNotificationReceiver(new LambdaNotificationReceiver(onNotificationReceived), notificationFilter);
         }

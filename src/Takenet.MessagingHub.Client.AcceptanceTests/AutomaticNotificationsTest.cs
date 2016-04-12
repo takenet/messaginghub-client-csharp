@@ -239,7 +239,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             return connection;
         }
 
-        private static MessagingHubListener GetListenerForApplication(MessagingHubConnection connection, Func<MessagingHubSender, Message, CancellationToken, Task> onMessageReceived, Func<MessagingHubSender, Notification, CancellationToken, Task> onNotificationReceived)
+        private static IMessagingHubListener GetListenerForApplication(MessagingHubConnection connection, Func<MessagingHubSender, Message, CancellationToken, Task> onMessageReceived, Func<MessagingHubSender, Notification, CancellationToken, Task> onNotificationReceived)
         {
             var listener = new MessagingHubListener(connection);
 

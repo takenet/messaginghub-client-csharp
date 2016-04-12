@@ -7,14 +7,14 @@ namespace Takenet.MessagingHub.Client.Listener
 {
     internal class EnvelopeListenerRegistrar
     {
-        private readonly MessagingHubListener _listener;
+        private readonly IMessagingHubListener _listener;
         private readonly IList<ReceiverFactoryPredicate<Message>> _messageReceivers;
         private readonly IList<ReceiverFactoryPredicate<Notification>> _notificationReceivers;
 
         private static readonly IEnumerable<IMessageReceiver> DefaultMessageReceivers = new IMessageReceiver[] { new UnsupportedMessageReceiver() };
         private static readonly IEnumerable<INotificationReceiver> DefaultNotificationReceivers = new INotificationReceiver[] { new BlackholeNotificationReceiver() };
 
-        internal EnvelopeListenerRegistrar(MessagingHubListener listener)
+        internal EnvelopeListenerRegistrar(IMessagingHubListener listener)
         {
             _listener = listener;
             _messageReceivers = new List<ReceiverFactoryPredicate<Message>>();
