@@ -16,7 +16,7 @@ namespace Takenet.MessagingHub.Client.Test
     {
         protected readonly TimeSpan TIME_OUT = TimeSpan.FromSeconds(2.5);
 
-        protected MessagingHubConnection MessagingHubConnection;
+        protected IMessagingHubConnection MessagingHubConnection;
         protected IOnDemandClientChannel OnDemandClientChannel;
         protected IOnDemandClientChannelFactory OnDemandClientChannelFactory;
         protected IEstablishedClientChannelBuilder EstablishedClientChannelBuilder;

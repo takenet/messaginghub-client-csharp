@@ -11,7 +11,7 @@ namespace Takenet.MessagingHub.Client.Listener
 {
     public sealed class MessagingHubListener : IMessagingHubListener
     {
-        public MessagingHubConnection Connection { get; }
+        public IMessagingHubConnection Connection { get; }
 
         public IMessagingHubSender Sender { get; }
 
@@ -21,7 +21,7 @@ namespace Takenet.MessagingHub.Client.Listener
 
         public bool Listening { get; private set; }
 
-        public MessagingHubListener(MessagingHubConnection connection, IMessagingHubSender sender = null)
+        public MessagingHubListener(IMessagingHubConnection connection, IMessagingHubSender sender = null)
         {
             Connection = connection;
             Sender = sender ?? new MessagingHubSender(connection);

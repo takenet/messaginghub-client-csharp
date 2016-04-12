@@ -10,22 +10,13 @@ using Lime.Protocol.Network;
 
 namespace Takenet.MessagingHub.Client.Connection
 {
-    /// <summary>
-    /// Represents a connection with the messaging hub. Use the <see cref="MessagingHubConnectionBuilder"/> to build a connection
-    /// </summary>
-    public sealed class MessagingHubConnection
+    public sealed class MessagingHubConnection : IMessagingHubConnection
     {
-        /// <summary>
-        /// Time to wait before a timeout exception is raised when trying to send envelopes through this connection
-        /// </summary>
         public TimeSpan SendTimeout { get; }
 
-        /// <summary>
-        /// Maximum number of retries when failing to connect to the Messaging Hub
-        /// </summary>
         public int MaxConnectionRetries { get; set; }
 
-        internal IOnDemandClientChannel OnDemandClientChannel { get; private set; }
+        public IOnDemandClientChannel OnDemandClientChannel { get; private set; }
 
         private readonly SemaphoreSlim _semaphore;
         private readonly IEstablishedClientChannelBuilder _establishedClientChannelBuilder;
@@ -46,14 +37,8 @@ namespace Takenet.MessagingHub.Client.Connection
             _onDemandClientChannelFactory = onDemandClientChannelFactory;
         }
 
-        /// <summary>
-        /// Indicates whether or not a the connection is active
-        /// </summary>
         public bool IsConnected { get; private set; }
 
-        /// <summary>
-        /// Activate the connection with the Messaging Hub
-        /// </summary>
         public async Task ConnectAsync()
         {
             await _semaphore.WaitAsync().ConfigureAwait(false);
@@ -62,7 +47,7 @@ namespace Takenet.MessagingHub.Client.Connection
             {
                 if (IsConnected)
                     throw new InvalidOperationException("The client is already started");
-                
+
                 OnDemandClientChannel = _onDemandClientChannelFactory.Create(_establishedClientChannelBuilder);
                 OnDemandClientChannel.ChannelCreationFailedHandlers.Add(StopOnLimeExceptionAsync);
                 OnDemandClientChannel.ChannelDiscardedHandlers.Add(ChannelDiscarded);
@@ -85,9 +70,6 @@ namespace Takenet.MessagingHub.Client.Connection
             }
         }
 
-        /// <summary>
-        /// Disconnects from the Messaging Hub
-        /// </summary>
         public async Task DisconnectAsync()
         {
             await _semaphore.WaitAsync().ConfigureAwait(false);

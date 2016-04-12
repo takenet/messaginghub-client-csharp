@@ -220,7 +220,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
 
         private const string Beat = "Beat";
 
-        private static MessagingHubConnection GetConnectionForApplication(ref string appShortName)
+        private static IMessagingHubConnection GetConnectionForApplication(ref string appShortName)
         {
             appShortName = appShortName ?? CreateAndRegisterApplicationAsync().Result;
             var appAccessKey = GetApplicationAccessKeyAsync(appShortName).Result;
@@ -228,7 +228,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             return connection;
         }
 
-        private static async Task<MessagingHubConnection> GetConnectionForApplicationAsync(string appShortName, string appAccessKey)
+        private static async Task<IMessagingHubConnection> GetConnectionForApplicationAsync(string appShortName, string appAccessKey)
         {
             var connection = new MessagingHubConnectionBuilder()
                 .UsingHostName("hmg.msging.net")
@@ -239,7 +239,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             return connection;
         }
 
-        private static IMessagingHubListener GetListenerForApplication(MessagingHubConnection connection, Func<IMessagingHubSender, Message, CancellationToken, Task> onMessageReceived, Func<IMessagingHubSender, Notification, CancellationToken, Task> onNotificationReceived)
+        private static IMessagingHubListener GetListenerForApplication(IMessagingHubConnection connection, Func<IMessagingHubSender, Message, CancellationToken, Task> onMessageReceived, Func<IMessagingHubSender, Notification, CancellationToken, Task> onNotificationReceived)
         {
             var listener = new MessagingHubListener(connection);
 
@@ -249,7 +249,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             return listener;
         }
 
-        private static IMessagingHubSender GetSenderForApplication(MessagingHubConnection connection)
+        private static IMessagingHubSender GetSenderForApplication(IMessagingHubConnection connection)
         {
             var sender = new MessagingHubSender(connection);
             return sender;

@@ -13,7 +13,7 @@ namespace Takenet.MessagingHub.Client.Sender
         /// <summary>
         /// Connection to send the message through
         /// </summary>
-        MessagingHubConnection Connection { get; }
+        IMessagingHubConnection Connection { get; }
 
         /// <summary>
         /// Send a command through the Messaging Hub

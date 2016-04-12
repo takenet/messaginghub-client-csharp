@@ -22,7 +22,7 @@ namespace Takenet.MessagingHub.Client.Textc
     public sealed class TextcMessageReceiverBuilder
     {
         private readonly MessagingHubConnectionBuilder _connectionBuilder;
-        private readonly MessagingHubConnection _connection;
+        private readonly IMessagingHubConnection _connection;
         private readonly IMessagingHubSender _sender;
         private IContextProvider _contextProvider;
         private Func<Message, MessageReceiverBase, Task> _matchNotFoundHandler;
@@ -198,7 +198,7 @@ namespace Takenet.MessagingHub.Client.Textc
         /// Builds a new instance of <see cref="TextcMessageReceiver"/> using the defined configurations and adds it to the associated <see cref="MessagingHubClient"/> instance.
         /// </summary>
         /// <returns></returns>
-        public MessagingHubConnection BuildAndAddTextcMessageReceiver()
+        public IMessagingHubConnection BuildAndAddTextcMessageReceiver()
         {
             var listener = new MessagingHubListener(_connection);
             listener.AddMessageReceiver(Build(), MediaTypes.PlainText);

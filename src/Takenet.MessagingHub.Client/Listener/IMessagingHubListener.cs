@@ -14,7 +14,7 @@ namespace Takenet.MessagingHub.Client.Listener
         /// <summary>
         /// The connection used to listen through
         /// </summary>
-        MessagingHubConnection Connection { get; }
+        IMessagingHubConnection Connection { get; }
 
         /// <summary>
         /// Indicates whether or not the listener is active

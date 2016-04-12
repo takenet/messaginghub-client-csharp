@@ -153,7 +153,7 @@ namespace Takenet.MessagingHub.Client.Connection
         }
 
         /// <summary>
-        /// Overrides the default <see cref="MessagingHubConnection.SendTimeout">send timeout</see>
+        /// Overrides the default <see cref="IMessagingHubConnection.SendTimeout">send timeout</see>
         /// </summary>
         /// <param name="timeout">A timespan representing the desired send timeout</param>
         /// <returns>The same builder instance, configured to use the given send timeout</returns>
@@ -164,7 +164,7 @@ namespace Takenet.MessagingHub.Client.Connection
         }
 
         /// <summary>
-        /// Overrides the default <see cref="MessagingHubConnection.MaxConnectionRetries">maximum connection retries</see>
+        /// Overrides the default <see cref="IMessagingHubConnection.MaxConnectionRetries">maximum connection retries</see>
         /// </summary>
         /// <param name="maxConnectionRetries">The maximum number of connection retries. The number must be at least 1 and at most 5</param>
         /// <returns>The same builder instance, configured to use the given maximum connection retries</returns>
@@ -207,10 +207,10 @@ namespace Takenet.MessagingHub.Client.Connection
         }
 
         /// <summary>
-        /// Builds a <see cref="MessagingHubConnection">connection</see> with the configured parameters
+        /// Builds a <see cref="IMessagingHubConnection">connection</see> with the configured parameters
         /// </summary>
-        /// <returns>An inactive connection with the Messaging Hub. Call <see cref="MessagingHubConnection.ConnectAsync"/> to activate it</returns>
-        public MessagingHubConnection Build()
+        /// <returns>An inactive connection with the Messaging Hub. Call <see cref="IMessagingHubConnection.ConnectAsync"/> to activate it</returns>
+        public IMessagingHubConnection Build()
         {
             if (_onDemandClientChannelFactory == null)
                 _onDemandClientChannelFactory = new OnDemandClientChannelFactory();
@@ -232,7 +232,14 @@ namespace Takenet.MessagingHub.Client.Connection
                     .WithEncryption(_sessionEncryption);
             }
 
-            var connection = new MessagingHubConnection(_sendTimeout, _maxConnectionRetries, _onDemandClientChannelFactory, _establishedClientChannelBuilder);
+            var connection = CreateConnection();
+            return connection;
+        }
+
+        protected virtual IMessagingHubConnection CreateConnection()
+        {
+            var connection = new MessagingHubConnection(_sendTimeout, _maxConnectionRetries, _onDemandClientChannelFactory,
+                _establishedClientChannelBuilder);
             return connection;
         }
 

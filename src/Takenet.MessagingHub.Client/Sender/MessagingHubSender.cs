@@ -8,9 +8,9 @@ namespace Takenet.MessagingHub.Client.Sender
 {
     public sealed class MessagingHubSender : IMessagingHubSender
     {
-        public MessagingHubConnection Connection { get; set; }
+        public IMessagingHubConnection Connection { get; set; }
 
-        public MessagingHubSender(MessagingHubConnection connection)
+        public MessagingHubSender(IMessagingHubConnection connection)
         {
             Connection = connection;
         }
