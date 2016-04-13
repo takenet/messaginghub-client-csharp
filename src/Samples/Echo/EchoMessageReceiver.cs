@@ -7,9 +7,9 @@ using Takenet.MessagingHub.Client.Sender;
 
 namespace Echo
 {
-    public class EchoMessageReceiver : MessageReceiverBase
+    public class EchoMessageReceiver : IMessageReceiver
     {
-        public override async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
+        public async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
         {
             //Fire and forget messages
             if (Guid.Equals(message.Id, Guid.Empty))

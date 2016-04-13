@@ -15,7 +15,7 @@ using Takenet.MessagingHub.Client.Sender;
 
 namespace Buscape
 {
-    public sealed class PlainTextMessageReceiver : MessageReceiverBase, IDisposable
+    public sealed class PlainTextMessageReceiver : IMessageReceiver, IDisposable
     {
         private const string StartMessage = "Iniciar";
         private const string FinishMessage = "ENCERRAR";
@@ -47,7 +47,7 @@ namespace Buscape
             
         }
 
-        public override async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
+        public async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
         {
             try
             {

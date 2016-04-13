@@ -25,7 +25,7 @@ namespace Takenet.MessagingHub.Client.Textc
         private readonly IMessagingHubConnection _connection;
         private readonly IMessagingHubSender _sender;
         private IContextProvider _contextProvider;
-        private Func<Message, MessageReceiverBase, Task> _matchNotFoundHandler;
+        private Func<Message, IMessageReceiver, Task> _matchNotFoundHandler;
 
         private IOutputProcessor _outputProcessor;
         private ISyntaxParser _syntaxParser;
@@ -114,7 +114,7 @@ namespace Takenet.MessagingHub.Client.Textc
         /// </summary>
         /// <param name="matchNotFoundHandler">The handler.</param>
         /// <returns></returns>
-        public TextcMessageReceiverBuilder WithMatchNotFoundHandler(Func<Message, MessageReceiverBase, Task> matchNotFoundHandler)
+        public TextcMessageReceiverBuilder WithMatchNotFoundHandler(Func<Message, IMessageReceiver, Task> matchNotFoundHandler)
         {
             _matchNotFoundHandler = matchNotFoundHandler;
             return this;

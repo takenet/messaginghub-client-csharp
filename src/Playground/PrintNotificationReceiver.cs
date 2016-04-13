@@ -10,9 +10,9 @@ namespace Playground
     /// <summary>
     /// Example of a notification receiver
     /// </summary>
-    public class PrintNotificationReceiver : NotificationReceiverBase
+    public class PrintNotificationReceiver : INotificationReceiver
     {
-        public override Task ReceiveAsync(IMessagingHubSender sender, Notification notification, CancellationToken cancellationToken)
+        public Task ReceiveAsync(IMessagingHubSender sender, Notification notification, CancellationToken cancellationToken)
         {
             Console.WriteLine("Notification of {0} event received. Reason: {1}", notification.Event, notification.Reason);
             return Task.FromResult(0);

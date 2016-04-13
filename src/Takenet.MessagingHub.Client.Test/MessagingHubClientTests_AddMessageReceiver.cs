@@ -67,7 +67,7 @@ namespace Takenet.MessagingHub.Client.Test
         public async Task Add_Base_MessageReceiver_And_Process_Message_With_Success()
         {
             //Arrange
-            var messageReceiver = Substitute.For<MessageReceiverBase>();
+            var messageReceiver = Substitute.For<IMessageReceiver>();
             MessagingHubListener.AddMessageReceiver(messageReceiver);
             await MessagingHubConnection.ConnectAsync();
             await MessagingHubListener.StartAsync();

@@ -10,9 +10,9 @@ namespace Playground
     /// <summary>
     /// Example of a plain text message receiver
     /// </summary>
-    public class PlainTextMessageReceiver : MessageReceiverBase
+    public class PlainTextMessageReceiver : IMessageReceiver
     {
-        public override async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
+        public async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
         {
             Console.WriteLine(message.Content.ToString());
             await sender.SendMessageAsync("Thanks for your message!", message.From, cancellationToken);

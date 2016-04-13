@@ -9,16 +9,16 @@ using Takenet.Textc;
 
 namespace Takenet.MessagingHub.Client.Textc
 {
-    public class TextcMessageReceiver : MessageReceiverBase
+    public class TextcMessageReceiver : IMessageReceiver
     {
         private readonly ITextProcessor _textProcessor;
         private readonly IContextProvider _contextProvider;
-        private readonly Func<Message, MessageReceiverBase, Task> _matchNotFoundHandler;
+        private readonly Func<Message, IMessageReceiver, Task> _matchNotFoundHandler;
         private readonly TimeSpan _processTimeout;
 
         private static readonly TimeSpan DefaultProcessTimeout = TimeSpan.FromSeconds(60);
 
-        public TextcMessageReceiver(ITextProcessor textProcessor, IContextProvider contextProvider, Func<Message, MessageReceiverBase, Task> matchNotFoundHandler = null, TimeSpan? processTimeout = null)
+        public TextcMessageReceiver(ITextProcessor textProcessor, IContextProvider contextProvider, Func<Message, IMessageReceiver, Task> matchNotFoundHandler = null, TimeSpan? processTimeout = null)
         {
             if (textProcessor == null) throw new ArgumentNullException(nameof(textProcessor));
             if (contextProvider == null) throw new ArgumentNullException(nameof(contextProvider));
@@ -28,7 +28,7 @@ namespace Takenet.MessagingHub.Client.Textc
             _processTimeout = processTimeout ?? DefaultProcessTimeout;
         }
 
-        public override async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
+        public async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
         {
             try
             {

@@ -9,9 +9,9 @@ namespace Takenet.MessagingHub.Client.Listener
     /// <summary>
     /// Message receiver that automatically respond to any message as an unsupported message
     /// </summary>
-    public class UnsupportedMessageReceiver : MessageReceiverBase
+    public class UnsupportedMessageReceiver : IMessageReceiver
     {
-        public override Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
+        public Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
         {
             var reason = new Reason
             {

@@ -75,8 +75,6 @@
     <Compile Include="Listener\LambdaNotificationReceiver.cs" />
     <Compile Include="Listener\LambdaMessageReceiver.cs" />
     <Compile Include="Listener\MessagingHubListenerExtensions.cs" />
-    <Compile Include="Listener\NotificationReceiverBase.cs" />
-    <Compile Include="Listener\MessageReceiverBase.cs" />
     <Compile Include="Listener\MessagingHubListener.cs" />
     <Compile Include="Listener\UnsupportedMessageReceiver.cs" />
     <Compile Include="Messages\MediaTypes.cs" />

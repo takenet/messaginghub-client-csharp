@@ -9,7 +9,7 @@ using Takenet.MessagingHub.Client.Sender;
 
 namespace Chat
 {
-    public class ChatMessageReceiver : MessageReceiverBase
+    public class ChatMessageReceiver : IMessageReceiver
     {
         private const string _targetPostmaster = "postmaster@0mn.io/#irisomni1";
         private const string _targetGroupDomain = "groups.0mn.io";
@@ -21,7 +21,7 @@ namespace Chat
 
         private static Identity GroupIdentity(string groupName) => new Identity($"{_groupPrefix}{groupName}", _targetGroupDomain);
 
-        public override async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
+        public async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
         {
             if(message.To.Domain.Equals(_targetGroupDomain, StringComparison.InvariantCultureIgnoreCase))
                 return;
