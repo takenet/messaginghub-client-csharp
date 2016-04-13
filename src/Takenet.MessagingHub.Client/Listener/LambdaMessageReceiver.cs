@@ -12,6 +12,7 @@ namespace Takenet.MessagingHub.Client.Listener
 
         public LambdaMessageReceiver(Func<IMessagingHubSender, Message, CancellationToken, Task> onMessageReceived)
         {
+            if (onMessageReceived == null) throw new ArgumentNullException(nameof(onMessageReceived));
             OnMessageReceived = onMessageReceived;
         }
 
