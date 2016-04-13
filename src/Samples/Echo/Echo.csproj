@@ -30,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lime.Protocol, Version=0.4.28.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Lime.Protocol.0.4.28\lib\net461\Lime.Protocol.dll</HintPath>
+    <Reference Include="Lime.Protocol, Version=0.4.35.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lime.Protocol.0.4.35\lib\net461\Lime.Protocol.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

@@ -37,13 +37,13 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lime.Messaging, Version=0.4.25.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Lime.Messaging.0.4.25\lib\net461\Lime.Messaging.dll</HintPath>
+    <Reference Include="Lime.Messaging, Version=0.4.35.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lime.Messaging.0.4.35\lib\net461\Lime.Messaging.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Protocol, Version=0.4.25.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Lime.Protocol.0.4.25\lib\net461\Lime.Protocol.dll</HintPath>
+    <Reference Include="Lime.Protocol, Version=0.4.35.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lime.Protocol.0.4.35\lib\net461\Lime.Protocol.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -62,8 +62,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Takenet.Textc, Version=0.2.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Takenet.Textc.0.2.5.0\lib\net451\Takenet.Textc.dll</HintPath>
+    <Reference Include="Takenet.Textc, Version=0.2.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.Textc.0.2.7.0\lib\net451\Takenet.Textc.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
