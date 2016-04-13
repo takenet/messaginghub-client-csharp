@@ -4,14 +4,14 @@ In most cases, you will not need to handle notifications. But if you do, this do
 
 If you are not using the *Takenet.MessagingHub.Client.Template* package, you need to establish a connection before sending or receiving notifications.
 
-To establish a connection, use the `MessagingHubConnectionBuilder`:
+To establish a connection, use the `MessagingHubClientBuilder`:
 
 ```csharp
-var connection = new MessagingHubConnectionBuilder()
+var client = new MessagingHubClientBuilder()
     .UsingAccessKey("xpto", "cXkzT1Rp")
     .Build();
 
-await connection.ConnectAsync();
+await client.StartAsync();
 ```
 
 **Remark: If you are using the *Takenet.MessagingHub.Client.Template* package, the connection is automatically handled for you. See more in [Hosting](http://messaginghub.io/docs/sdks/hosting).**
@@ -47,11 +47,13 @@ await client.SendNotificationAsync(message.ToNotification(Event.Received));
 To receive a notification, instantiate a listener and register a *NotificationReceiver*:
 
 ```csharp
+var client = new MessagingHubClientBuilder()
+    .UsingAccessKey("xpto", "cXkzT1Rp")
+    .Build();
 
-var listener = new MessagingHubListener(connection);
-listener.AddNotificationReceiver(new ConsumedNotificationReceiver(), Event.Consumed);
+client.AddNotificationReceiver(new ConsumedNotificationReceiver(), Event.Consumed);
 
-await listener.StartAsync();
+await client.StartAsync();
 ```
 
 **Remark: If you are using the *Takenet.MessagingHub.Client.Template* package, the listener is automatically handled for you. See more in [Hosting](http://messaginghub.io/docs/sdks/hosting).**
@@ -59,9 +61,9 @@ await listener.StartAsync();
 Your *NotificationReceiver* can be defined as follows:
 
 ```csharp
-public class ConsumedNotificationReceiver : NotificationReceiverBase
+public class ConsumedNotificationReceiver : INotificationReceiver
 {
-    public override async Task ReceiveAsync(MessagingHubSender sender, Notification notification, CancellationToken cancellationToken)
+    public async Task ReceiveAsync(MessagingHubSender sender, Notification notification, CancellationToken cancellationToken)
     {
         // Write the received notification to the console
         Console.WriteLine(notification.ToString());

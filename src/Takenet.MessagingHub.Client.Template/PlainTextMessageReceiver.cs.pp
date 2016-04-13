@@ -6,9 +6,9 @@ using Takenet.MessagingHub.Client.Listener;
 
 namespace $rootnamespace$
 {
-    public class PlainTextMessageReceiver : MessageReceiverBase
+    public class PlainTextMessageReceiver : IMessageReceiver
     {
-        public override async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
+        public async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
         {
             Console.WriteLine($"From: {message.From} \tContent: {message.Content}");
             await sender.SendMessageAsync("Pong!", message.From, cancellationToken);

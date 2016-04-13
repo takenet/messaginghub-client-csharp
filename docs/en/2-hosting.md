@@ -27,16 +27,13 @@ Here follows an example:
 In this example, the client is configured using the application `xpto` and the access key `cXkzT1Rp`. Besides, it is also registering a **MessageReceiver** of type `PlainTextMessageReceiver`, with a filter of **media type** `text/plain`. The same definition using C# would be:
 
 ```csharp
-var connection = new MessagingHubConnectionBuilder()
+var client = new MessagingHubClientBuilder()
     .UsingAccessKey("xpto", "cXkzT1Rp")
     .Build();
 
-await connection.ConnectAsync();
+client.AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
 
-var listener = new MessagingHubListener(connection);
-listener.AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
-
-await listener.StartAsync();
+await client.StartAsync();
 ```
 
 

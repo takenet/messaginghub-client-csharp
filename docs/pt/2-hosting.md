@@ -26,16 +26,13 @@ Abaixo um exemplo:
 Neste exemplo, o cliente está sendo configurado utilizando a aplicação `xpto` e access key `cXkzT1Rp`, além de estar registrando um **MessageReceiver** do tipo `PlainTextMessageReceiver`, com um filtro pelo **media type** `text/plain`. A mesma definição utilizando C# seria:
 
 ```csharp
-var connection = new MessagingHubConnectionBuilder()
+var client = new MessagingHubClientBuilder()
     .UsingAccessKey("xpto", "cXkzT1Rp")
     .Build();
 
-await connection.ConnectAsync();
+client.AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
 
-var listener = new MessagingHubListener(connection);
-listener.AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText)
-
-await listener.StartAsync();
+await client.StartAsync();
 ```
 
 Através do arquivo `application.json`, o desenvolvedor tem acesso a todas as propriedades do `MessagingHubClientBuilder`, além de permitir a inicialização de forma transparente dos tipos utilizados pela aplicação. Isso significa que não é necessário se preocupar como a aplicação sera construída para funcionar, já que isso é tratado pelo utilitário `mhh.exe` instalado junto ao pacote. 
