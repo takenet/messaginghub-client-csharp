@@ -66,7 +66,7 @@ namespace Takenet.MessagingHub.Client.Connection
             }
         }
 
-        public async Task DisconnectAsync(CancellationToken cancellationToken)
+        public async Task DisconnectAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 

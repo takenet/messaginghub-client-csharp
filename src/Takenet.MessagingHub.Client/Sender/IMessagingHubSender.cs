@@ -21,7 +21,7 @@ namespace Takenet.MessagingHub.Client.Sender
         /// <param name="command">Command to be sent</param>
         /// <param name="cancellationToken">A cancellation token to allow the task to be canceled</param>
         /// <returns>A task representing the sending operation. When completed, it will contain the command response</returns>
-        Task<Command> SendCommandAsync(Command command, CancellationToken cancellationToken);
+        Task<Command> SendCommandAsync(Command command, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Send a message through the Messaging Hub
@@ -29,7 +29,7 @@ namespace Takenet.MessagingHub.Client.Sender
         /// <param name="message">Message to be sent</param>
         /// <param name="cancellationToken">A cancellation token to allow the task to be canceled</param>
         /// <returns>A task representing the sending operation</returns>
-        Task SendMessageAsync(Message message, CancellationToken cancellationToken);
+        Task SendMessageAsync(Message message, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Send a notification through the Messaging Hub
@@ -37,6 +37,6 @@ namespace Takenet.MessagingHub.Client.Sender
         /// <param name="notification">Notification to be sent</param>
         /// <param name="cancellationToken">A cancellation token to allow the task to be canceled</param>
         /// <returns>A task representing the sending operation</returns>
-        Task SendNotificationAsync(Notification notification, CancellationToken cancellationToken);
+        Task SendNotificationAsync(Notification notification, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

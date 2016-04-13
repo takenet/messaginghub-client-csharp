@@ -41,7 +41,7 @@ namespace Takenet.MessagingHub.Client.Listener
             }
         }
 
-        protected virtual Task CallReceiver<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken cancellationToken)
+        protected virtual Task CallReceiver<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken cancellationToken = default(CancellationToken))
             where TEnvelope : Envelope
         {
             return envelopeReceiver.ReceiveAsync(Sender, envelope, cancellationToken);
@@ -54,7 +54,7 @@ namespace Takenet.MessagingHub.Client.Listener
         {
         }
 
-        protected override async Task CallReceiver<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken cancellationToken)
+        protected override async Task CallReceiver<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken cancellationToken = default(CancellationToken))
         {
             var message = envelope as Message;
             try

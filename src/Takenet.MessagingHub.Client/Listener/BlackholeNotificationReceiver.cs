@@ -10,7 +10,7 @@ namespace Takenet.MessagingHub.Client.Listener
     /// </summary>
     public class BlackholeNotificationReceiver : INotificationReceiver
     {
-        public Task ReceiveAsync(IMessagingHubSender sender, Notification notification, CancellationToken cancellationToken)
+        public Task ReceiveAsync(IMessagingHubSender sender, Notification notification, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(0);
         }

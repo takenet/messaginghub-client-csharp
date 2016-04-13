@@ -246,7 +246,7 @@ namespace Takenet.MessagingHub.Client.Connection
             return connection;
         }
 
-        private static async Task SetPresenceAsync(IClientChannel clientChannel, CancellationToken cancellationToken)
+        private static async Task SetPresenceAsync(IClientChannel clientChannel, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!IsGuest(clientChannel.LocalNode.Name))
                 await clientChannel.SetResourceAsync(
@@ -256,7 +256,7 @@ namespace Takenet.MessagingHub.Client.Connection
                         .ConfigureAwait(false);
         }
 
-        private static async Task SetReceiptAsync(IClientChannel clientChannel, CancellationToken cancellationToken)
+        private static async Task SetReceiptAsync(IClientChannel clientChannel, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!IsGuest(clientChannel.LocalNode.Name))
                 await clientChannel.SetResourceAsync(
