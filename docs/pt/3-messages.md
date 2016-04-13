@@ -45,7 +45,7 @@ Seu *MessageReceiver*  pode ser definido da seguinte forma;
 ```csharp
 public class PlainTextMessageReceiver : MessageReceiverBase
 {
-    public override async Task ReceiveAsync(MessagingHubSender sender, Message message, CancellationToken token)
+    public override async Task ReceiveAsync(MessagingHubSender sender, Message message, CancellationToken cancellationToken)
     {
         // Write the received message to the console
         Console.WriteLine(message.Content.ToString());
@@ -58,12 +58,12 @@ Você pode também responder a mensagens recebidas usando o parâmetro *sender*:
 ```csharp
 public class PlainTextMessageReceiver : MessageReceiverBase
 {
-    public override async Task ReceiveAsync(MessagingHubSender sender, Message message, CancellationToken token)
+    public override async Task ReceiveAsync(MessagingHubSender sender, Message message, CancellationToken cancellationToken)
     {
         // Write the received message to the console
         Console.WriteLine(message.Content.ToString());
         // Responds to the received message
-        sender.SendMessageAsync("Hi. I just received your message!", message.From, token);
+        sender.SendMessageAsync("Hi. I just received your message!", message.From, cancellationToken);
     }
 }
 ```

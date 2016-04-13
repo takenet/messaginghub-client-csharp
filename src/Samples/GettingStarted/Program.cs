@@ -42,7 +42,7 @@ namespace GettingStarted
             Console.ReadKey();
         }
 
-        private static async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken token)
+        private static async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
         {
             // Text messages sent to your application will be received here
             Console.WriteLine("MESSAGE RECEIVED");
@@ -54,7 +54,7 @@ namespace GettingStarted
             const string ItWorks = "It works!";
 
             if (message.Content.ToString() != ItWorks)
-                await sender.SendMessageAsync(ItWorks, message.From, token);
+                await sender.SendMessageAsync(ItWorks, message.From, cancellationToken);
         }
     }
 }

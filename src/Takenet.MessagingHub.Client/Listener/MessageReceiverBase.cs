@@ -10,6 +10,6 @@ namespace Takenet.MessagingHub.Client.Listener
     /// </summary>
     public abstract class MessageReceiverBase : IMessageReceiver
     {
-        public abstract Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken token);
+        public abstract Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken);
     }
 }

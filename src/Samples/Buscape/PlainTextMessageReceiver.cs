@@ -47,59 +47,59 @@ namespace Buscape
             
         }
 
-        public override async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken token)
+        public override async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
         {
             try
             {
-                await ProcessMessagesAsync(sender, message, token);
+                await ProcessMessagesAsync(sender, message, cancellationToken);
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Exception processing message: {e}");
-                await sender.SendMessageAsync(@"Falhou :(", message.From, token);
+                await sender.SendMessageAsync(@"Falhou :(", message.From, cancellationToken);
             }
         }
 
-        private async Task ProcessMessagesAsync(IMessagingHubSender sender, Message message, CancellationToken token)
+        private async Task ProcessMessagesAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
         {
             var keyword = message.Content.ToString();
 
             if (keyword.First() == '#')
                 keyword = keyword.Substring(Math.Min(keyword.Length, 5)).Trim();
 
-            if (await HandleStartMessageAsync(sender, message, keyword, token)) return;
+            if (await HandleStartMessageAsync(sender, message, keyword, cancellationToken)) return;
 
-            if (await HandleEndOfSearchAsync(sender, message, keyword, token)) return;
+            if (await HandleEndOfSearchAsync(sender, message, keyword, cancellationToken)) return;
 
-            if (await HandleNextPageRequestAsync(sender, message, keyword, token)) return;
+            if (await HandleNextPageRequestAsync(sender, message, keyword, cancellationToken)) return;
 
             keyword = HandleNextPageKeywordAsync(message, keyword);
 
             var uri = await ComposeSearchUriAsync(message, keyword);
 
-            await ExecuteSearchAsync(sender, message, uri, token);
+            await ExecuteSearchAsync(sender, message, uri, cancellationToken);
         }
 
-        private static async Task<bool> HandleStartMessageAsync(IMessagingHubSender sender, Message message, string keyword, CancellationToken token)
+        private static async Task<bool> HandleStartMessageAsync(IMessagingHubSender sender, Message message, string keyword, CancellationToken cancellationToken)
         {
             if (keyword != StartMessage)
                 return false;
 
             Console.WriteLine($"Start message received from {message.From}!");
-            await sender.SendMessageAsync(@"Tudo pronto. Qual produto deseja pesquisar?", message.From, token);
+            await sender.SendMessageAsync(@"Tudo pronto. Qual produto deseja pesquisar?", message.From, cancellationToken);
             return true;
         }
 
-        private static async Task<bool> HandleEndOfSearchAsync(IMessagingHubSender sender, Message message, string keyword, CancellationToken token)
+        private static async Task<bool> HandleEndOfSearchAsync(IMessagingHubSender sender, Message message, string keyword, CancellationToken cancellationToken)
         {
             if (keyword != FinishMessage)
                 return false;
 
-            await sender.SendMessageAsync(@"Obrigado por usar o aplicativo OMNI!", message.From, token);
+            await sender.SendMessageAsync(@"Obrigado por usar o aplicativo OMNI!", message.From, cancellationToken);
             return true;
         }
 
-        private async Task<bool> HandleNextPageRequestAsync(IMessagingHubSender sender, Message message, string keyword, CancellationToken token)
+        private async Task<bool> HandleNextPageRequestAsync(IMessagingHubSender sender, Message message, string keyword, CancellationToken cancellationToken)
         {
             if (keyword != MoreResultsMessage)
                 return false;
@@ -107,7 +107,7 @@ namespace Buscape
             if (Session.Contains(message.From.ToString()))
                 return false;
 
-            await sender.SendMessageAsync(@"Não foi possível identificar o último item pesquisado!", message.From, token);
+            await sender.SendMessageAsync(@"Não foi possível identificar o último item pesquisado!", message.From, cancellationToken);
             return true;
         }
 
@@ -181,7 +181,7 @@ namespace Buscape
             }
         }
 
-        private async Task ExecuteSearchAsync(IMessagingHubSender sender, Message message, string uri, CancellationToken token)
+        private async Task ExecuteSearchAsync(IMessagingHubSender sender, Message message, string uri, CancellationToken cancellationToken)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Get, uri))
             {
@@ -190,7 +190,7 @@ namespace Buscape
                     var buscapeResponse = await WebClient.SendAsync(request, cancellationTokenSource.Token);
                     if (buscapeResponse.StatusCode != HttpStatusCode.OK)
                     {
-                        await sender.SendMessageAsync(@"Não foi possível obter uma resposta do Buscapé!", message.From, token);
+                        await sender.SendMessageAsync(@"Não foi possível obter uma resposta do Buscapé!", message.From, cancellationToken);
                     }
                     else
                     {
@@ -203,7 +203,7 @@ namespace Buscape
                                 try
                                 {
                                     var resultItem = ParseProduct(product);
-                                    await sender.SendMessageAsync(resultItem, message.From, token);
+                                    await sender.SendMessageAsync(resultItem, message.From, cancellationToken);
                                 }
                                 catch (Exception e)
                                 {
@@ -214,11 +214,11 @@ namespace Buscape
                         catch (Exception e)
                         {
                             Console.WriteLine($"Exception parsing response from Buscapé: {e}");
-                            await sender.SendMessageAsync("Nenhum resultado encontrado", message.From, token);
+                            await sender.SendMessageAsync("Nenhum resultado encontrado", message.From, cancellationToken);
                             return;
                         }
                         await Task.Delay(TimeSpan.FromSeconds(2), cancellationTokenSource.Token);
-                        await sender.SendMessageAsync($"Envie: {FinishMessage}; {MoreResultsMessage}", message.From, token);
+                        await sender.SendMessageAsync($"Envie: {FinishMessage}; {MoreResultsMessage}", message.From, cancellationToken);
                         Console.WriteLine("Response sent!");
                     }
                 }

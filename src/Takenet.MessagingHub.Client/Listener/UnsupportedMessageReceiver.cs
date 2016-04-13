@@ -11,14 +11,14 @@ namespace Takenet.MessagingHub.Client.Listener
     /// </summary>
     public class UnsupportedMessageReceiver : MessageReceiverBase
     {
-        public override Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken token)
+        public override Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
         {
             var reason = new Reason
             {
                 Code = ReasonCodes.MESSAGE_UNSUPPORTED_CONTENT_TYPE,
                 Description = $"{message.Type} messages are not supported"
             };
-            return sender.SendNotificationAsync(message.ToFailedNotification(reason), token);
+            return sender.SendNotificationAsync(message.ToFailedNotification(reason), cancellationToken);
         }
     }
 }

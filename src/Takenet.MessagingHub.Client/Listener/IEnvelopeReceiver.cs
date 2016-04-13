@@ -17,8 +17,8 @@ namespace Takenet.MessagingHub.Client.Listener
         /// </summary>
         /// <param name="sender">A sender that can be used to send envelopes</param>
         /// <param name="envelope">Envelope type</param>
-        /// <param name="token">A cancellation token to allow the task to be canceled</param>
+        /// <param name="cancellationToken">A cancellation token to allow the task to be canceled</param>
         /// <returns>Task representing the receive operation</returns>
-        Task ReceiveAsync(IMessagingHubSender sender, TEnvelope envelope, CancellationToken token = default(CancellationToken));
+        Task ReceiveAsync(IMessagingHubSender sender, TEnvelope envelope, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

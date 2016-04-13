@@ -15,7 +15,7 @@ namespace Takenet.MessagingHub.Client.Sender
             Connection = connection;
         }
 
-        public async Task<Command> SendCommandAsync(Command command, CancellationToken token)
+        public async Task<Command> SendCommandAsync(Command command, CancellationToken cancellationToken)
         {
             if (!Connection.IsConnected)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation");
@@ -24,7 +24,7 @@ namespace Takenet.MessagingHub.Client.Sender
             {
                 using (
                     var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutTokenSource.Token,
-                        token))
+                        cancellationToken))
                 {
                     return
                         await
@@ -34,7 +34,7 @@ namespace Takenet.MessagingHub.Client.Sender
             }
         }
 
-        public async Task SendMessageAsync(Message message, CancellationToken token)
+        public async Task SendMessageAsync(Message message, CancellationToken cancellationToken)
         {
             if (!Connection.IsConnected)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation");
@@ -43,7 +43,7 @@ namespace Takenet.MessagingHub.Client.Sender
             {
                 using (
                     var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutTokenSource.Token,
-                        token))
+                        cancellationToken))
                 {
                     await
                         Connection.OnDemandClientChannel.SendMessageAsync(message, linkedTokenSource.Token)
@@ -52,7 +52,7 @@ namespace Takenet.MessagingHub.Client.Sender
             }
         }
 
-        public async Task SendNotificationAsync(Notification notification, CancellationToken token)
+        public async Task SendNotificationAsync(Notification notification, CancellationToken cancellationToken)
         {
             if (!Connection.IsConnected)
                 throw new InvalidOperationException("A connection must be established before to proceed with this operation!");
@@ -61,7 +61,7 @@ namespace Takenet.MessagingHub.Client.Sender
             {
                 using (
                     var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutTokenSource.Token,
-                        token))
+                        cancellationToken))
                 {
                     await
                         Connection.OnDemandClientChannel.SendNotificationAsync(notification,

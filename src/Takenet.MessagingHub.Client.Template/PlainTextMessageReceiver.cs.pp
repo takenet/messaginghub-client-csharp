@@ -8,10 +8,10 @@ namespace $rootnamespace$
 {
     public class PlainTextMessageReceiver : MessageReceiverBase
     {
-        public override async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken token)
+        public override async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
         {
             Console.WriteLine($"From: {message.From} \tContent: {message.Content}");
-            await sender.SendMessageAsync("Pong!", message.From, token);
+            await sender.SendMessageAsync("Pong!", message.From, cancellationToken);
         }
     }
 }

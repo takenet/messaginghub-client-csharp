@@ -21,14 +21,14 @@ namespace Chat
 
         private static Identity GroupIdentity(string groupName) => new Identity($"{_groupPrefix}{groupName}", _targetGroupDomain);
 
-        public override async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken token)
+        public override async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
         {
             if(message.To.Domain.Equals(_targetGroupDomain, StringComparison.InvariantCultureIgnoreCase))
                 return;
 
             if(message.Content == null)
             {
-                await sender.SendMessageAsync(_helpMessage, message.From, token);
+                await sender.SendMessageAsync(_helpMessage, message.From, cancellationToken);
                 return;
             }
 
@@ -36,15 +36,15 @@ namespace Chat
             
             if(messageText.Equals(_listCommand, StringComparison.InvariantCultureIgnoreCase))
             {
-                var groups = await ListGroupsAsync(sender, token);
+                var groups = await ListGroupsAsync(sender, cancellationToken);
 
-                await sender.SendMessageAsync(_helpMessage, groups, token);
+                await sender.SendMessageAsync(_helpMessage, groups, cancellationToken);
                 return;
             }
 
             if (!messageText.StartsWith("#") || messageText.Equals(_helpCommand, StringComparison.InvariantCultureIgnoreCase))
             {
-                await sender.SendMessageAsync(_helpMessage, message.From, token);
+                await sender.SendMessageAsync(_helpMessage, message.From, cancellationToken);
                 return;
             }
 
@@ -52,45 +52,45 @@ namespace Chat
 
             if (!IsValidGroupName(groupName))
             {
-                await sender.SendMessageAsync("Formato de assunto inválido. Evite caracteres especiais e acentuação", message.From, token);
+                await sender.SendMessageAsync("Formato de assunto inválido. Evite caracteres especiais e acentuação", message.From, cancellationToken);
                 return;
             }
 
-            var getResponse = await sender.SendCommandAsync(BuildGetGroupCommand(groupName), token);
+            var getResponse = await sender.SendCommandAsync(BuildGetGroupCommand(groupName), cancellationToken);
 
             if (getResponse.Status == CommandStatus.Failure)
             {
                 if (getResponse.Reason != null && getResponse.Reason.Code == ReasonCodes.COMMAND_RESOURCE_NOT_FOUND)
                 {
-                    var createResponse = await sender.SendCommandAsync(BuildCreateGroupCommand(groupName), token);
+                    var createResponse = await sender.SendCommandAsync(BuildCreateGroupCommand(groupName), cancellationToken);
 
                     if(createResponse.Status == CommandStatus.Failure)
                     {
-                        await sender.SendMessageAsync("Erro ao criar o grupo. Tente novamente mais tarde", message.From, token);
+                        await sender.SendMessageAsync("Erro ao criar o grupo. Tente novamente mais tarde", message.From, cancellationToken);
                         return;
                     }
                 }
                 else
                 {
-                    await sender.SendMessageAsync("Erro ao verificar existência do grupo. Tente novamente mais tarde", message.From, token);
+                    await sender.SendMessageAsync("Erro ao verificar existência do grupo. Tente novamente mais tarde", message.From, cancellationToken);
                     return;
                 }
             }
 
-            var insertMemberResponse = await sender.SendCommandAsync(BuildInsertMemberCommand(groupName, message.From), token);
+            var insertMemberResponse = await sender.SendCommandAsync(BuildInsertMemberCommand(groupName, message.From), cancellationToken);
 
             if(insertMemberResponse.Status == CommandStatus.Failure)
             {
-                await sender.SendMessageAsync("Erro ao inserir usuário no grupo. Tente novamente mais tarde", message.From, token);
+                await sender.SendMessageAsync("Erro ao inserir usuário no grupo. Tente novamente mais tarde", message.From, cancellationToken);
                 return;
             }
 
-            await sender.SendMessageAsync($"Você foi inserido no grupo #{groupName}", message.From, token);
+            await sender.SendMessageAsync($"Você foi inserido no grupo #{groupName}", message.From, cancellationToken);
         }
         
-        private static async Task<string> ListGroupsAsync(IMessagingHubSender sender, CancellationToken token)
+        private static async Task<string> ListGroupsAsync(IMessagingHubSender sender, CancellationToken cancellationToken)
         {
-            var listResponse = await sender.SendCommandAsync(BuildListGroupCommand(), token);
+            var listResponse = await sender.SendCommandAsync(BuildListGroupCommand(), cancellationToken);
 
             if(listResponse.Status == CommandStatus.Failure)
             {
