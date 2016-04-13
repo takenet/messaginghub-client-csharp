@@ -32,6 +32,7 @@ namespace Takenet.MessagingHub.Client.Test
         public async Task StartSuccessfully()
         {
             var connection = new MessagingHubConnectionBuilder()
+                .WithMaxConnectionRetries(1)
                 .UsingHostName("hmg.msging.net")
                 .UsingGuest()
                 .Build();
