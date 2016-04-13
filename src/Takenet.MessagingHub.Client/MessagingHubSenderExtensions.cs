@@ -3,8 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Lime.Messaging.Contents;
 using Lime.Protocol;
+using Takenet.MessagingHub.Client.Sender;
 
-namespace Takenet.MessagingHub.Client.Sender
+namespace Takenet.MessagingHub.Client
 {
     /// <summary>
     /// Extension methods to simplify the usage of the <see cref="MessagingHubSender"/>

@@ -79,14 +79,14 @@
     <Compile Include="Listener\INotificationReceiver.cs" />
     <Compile Include="Listener\LambdaNotificationReceiver.cs" />
     <Compile Include="Listener\LambdaMessageReceiver.cs" />
-    <Compile Include="Listener\MessagingHubListenerExtensions.cs" />
+    <Compile Include="MessagingHubListenerExtensions.cs" />
     <Compile Include="Listener\MessagingHubListener.cs" />
     <Compile Include="Listener\UnsupportedMessageReceiver.cs" />
     <Compile Include="Messages\MediaTypes.cs" />
     <Compile Include="Messages\MessageExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sender\IMessagingHubSender.cs" />
-    <Compile Include="Sender\MessagingHubSenderExtensions.cs" />
+    <Compile Include="MessagingHubSenderExtensions.cs" />
     <Compile Include="Sender\MessagingHubSender.cs" />
   </ItemGroup>
   <ItemGroup>

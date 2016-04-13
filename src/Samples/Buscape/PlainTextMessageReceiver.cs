@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Lime.Messaging.Contents;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
 
