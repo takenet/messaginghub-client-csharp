@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using NUnit.Framework;
@@ -188,7 +189,7 @@ namespace Takenet.MessagingHub.Client.Textc.Test
 
         public static IDictionary<string, object> Settings;
 
-        public Task StartAsync()
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             _Started = true;
             return Task.CompletedTask;

@@ -35,9 +35,9 @@ namespace Takenet.MessagingHub.Client.Test
 
         public Uri ListenerUri { get; }
 
-        public async Task StartAsync()
+        public async Task StartAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            await ListenerSemaphore.WaitAsync();
+            await ListenerSemaphore.WaitAsync(cancellationToken);
 
             await _transportListener.StartAsync();
 #pragma warning disable 4014
@@ -94,7 +94,7 @@ namespace Takenet.MessagingHub.Client.Test
                 _cts.Token);
         }
 
-        public async Task StopAsync()
+        public async Task StopAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             _cts?.Cancel();
             await (_transportListener?.StopAsync() ?? Task.CompletedTask);

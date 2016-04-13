@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Takenet.MessagingHub.Client.Sender;
 using Takenet.MessagingHub.Client.Listener;
@@ -16,7 +17,7 @@ namespace $rootnamespace$
             _settings = settings;
         }
 
-        public Task StartAsync()
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

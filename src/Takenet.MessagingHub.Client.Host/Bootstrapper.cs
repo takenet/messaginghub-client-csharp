@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Serialization;
@@ -322,11 +323,11 @@ namespace Takenet.MessagingHub.Client.Host
                 _stoppables = stoppables;
             }
 
-            public async Task StopAsync()
+            public async Task StopAsync(CancellationToken cancellationTokenn)
             {
                 foreach (var stoppable in _stoppables)
                 {
-                    if (stoppable != null) await stoppable.StopAsync().ConfigureAwait(false);
+                    if (stoppable != null) await stoppable.StopAsync(cancellationTokenn).ConfigureAwait(false);
                 }                
             }
         }

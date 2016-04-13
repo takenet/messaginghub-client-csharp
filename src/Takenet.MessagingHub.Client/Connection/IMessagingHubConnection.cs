@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol.Client;
 
@@ -32,11 +33,11 @@ namespace Takenet.MessagingHub.Client.Connection
         /// <summary>
         /// Activate the connection with the Messaging Hub
         /// </summary>
-        Task ConnectAsync();
+        Task ConnectAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Disconnects from the Messaging Hub
         /// </summary>
-        Task DisconnectAsync();
+        Task DisconnectAsync(CancellationToken cancellationToken = default(CancellationToken));
     }
 }

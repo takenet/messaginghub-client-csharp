@@ -38,14 +38,14 @@ namespace Takenet.MessagingHub.Client.Listener
             EnvelopeRegistrar.AddNotificationReceiver(() => notificationReceiver, notificationFilter);
         }
 
-        public Task StartAsync()
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             StartEnvelopeListeners();
             Listening = true;
             return Task.CompletedTask;
         }
 
-        public Task StopAsync()
+        public Task StopAsync(CancellationToken cancellationToken)
         {
             StopEnvelopeListeners();
             Listening = false;

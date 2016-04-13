@@ -324,7 +324,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
 
         public bool Started => _Started;
 
-        public Task StartAsync()
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             _Started = true;
             return Task.CompletedTask;
@@ -347,7 +347,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
 
         public static IDictionary<string, object> Settings;
 
-        public Task StartAsync()
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             _Started = true;
             return Task.CompletedTask;

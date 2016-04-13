@@ -37,9 +37,9 @@ namespace Takenet.MessagingHub.Client.Connection
 
         public IOnDemandClientChannel OnDemandClientChannel { get; private set; }
 
-        public async Task ConnectAsync()
+        public async Task ConnectAsync(CancellationToken cancellationToken)
         {
-            await _semaphore.WaitAsync().ConfigureAwait(false);
+            await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             try
             {
@@ -55,7 +55,7 @@ namespace Takenet.MessagingHub.Client.Connection
                         IsConnected = true;
                         return;
                     }
-                    await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, i)));
+                    await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, i)), cancellationToken);
                 }
 
                 throw new TimeoutException("Could not connect to server!");
@@ -66,9 +66,9 @@ namespace Takenet.MessagingHub.Client.Connection
             }
         }
 
-        public async Task DisconnectAsync()
+        public async Task DisconnectAsync(CancellationToken cancellationToken)
         {
-            await _semaphore.WaitAsync().ConfigureAwait(false);
+            await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             try
             {

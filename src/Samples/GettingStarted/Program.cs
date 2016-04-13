@@ -27,7 +27,7 @@ namespace GettingStarted
 
             await connection.ConnectAsync();
 
-            var listener = new MessagingHubListener(connection);
+            IMessagingHubListener listener = new MessagingHubListener(connection);
             listener.AddMessageReceiver(ReceiveAsync);
             await listener.StartAsync();
 

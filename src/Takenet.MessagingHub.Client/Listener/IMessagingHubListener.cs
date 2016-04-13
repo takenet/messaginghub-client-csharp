@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Takenet.MessagingHub.Client.Connection;
@@ -9,7 +10,7 @@ namespace Takenet.MessagingHub.Client.Listener
     /// <summary>
     /// Listen to envelopes sent to the account you are connected as
     /// </summary>
-    public interface IMessagingHubListener : IWorker
+    public interface IMessagingHubListener : IStartable, IStoppable
     {
         /// <summary>
         /// The connection used to listen through
@@ -39,15 +40,5 @@ namespace Takenet.MessagingHub.Client.Listener
         /// <param name="notificationReceiver">The notification receiver that will be invoked when a notification that satisfy the given criteria is received</param>
         /// <param name="notificationFilter">The criteria to filter the notifications</param>
         void AddNotificationReceiver(INotificationReceiver notificationReceiver, Predicate<Notification> notificationFilter);
-
-        /// <summary>
-        /// Starts to listen to the registered receivers. No receivers can be added after the listener is started
-        /// </summary>
-        Task StartAsync();
-
-        /// <summary>
-        /// Stops listening to the connection
-        /// </summary>
-        Task StopAsync();
     }
 }

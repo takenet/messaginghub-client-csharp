@@ -62,7 +62,6 @@
     <Compile Include="Listener\IMessagingHubListener.cs" />
     <Compile Include="Listener\IStartable.cs" />
     <Compile Include="Listener\IStoppable.cs" />
-    <Compile Include="Listener\IWorker.cs" />
     <Compile Include="LimeProtocol\IOnDemandClientChannelFactory.cs" />
     <Compile Include="LimeProtocol\OnDemandClientChannelFactory.cs" />
     <Compile Include="Connection\MessagingHubConnectionBuilder.cs" />
