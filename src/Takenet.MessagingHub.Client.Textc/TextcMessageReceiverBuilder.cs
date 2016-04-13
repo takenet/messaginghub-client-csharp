@@ -8,11 +8,11 @@ using Lime.Protocol;
 using Takenet.MessagingHub.Client.Connection;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Messages;
-using Takenet.MessagingHub.Client.Sender;
 using Takenet.Textc;
 using Takenet.Textc.Csdl;
 using Takenet.Textc.Processors;
 using Takenet.Textc.Scorers;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Textc
 {
@@ -21,25 +21,24 @@ namespace Takenet.MessagingHub.Client.Textc
     /// </summary>
     public sealed class TextcMessageReceiverBuilder
     {
-        private readonly MessagingHubConnectionBuilder _connectionBuilder;
-        private readonly IMessagingHubConnection _connection;
-        private readonly IMessagingHubSender _sender;
+        private readonly MessagingHubClientBuilder _clientBuilder;
         private IContextProvider _contextProvider;
         private Func<Message, IMessageReceiver, Task> _matchNotFoundHandler;
 
+        private IMessagingHubClient _client;
         private IOutputProcessor _outputProcessor;
         private ISyntaxParser _syntaxParser;
         private IExpressionScorer _expressionScorer;
         private ICultureProvider _cultureProvider;
         private readonly List<Func<IOutputProcessor, ICommandProcessor>> _commandProcessorFactories;
-        
-        public TextcMessageReceiverBuilder(MessagingHubConnectionBuilder connectionBuilder, IOutputProcessor outputProcessor = null, ISyntaxParser syntaxParser = null,
-            IExpressionScorer expressionScorer = null, ICultureProvider cultureProvider = null, IMessagingHubSender sender = null)
+
+        public TextcMessageReceiverBuilder(MessagingHubClientBuilder clientBuilder, IOutputProcessor outputProcessor = null, ISyntaxParser syntaxParser = null,
+            IExpressionScorer expressionScorer = null, ICultureProvider cultureProvider = null)
         {
-            if (connectionBuilder == null) throw new ArgumentNullException(nameof(connectionBuilder));
-            _connectionBuilder = connectionBuilder;
-            _connection = _connectionBuilder.Build();
-            _outputProcessor = outputProcessor ?? new MessageOutputProcessor(() => sender ?? new MessagingHubSender(_connection));
+            if (clientBuilder == null) throw new ArgumentNullException(nameof(clientBuilder));
+            _clientBuilder = clientBuilder;
+            _client = _clientBuilder.Build();
+            _outputProcessor = outputProcessor ?? new MessageOutputProcessor(() => _client);
             _syntaxParser = syntaxParser ?? new SyntaxParser();
             _expressionScorer = expressionScorer ?? new RatioExpressionScorer();
             _cultureProvider = cultureProvider ?? new DefaultCultureProvider(CultureInfo.InvariantCulture);
@@ -107,7 +106,7 @@ namespace Takenet.MessagingHub.Client.Textc
         public TextcMessageReceiverBuilder WithMatchNotFoundMessage(string matchNotFoundMessage) => 
             WithMatchNotFoundHandler(
                 (message, receiver) =>
-                    _sender.SendMessageAsync(matchNotFoundMessage, message.Pp ?? message.From, CancellationToken.None));
+                    _client.SendMessageAsync(matchNotFoundMessage, message.Pp ?? message.From, CancellationToken.None));
 
         /// <summary>
         /// Sets a handler to be called in case of no match of the user input.
@@ -198,11 +197,11 @@ namespace Takenet.MessagingHub.Client.Textc
         /// Builds a new instance of <see cref="TextcMessageReceiver"/> using the defined configurations and adds it to the associated <see cref="MessagingHubClient"/> instance.
         /// </summary>
         /// <returns></returns>
-        public IMessagingHubConnection BuildAndAddTextcMessageReceiver()
+        public IMessagingHubClient BuildAndAddTextcMessageReceiver()
         {
-            var listener = new MessagingHubListener(_connection);
-            listener.AddMessageReceiver(Build(), MediaTypes.PlainText);
-            return _connection;
+            var client = _clientBuilder.Build();
+            client.AddMessageReceiver(Build(), MediaTypes.PlainText);
+            return client;
         }
     }
 }

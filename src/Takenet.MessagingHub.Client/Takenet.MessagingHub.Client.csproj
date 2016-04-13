@@ -57,6 +57,9 @@
     <Reference Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IMessagingHubClient.cs" />
+    <Compile Include="MessagingHubClient.cs" />
+    <Compile Include="MessagingHubClientBuilder.cs" />
     <Compile Include="Connection\IMessagingHubConnection.cs" />
     <Compile Include="Connection\IMessagingHubConnectionConfigurator.cs" />
     <Compile Include="Connection\MessagingHubConnection.cs" />
@@ -93,6 +96,7 @@
     </None>
     <None Include="Takenet.MessagingHub.Client.nuspec" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

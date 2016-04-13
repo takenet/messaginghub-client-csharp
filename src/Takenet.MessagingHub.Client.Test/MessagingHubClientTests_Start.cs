@@ -31,26 +31,26 @@ namespace Takenet.MessagingHub.Client.Test
         [Test]
         public async Task StartSuccessfully()
         {
-            var connection = new MessagingHubConnectionBuilder()
+            var client = new MessagingHubClientBuilder()
                 .WithMaxConnectionRetries(1)
                 .UsingHostName("hmg.msging.net")
                 .UsingGuest()
                 .Build();
 
-            await connection.ConnectAsync().ConfigureAwait(false);
+            await client.StartAsync().ConfigureAwait(false);
         }
 
         [Test]
         public void TryToStartConnectionWithInvalidServer()
         {
-            var connection = new MessagingHubConnectionBuilder()
+            var client = new MessagingHubClientBuilder()
                 .WithMaxConnectionRetries(1)
                 .UsingHostName("invalid.iris.io")
                 .UsingGuest()
                 .WithSendTimeout(TimeSpan.FromSeconds(2))
                 .Build();
 
-            Should.ThrowAsync<TimeoutException>(async () => await connection.ConnectAsync().ConfigureAwait(false)).Wait();
+            Should.ThrowAsync<TimeoutException>(async () => await client.StartAsync().ConfigureAwait(false)).Wait();
         }
     }
 }

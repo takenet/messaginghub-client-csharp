@@ -25,8 +25,8 @@ namespace Playground
             const string password = "123456";
 
             // Instantiates a MessageHubClient using its fluent API
-            var connection =
-                new MessagingHubConnectionBuilder()
+            var client =
+                new MessagingHubClientBuilder()
                     // Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
                     .UsingHostName("hmg.msging.net")
                     .UsingAccount(login, password)
@@ -55,12 +55,11 @@ namespace Playground
                     .BuildAndAddTextcMessageReceiver();
 
 
-            var listener = new MessagingHubListener(connection);
-            listener.AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText);
-            listener.AddNotificationReceiver(new PrintNotificationReceiver());
+            client.AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText);
+            client.AddNotificationReceiver(new PrintNotificationReceiver());
 
             // Starts the client
-            await connection.ConnectAsync();
+            await client.StartAsync();
 
             // Instantiates a command to get the current account form the server
             var command = new Command
@@ -69,10 +68,8 @@ namespace Playground
                 Uri = new LimeUri("/account")
             };
 
-            var sender = new MessagingHubSender(connection);
-
             // Sends the command and stores its response
-            var responseCommand = await sender.SendCommandAsync(command, CancellationToken.None);
+            var responseCommand = await client.SendCommandAsync(command, CancellationToken.None);
 
             // Extract the account from the command response
             var account = (Account)responseCommand.Resource;
@@ -83,7 +80,7 @@ namespace Playground
             Console.ReadKey();
 
             // Stop the client
-            await connection.DisconnectAsync();
+            await client.StopAsync();
         }
 
         private static string AccountDescriptionFor(Account account)

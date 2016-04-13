@@ -9,11 +9,11 @@ using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
-    public sealed class MessagingHubListener : IMessagingHubListener
+    internal sealed class MessagingHubListener : IMessagingHubListener
     {
-        public IMessagingHubConnection Connection { get; }
+        private IMessagingHubConnection Connection { get; }
 
-        public IMessagingHubSender Sender { get; }
+        private IMessagingHubSender Sender { get; }
 
         internal EnvelopeListenerRegistrar EnvelopeRegistrar { get; }
 

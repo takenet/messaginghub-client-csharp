@@ -6,9 +6,9 @@ using Takenet.MessagingHub.Client.Connection;
 
 namespace Takenet.MessagingHub.Client.Sender
 {
-    public sealed class MessagingHubSender : IMessagingHubSender
+    internal sealed class MessagingHubSender : IMessagingHubSender
     {
-        public IMessagingHubConnection Connection { get; set; }
+        private IMessagingHubConnection Connection { get; }
 
         public MessagingHubSender(IMessagingHubConnection connection)
         {

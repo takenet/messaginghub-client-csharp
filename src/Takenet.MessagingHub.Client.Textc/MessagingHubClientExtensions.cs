@@ -10,12 +10,12 @@ namespace Takenet.MessagingHub.Client
         /// <summary>
         /// Creates a new builder for the <see cref="TextcMessageReceiver"/> class.
         /// </summary>
-        /// <param name="senderBuilder"></param>
+        /// <param name="clientBuilder"></param>
         /// <param name="outputProcessor"></param>
         /// <returns></returns>
-        public static TextcMessageReceiverBuilder NewTextcMessageReceiverBuilder(this MessagingHubConnectionBuilder senderBuilder, IOutputProcessor outputProcessor = null)
+        public static TextcMessageReceiverBuilder NewTextcMessageReceiverBuilder(this MessagingHubClientBuilder clientBuilder, IOutputProcessor outputProcessor = null)
         {
-            return new TextcMessageReceiverBuilder(senderBuilder, outputProcessor);
+            return new TextcMessageReceiverBuilder(clientBuilder, outputProcessor);
         }
     }
 }

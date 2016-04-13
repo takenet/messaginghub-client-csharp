@@ -13,7 +13,8 @@ using Takenet.MessagingHub.Client.LimeProtocol;
 
 namespace Takenet.MessagingHub.Client.Connection
 {
-    public class MessagingHubConnectionBuilder : MessagingHubConnectionConfigurator<MessagingHubConnectionBuilder>
+    public class MessagingHubConnectionBuilder<TConfigurator> : MessagingHubConnectionConfigurator<TConfigurator>
+        where TConfigurator : MessagingHubConnectionBuilder<TConfigurator>
     {
 
         /// <summary>

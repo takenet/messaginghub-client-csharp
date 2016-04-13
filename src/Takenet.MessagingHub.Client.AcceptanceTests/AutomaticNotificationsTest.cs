@@ -10,7 +10,6 @@ using Lime.Protocol;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
-using Takenet.MessagingHub.Client.Connection;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
 
@@ -24,26 +23,19 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         {
             var notifications = new Queue<Notification>();
             string appShortName1 = null, appShortName2 = null;
-            var connection1 = GetConnectionForApplication(ref appShortName1);
-            var connection2 = GetConnectionForApplication(ref appShortName2);
-
-            await connection1.ConnectAsync();
-            await connection2.ConnectAsync();
-
-            var sender1 = GetSenderForApplication(connection1);
-            var listener1 = GetListenerForApplication(connection1, (s, m, c) => Task.CompletedTask, (s, n, c) =>
+            var sender = GetClientForApplication(ref appShortName1, (s, m, c) => Task.CompletedTask, (s, n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var listener2 = GetListenerForApplication(connection2, (s, m, c) => Task.CompletedTask, (s, n, c) => Task.CompletedTask);
+            var receiver = GetClientForApplication(ref appShortName2, (s, m, c) => Task.CompletedTask, (s, n, c) => Task.CompletedTask);
 
             try
             {
-                await listener1.StartAsync();
-                await listener2.StartAsync();
+                await sender.StartAsync(CancellationToken.None);
+                await receiver.StartAsync(CancellationToken.None);
 
-                await sender1.SendMessageAsync(Beat, appShortName2, CancellationToken.None);
+                await sender.SendMessageAsync(Beat, appShortName2, CancellationToken.None);
 
                 await Task.Delay(Timeout, CancellationToken.None);
 
@@ -54,10 +46,8 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             }
             finally
             {
-                await listener2.StopAsync();
-                await listener1.StopAsync();
-                await connection2.DisconnectAsync();
-                await connection1.DisconnectAsync();
+                await sender.StopAsync(CancellationToken.None);
+                await receiver.StopAsync(CancellationToken.None);
             }
         }
 
@@ -66,27 +56,19 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         {
             var notifications = new Queue<Notification>();
             string appShortName1 = null, appShortName2 = null;
-
-            var connection1 = GetConnectionForApplication(ref appShortName1);
-            var connection2 = GetConnectionForApplication(ref appShortName2);
-
-            await connection1.ConnectAsync();
-            await connection2.ConnectAsync();
-
-            var sender1 = GetSenderForApplication(connection1);
-            var listener1 = GetListenerForApplication(connection1, (s, m, c) => Task.CompletedTask, (s, n, c) =>
+            var sender = GetClientForApplication(ref appShortName1, (s, m, c) => Task.CompletedTask, (s, n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var listener2 = GetListenerForApplication(connection2, (s, m, c) => Task.CompletedTask, (s, n, c) => Task.CompletedTask);
+            var receiver = GetClientForApplication(ref appShortName2, (s, m, c) => Task.CompletedTask, (s, n, c) => Task.CompletedTask);
 
             try
             {
-                await listener1.StartAsync();
-                await listener2.StartAsync();
+                await sender.StartAsync(CancellationToken.None);
+                await receiver.StartAsync(CancellationToken.None);
 
-                await sender1.SendMessageAsync(Beat, appShortName2, CancellationToken.None);
+                await sender.SendMessageAsync(Beat, appShortName2, CancellationToken.None);
 
                 await Task.Delay(Timeout, CancellationToken.None);
 
@@ -98,10 +80,8 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             }
             finally
             {
-                await listener2.StopAsync();
-                await listener1.StopAsync();
-                await connection2.DisconnectAsync();
-                await connection1.DisconnectAsync();
+                await sender.StopAsync(CancellationToken.None);
+                await receiver.StopAsync(CancellationToken.None);
             }
         }
 
@@ -110,26 +90,19 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         {
             var notifications = new Queue<Notification>();
             string appShortName1 = null, appShortName2 = null;
-            var connection1 = GetConnectionForApplication(ref appShortName1);
-            var connection2 = GetConnectionForApplication(ref appShortName2);
-
-            await connection1.ConnectAsync();
-            await connection2.ConnectAsync();
-
-            var sender1 = GetSenderForApplication(connection1);
-            var listener1 = GetListenerForApplication(connection1, (s, m, c) => Task.CompletedTask, (s, n, c) =>
+            var sender = GetClientForApplication(ref appShortName1, (s, m, c) => Task.CompletedTask, (s, n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var listener2 = GetListenerForApplication(connection2, (s, m, c) => Task.CompletedTask, (s, n, c) => Task.CompletedTask);
+            var receiver = GetClientForApplication(ref appShortName2, (s, m, c) => Task.CompletedTask, (s, n, c) => Task.CompletedTask);
 
             try
             {
-                await listener1.StartAsync();
-                await listener2.StartAsync();
+                await sender.StartAsync(CancellationToken.None);
+                await receiver.StartAsync(CancellationToken.None);
 
-                await sender1.SendMessageAsync(Beat, appShortName2, CancellationToken.None);
+                await sender.SendMessageAsync(Beat, appShortName2, CancellationToken.None);
 
                 await Task.Delay(Timeout, CancellationToken.None);
 
@@ -142,10 +115,8 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             }
             finally
             {
-                await listener2.StopAsync();
-                await listener1.StopAsync();
-                await connection2.DisconnectAsync();
-                await connection1.DisconnectAsync();
+                await sender.StopAsync(CancellationToken.None);
+                await receiver.StopAsync(CancellationToken.None);
             }
         }
 
@@ -154,29 +125,22 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         {
             var notifications = new Queue<Notification>();
             string appShortName1 = null, appShortName2 = null;
-            var connection1 = GetConnectionForApplication(ref appShortName1);
-            var connection2 = GetConnectionForApplication(ref appShortName2);
-
-            await connection1.ConnectAsync();
-            await connection2.ConnectAsync();
-
-            var sender1 = GetSenderForApplication(connection1);
-            var listener1 = GetListenerForApplication(connection1, (s, m, c) => Task.CompletedTask, (s, n, c) =>
+            var sender = GetClientForApplication(ref appShortName1, (s, m, c) => Task.CompletedTask, (s, n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var listener2 = GetListenerForApplication(connection2, (s, m, c) =>
+            var receiver = GetClientForApplication(ref appShortName2, (s, m, c) =>
             {
                 throw new Exception();
             }, (s, n, c) => Task.CompletedTask);
 
             try
             {
-                await listener1.StartAsync();
-                await listener2.StartAsync();
+                await sender.StartAsync(CancellationToken.None);
+                await receiver.StartAsync(CancellationToken.None);
 
-                await sender1.SendMessageAsync(Beat, appShortName2, CancellationToken.None);
+                await sender.SendMessageAsync(Beat, appShortName2, CancellationToken.None);
 
                 await Task.Delay(Timeout, CancellationToken.None);
 
@@ -190,10 +154,8 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             }
             finally
             {
-                await listener2.StopAsync();
-                await listener1.StopAsync();
-                await connection2.DisconnectAsync();
-                await connection1.DisconnectAsync();
+                await sender.StopAsync(CancellationToken.None);
+                await receiver.StopAsync(CancellationToken.None);
             }
         }
 
@@ -202,26 +164,19 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         {
             var notifications = new Queue<Notification>();
             string appShortName1 = null, appShortName2 = null;
-            var connection1 = GetConnectionForApplication(ref appShortName1);
-            var connection2 = GetConnectionForApplication(ref appShortName2);
-
-            await connection1.ConnectAsync();
-            await connection2.ConnectAsync();
-
-            var sender1 = GetSenderForApplication(connection1);
-            var listener1 = GetListenerForApplication(connection1, (s, m, c) => Task.CompletedTask, (s, n, c) =>
+            var sender = GetClientForApplication(ref appShortName1, (s, m, c) => Task.CompletedTask, (s, n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var listener2 = GetListenerForApplication(connection2, (s, m, c) => Task.CompletedTask, (s, n, c) => Task.CompletedTask);
+            var receiver = GetClientForApplication(ref appShortName2, (s, m, c) => Task.CompletedTask, (s, n, c) => Task.CompletedTask);
 
             try
             {
-                await listener1.StartAsync();
-                await listener2.StartAsync();
+                await sender.StartAsync(CancellationToken.None);
+                await receiver.StartAsync(CancellationToken.None);
 
-                await sender1.SendMessageAsync(Beat, appShortName2, CancellationToken.None);
+                await sender.SendMessageAsync(Beat, appShortName2, CancellationToken.None);
 
                 await Task.Delay(Timeout, CancellationToken.None);
 
@@ -235,48 +190,29 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             }
             finally
             {
-                await listener2.StopAsync();
-                await listener1.StopAsync();
-                await connection2.DisconnectAsync();
-                await connection1.DisconnectAsync();
+                await sender.StopAsync(CancellationToken.None);
+                await receiver.StopAsync(CancellationToken.None);
             }
         }
 
         private const string Beat = "Beat";
 
-        private static IMessagingHubConnection GetConnectionForApplication(ref string appShortName)
+        private static IMessagingHubClient GetClientForApplication(ref string appShortName, Func<IMessagingHubSender, Message, CancellationToken, Task> onMessageReceived, Func<IMessagingHubSender, Notification, CancellationToken, Task> onNotificationReceived)
         {
             appShortName = appShortName ?? CreateAndRegisterApplicationAsync().Result;
             var appAccessKey = GetApplicationAccessKeyAsync(appShortName).Result;
-            var connection = GetConnectionForApplication(appShortName, appAccessKey);
-            return connection;
-        }
 
-        private static IMessagingHubConnection GetConnectionForApplication(string appShortName, string appAccessKey)
-        {
-            var connection = new MessagingHubConnectionBuilder()
+            var client = new MessagingHubClientBuilder()
                 .UsingHostName("hmg.msging.net")
                 .UsingAccessKey(appShortName, appAccessKey)
                 .WithMaxConnectionRetries(1)
                 .WithSendTimeout(Timeout)
                 .Build();
-            return connection;
-        }
 
-        private static IMessagingHubListener GetListenerForApplication(IMessagingHubConnection connection, Func<IMessagingHubSender, Message, CancellationToken, Task> onMessageReceived, Func<IMessagingHubSender, Notification, CancellationToken, Task> onNotificationReceived)
-        {
-            var listener = new MessagingHubListener(connection);
+            client.AddMessageReceiver(onMessageReceived);
+            client.AddNotificationReceiver(onNotificationReceived);
 
-            listener.AddMessageReceiver(onMessageReceived);
-            listener.AddNotificationReceiver(onNotificationReceived);
-
-            return listener;
-        }
-
-        private static IMessagingHubSender GetSenderForApplication(IMessagingHubConnection connection)
-        {
-            var sender = new MessagingHubSender(connection);
-            return sender;
+            return client;
         }
 
         private static TimeSpan Timeout => TimeSpan.FromSeconds(5);

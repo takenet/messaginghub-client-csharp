@@ -44,16 +44,16 @@ namespace Takenet.MessagingHub.Client.Host
                 TypeUtil.LoadAssembliesAndReferences(path, assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter);
             }
 
-            var connectionBuilder = new MessagingHubConnectionBuilder();
+            var builder = new MessagingHubClientBuilder();
             if (application.Account != null)
             {
                 if (application.Password != null)
                 {
-                    connectionBuilder = connectionBuilder.UsingAccount(application.Account, application.Password);
+                    builder = builder.UsingAccount(application.Account, application.Password);
                 }
                 else if (application.AccessKey != null)
                 {
-                    connectionBuilder = connectionBuilder.UsingAccessKey(application.Account, application.AccessKey);
+                    builder = builder.UsingAccessKey(application.Account, application.AccessKey);
                 }
                 else
                 {
@@ -62,29 +62,25 @@ namespace Takenet.MessagingHub.Client.Host
             }
             else
             {
-                connectionBuilder = connectionBuilder.UsingGuest();
+                builder = builder.UsingGuest();
             }
 
-            if (application.Domain != null) connectionBuilder = connectionBuilder.UsingDomain(application.Domain);
-            if (application.HostName != null) connectionBuilder = connectionBuilder.UsingHostName(application.HostName);
-            if (application.SendTimeout != 0) connectionBuilder = connectionBuilder.WithSendTimeout(TimeSpan.FromMilliseconds(application.SendTimeout));
-            if (application.SessionEncryption.HasValue) connectionBuilder = connectionBuilder.UsingEncryption(application.SessionEncryption.Value);
-            if (application.SessionCompression.HasValue) connectionBuilder = connectionBuilder.UsingCompression(application.SessionCompression.Value);
+            if (application.Domain != null) builder = builder.UsingDomain(application.Domain);
+            if (application.HostName != null) builder = builder.UsingHostName(application.HostName);
+            if (application.SendTimeout != 0) builder = builder.WithSendTimeout(TimeSpan.FromMilliseconds(application.SendTimeout));
+            if (application.SessionEncryption.HasValue) builder = builder.UsingEncryption(application.SessionEncryption.Value);
+            if (application.SessionCompression.HasValue) builder = builder.UsingCompression(application.SessionCompression.Value);
 
             var localServiceProvider = new ServiceProvider(serviceProvider);
 
-            var connection = connectionBuilder.Build();
-            await connection.ConnectAsync().ConfigureAwait(false);
+            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubClientBuilder), builder);
 
-            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubConnectionBuilder), connectionBuilder);
-            localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubConnection), connection);
-
-            var listener = await BuildMessagingHubListenerAsync(application, connection, localServiceProvider);
-            localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubListener), listener);
-            localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubSender), listener.Sender);
+            var client = await BuildMessagingHubListenerAsync(application, builder, localServiceProvider);
+            localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubClient), client);
+            localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubSender), client);
 
             var stoppables = new IStoppable[2];
-            stoppables[0] = listener;
+            stoppables[0] = client;
             if (application.StartupType != null)
             {
                 var startable = await CreateAsync<IStartable>(
@@ -98,9 +94,9 @@ namespace Takenet.MessagingHub.Client.Host
             return new StoppableWrapper(stoppables);
         }
 
-        private static async Task<IMessagingHubListener> BuildMessagingHubListenerAsync(Application application, IMessagingHubConnection connection, ServiceProvider localServiceProvider)
+        private static async Task<IMessagingHubListener> BuildMessagingHubListenerAsync(Application application, MessagingHubClientBuilder builder, ServiceProvider localServiceProvider)
         {
-            var listener = new MessagingHubListener(connection);
+            var client = builder.Build();
 
             if (application.MessageReceivers != null && application.MessageReceivers.Length > 0)
             {
@@ -141,7 +137,7 @@ namespace Takenet.MessagingHub.Client.Host
                         messagePredicate = m => currentMessagePredicate(m) && destinationRegex.IsMatch(m.To.ToString());
                     }
 
-                    listener.AddMessageReceiver(receiver, messagePredicate);
+                    client.AddMessageReceiver(receiver, messagePredicate);
                 }
             }
 
@@ -177,11 +173,11 @@ namespace Takenet.MessagingHub.Client.Host
                         notificationPredicate = n => currentNotificationPredicate(n) && destinationRegex.IsMatch(n.To.ToString());
                     }
 
-                    listener.AddNotificationReceiver(receiver, notificationPredicate);
+                    client.AddNotificationReceiver(receiver, notificationPredicate);
                 }
             }
 
-            return listener;
+            return client;
         }
 
         private static IDictionary<string, object> MergeSettings(Application application, ApplicationReceiver applicationReceiver)

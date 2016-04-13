@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
-using Takenet.MessagingHub.Client.Connection;
 
 namespace Takenet.MessagingHub.Client.Sender
 {
@@ -10,11 +9,6 @@ namespace Takenet.MessagingHub.Client.Sender
     /// </summary>
     public interface IMessagingHubSender
     {
-        /// <summary>
-        /// Connection to send the message through
-        /// </summary>
-        IMessagingHubConnection Connection { get; }
-
         /// <summary>
         /// Send a command through the Messaging Hub
         /// </summary>

@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
+using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Connection;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
@@ -21,22 +22,17 @@ namespace GettingStarted
 
         private static async Task MainAsync()
         {
-            var connection = new MessagingHubConnectionBuilder()
+            var client = new MessagingHubClientBuilder()
                             .UsingAccessKey(Account, AccessKey)
                             .Build();
 
-            await connection.ConnectAsync();
+            client.AddMessageReceiver(ReceiveAsync);
+            await client.StartAsync();
 
-            IMessagingHubListener listener = new MessagingHubListener(connection);
-            listener.AddMessageReceiver(ReceiveAsync);
-            await listener.StartAsync();
-
-            var sender = new MessagingHubSender(connection);
-            await sender.SendMessageAsync("Hi, you are now connected to the Messaging Hub!", Account);
+            await client.SendMessageAsync("Hi, you are now connected to the Messaging Hub!", Account);
             await Task.Delay(1000);
 
-            await listener.StopAsync();
-            await connection.DisconnectAsync();
+            await client.StopAsync();
 
             Console.WriteLine("Press any key to exit");
             Console.ReadKey();

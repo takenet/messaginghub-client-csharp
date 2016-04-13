@@ -22,7 +22,7 @@ namespace Takenet.MessagingHub.Client.Textc
 
         public async Task<IMessageReceiver> CreateAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings)
         {
-            var builder = new TextcMessageReceiverBuilder(serviceProvider.GetService<MessagingHubConnectionBuilder>());
+            var builder = new TextcMessageReceiverBuilder(serviceProvider.GetService<MessagingHubClientBuilder>());
             if (settings != null)
             {
                 var textcMessageReceiverSettings = TextcMessageReceiverSettings.ParseFromSettings(settings);
