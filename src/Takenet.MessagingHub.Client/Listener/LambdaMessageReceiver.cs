@@ -8,7 +8,7 @@ namespace Takenet.MessagingHub.Client.Listener
 {
     public class LambdaMessageReceiver : IMessageReceiver
     {
-        public Func<IMessagingHubSender, Message, CancellationToken, Task> OnMessageReceived { get; set; }
+        private Func<IMessagingHubSender, Message, CancellationToken, Task> OnMessageReceived { get; }
 
         public LambdaMessageReceiver(Func<IMessagingHubSender, Message, CancellationToken, Task> onMessageReceived)
         {

@@ -8,7 +8,7 @@ namespace Takenet.MessagingHub.Client.Listener
 {
     public class LambdaNotificationReceiver : INotificationReceiver
     {
-        public Func<IMessagingHubSender, Notification, CancellationToken, Task> OnNotificationReceived { get; set; }
+        private Func<IMessagingHubSender, Notification, CancellationToken, Task> OnNotificationReceived { get; }
 
         public LambdaNotificationReceiver(Func<IMessagingHubSender, Notification, CancellationToken, Task> onNotificationReceived)
         {
