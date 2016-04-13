@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Messaging.Resources;
@@ -123,8 +124,9 @@ namespace Takenet.MessagingHub.Client.Connection
                 // A LimeException usually means that some credential information is wrong, so throw it to allow client to check
                 throw;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Trace.WriteLine($"Exception connecting to Messaging Hub: {ex}");
                 return false;
             }
         }

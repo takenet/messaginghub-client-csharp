@@ -55,7 +55,7 @@ namespace Takenet.MessagingHub.Client.Sender
         public async Task SendNotificationAsync(Notification notification, CancellationToken token)
         {
             if (!Connection.IsConnected)
-                throw new InvalidOperationException("A connection must be estabilished before to proceed with this operation!");
+                throw new InvalidOperationException("A connection must be established before to proceed with this operation!");
 
             using (var timeoutTokenSource = new CancellationTokenSource(Connection.SendTimeout))
             {
