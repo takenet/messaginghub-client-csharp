@@ -71,7 +71,8 @@ namespace Takenet.MessagingHub.Client.Test
 
         private void SubstituteOnDemandClientChannelFactory()
         {
-            OnDemandClientChannelFactory = Substitute.For<IOnDemandClientChannelFactory>(EstablishedClientChannelBuilder);
+            OnDemandClientChannelFactory = Substitute.For<IOnDemandClientChannelFactory>();
+            OnDemandClientChannelFactory.ChannelBuilder.Returns(EstablishedClientChannelBuilder);
             OnDemandClientChannelFactory.Create().Returns(OnDemandClientChannel);
         }
 
