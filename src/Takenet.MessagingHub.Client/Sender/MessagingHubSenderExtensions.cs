@@ -53,6 +53,7 @@ namespace Takenet.MessagingHub.Client.Sender
             if (content == null) throw new ArgumentNullException(nameof(content));
             var message = new Message
             {
+                Id = Guid.NewGuid(),
                 To = to,
                 Content = content
             };
