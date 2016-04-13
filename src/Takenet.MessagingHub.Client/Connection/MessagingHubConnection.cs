@@ -13,32 +13,29 @@ namespace Takenet.MessagingHub.Client.Connection
 {
     public sealed class MessagingHubConnection : IMessagingHubConnection
     {
-        public TimeSpan SendTimeout { get; }
-
-        public int MaxConnectionRetries { get; set; }
-
-        public IOnDemandClientChannel OnDemandClientChannel { get; private set; }
-
-        private readonly SemaphoreSlim _semaphore;
-        private readonly IEstablishedClientChannelBuilder _establishedClientChannelBuilder;
-        private readonly IOnDemandClientChannelFactory _onDemandClientChannelFactory;
-
         private static readonly TimeSpan ChannelDiscardedDelay = TimeSpan.FromMilliseconds(300);
 
+        private readonly SemaphoreSlim _semaphore;
+        private readonly IOnDemandClientChannelFactory _onDemandClientChannelFactory;
+
         internal MessagingHubConnection(
-            TimeSpan sendTimeout, 
+            TimeSpan sendTimeout,
             int maxConnectionRetries,
-            IOnDemandClientChannelFactory onDemandClientChannelFactory,
-            IEstablishedClientChannelBuilder establishedClientChannelBuilder)
+            IOnDemandClientChannelFactory onDemandClientChannelFactory)
         {
             _semaphore = new SemaphoreSlim(1);
             MaxConnectionRetries = maxConnectionRetries;
             SendTimeout = sendTimeout;
-            _establishedClientChannelBuilder = establishedClientChannelBuilder;
             _onDemandClientChannelFactory = onDemandClientChannelFactory;
         }
 
         public bool IsConnected { get; private set; }
+
+        public int MaxConnectionRetries { get; set; }
+
+        public TimeSpan SendTimeout { get; }
+
+        public IOnDemandClientChannel OnDemandClientChannel { get; private set; }
 
         public async Task ConnectAsync()
         {
@@ -49,9 +46,7 @@ namespace Takenet.MessagingHub.Client.Connection
                 if (IsConnected)
                     throw new InvalidOperationException("The client is already started");
 
-                OnDemandClientChannel = _onDemandClientChannelFactory.Create(_establishedClientChannelBuilder);
-                OnDemandClientChannel.ChannelCreationFailedHandlers.Add(StopOnLimeExceptionAsync);
-                OnDemandClientChannel.ChannelDiscardedHandlers.Add(ChannelDiscarded);
+                CreateOnDemandClientChannel();
 
                 for (var i = 0; i < MaxConnectionRetries; i++)
                 {
@@ -91,6 +86,13 @@ namespace Takenet.MessagingHub.Client.Connection
             {
                 _semaphore.Release();
             }
+        }
+
+        private void CreateOnDemandClientChannel()
+        {
+            OnDemandClientChannel = _onDemandClientChannelFactory.Create();
+            OnDemandClientChannel.ChannelCreationFailedHandlers.Add(StopOnLimeExceptionAsync);
+            OnDemandClientChannel.ChannelDiscardedHandlers.Add(ChannelDiscarded);
         }
 
         /// <summary>

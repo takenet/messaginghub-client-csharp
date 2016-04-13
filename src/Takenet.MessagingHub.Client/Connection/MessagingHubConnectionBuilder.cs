@@ -212,12 +212,10 @@ namespace Takenet.MessagingHub.Client.Connection
         /// <returns>An inactive connection with the Messaging Hub. Call <see cref="IMessagingHubConnection.ConnectAsync"/> to activate it</returns>
         public IMessagingHubConnection Build()
         {
-            if (_onDemandClientChannelFactory == null)
-                _onDemandClientChannelFactory = new OnDemandClientChannelFactory();
-
             if (_establishedClientChannelBuilder == null)
             {
-                var channelBuilder = ClientChannelBuilder.Create(() => new TcpTransport(traceWriter: new TraceWriter(), envelopeSerializer: new JsonNetSerializer()), _endPoint)
+                var channelBuilder = ClientChannelBuilder.Create(
+                    () => new TcpTransport(traceWriter: new TraceWriter(), envelopeSerializer: new JsonNetSerializer()), _endPoint)
                                      .WithSendTimeout(_sendTimeout)
                                      .WithBuffersLimit(100)
                                      .AddMessageModule(c => new NotifyReceiptChannelModule(c))
@@ -232,14 +230,19 @@ namespace Takenet.MessagingHub.Client.Connection
                     .WithEncryption(_sessionEncryption);
             }
 
+            if (_onDemandClientChannelFactory == null)
+                _onDemandClientChannelFactory = new OnDemandClientChannelFactory(_establishedClientChannelBuilder);
+
             var connection = CreateConnection();
             return connection;
         }
 
+        /// <summary>
+        /// Creates a connection
+        /// </summary>
         protected virtual IMessagingHubConnection CreateConnection()
         {
-            var connection = new MessagingHubConnection(_sendTimeout, _maxConnectionRetries, _onDemandClientChannelFactory,
-                _establishedClientChannelBuilder);
+            var connection = new MessagingHubConnection(_sendTimeout, _maxConnectionRetries, _onDemandClientChannelFactory);
             return connection;
         }
 

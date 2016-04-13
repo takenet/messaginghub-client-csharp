@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Lime.Protocol.Client;
-using Lime.Protocol.Network;
 
 namespace Takenet.MessagingHub.Client.Connection
 {

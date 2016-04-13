@@ -4,6 +4,6 @@ namespace Takenet.MessagingHub.Client.LimeProtocol
 {
     internal interface IOnDemandClientChannelFactory
     {
-        IOnDemandClientChannel Create(IEstablishedClientChannelBuilder establishedClientChannelBuilder);
+        IOnDemandClientChannel Create();
     }
 }

@@ -71,8 +71,8 @@ namespace Takenet.MessagingHub.Client.Test
 
         private void SubstituteOnDemandClientChannelFactory()
         {
-            OnDemandClientChannelFactory = Substitute.For<IOnDemandClientChannelFactory>();
-            OnDemandClientChannelFactory.Create(EstablishedClientChannelBuilder).Returns(OnDemandClientChannel);
+            OnDemandClientChannelFactory = Substitute.For<IOnDemandClientChannelFactory>(EstablishedClientChannelBuilder);
+            OnDemandClientChannelFactory.Create().Returns(OnDemandClientChannel);
         }
 
         private void CreateProducers()
@@ -84,7 +84,7 @@ namespace Takenet.MessagingHub.Client.Test
         
         private void CreateActualMessageHubClient()
         {
-            MessagingHubConnection = new MessagingHubConnection(_sendTimeout, _maxConnectionRetries, OnDemandClientChannelFactory, EstablishedClientChannelBuilder);
+            MessagingHubConnection = new MessagingHubConnection(_sendTimeout, _maxConnectionRetries, OnDemandClientChannelFactory);
             MessagingHubListener = new MessagingHubListener(MessagingHubConnection);
             MessagingHubSender = new MessagingHubSender(MessagingHubConnection);
         }
