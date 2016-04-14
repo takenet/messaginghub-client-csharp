@@ -322,7 +322,8 @@ namespace Takenet.MessagingHub.Client.Host
             {
                 foreach (var stoppable in _stoppables)
                 {
-                    if (stoppable != null) await stoppable.StopAsync(cancellationTokenn).ConfigureAwait(false);
+                    if (stoppable != null)
+                        await stoppable.StopAsync(cancellationTokenn).ConfigureAwait(false);
                 }                
             }
         }

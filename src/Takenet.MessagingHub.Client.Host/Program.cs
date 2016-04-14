@@ -19,7 +19,7 @@ namespace Takenet.MessagingHub.Client.Host
         static async Task MainAsync(string[] args)
         {
             try
-            {                
+            {
                 var applicationFileName = Bootstrapper.DefaultApplicationFileName;
                 if (args.Length > 0)
                 {
