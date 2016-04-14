@@ -11,7 +11,7 @@ An introdutory application can be found [here](https://github.com/takenet/messag
 
 ## Creating Messaging Hub Applications
 
-To easily create Messaging Hub applications, create a new *class library* project in the *Visual Studio 2015* and import the NuGet package from [here](https://www.nuget.org/packages/Takenet.MessagingHub.Client.Template).
+To easily create Messaging Hub applications, create a new *class library* project in the *Visual Studio 2015* and import the *Messaging Hub Application Template* package from [here](https://www.nuget.org/packages/Takenet.MessagingHub.Client.Template).
 
 ## Documentation 
 
