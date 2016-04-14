@@ -3,15 +3,20 @@
 
 MessagingHub.Client is a simple client for the [Messaging Hub](https://messaginghub.io/) that uses a fluent interface to send and receive messages, commands and notifications.
 
-<a href="https://www.nuget.org/packages/Takenet.MessagingHub.Client/" rel="Messaging Hub Client">![Messaging Hub Client](https://img.shields.io/nuget/v/Takenet.MessagingHub.Client.svg)</a>
+**Messaging Hub Client**
+
+<a href="https://www.nuget.org/packages/Takenet.MessagingHub.Client/" rel="NuGet">![NuGet](https://img.shields.io/nuget/v/Takenet.MessagingHub.Client.svg)</a>
 
 **Messaging Hub Client Host**
+
 <a href="https://www.nuget.org/packages/Takenet.MessagingHub.Client.Host/" rel="NuGet">![NuGet](https://img.shields.io/nuget/v/Takenet.MessagingHub.Client.Host.svg)</a>
 
 **Messaging Hub Textc Extensions**
+
 <a href="https://www.nuget.org/packages/Takenet.MessagingHub.Client.Textc/" rel="NuGet">![NuGet](https://img.shields.io/nuget/v/Takenet.MessagingHub.Client.Textc.svg)</a>
 
 **Messaging Hub Application Template**
+
 <a href="https://www.nuget.org/packages/Takenet.MessagingHub.Client.Template/" rel="NuGet">![NuGet](https://img.shields.io/nuget/v/Takenet.MessagingHub.Client.Template.svg)</a>
 
 ## Getting Started
