@@ -1,5 +1,5 @@
 
-The **Messaging Hub Client** is a set of Nuget packages that allow the creation of applications for the [Messaging Hub](https://messaginghub.io/) platform.
+The **Messaging Hub Client** is a set of Nuget packages that allow the creation of [Messaging Hub](https://messaginghub.io/) applications.
 
 <a href="https://www.nuget.org/packages/Takenet.MessagingHub.Client.Template/" rel="NuGet">![NuGet](https://img.shields.io/nuget/v/Takenet.MessagingHub.Client.Template.svg)</a>
 
