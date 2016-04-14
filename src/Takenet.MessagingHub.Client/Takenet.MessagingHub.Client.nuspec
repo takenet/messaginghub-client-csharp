@@ -3,21 +3,15 @@
   <metadata>
     <id>Takenet.MessagingHub.Client</id>
     <version>$version$</version>
-    <title>Messaging Hub client SDK</title>
+    <title>Messaging Hub Client</title>
     <authors>takenet</authors>
     <owners>takenet</owners>
     <projectUrl>https://github.com/takenet/messaginghub-client-csharp</projectUrl>
     <licenseUrl>https://raw.githubusercontent.com/takenet/messaginghub-client-csharp/master/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>The C# SDK for the Messaging Hub portal</description>
+    <description>The C# SDK for the Messaging Hub</description>
     <copyright>Copyright ©  2015 Curupira S/A</copyright>
     <tags>lime messaginghub</tags>
-    <dependencies>
-      <dependency id="Lime.Protocol" version="0.4.25" />
-      <dependency id="Lime.Transport.Tcp" version="0.4.25" />
-      <dependency id="Lime.Messaging" version="0.4.25" />
-      <dependency id="Lime.Protocol.Serialization.Newtonsoft" version="0.4.25" />     
-    </dependencies>
   </metadata>
   <files>
     <file src="bin\Release\Takenet.MessagingHub.Client.dll" target="lib\net461\Takenet.MessagingHub.Client.dll" />

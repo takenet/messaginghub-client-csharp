@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
-using Takenet.MessagingHub.Client.Receivers;
+using Takenet.MessagingHub.Client.Connection;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Messages;
 using Takenet.Textc;
 using Takenet.Textc.Csdl;
 using Takenet.Textc.Processors;
 using Takenet.Textc.Scorers;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Textc
 {
@@ -17,22 +21,24 @@ namespace Takenet.MessagingHub.Client.Textc
     /// </summary>
     public sealed class TextcMessageReceiverBuilder
     {
-        private readonly MessagingHubSenderBuilder _senderBuilder;
+        private readonly MessagingHubClientBuilder _clientBuilder;
         private IContextProvider _contextProvider;
-        private Func<Message, MessageReceiverBase, Task> _matchNotFoundHandler;
+        private Func<Message, IMessageReceiver, Task> _matchNotFoundHandler;
 
+        private IMessagingHubClient _client;
         private IOutputProcessor _outputProcessor;
         private ISyntaxParser _syntaxParser;
         private IExpressionScorer _expressionScorer;
         private ICultureProvider _cultureProvider;
         private readonly List<Func<IOutputProcessor, ICommandProcessor>> _commandProcessorFactories;
-        
-        public TextcMessageReceiverBuilder(MessagingHubSenderBuilder senderBuilder, IOutputProcessor outputProcessor = null, ISyntaxParser syntaxParser = null,
+
+        public TextcMessageReceiverBuilder(MessagingHubClientBuilder clientBuilder, IOutputProcessor outputProcessor = null, ISyntaxParser syntaxParser = null,
             IExpressionScorer expressionScorer = null, ICultureProvider cultureProvider = null)
         {
-            if (senderBuilder == null) throw new ArgumentNullException(nameof(senderBuilder));
-            _senderBuilder = senderBuilder;                        
-            _outputProcessor = outputProcessor ?? new MessageOutputProcessor(() => _senderBuilder.EnvelopeSender);
+            if (clientBuilder == null) throw new ArgumentNullException(nameof(clientBuilder));
+            _clientBuilder = clientBuilder;
+            _client = _clientBuilder.Build();
+            _outputProcessor = outputProcessor ?? new MessageOutputProcessor(() => _client);
             _syntaxParser = syntaxParser ?? new SyntaxParser();
             _expressionScorer = expressionScorer ?? new RatioExpressionScorer();
             _cultureProvider = cultureProvider ?? new DefaultCultureProvider(CultureInfo.InvariantCulture);
@@ -100,14 +106,14 @@ namespace Takenet.MessagingHub.Client.Textc
         public TextcMessageReceiverBuilder WithMatchNotFoundMessage(string matchNotFoundMessage) => 
             WithMatchNotFoundHandler(
                 (message, receiver) =>
-                    receiver.EnvelopeSender.SendMessageAsync(matchNotFoundMessage, message.Pp ?? message.From));
+                    _client.SendMessageAsync(matchNotFoundMessage, message.Pp ?? message.From, CancellationToken.None));
 
         /// <summary>
         /// Sets a handler to be called in case of no match of the user input.
         /// </summary>
         /// <param name="matchNotFoundHandler">The handler.</param>
         /// <returns></returns>
-        public TextcMessageReceiverBuilder WithMatchNotFoundHandler(Func<Message, MessageReceiverBase, Task> matchNotFoundHandler)
+        public TextcMessageReceiverBuilder WithMatchNotFoundHandler(Func<Message, IMessageReceiver, Task> matchNotFoundHandler)
         {
             _matchNotFoundHandler = matchNotFoundHandler;
             return this;
@@ -191,10 +197,11 @@ namespace Takenet.MessagingHub.Client.Textc
         /// Builds a new instance of <see cref="TextcMessageReceiver"/> using the defined configurations and adds it to the associated <see cref="MessagingHubClient"/> instance.
         /// </summary>
         /// <returns></returns>
-        public MessagingHubSenderBuilder BuildAndAddTextcMessageReceiver()
+        public IMessagingHubClient BuildAndAddTextcMessageReceiver()
         {
-            _senderBuilder.AddMessageReceiver(Build(), MediaTypes.PlainText);
-            return _senderBuilder;
+            var client = _clientBuilder.Build();
+            client.AddMessageReceiver(Build(), MediaTypes.PlainText);
+            return client;
         }
     }
 }

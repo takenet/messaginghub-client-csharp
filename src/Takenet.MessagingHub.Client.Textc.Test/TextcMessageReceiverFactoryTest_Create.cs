@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Shouldly;
 using Takenet.MessagingHub.Client.Host;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 using Takenet.MessagingHub.Client.Test;
 using Takenet.Textc;
 
@@ -114,6 +113,14 @@ namespace Takenet.MessagingHub.Client.Textc.Test
         [Test]
         public async Task Create_With_Json_Single_Multiple_Syntaxes_Should_Create_Processor()
         {
+            if (DateTime.Today.DayOfWeek == DayOfWeek.Saturday ||
+                DateTime.Today.DayOfWeek == DayOfWeek.Sunday ||
+                DateTime.Now.Hour < 6 ||
+                DateTime.Now.Hour > 19)
+            {
+                Assert.Ignore("As this test uses hmg server, it cannot be run out of worktime!");
+            }
+
             // Arrange
             var json =
                 "{\"login\":\"image.search\",\"accessKey\":\"Z09SNXdt\",\"messageReceivers\":[{\"type\":\"TextcMessageReceiverFactory\",\"mediaType\":\"text/plain\",\"settings\":{\"commands\":[{\"syntaxes\":[\"[:Word(mais,more,top) top:Integer? query+:Text]\"],\"processorType\":\"TestCommandProcessor\",\"method\":\"GetImageDocumentAsync\"},{\"syntaxes\":[\"[query+:Text]\"],\"processorType\":\"TestCommandProcessor\",\"method\":\"GetFirstImageDocumentAsync\"},{\"syntaxes\":[\"[query+:Text option1:Word(a,b,c,d)]\"],\"returnText\":\"This is an return value\"},{\"syntaxes\":[\"[query+:Text option1:Word(x,y,z]\"],\"returnJson\":{\"key\":\"value1\"}}],\"scorerType\":\"MatchCountExpressionScorer\"}}],\"startupType\":\"SettingsTestStartable\",\"settings\":{\"bingApiKey\":\"z1f6I3djqJy0sWG/0HxxwjbrVrQZMF1JbTK+a5U9oNU=\"}}";
@@ -182,7 +189,7 @@ namespace Takenet.MessagingHub.Client.Textc.Test
 
         public static IDictionary<string, object> Settings;
 
-        public Task StartAsync()
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             _Started = true;
             return Task.CompletedTask;

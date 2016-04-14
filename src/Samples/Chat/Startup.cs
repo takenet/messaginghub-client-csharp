@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
-using Takenet.MessagingHub.Client;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Chat
 {
@@ -15,7 +17,7 @@ namespace Chat
             _settings = settings;
         }
 
-        public Task StartAsync()
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

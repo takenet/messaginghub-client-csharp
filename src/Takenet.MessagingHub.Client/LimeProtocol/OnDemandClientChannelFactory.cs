@@ -1,17 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Lime.Protocol.Client;
 
 namespace Takenet.MessagingHub.Client.LimeProtocol
 {
     internal class OnDemandClientChannelFactory : IOnDemandClientChannelFactory
     {
-        public IOnDemandClientChannel Create(IEstablishedClientChannelBuilder establishedClientChannelBuilder)
+        public IEstablishedClientChannelBuilder ChannelBuilder { get; set; }
+
+        public OnDemandClientChannelFactory(IEstablishedClientChannelBuilder channelBuilder)
         {
-            return new OnDemandClientChannel(establishedClientChannelBuilder);
+            if (channelBuilder == null) throw new ArgumentNullException(nameof(channelBuilder));
+
+            ChannelBuilder = channelBuilder;
+        }
+
+        public IOnDemandClientChannel Create()
+        {
+            return new OnDemandClientChannel(ChannelBuilder);
         }
     }
 }

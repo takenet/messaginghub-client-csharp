@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Text;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Lime.Messaging.Resources;
-using Lime.Protocol;
 using Shouldly;
+using Takenet.MessagingHub.Client.Connection;
 
 namespace Takenet.MessagingHub.Client.Test
 {
@@ -12,9 +10,16 @@ namespace Takenet.MessagingHub.Client.Test
     internal class MessagingHubClientTests_Start : MessagingHubClientTestBase
     {
         [SetUp]
-        protected override void Setup()
+        public void TestSetUp()
         {
             base.Setup();
+            if (DateTime.Today.DayOfWeek == DayOfWeek.Saturday ||
+                DateTime.Today.DayOfWeek == DayOfWeek.Sunday ||
+                DateTime.Now.Hour < 6 ||
+                DateTime.Now.Hour > 19)
+            {
+                Assert.Ignore("As this test uses hmg server, it cannot be run out of worktime!");
+            }
         }
 
         [TearDown]
@@ -24,10 +29,11 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        [Ignore("Requires real server connection")]
         public async Task StartSuccessfully()
         {
             var client = new MessagingHubClientBuilder()
+                .WithMaxConnectionRetries(1)
+                .UsingHostName("hmg.msging.net")
                 .UsingGuest()
                 .Build();
 
@@ -35,12 +41,13 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        [Ignore("Taking too long")]
         public void TryToStartConnectionWithInvalidServer()
         {
             var client = new MessagingHubClientBuilder()
+                .WithMaxConnectionRetries(1)
                 .UsingHostName("invalid.iris.io")
                 .UsingGuest()
+                .WithSendTimeout(TimeSpan.FromSeconds(2))
                 .Build();
 
             Should.ThrowAsync<TimeoutException>(async () => await client.StartAsync().ConfigureAwait(false)).Wait();

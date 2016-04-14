@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Lime.Protocol;
+using Takenet.MessagingHub.Client.Connection;
 using Takenet.MessagingHub.Client.Host;
-using Takenet.MessagingHub.Client.Receivers;
+using Takenet.MessagingHub.Client.Listener;
 using Takenet.Textc;
 using Takenet.Textc.Csdl;
 using Takenet.Textc.Processors;
@@ -19,7 +22,7 @@ namespace Takenet.MessagingHub.Client.Textc
 
         public async Task<IMessageReceiver> CreateAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings)
         {
-            var builder = new TextcMessageReceiverBuilder(serviceProvider.GetService<MessagingHubSenderBuilder>());
+            var builder = new TextcMessageReceiverBuilder(serviceProvider.GetService<MessagingHubClientBuilder>());
             if (settings != null)
             {
                 var textcMessageReceiverSettings = TextcMessageReceiverSettings.ParseFromSettings(settings);
@@ -85,6 +88,9 @@ namespace Takenet.MessagingHub.Client.Textc
                             {
                                 var processorTypeName = commandSetting.ProcessorType;
                                 var methodName = commandSetting.Method;
+                                var assembly = typeof(TextcMessageReceiverBuilder).Assembly;
+                                var path = new FileInfo(assembly.Location).DirectoryName;
+                                Lime.Protocol.Serialization.TypeUtil.LoadAssembliesAndReferences(path, assemblyFilter: Lime.Protocol.Serialization.TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter);
                                 var processorType = Bootstrapper.ParseTypeName(processorTypeName);
                                 object processor;
                                 if (!ProcessorInstancesDictionary.TryGetValue(processorType, out processor))
