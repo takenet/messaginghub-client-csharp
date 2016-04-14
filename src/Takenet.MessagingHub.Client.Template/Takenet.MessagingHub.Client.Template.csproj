@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Takenet.MessagingHub.Client.Template</RootNamespace>
-    <AssemblyName>mhh</AssemblyName>
+    <AssemblyName>Takenet.MessagingHub.Client.Template</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -45,7 +45,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Takenet.MessagingHub.Client.Template.nuspec" />
+    <None Include="Takenet.MessagingHub.Client.Template.nuspec">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="uninstall.ps1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -65,17 +67,17 @@
     <None Include="Startup.cs.pp" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Takenet.MessagingHub.Client.Host\Takenet.MessagingHub.Client.Host.csproj">
       <Project>{288513c0-fcd1-47b0-9c98-00b34ce99b63}</Project>
       <Name>Takenet.MessagingHub.Client.Host</Name>
     </ProjectReference>
     <ProjectReference Include="..\Takenet.MessagingHub.Client\Takenet.MessagingHub.Client.csproj">
-      <Project>{628F8EE4-956A-49CE-B9D6-BD5F6800FE6F}</Project>
+      <Project>{628f8ee4-956a-49ce-b9d6-bd5f6800fe6f}</Project>
       <Name>Takenet.MessagingHub.Client</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

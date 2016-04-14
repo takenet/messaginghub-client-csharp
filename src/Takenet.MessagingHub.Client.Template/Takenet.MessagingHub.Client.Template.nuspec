@@ -19,11 +19,5 @@
     <file src="Startup.cs.pp" target="content\Startup.cs.pp"/>
     <file src="install.ps1" target="tools\net461\install.ps1"/>
     <file src="uninstall.ps1" target="tools\net461\uninstall.ps1"/>
-    <file src="bin\Release\mhh.exe" target="tools\net461\mhh.exe" />
-    <file src="bin\Release\mhh.exe.config" target="tools\net461\mhh.exe.config" />
-    <file src="bin\Release\Lime.Messaging.dll" target="tools\net461\Lime.Messaging.dll" />
-    <file src="bin\Release\Lime.Protocol.dll" target="tools\net461\Lime.Protocol.dll" />
-    <file src="bin\Release\Newtonsoft.Json.dll" target="tools\net461\Newtonsoft.Json.dll" />
-    <file src="bin\Release\Takenet.MessagingHub.Client.dll" target="tools\net461\Takenet.MessagingHub.Client.dll" />
   </files>
 </package>
