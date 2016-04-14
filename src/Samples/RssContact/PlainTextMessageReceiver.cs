@@ -1,16 +1,17 @@
 using Lime.Protocol;
 using System;
 using System.Diagnostics;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Takenet.MessagingHub.Client;
-using Takenet.MessagingHub.Client.Receivers;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace RssContact
 {
-    public class PlainTextMessageReceiver : MessageReceiverBase
+    public class PlainTextMessageReceiver : IMessageReceiver
     {
-        public async override Task ReceiveAsync(Message message)
+        public async Task ReceiveAsync(Message message, IMessagingHubSender sender, CancellationToken cancellationToken)
         {
             Debug.WriteLine($"From: {message.From} \tContent: {message.Content}");
             try
@@ -18,8 +19,7 @@ namespace RssContact
                 Uri feedUri;
                 if (!Uri.TryCreate(message.Content.ToString(), UriKind.Absolute, out feedUri))
                 {
-                    await EnvelopeSender.SendMessageAsync("URL inválida", message.From);
-                    await EnvelopeSender.SendNotificationAsync(message.ToConsumedNotification());
+                    await sender.SendMessageAsync("URL inválida", message.From, cancellationToken);
                     return;
                 }
 
@@ -27,15 +27,13 @@ namespace RssContact
                 var items = FeedParser.Get(feedUri);
                 foreach (var item in items)
                 {
-                    await EnvelopeSender.SendMessageAsync($"[{item.Title}]\n{item.Content}", message.From);
+                    await sender.SendMessageAsync($"[{item.Title}]\n{item.Content}", message.From, cancellationToken);
                 }
-                await EnvelopeSender.SendNotificationAsync(message.ToConsumedNotification());
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
-                await EnvelopeSender.SendMessageAsync("Houve um erro ao processar o feed.\nPor favor, tenta novamente.", message.From);
-                await EnvelopeSender.SendNotificationAsync(message.ToConsumedNotification());
+                await sender.SendMessageAsync("Houve um erro ao processar o feed.\nPor favor, tenta novamente.", message.From, cancellationToken);
             }
         }
     }

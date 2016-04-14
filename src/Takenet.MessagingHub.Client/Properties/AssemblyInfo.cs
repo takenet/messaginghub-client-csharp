@@ -38,5 +38,6 @@ using System.Runtime.InteropServices;
 
 // Custom settings
 [assembly: InternalsVisibleTo("Takenet.MessagingHub.Client.Test")]
+[assembly: InternalsVisibleTo("Takenet.MessagingHub.Client.Host.Test")]
 [assembly: InternalsVisibleTo("Takenet.MessagingHub.Client.Textc")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

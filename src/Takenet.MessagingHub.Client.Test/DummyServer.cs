@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using Lime.Protocol;
 using Lime.Protocol.Listeners;
 using Lime.Protocol.Security;
@@ -13,6 +8,7 @@ using Lime.Protocol.Serialization.Newtonsoft;
 using Lime.Protocol.Server;
 using Lime.Protocol.Util;
 using Lime.Transport.Tcp;
+using Takenet.MessagingHub.Client.Listener;
 
 namespace Takenet.MessagingHub.Client.Test
 {
@@ -39,9 +35,9 @@ namespace Takenet.MessagingHub.Client.Test
 
         public Uri ListenerUri { get; }
 
-        public async Task StartAsync()
+        public async Task StartAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            await ListenerSemaphore.WaitAsync();
+            await ListenerSemaphore.WaitAsync(cancellationToken);
 
             await _transportListener.StartAsync();
 #pragma warning disable 4014
@@ -98,7 +94,7 @@ namespace Takenet.MessagingHub.Client.Test
                 _cts.Token);
         }
 
-        public async Task StopAsync()
+        public async Task StopAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             _cts?.Cancel();
             await (_transportListener?.StopAsync() ?? Task.CompletedTask);

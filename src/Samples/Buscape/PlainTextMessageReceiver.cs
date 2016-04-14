@@ -11,11 +11,12 @@ using Lime.Messaging.Contents;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Takenet.MessagingHub.Client;
-using Takenet.MessagingHub.Client.Receivers;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Buscape
 {
-    public sealed class PlainTextMessageReceiver : MessageReceiverBase, IDisposable
+    public sealed class PlainTextMessageReceiver : IMessageReceiver, IDisposable
     {
         private const string StartMessage = "Iniciar";
         private const string FinishMessage = "ENCERRAR";
@@ -47,66 +48,59 @@ namespace Buscape
             
         }
 
-        public override async Task ReceiveAsync(Message message)
+        public async Task ReceiveAsync(Message message, IMessagingHubSender sender, CancellationToken cancellationToken)
         {
             try
             {
-                await EnvelopeSender.SendNotificationAsync(new Notification
-                {
-                    Id = message.Id,
-                    Event = Event.Consumed,
-                    To = message.From
-                });
-
-                await ProcessMessagesAsync(message);
+                await ProcessMessagesAsync(sender, message, cancellationToken);
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Exception processing message: {e}");
-                await EnvelopeSender.SendMessageAsync(@"Falhou :(", message.From);
+                await sender.SendMessageAsync(@"Falhou :(", message.From, cancellationToken);
             }
         }
 
-        private async Task ProcessMessagesAsync(Message message)
+        private async Task ProcessMessagesAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
         {
             var keyword = message.Content.ToString();
 
             if (keyword.First() == '#')
                 keyword = keyword.Substring(Math.Min(keyword.Length, 5)).Trim();
 
-            if (await HandleStartMessageAsync(message, keyword)) return;
+            if (await HandleStartMessageAsync(sender, message, keyword, cancellationToken)) return;
 
-            if (await HandleEndOfSearchAsync(message, keyword)) return;
+            if (await HandleEndOfSearchAsync(sender, message, keyword, cancellationToken)) return;
 
-            if (await HandleNextPageRequestAsync(message, keyword)) return;
+            if (await HandleNextPageRequestAsync(sender, message, keyword, cancellationToken)) return;
 
             keyword = HandleNextPageKeywordAsync(message, keyword);
 
             var uri = await ComposeSearchUriAsync(message, keyword);
 
-            await ExecuteSearchAsync(message, uri);
+            await ExecuteSearchAsync(sender, message, uri, cancellationToken);
         }
 
-        private async Task<bool> HandleStartMessageAsync(Message message, string keyword)
+        private static async Task<bool> HandleStartMessageAsync(IMessagingHubSender sender, Message message, string keyword, CancellationToken cancellationToken)
         {
             if (keyword != StartMessage)
                 return false;
 
             Console.WriteLine($"Start message received from {message.From}!");
-            await EnvelopeSender.SendMessageAsync(@"Tudo pronto. Qual produto deseja pesquisar?", message.From);
+            await sender.SendMessageAsync(@"Tudo pronto. Qual produto deseja pesquisar?", message.From, cancellationToken);
             return true;
         }
 
-        private async Task<bool> HandleEndOfSearchAsync(Message message, string keyword)
+        private static async Task<bool> HandleEndOfSearchAsync(IMessagingHubSender sender, Message message, string keyword, CancellationToken cancellationToken)
         {
             if (keyword != FinishMessage)
                 return false;
 
-            await EnvelopeSender.SendMessageAsync(@"Obrigado por usar o aplicativo OMNI!", message.From);
+            await sender.SendMessageAsync(@"Obrigado por usar o aplicativo OMNI!", message.From, cancellationToken);
             return true;
         }
 
-        private async Task<bool> HandleNextPageRequestAsync(Message message, string keyword)
+        private async Task<bool> HandleNextPageRequestAsync(IMessagingHubSender sender, Message message, string keyword, CancellationToken cancellationToken)
         {
             if (keyword != MoreResultsMessage)
                 return false;
@@ -114,7 +108,7 @@ namespace Buscape
             if (Session.Contains(message.From.ToString()))
                 return false;
 
-            await EnvelopeSender.SendMessageAsync(@"Não foi possível identificar o último item pesquisado!", message.From);
+            await sender.SendMessageAsync(@"Não foi possível identificar o último item pesquisado!", message.From, cancellationToken);
             return true;
         }
 
@@ -188,7 +182,7 @@ namespace Buscape
             }
         }
 
-        private async Task ExecuteSearchAsync(Message message, string uri)
+        private async Task ExecuteSearchAsync(IMessagingHubSender sender, Message message, string uri, CancellationToken cancellationToken)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Get, uri))
             {
@@ -197,7 +191,7 @@ namespace Buscape
                     var buscapeResponse = await WebClient.SendAsync(request, cancellationTokenSource.Token);
                     if (buscapeResponse.StatusCode != HttpStatusCode.OK)
                     {
-                        await EnvelopeSender.SendMessageAsync(@"Não foi possível obter uma resposta do Buscapé!", message.From);
+                        await sender.SendMessageAsync(@"Não foi possível obter uma resposta do Buscapé!", message.From, cancellationToken);
                     }
                     else
                     {
@@ -210,7 +204,7 @@ namespace Buscape
                                 try
                                 {
                                     var resultItem = ParseProduct(product);
-                                    await EnvelopeSender.SendMessageAsync(resultItem, message.From);
+                                    await sender.SendMessageAsync(resultItem, message.From, cancellationToken);
                                 }
                                 catch (Exception e)
                                 {
@@ -221,12 +215,12 @@ namespace Buscape
                         catch (Exception e)
                         {
                             Console.WriteLine($"Exception parsing response from Buscapé: {e}");
-                            await EnvelopeSender.SendMessageAsync("Nenhum resultado encontrado", message.From);
+                            await sender.SendMessageAsync("Nenhum resultado encontrado", message.From, cancellationToken);
                             return;
                         }
                         await Task.Delay(TimeSpan.FromSeconds(2), cancellationTokenSource.Token);
-                        await EnvelopeSender.SendMessageAsync($"Envie: {FinishMessage}; {MoreResultsMessage}", message.From);
-                        Console.WriteLine($"Response sent!");
+                        await sender.SendMessageAsync($"Envie: {FinishMessage}; {MoreResultsMessage}", message.From, cancellationToken);
+                        Console.WriteLine("Response sent!");
                     }
                 }
             }

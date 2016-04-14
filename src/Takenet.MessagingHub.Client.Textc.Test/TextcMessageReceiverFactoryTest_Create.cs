@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Shouldly;
 using Takenet.MessagingHub.Client.Host;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 using Takenet.MessagingHub.Client.Test;
 using Takenet.Textc;
 
@@ -190,7 +189,7 @@ namespace Takenet.MessagingHub.Client.Textc.Test
 
         public static IDictionary<string, object> Settings;
 
-        public Task StartAsync()
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             _Started = true;
             return Task.CompletedTask;

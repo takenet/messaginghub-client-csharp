@@ -8,23 +8,25 @@ To get started, create a new *Class library* using the *Visual Studio 2015 Updat
 
 From the Package Manager Console, install the application template using:
 
-    Install-Package Takenet.MessagingHub.Client.HostTemplate
+    Install-Package Takenet.MessagingHub.Client.Template
 
-## Client Configuration
+## Getting your access key
 
-To work with the Messaging Hub you need perform the authentication process.
-See more in [Client Configuration](http://messaginghub.io/docs/sdks/clientconfiguration).
+You will need an application account and access key to interact with the Messaging Hub. To get those, do as follows:
+- Access the Messaging Hub [Console](http://messaginghub.io/home/console).
+- In the `Applications` tab click [Add](http://messaginghub.io/application/add) to register your application.
+- After finishing the registration, get your application `identifier` and `access key` and use them to connect to the Messaging Hub.
 
-## Working with the Messaging Hub
+## Working with the Messaging Hub Client
 
-After reference the Messaging Hub.Client in your code and have the data to access, use the following operations:
+You can perform the following operations using the Messaging Hub Client:
 - Send and receive [messages](http://messaginghub.io/docs/sdks/messages)
 - Send and receive [notifications](http://messaginghub.io/docs/sdks/notifications)
 - Send [commands](http://messaginghub.io/docs/sdks/commands)
 
 ## Hosting
 
-Finally, you can host your code with us so that your work with the Messaging Hub will always be available.
+You can also host your code with us so that your application become always available.
 See more in [Hosting](http://messaginghub.io/docs/sdks/hosting).
 
 ## Contributions

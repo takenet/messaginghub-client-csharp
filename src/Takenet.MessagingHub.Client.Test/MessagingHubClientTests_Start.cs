@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Text;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Lime.Messaging.Resources;
-using Lime.Protocol;
 using Shouldly;
+using Takenet.MessagingHub.Client.Connection;
 
 namespace Takenet.MessagingHub.Client.Test
 {
@@ -34,6 +32,8 @@ namespace Takenet.MessagingHub.Client.Test
         public async Task StartSuccessfully()
         {
             var client = new MessagingHubClientBuilder()
+                .WithMaxConnectionRetries(1)
+                .UsingHostName("hmg.msging.net")
                 .UsingGuest()
                 .Build();
 
@@ -44,6 +44,7 @@ namespace Takenet.MessagingHub.Client.Test
         public void TryToStartConnectionWithInvalidServer()
         {
             var client = new MessagingHubClientBuilder()
+                .WithMaxConnectionRetries(1)
                 .UsingHostName("invalid.iris.io")
                 .UsingGuest()
                 .WithSendTimeout(TimeSpan.FromSeconds(2))

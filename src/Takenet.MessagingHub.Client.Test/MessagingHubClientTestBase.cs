@@ -4,13 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Client;
-using Lime.Protocol.Security;
-using Lime.Protocol.Serialization.Newtonsoft;
-using Lime.Protocol.Server;
-using Lime.Protocol.Util;
-using Lime.Transport.Tcp;
 using NSubstitute;
+using Takenet.MessagingHub.Client.Connection;
 using Takenet.MessagingHub.Client.LimeProtocol;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Test
 {
@@ -18,16 +16,20 @@ namespace Takenet.MessagingHub.Client.Test
     {
         protected readonly TimeSpan TIME_OUT = TimeSpan.FromSeconds(2.5);
 
-        protected MessagingHubClient MessagingHubClient;
+        protected IMessagingHubConnection MessagingHubConnection;
         protected IOnDemandClientChannel OnDemandClientChannel;
         protected IOnDemandClientChannelFactory OnDemandClientChannelFactory;
         protected IEstablishedClientChannelBuilder EstablishedClientChannelBuilder;
-        protected EnvelopeListenerRegistrar EnvelopeListenerRegistrar;
         protected BlockingCollection<Message> MessageProducer;
         protected BlockingCollection<Notification> NotificationProducer;
         protected BlockingCollection<Command> CommandProducer;
+
         private TimeSpan _sendTimeout = TimeSpan.FromSeconds(20);
-        
+        private int _maxConnectionRetries = 1;
+
+        protected IMessagingHubListener MessagingHubListener { get; private set; }
+        protected IMessagingHubSender MessagingHubSender { get; private set; }
+
         protected virtual void Setup()
         {
             CreateProducers();
@@ -45,7 +47,8 @@ namespace Takenet.MessagingHub.Client.Test
             NotificationProducer.Dispose();
             CommandProducer.Dispose();
 
-            if (MessagingHubClient.Started) MessagingHubClient.StopAsync().Wait();            
+            if (MessagingHubConnection.IsConnected)
+                MessagingHubConnection.DisconnectAsync().Wait();
         }
 
         private void SubstituteOnDemandClientChannel()
@@ -69,7 +72,8 @@ namespace Takenet.MessagingHub.Client.Test
         private void SubstituteOnDemandClientChannelFactory()
         {
             OnDemandClientChannelFactory = Substitute.For<IOnDemandClientChannelFactory>();
-            OnDemandClientChannelFactory.Create(EstablishedClientChannelBuilder).Returns(OnDemandClientChannel);
+            OnDemandClientChannelFactory.ChannelBuilder.Returns(EstablishedClientChannelBuilder);
+            OnDemandClientChannelFactory.Create().Returns(OnDemandClientChannel);
         }
 
         private void CreateProducers()
@@ -81,10 +85,9 @@ namespace Takenet.MessagingHub.Client.Test
         
         private void CreateActualMessageHubClient()
         {
-            EnvelopeListenerRegistrar = new EnvelopeListenerRegistrar();
-            MessagingHubClient = new MessagingHubClient(EstablishedClientChannelBuilder, OnDemandClientChannelFactory, _sendTimeout, EnvelopeListenerRegistrar);            
+            MessagingHubConnection = new MessagingHubConnection(_sendTimeout, _maxConnectionRetries, OnDemandClientChannelFactory);
+            MessagingHubListener = new MessagingHubListener(MessagingHubConnection);
+            MessagingHubSender = new MessagingHubSender(MessagingHubConnection);
         }
-
-
     }
 }

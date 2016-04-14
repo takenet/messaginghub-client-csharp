@@ -1,4 +1,4 @@
-The client allow you to send commands through the Messaging Hub. But it is not possible to receive commands.
+The client also allow you to send commands to another Messaging Hub accounts.
 
 ## Sending Commands
 

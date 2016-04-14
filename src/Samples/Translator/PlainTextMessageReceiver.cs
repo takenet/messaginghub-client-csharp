@@ -1,18 +1,19 @@
 using Lime.Protocol;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Takenet.MessagingHub.Client;
-using Takenet.MessagingHub.Client.Receivers;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Translator
 {
-    public class PlainTextMessageReceiver : MessageReceiverBase
+    public class PlainTextMessageReceiver : IMessageReceiver
     {
-        public override async Task ReceiveAsync(Message message)
+        public async Task ReceiveAsync(Message message, IMessagingHubSender sender, CancellationToken cancellationToken)
         {
             Console.WriteLine($"From: {message.From} \tContent: {message.Content}");
-            await EnvelopeSender.SendMessageAsync("Pong!", message.From);
-            await EnvelopeSender.SendNotificationAsync(message.ToConsumedNotification());
+            await sender.SendMessageAsync("Pong!", message.From, cancellationToken);
         }
     }
 }
