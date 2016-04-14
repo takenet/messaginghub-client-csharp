@@ -37,10 +37,10 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         [Test]
-        public void Stop_Without_Start_Should_Throw_Exception()
+        public void Stop_Without_Start_Should_Not_Throw_Exception()
         {
             // Act // Assert
-            Should.ThrowAsync<InvalidOperationException>(async () => await MessagingHubConnection.DisconnectAsync()).Wait();
+            Should.NotThrow(async () => await MessagingHubConnection.DisconnectAsync());
         }
         
     }
