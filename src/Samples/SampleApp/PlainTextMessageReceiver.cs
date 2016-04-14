@@ -1,4 +1,4 @@
-﻿using Lime.Protocol;
+using Lime.Protocol;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,7 +6,7 @@ using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Sender;
 using Takenet.MessagingHub.Client.Listener;
 
-namespace $rootnamespace$
+namespace SampleApp
 {
     public class PlainTextMessageReceiver : IMessageReceiver
     {

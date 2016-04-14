@@ -82,6 +82,7 @@ namespace Takenet.MessagingHub.Client.Host
             }
 
             TypeUtil.LoadAssembliesAndReferences(path);
+            TypeUtil.LoadAssembliesAndReferences(path, "*.exe");
             AppDomain.CurrentDomain.AssemblyResolve += (sender, eventArgs) =>
             {
                 var assemblyName = new AssemblyName(eventArgs.Name);
