@@ -5,7 +5,7 @@ The **Messaging Hub Client** is a set of Nuget packages that allow the creation 
 
 ## Getting Started
 
-To get started with the Messaging Hub Client, see [our SDK documentation](http://messaginghub.io/docs/sdks/getting-started).
+To get started with the Messaging Hub Client, see our SDK documentation [here](http://messaginghub.io/docs/sdks/introduction).
 
 An introdutory application can be found [here](https://github.com/takenet/messaginghub-client-csharp/tree/master/src/Samples/GettingStarted), but we encourage you to use the *Messaging Hub Application Template* as described below.
 
@@ -15,7 +15,7 @@ To easily create Messaging Hub applications, create a new *class library* projec
 
 ## Documentation 
 
-The full documentation can be found at [http://messaginghub.io/docs/sdks/introduction](http://messaginghub.io/docs/sdks/introduction).
+The full documentation can be found at [http://messaginghub.io/docs](http://messaginghub.io/docs).
 
 ## License
 
