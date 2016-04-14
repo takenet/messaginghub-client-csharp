@@ -8,17 +8,17 @@ namespace Takenet.MessagingHub.Client.Listener
 {
     public class LambdaNotificationReceiver : INotificationReceiver
     {
-        private Func<IMessagingHubSender, Notification, CancellationToken, Task> OnNotificationReceived { get; }
+        private Func<Notification, IMessagingHubSender, CancellationToken, Task> OnNotificationReceived { get; }
 
-        public LambdaNotificationReceiver(Func<IMessagingHubSender, Notification, CancellationToken, Task> onNotificationReceived)
+        public LambdaNotificationReceiver(Func<Notification, IMessagingHubSender, CancellationToken, Task> onNotificationReceived)
         {
             if (onNotificationReceived == null) throw new ArgumentNullException(nameof(onNotificationReceived));
             OnNotificationReceived = onNotificationReceived;
         }
 
-        public Task ReceiveAsync(IMessagingHubSender sender, Notification envelope, CancellationToken cancellationToken = default(CancellationToken))
+        public Task ReceiveAsync(Notification notification, IMessagingHubSender sender, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return OnNotificationReceived?.Invoke(sender, envelope, cancellationToken);
+            return OnNotificationReceived?.Invoke(notification, sender, cancellationToken);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Playground
     /// </summary>
     public class PrintNotificationReceiver : INotificationReceiver
     {
-        public Task ReceiveAsync(IMessagingHubSender sender, Notification notification, CancellationToken cancellationToken)
+        public Task ReceiveAsync(Notification notification, IMessagingHubSender sender, CancellationToken cancellationToken)
         {
             Console.WriteLine("Notification of {0} event received. Reason: {1}", notification.Event, notification.Reason);
             return Task.FromResult(0);

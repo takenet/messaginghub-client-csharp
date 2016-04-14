@@ -9,7 +9,7 @@ namespace Echo
 {
     public class EchoMessageReceiver : IMessageReceiver
     {
-        public async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
+        public async Task ReceiveAsync(Message message, IMessagingHubSender sender, CancellationToken cancellationToken)
         {
             //Fire and forget messages
             if (Guid.Equals(message.Id, Guid.Empty))

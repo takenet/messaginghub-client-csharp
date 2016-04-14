@@ -48,7 +48,7 @@ namespace Buscape
             
         }
 
-        public async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
+        public async Task ReceiveAsync(Message message, IMessagingHubSender sender, CancellationToken cancellationToken)
         {
             try
             {

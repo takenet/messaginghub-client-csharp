@@ -11,7 +11,7 @@ namespace RssContact
 {
     public class PlainTextMessageReceiver : IMessageReceiver
     {
-        public async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
+        public async Task ReceiveAsync(Message message, IMessagingHubSender sender, CancellationToken cancellationToken)
         {
             Debug.WriteLine($"From: {message.From} \tContent: {message.Content}");
             try

@@ -13,7 +13,7 @@ namespace Playground
     /// </summary>
     public class PlainTextMessageReceiver : IMessageReceiver
     {
-        public async Task ReceiveAsync(IMessagingHubSender sender, Message message, CancellationToken cancellationToken)
+        public async Task ReceiveAsync(Message message, IMessagingHubSender sender, CancellationToken cancellationToken)
         {
             Console.WriteLine(message.Content.ToString());
             await sender.SendMessageAsync("Thanks for your message!", message.From, cancellationToken);
