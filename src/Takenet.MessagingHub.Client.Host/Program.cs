@@ -86,7 +86,8 @@ namespace Takenet.MessagingHub.Client.Host
             AppDomain.CurrentDomain.AssemblyResolve += (sender, eventArgs) =>
             {
                 var assemblyName = new AssemblyName(eventArgs.Name);
-                var filePath = Path.Combine(path, $"{assemblyName.Name}.dll");
+                var fileName = new FileInfo(assemblyName.FullName).Name;
+                var filePath = Path.Combine(path, $"{fileName}");
                 return File.Exists(filePath) ? Assembly.LoadFile(filePath) : null;
             };
         }
