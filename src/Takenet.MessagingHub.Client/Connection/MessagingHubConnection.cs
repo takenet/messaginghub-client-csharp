@@ -72,14 +72,15 @@ namespace Takenet.MessagingHub.Client.Connection
 
             try
             {
-                if (!IsConnected) throw new InvalidOperationException("The client is not started");
-
-                using (var cancellationTokenSource = new CancellationTokenSource(SendTimeout))
+                if (OnDemandClientChannel != null)
                 {
-                    await OnDemandClientChannel.FinishAsync(cancellationTokenSource.Token).ConfigureAwait(false);
-                }
+                    using (var cancellationTokenSource = new CancellationTokenSource(SendTimeout))
+                    {
+                        await OnDemandClientChannel.FinishAsync(cancellationTokenSource.Token).ConfigureAwait(false);
+                    }
 
-                OnDemandClientChannel.DisposeIfDisposable();
+                    OnDemandClientChannel.DisposeIfDisposable();
+                }
                 IsConnected = false;
             }
             finally

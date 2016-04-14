@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Lime.Protocol.Serialization;
 
 namespace Takenet.MessagingHub.Client.Host
 {
@@ -80,6 +81,7 @@ namespace Takenet.MessagingHub.Client.Host
                 path = Environment.CurrentDirectory;
             }
 
+            TypeUtil.LoadAssembliesAndReferences(path);
             AppDomain.CurrentDomain.AssemblyResolve += (sender, eventArgs) =>
             {
                 var assemblyName = new AssemblyName(eventArgs.Name);
