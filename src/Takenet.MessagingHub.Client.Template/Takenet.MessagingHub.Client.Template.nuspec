@@ -3,11 +3,11 @@
   <metadata>
     <id>Takenet.MessagingHub.Client.Template</id>
     <version>$version$</version>
-    <title>Messaging Hub Client Template</title>
+    <title>Messaging Hub Application Template</title>
     <authors>Takenet</authors>
     <owners>takenet</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Messaging Hub Client Template</description>
+    <description>Messaging Hub Application Template</description>
     <summary>A template to create Messaging Hub applications</summary>
     <copyright>Copyright © 2016 Curupira S/A</copyright>
     <tags>messagingHub</tags>

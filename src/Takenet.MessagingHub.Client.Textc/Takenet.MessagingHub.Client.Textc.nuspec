@@ -3,19 +3,15 @@
   <metadata>
     <id>Takenet.MessagingHub.Client.Textc</id>
     <version>$version$</version>
-    <title>Messaging Hub Textc extensions</title>
+    <title>Messaging Hub Textc Extensions</title>
     <authors>takenet</authors>
     <owners>takenet</owners>
     <projectUrl>https://github.com/takenet/messaginghub-client-csharp</projectUrl>
     <licenseUrl>https://raw.githubusercontent.com/takenet/messaginghub-client-csharp/master/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Textc extensions for the Messaging Hub SDK</description>
+    <description>Textc extensions for the Messaging Hub Client</description>
     <copyright>Copyright ©  2015 Curupira S/A</copyright>
     <tags>lime messaginghub textc</tags>
-    <dependencies>
-      <dependency id="Takenet.MessagingHub.Client" version="$version$" />
-      <dependency id="Takenet.Textc" version="0.2.5.0" />
-    </dependencies>
   </metadata>
   <files>
     <file src="bin\Release\Takenet.MessagingHub.Client.Textc.dll" target="lib\net45\Takenet.MessagingHub.Client.Textc.dll" />

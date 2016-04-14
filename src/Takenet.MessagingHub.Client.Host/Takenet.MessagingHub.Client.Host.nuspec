@@ -3,23 +3,14 @@
   <metadata>
     <id>Takenet.MessagingHub.Client.Host</id>
     <version>$version$</version>
-    <title>MessagingHub Client Host</title>
+    <title>Messaging Hub Client Host</title>
     <authors>Takenet</authors>
     <owners>takenet</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>MessagingHub Client host</description>
-    <summary>A host implementation to run a library using MessagingHub SDK</summary>
+    <description>Messaging Hub Client Host</description>
+    <summary>A host implementation to run libraries that use the Messaging Hub Client</summary>
     <copyright>Copyright © 2016 Curupira S/A</copyright>
     <tags>messagingHub</tags>
-    <dependencies>
-      <dependency id="Lime.Messaging" version="0.4.20" />
-      <dependency id="Lime.Protocol" version="0.4.20" />
-      <dependency id="Lime.Protocol.Serialization.Newtonsoft" version="0.4.20" />
-      <dependency id="Lime.Transport.Tcp" version="0.4.20" />
-      <dependency id="Microsoft.Tpl.Dataflow" version="4.5.24" />
-      <dependency id="Newtonsoft.Json" version="8.0.3" />
-      <dependency id="Takenet.MessagingHub.Client" version="$version$" />
-    </dependencies>
   </metadata>
   <files>
     <file src="install.ps1" target="tools\net461\install.ps1"/>
