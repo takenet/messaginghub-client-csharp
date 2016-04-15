@@ -59,12 +59,12 @@ namespace Takenet.MessagingHub.Client.Listener
 
             if (envelope is Message)
             {
-                return (IEnumerable<ReceiverFactoryPredicate<TEnvelope>>) GetReceiversFor(_messageReceivers, envelope as Message).Concat(DefaultMessageReceivers);
+                return (IEnumerable<ReceiverFactoryPredicate<TEnvelope>>) GetReceiversFor(_messageReceivers, envelope as Message).Coalesce(DefaultMessageReceivers);
             }
 
             if (envelope is Notification)
             {
-                return (IEnumerable<ReceiverFactoryPredicate<TEnvelope>>) GetReceiversFor(_notificationReceivers, envelope as Notification).Concat(DefaultNotificationReceivers);
+                return (IEnumerable<ReceiverFactoryPredicate<TEnvelope>>) GetReceiversFor(_notificationReceivers, envelope as Notification).Coalesce(DefaultNotificationReceivers);
             }
 
             return Enumerable.Empty<ReceiverFactoryPredicate<TEnvelope>>();
