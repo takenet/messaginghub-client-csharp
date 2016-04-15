@@ -50,7 +50,9 @@ namespace Takenet.MessagingHub.Client.Connection
 
                 for (var i = 0; i < MaxConnectionRetries; i++)
                 {
-                    if (await EnsureConnectionIsOkayAsync()) 
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    if (await EnsureConnectionIsOkayAsync(cancellationToken))
                     {
                         IsConnected = true;
                         return;
@@ -106,28 +108,35 @@ namespace Takenet.MessagingHub.Client.Connection
             return (!(failedChannelInformation.Exception is LimeException)).AsCompletedTask();
         }
 
-        private async Task<bool> EnsureConnectionIsOkayAsync()
+        private async Task<bool> EnsureConnectionIsOkayAsync(CancellationToken cancellationToken)
         {
             try
             {
-                using (var cancellationTokenSource = new CancellationTokenSource(SendTimeout))
+                using (var timeoutTokenSource = new CancellationTokenSource(SendTimeout))
                 {
-                    var command = new Command
+                    using (
+                        var linkedCancellationTokenSource =
+                            CancellationTokenSource.CreateLinkedTokenSource(timeoutTokenSource.Token, cancellationToken)
+                        )
                     {
-                        Method = CommandMethod.Get,
-                        Uri = new LimeUri(UriTemplates.PING)
-                    };
+                        {
+                            var command = new Command
+                            {
+                                Method = CommandMethod.Get,
+                                Uri = new LimeUri(UriTemplates.PING)
+                            };
 
-                    var result = await OnDemandClientChannel.ProcessCommandAsync(command, cancellationTokenSource.Token).ConfigureAwait(false);
-                    return result.Status == CommandStatus.Success;
+                            var result =
+                                await
+                                    OnDemandClientChannel.ProcessCommandAsync(command,
+                                        linkedCancellationTokenSource.Token)
+                                        .ConfigureAwait(false);
+                            return result.Status == CommandStatus.Success;
+                        }
+                    }
                 }
             }
-            catch(LimeException)
-            {
-                // A LimeException usually means that some credential information is wrong, so throw it to allow client to check
-                throw;
-            }
-            catch (Exception ex)
+            catch (OperationCanceledException ex)
             {
                 Trace.WriteLine($"Exception connecting to Messaging Hub: {ex}");
                 return false;
