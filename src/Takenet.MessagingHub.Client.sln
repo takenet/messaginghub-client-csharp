@@ -64,6 +64,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pt", "pt", "{1963AB75-FD6A-
 		..\docs\pt\5-commands.md = ..\docs\pt\5-commands.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Switcher", "Samples\Switcher\Switcher.csproj", "{31174433-9470-45BE-A370-357A8B9BD8FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -134,6 +136,10 @@ Global
 		{15CBE898-930A-41A8-A985-B982DFE48827}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15CBE898-930A-41A8-A985-B982DFE48827}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15CBE898-930A-41A8-A985-B982DFE48827}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31174433-9470-45BE-A370-357A8B9BD8FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31174433-9470-45BE-A370-357A8B9BD8FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31174433-9470-45BE-A370-357A8B9BD8FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31174433-9470-45BE-A370-357A8B9BD8FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -153,5 +159,6 @@ Global
 		{75215B69-A755-40E3-8A7D-196327DCF157} = {91B1773F-C4C1-4E2D-8AE4-AF33D05B6166}
 		{E05D6622-4FF1-4498-B2D1-7982E27A331B} = {75215B69-A755-40E3-8A7D-196327DCF157}
 		{1963AB75-FD6A-4776-9CF6-FCF7CD344E8D} = {75215B69-A755-40E3-8A7D-196327DCF157}
+		{31174433-9470-45BE-A370-357A8B9BD8FD} = {C5A11983-81F4-4CA2-83DE-B3618D9A499C}
 	EndGlobalSection
 EndGlobal
