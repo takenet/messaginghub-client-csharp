@@ -12,18 +12,18 @@ namespace Takenet.MessagingHub.Client.Connection
         /// <summary>
         /// Inform an account to be used to connect to the Messaging Hub
         /// </summary>
-        /// <param name="account">Account identifier</param>
+        /// <param name="identifier">Account identifier</param>
         /// <param name="accessKey">Account access key</param>
         /// <returns>The same instance of the <see cref="IMessagingHubConnectionConfigurator"/>, configured to use the given account</returns>
-        TConfigurator UsingAccessKey(string account, string accessKey);
+        TConfigurator UsingAccessKey(string identifier, string accessKey);
 
         /// <summary>
         /// Inform an account to be used to connect to the Messaging Hub
         /// </summary>
-        /// <param name="account">Account identifier</param>
+        /// <param name="identifier">Account identifier</param>
         /// <param name="password">Account password</param>
         /// <returns>The same instance of the <see cref="IMessagingHubConnectionConfigurator"/>, configured to use the given account</returns>
-        TConfigurator UsingAccount(string account, string password);
+        TConfigurator UsingPassword(string identifier, string password);
 
         /// <summary>
         /// Overrides the session compression mode

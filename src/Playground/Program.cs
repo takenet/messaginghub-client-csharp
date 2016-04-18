@@ -29,7 +29,7 @@ namespace Playground
                 new MessagingHubClientBuilder()
                     // Since host name and domain name are not informed, the default value, 'msging.net', will be used for both parameters
                     .UsingHostName("hmg.msging.net")
-                    .UsingAccount(login, password)
+                    .UsingPassword(login, password)
                     .NewTextcMessageReceiverBuilder()
                     .ForSyntax(":LDWord(help,wtf,ajuda,comofaz)")
                     .Return(
