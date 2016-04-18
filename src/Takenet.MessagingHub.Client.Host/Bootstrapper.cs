@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,15 +41,15 @@ namespace Takenet.MessagingHub.Client.Host
             }
 
             var builder = new MessagingHubClientBuilder();
-            if (application.Account != null)
+            if (application.Identifier != null)
             {
                 if (application.Password != null)
                 {
-                    builder = builder.UsingAccount(application.Account, application.Password);
+                    builder = builder.UsingPassword(application.Identifier, application.Password);
                 }
                 else if (application.AccessKey != null)
                 {
-                    builder = builder.UsingAccessKey(application.Account, application.AccessKey);
+                    builder = builder.UsingAccessKey(application.Identifier, application.AccessKey);
                 }
                 else
                 {

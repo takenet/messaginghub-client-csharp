@@ -48,7 +48,7 @@ namespace Takenet.MessagingHub.Client.Connection
         {
             Authentication result = null;
 
-            if (IsGuest(Account))
+            if (IsGuest(Identifier))
             {
                 var guestAuthentication = new GuestAuthentication();
                 result = guestAuthentication;
@@ -68,7 +68,7 @@ namespace Takenet.MessagingHub.Client.Connection
             }
 
             if (result == null)
-                throw new InvalidOperationException($"A password or accessKey should be defined. Please use the '{nameof(UsingAccount)}' or '{nameof(UsingAccessKey)}' methods for that.");
+                throw new InvalidOperationException($"A password or accessKey should be defined. Please use the '{nameof(UsingPassword)}' or '{nameof(UsingAccessKey)}' methods for that.");
 
             return result;
         }
