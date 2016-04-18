@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
@@ -21,6 +23,7 @@ namespace Takenet.MessagingHub.Client.Textc.Test
         [SetUp]
         public async Task SetUpAsync()
         {
+            Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             Server = new DummyServer();
             await Server.StartAsync();
         }
@@ -123,7 +126,7 @@ namespace Takenet.MessagingHub.Client.Textc.Test
 
             // Arrange
             var json =
-                "{\"login\":\"image.search\",\"accessKey\":\"Z09SNXdt\",\"messageReceivers\":[{\"type\":\"TextcMessageReceiverFactory\",\"mediaType\":\"text/plain\",\"settings\":{\"commands\":[{\"syntaxes\":[\"[:Word(mais,more,top) top:Integer? query+:Text]\"],\"processorType\":\"TestCommandProcessor\",\"method\":\"GetImageDocumentAsync\"},{\"syntaxes\":[\"[query+:Text]\"],\"processorType\":\"TestCommandProcessor\",\"method\":\"GetFirstImageDocumentAsync\"},{\"syntaxes\":[\"[query+:Text option1:Word(a,b,c,d)]\"],\"returnText\":\"This is an return value\"},{\"syntaxes\":[\"[query+:Text option1:Word(x,y,z]\"],\"returnJson\":{\"key\":\"value1\"}}],\"scorerType\":\"MatchCountExpressionScorer\"}}],\"startupType\":\"SettingsTestStartable\",\"settings\":{\"bingApiKey\":\"z1f6I3djqJy0sWG/0HxxwjbrVrQZMF1JbTK+a5U9oNU=\"}}";
+                "{\"account\":\"image.search\",\"accessKey\":\"Z09SNXdt\",\"messageReceivers\":[{\"type\":\"TextcMessageReceiverFactory\",\"mediaType\":\"text/plain\",\"settings\":{\"commands\":[{\"syntaxes\":[\"[:Word(mais,more,top) top:Integer? query+:Text]\"],\"processorType\":\"TestCommandProcessor\",\"method\":\"GetImageDocumentAsync\"},{\"syntaxes\":[\"[query+:Text]\"],\"processorType\":\"TestCommandProcessor\",\"method\":\"GetFirstImageDocumentAsync\"},{\"syntaxes\":[\"[query+:Text option1:Word(a,b,c,d)]\"],\"returnText\":\"This is an return value\"},{\"syntaxes\":[\"[query+:Text option1:Word(x,y,z]\"],\"returnJson\":{\"key\":\"value1\"}}],\"scorerType\":\"MatchCountExpressionScorer\"}}],\"startupType\":\"SettingsTestStartable\",\"settings\":{\"bingApiKey\":\"z1f6I3djqJy0sWG/0HxxwjbrVrQZMF1JbTK+a5U9oNU=\"}}";
 
             var application = Application.ParseFromJson(json);
 
