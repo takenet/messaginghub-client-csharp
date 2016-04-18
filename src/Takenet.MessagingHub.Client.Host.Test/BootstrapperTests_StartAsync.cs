@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
@@ -20,6 +22,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
         [SetUp]
         public async Task SetUpAsync()
         {
+            Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             Server = new DummyServer();
             await Server.StartAsync();
         }

@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Lime.Protocol;
-using Takenet.MessagingHub.Client.Connection;
 using Takenet.MessagingHub.Client.Host;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.Textc;
