@@ -5,7 +5,6 @@ using Lime.Protocol;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using Takenet.MessagingHub.Client.Listener;
 
 namespace Takenet.MessagingHub.Client.Host
 {
@@ -15,9 +14,9 @@ namespace Takenet.MessagingHub.Client.Host
     public class Application
     {
         /// <summary>
-        /// Gets or sets the account.
+        /// Gets or sets the identifier.
         /// </summary>
-        public string Account { get; set; }
+        public string Identifier { get; set; }
 
         /// <summary>
         /// Gets or sets the domain.
@@ -108,6 +107,14 @@ namespace Takenet.MessagingHub.Client.Host
         /// The compression mode.
         /// </value>
         public SessionCompression? SessionCompression { get; set; }
+
+        /// <summary>
+        /// Identifies the version of the application.json schema. It is used to validate if a package is not outdated.
+        /// </summary>
+        /// <value>
+        /// The schema application.json version
+        /// </value>
+        public int SchemaVersion { get; set; }
 
         /// <summary>
         /// Creates an instance of <see cref="Application"/> from a JSON input.

@@ -8,7 +8,7 @@ namespace Takenet.MessagingHub.Client.Connection
     {
         public const string DEFAULT_DOMAIN = "msging.net";
 
-        protected string Account { get; private set; }
+        protected string Identifier { get; private set; }
         protected string Password { get; private set; }
         protected string AccessKey { get; private set; }
         protected TimeSpan SendTimeout { get; private set; }
@@ -18,7 +18,7 @@ namespace Takenet.MessagingHub.Client.Connection
         protected SessionCompression Compression { get; private set; }
         protected SessionEncryption Encryption { get; private set; }
 
-        protected Identity Identity => Identity.Parse($"{Account}@{Domain}");
+        protected Identity Identity => Identity.Parse($"{Identifier}@{Domain}");
         protected Uri EndPoint => new Uri($"net.tcp://{HostName}:55321");
 
         public MessagingHubConnectionConfigurator()
@@ -31,12 +31,12 @@ namespace Takenet.MessagingHub.Client.Connection
             Encryption = SessionEncryption.TLS;
         }
 
-        public TConfigurator UsingAccount(string account, string password)
+        public TConfigurator UsingPassword(string identifier, string password)
         {
-            if (string.IsNullOrEmpty(account)) throw new ArgumentNullException(nameof(account));
+            if (string.IsNullOrEmpty(identifier)) throw new ArgumentNullException(nameof(identifier));
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
 
-            Account = account;
+            Identifier = identifier;
             Password = password;
 
             return (TConfigurator)this;
@@ -44,16 +44,16 @@ namespace Takenet.MessagingHub.Client.Connection
 
         public TConfigurator UsingGuest()
         {
-            Account = Guid.NewGuid().ToString();
+            Identifier = Guid.NewGuid().ToString();
             return (TConfigurator)this;
         }
 
-        public TConfigurator UsingAccessKey(string account, string accessKey)
+        public TConfigurator UsingAccessKey(string identifier, string accessKey)
         {
-            if (string.IsNullOrEmpty(account)) throw new ArgumentNullException(nameof(account));
+            if (string.IsNullOrEmpty(identifier)) throw new ArgumentNullException(nameof(identifier));
             if (string.IsNullOrEmpty(accessKey)) throw new ArgumentNullException(nameof(accessKey));
 
-            Account = account;
+            Identifier = identifier;
             AccessKey = accessKey;
 
             return (TConfigurator)this;
