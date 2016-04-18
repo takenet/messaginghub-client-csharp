@@ -38,9 +38,7 @@ namespace Takenet.MessagingHub.Client.Host
 
             if (loadAssembliesFromWorkingDirectory)
             {
-                var assembly = Assembly.GetExecutingAssembly();
-                var path = new FileInfo(assembly.Location).DirectoryName;
-                TypeUtil.LoadAssembliesAndReferences(path, assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter);
+                TypeUtil.LoadAssembliesAndReferences(".", assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter);
             }
 
             var builder = new MessagingHubClientBuilder();
