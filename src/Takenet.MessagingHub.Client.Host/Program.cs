@@ -81,13 +81,10 @@ namespace Takenet.MessagingHub.Client.Host
                 path = Environment.CurrentDirectory;
             }
 
-            TypeUtil.LoadAssembliesAndReferences(path);
-            TypeUtil.LoadAssembliesAndReferences(path, "*.exe");
             AppDomain.CurrentDomain.AssemblyResolve += (sender, eventArgs) =>
             {
                 var assemblyName = new AssemblyName(eventArgs.Name);
-                var fileName = new FileInfo(assemblyName.FullName).Name;
-                var filePath = Path.Combine(path, $"{fileName}");
+                var filePath = Path.Combine(path, $"{assemblyName.Name}.dll");
                 return File.Exists(filePath) ? Assembly.LoadFile(filePath) : null;
             };
         }
