@@ -15,7 +15,7 @@ using Takenet.MessagingHub.Client.Test;
 namespace Takenet.MessagingHub.Client.Host.Test
 {
     [TestFixture]
-    public class BootstrapperTests_StartAsync
+    public class BootstrapperTests
     {
         public DummyServer Server;
 
@@ -318,6 +318,70 @@ namespace Takenet.MessagingHub.Client.Host.Test
             // Assert
             actual.ShouldNotBeNull();
             TestNotificationReceiver.InstanceCount.ShouldBe(3);
+        }
+
+        [Test]
+        public async Task Create_With_CustomServiceProvider()
+        {
+            // Arrange
+            var application = new Application()
+            {
+                Identifier = "testlogin",
+                AccessKey = "12345".ToBase64(),
+                MessageReceivers = new[]
+                {
+                    new MessageApplicationReceiver()
+                    {
+                        Type = typeof(TestMessageReceiverWithCustomParameter).Name,
+                        MediaType = "text/plain"
+                    }
+
+                },
+                HostName = Server.ListenerUri.Host,
+                ServiceProviderType = typeof(TestServiceProvider).Name
+            };
+
+            // Act
+            var actual = await Bootstrapper.StartAsync(application);
+
+            // Assert
+            actual.ShouldNotBeNull();
+            TestMessageReceiverWithCustomParameter.InstanceCount.ShouldBe(1);
+            TestMessageReceiverWithCustomParameter.Dependency.ShouldNotBeNull();
+        }
+    }
+
+    public class TestMessageReceiverWithCustomParameter : IMessageReceiver
+    {
+        public static TestCustomType Dependency { get; private set; }
+        public static int InstanceCount;
+
+        public TestMessageReceiverWithCustomParameter(TestCustomType dependency)
+        {
+            Dependency = dependency;
+            InstanceCount++;
+        }
+
+        public Task ReceiveAsync(Message envelope, IMessagingHubSender sender,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            return Task.CompletedTask;
+        }
+    }
+
+    public class TestCustomType
+    {
+    }
+
+    public class TestServiceProvider : IServiceProvider
+    {
+        public Type SingleInjectedType = typeof(TestCustomType);
+
+        public object GetService(Type serviceType)
+        {
+            if (serviceType == SingleInjectedType)
+                return new TestCustomType();
+            return null;
         }
     }
 

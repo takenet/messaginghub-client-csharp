@@ -56,6 +56,7 @@ Here follows all properties defined in the `application.json` file:
 | sessionEncryption | Encryption mode to be used.                              | None/TLS                   |
 | sessionCompression | Encryption mode to be used.                              | None                   |
 | startupType | Name of the .NET type that will be activated when your client is initialized. It must implement the `IStartable` interface. It may be its simple name (if it is found in the same assembly **assembly** as the file `application.json` file) or a fully qualified name with **assembly** name.    | Startup     |
+| serviceProviderType | A type to be used as a service provider for dependency injection. It must be an implementation of `IServiceProvider`. | ServiceProvider |
 | settings    | General settings for the application, in the key-value format. This value is injected in the instatiated types, such as **receivers** or the **startupType**. To receive values, such types must receive an instance of the type `IDictionary<string, object>` in their constructors. | { "myApiKey": "abcd1234" }   |
 | messageReceivers | Array of **message receivers**, that are types specialized in receiving messages. | *See below* |
 | notificationReceivers | Array of **notification receivers**, that are types specialized in receiving notifications. | *See below* |

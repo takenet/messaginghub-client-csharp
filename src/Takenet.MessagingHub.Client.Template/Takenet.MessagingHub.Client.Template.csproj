@@ -48,6 +48,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ServiceProvider.cs.pp" />
     <None Include="Takenet.MessagingHub.Client.Template.nuspec">
       <SubType>Designer</SubType>
     </None>
