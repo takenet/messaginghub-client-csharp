@@ -87,7 +87,7 @@ namespace Takenet.MessagingHub.Client.Host
 
 
         /// <summary>
-        /// Gets or sets a type to be used to as service provider for dependency injection. It must be an implementation of <see cref="IServiceProvider"/>.
+        /// Gets or sets a type to be used as a service provider for dependency injection. It must be an implementation of <see cref="IServiceProvider"/>.
         /// </summary>
         public string ServiceProviderType { get; set; }
 
