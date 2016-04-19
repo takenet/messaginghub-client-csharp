@@ -116,6 +116,12 @@ namespace Takenet.MessagingHub.Client.Host
         /// </value>
         public int SchemaVersion { get; set; }
 
+
+        /// <summary>
+        /// Indicates which schema version must be used to publish new applications
+        /// </summary>
+        public const int ExpectedSchemaVersion = 2;
+
         /// <summary>
         /// Creates an instance of <see cref="Application"/> from a JSON input.
         /// </summary>
