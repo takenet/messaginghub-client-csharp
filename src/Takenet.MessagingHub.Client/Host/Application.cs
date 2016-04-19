@@ -5,6 +5,7 @@ using Lime.Protocol;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Takenet.MessagingHub.Client.Listener;
 
 namespace Takenet.MessagingHub.Client.Host
 {
@@ -83,6 +84,12 @@ namespace Takenet.MessagingHub.Client.Host
         /// The type of the startup.
         /// </value>
         public string StartupType { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets a type to be used to as service provider for dependency injection. It must be an implementation of <see cref="IServiceProvider"/>.
+        /// </summary>
+        public string ServiceProviderType { get; set; }
 
         /// <summary>
         /// Gets or sets the settings to be injected to the startup and receivers types.
