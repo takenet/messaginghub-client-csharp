@@ -30,20 +30,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lime.Messaging, Version=0.4.42.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Lime.Messaging.0.4.42\lib\net461\Lime.Messaging.dll</HintPath>
+    <Reference Include="Lime.Messaging, Version=0.4.53.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lime.Messaging.0.4.53\lib\net461\Lime.Messaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Protocol, Version=0.4.42.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Lime.Protocol.0.4.42\lib\net461\Lime.Protocol.dll</HintPath>
+    <Reference Include="Lime.Protocol, Version=0.4.53.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lime.Protocol.0.4.53\lib\net461\Lime.Protocol.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Protocol.Serialization.Newtonsoft, Version=0.4.42.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Lime.Protocol.Serialization.Newtonsoft.0.4.42\lib\net461\Lime.Protocol.Serialization.Newtonsoft.dll</HintPath>
+    <Reference Include="Lime.Protocol.Serialization.Newtonsoft, Version=0.4.53.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lime.Protocol.Serialization.Newtonsoft.0.4.53\lib\net461\Lime.Protocol.Serialization.Newtonsoft.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Transport.Tcp, Version=0.4.42.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Lime.Transport.Tcp.0.4.42\lib\net461\Lime.Transport.Tcp.dll</HintPath>
+    <Reference Include="Lime.Transport.Tcp, Version=0.4.53.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lime.Transport.Tcp.0.4.53\lib\net461\Lime.Transport.Tcp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mhh, Version=0.3.30.0, Culture=neutral, processorArchitecture=MSIL">
@@ -70,27 +70,15 @@
       <HintPath>..\..\packages\Takenet.MessagingHub.Client.0.3.30\lib\net461\Takenet.MessagingHub.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Takenet.MessagingHub.Client.Template, Version=0.3.30.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Takenet.MessagingHub.Client.Template.0.3.30\lib\net461\Takenet.MessagingHub.Client.Template.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="OptOutMessageReceiver.cs" />
     <Compile Include="OptInMessageReceiver.cs" />
-    <Compile Include="PlainTextMessageReceiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceProvider.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="application.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
