@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Lime.Protocol.Network;
 using Takenet.MessagingHub.Client.Messages;
 using Takenet.MessagingHub.Client.Sender;
 
@@ -26,11 +27,12 @@ namespace Takenet.MessagingHub.Client.Listener
         {
             try
             {
-                await Task
-                        .WhenAll(
-                            _registrar.GetReceiversFor(envelope).Select(r =>
-                                CallReceiver(r.ReceiverFactory(), envelope, r.CancellationToken)))
-                        .ConfigureAwait(false);
+                var tasks = _registrar
+                    .GetReceiversFor(envelope)
+                    .Select(r => CallReceiver(r.ReceiverFactory(), envelope, r.CancellationToken));
+
+                await Task.WhenAll(tasks).ConfigureAwait(false);
+
                 return true;
             }
             catch (Exception ex)
@@ -61,6 +63,11 @@ namespace Takenet.MessagingHub.Client.Listener
             {
                 await base.CallReceiver(envelopeReceiver, envelope, cancellationToken);
                 await Sender.SendNotificationAsync(message.ToConsumedNotification(), cancellationToken);
+            }
+            catch (LimeException e)
+            {
+                await Sender.SendNotificationAsync(message.ToFailedNotification(e.Reason), cancellationToken);
+                throw;
             }
             catch (Exception e)
             {

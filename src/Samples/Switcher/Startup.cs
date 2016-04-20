@@ -8,6 +8,8 @@ using Lime.Messaging.Resources;
 using Lime.Protocol;
 using Newtonsoft.Json.Linq;
 using Takenet.MessagingHub.Client;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Switcher
 {
@@ -30,7 +32,7 @@ namespace Switcher
             _cts = new CancellationTokenSource();
         }
 
-        public async Task StartAsync()
+        public async Task StartAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             var delegationResult = await _sender.SendCommandAsync(
                 new Command()
@@ -41,7 +43,7 @@ namespace Switcher
                     {
                         Target = Node.Parse("postmaster@cs.msging.net")
                     }
-                });
+                }, cancellationToken);
 
             _sendScheduledMessagesTask = SendScheduledMessagesAsync();
         }
@@ -72,7 +74,7 @@ namespace Switcher
             catch (OperationCanceledException) when (_cts.IsCancellationRequested) { }
         }
 
-        public async Task StopAsync()
+        public async Task StopAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             _cts.Cancel();
             await _sendScheduledMessagesTask;
