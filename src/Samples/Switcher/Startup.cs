@@ -43,6 +43,17 @@ namespace Switcher
                     }
                 });
 
+            var configurationResult = await _sender.SendCommandAsync(
+                new Command()
+                {
+                    Uri = new LimeUri("lime://postmaster@cs.msging.net/configuration"),
+                    Method = CommandMethod.Set,
+                    Resource = new JsonDocument()
+                    {
+                        { "ignoreInboxNotifications", "true" }
+                    }
+                });
+
             _sendScheduledMessagesTask = SendScheduledMessagesAsync();
         }
 
