@@ -1,18 +1,24 @@
+using System.Threading;
 using Lime.Protocol;
 using System.Threading.Tasks;
 using Takenet.MessagingHub.Client;
-using Takenet.MessagingHub.Client.Receivers;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Switcher
 {
-    public class OptOutMessageReceiver : MessageReceiverBase
+    public class OptOutMessageReceiver : IMessageReceiver
     {
-        public override async Task ReceiveAsync(Message message)
+        public async Task ReceiveAsync(Message envelope, IMessagingHubSender sender,
+            CancellationToken cancellationToken = new CancellationToken())
         {
-            var sender = message.GetSender();
+            var senderAddress = envelope.GetSender();
 
-            Startup.Destinations.Remove(sender.ToIdentity());
-            await EnvelopeSender.SendMessageAsync("The identity was removed from the destinations list.", sender);
-        }
+            Startup.Destinations.Remove(senderAddress.ToIdentity());
+            await sender.SendMessageAsync(
+                "The identity was removed from the destinations list.", 
+                senderAddress, 
+                cancellationToken);
+        }        
     }
 }

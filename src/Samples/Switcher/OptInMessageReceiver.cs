@@ -2,21 +2,23 @@ using Lime.Protocol;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Messaging.Resources;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 using Takenet.MessagingHub.Client;
-using Takenet.MessagingHub.Client.Receivers;
 
 namespace Switcher
 {
-    public class OptInMessageReceiver : MessageReceiverBase
+    public class OptInMessageReceiver : IMessageReceiver
     {
-        public override async Task ReceiveAsync(Message message)
+        public async Task ReceiveAsync(Message envelope, IMessagingHubSender sender, CancellationToken cancellationToken = new CancellationToken())        
         {
-            var sender = message.GetSender();
-            if (GetPhoneNumberDomains().Contains(sender.Domain))
+            var senderAddress = envelope.GetSender();
+            if (GetPhoneNumberDomains().Contains(senderAddress.Domain))
             {
-                var identities = GetPhoneNumberDomains().Select(d => new Identity(sender.Name, d));
+                var identities = GetPhoneNumberDomains().Select(d => new Identity(senderAddress.Name, d));
 
                 foreach (var identity in identities)
                 {
@@ -31,11 +33,11 @@ namespace Switcher
                         }
                     };
 
-                    var addContactResponse = await EnvelopeSender.SendCommandAsync(addContactRequest);
+                    var addContactResponse = await sender.SendCommandAsync(addContactRequest, cancellationToken);
                     if (addContactResponse.Status != CommandStatus.Success)
                     {
-                        await EnvelopeSender.SendMessageAsync($"An error occurred while adding a contact with address '{identity}': {addContactResponse.Resource}",
-                            sender);
+                        await sender.SendMessageAsync($"An error occurred while adding a contact with address '{identity}': {addContactResponse.Resource}",
+                            senderAddress, cancellationToken);
                         return;
                     }
 
@@ -52,23 +54,23 @@ namespace Switcher
                             }
                         };
 
-                        var linkContactResponse = await EnvelopeSender.SendCommandAsync(linkContactRequest);
+                        var linkContactResponse = await sender.SendCommandAsync(linkContactRequest, cancellationToken);
                         if (linkContactResponse.Status != CommandStatus.Success)
                         {
-                            await EnvelopeSender.SendMessageAsync($"An error occurred while linking the contact '{identity}' to '{linkedIdentity}': {linkContactResponse.Resource}",
-                                sender);
+                            await sender.SendMessageAsync($"An error occurred while linking the contact '{identity}' to '{linkedIdentity}': {linkContactResponse.Resource}",
+                                senderAddress, cancellationToken);
                             return;
                         }
                     }                    
                 }
-                Startup.Destinations.Add(sender.ToIdentity());
-                await EnvelopeSender.SendMessageAsync($"Done! The contacts {identities.Select(i => i.ToString()).Aggregate((a, b) => $"{a}, {b}").Trim(' ')} are now linked.",
-                    sender);
+                Startup.Destinations.Add(senderAddress.ToIdentity());
+                await sender.SendMessageAsync($"Done! The contacts {identities.Select(i => i.ToString()).Aggregate((a, b) => $"{a}, {b}").Trim(' ')} are now linked.",
+                    senderAddress, cancellationToken);
             }
             else
             {
-                await EnvelopeSender.SendMessageAsync("It seems your identifier is not a valid phone number so I cannot subscribe you :(",
-                    sender);
+                await sender.SendMessageAsync("It seems your identifier is not a valid phone number so I cannot subscribe you :(",
+                    senderAddress, cancellationToken);
             }
         }
 
@@ -91,5 +93,8 @@ namespace Switcher
             yield return "tangram.com.br";
             yield return "msging.net";
         }
+
+        
+
     }
 }
