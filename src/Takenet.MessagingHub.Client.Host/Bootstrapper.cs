@@ -124,8 +124,6 @@ namespace Takenet.MessagingHub.Client.Host
             }
 
             var client = await BuildMessagingHubClientAsync(application, builder, serviceProvider, localServiceProvider);
-            localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubClient), client);
-            localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubSender), client);
 
             await client.StartAsync().ConfigureAwait(false);
 
@@ -150,6 +148,8 @@ namespace Takenet.MessagingHub.Client.Host
         {
             var client = builder.Build();
 
+            localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubSender), client);
+
             if (application.MessageReceivers != null && application.MessageReceivers.Length > 0)
             {
                 foreach (var applicationReceiver in application.MessageReceivers)
@@ -164,7 +164,6 @@ namespace Takenet.MessagingHub.Client.Host
                             var settings = JsonConvert.DeserializeObject(settingsJson, settingsType, Application.SerializerSettings);
                             localServiceProvider.TypeDictionary.Add(settingsType, settings);
                         }
-
                     }
 
                     var receiver = await CreateAsync<IMessageReceiver>(applicationReceiver.Type, serviceProvider, applicationReceiver.Settings).ConfigureAwait(false);

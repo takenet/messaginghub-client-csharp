@@ -348,6 +348,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             // Assert
             actual.ShouldNotBeNull();
             TestMessageReceiverWithCustomParameter.InstanceCount.ShouldBe(1);
+            TestMessageReceiverWithCustomParameter.Sender.ShouldNotBeNull();
             TestMessageReceiverWithCustomParameter.Dependency.ShouldNotBeNull();
         }
 
@@ -465,11 +466,13 @@ namespace Takenet.MessagingHub.Client.Host.Test
     public class TestMessageReceiverWithCustomParameter : IMessageReceiver
     {
         public static TestCustomType Dependency { get; private set; }
+        public static IMessagingHubSender Sender { get; private set; }
         public static int InstanceCount;
 
-        public TestMessageReceiverWithCustomParameter(TestCustomType dependency)
+        public TestMessageReceiverWithCustomParameter(TestCustomType dependency, IMessagingHubSender sender)
         {
             Dependency = dependency;
+            Sender = sender;
             InstanceCount++;
         }
 
