@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -74,7 +75,7 @@ namespace Takenet.MessagingHub.Client.Host
                     serviceProvider = (IServiceProvider)Activator.CreateInstance(serviceProviderType);
             }
 
-            var localServiceProvider = new ServiceProvider(serviceProvider);
+            var localServiceProvider = new LocalServiceProvider(serviceProvider);
 
             localServiceProvider.TypeDictionary.Add(typeof(MessagingHubClientBuilder), builder);
 
@@ -99,7 +100,7 @@ namespace Takenet.MessagingHub.Client.Host
             return new StoppableWrapper(stoppables);
         }
 
-        private static async Task<IMessagingHubClient> BuildMessagingHubClientAsync(Application application, MessagingHubClientBuilder builder, ServiceProvider localServiceProvider)
+        private static async Task<IMessagingHubClient> BuildMessagingHubClientAsync(Application application, MessagingHubClientBuilder builder, LocalServiceProvider localServiceProvider)
         {
             var client = builder.Build();
 
@@ -207,14 +208,14 @@ namespace Takenet.MessagingHub.Client.Host
             return settings;
         }
 
-        public static Task<T> CreateAsync<T>(string typeName, IServiceProvider serviceProvider, IDictionary<string, object> settings) where T : class
+        private static Task<T> CreateAsync<T>(string typeName, IServiceProvider serviceProvider, IDictionary<string, object> settings) where T : class
         {
             if (typeName == null) throw new ArgumentNullException(nameof(typeName));
             var type = ParseTypeName(typeName);
             return CreateAsync<T>(type, serviceProvider, settings);
         }
 
-        public static Task<T> CreateAsync<T>(Type type, IServiceProvider serviceProvider, IDictionary<string, object> settings) where T : class
+        private static Task<T> CreateAsync<T>(Type type, IServiceProvider serviceProvider, IDictionary<string, object> settings) where T : class
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             IFactory<T> factory;
@@ -230,7 +231,7 @@ namespace Takenet.MessagingHub.Client.Host
             return factory.CreateAsync(serviceProvider, settings);
         }
 
-        public static Type ParseTypeName(string typeName)
+        private static Type ParseTypeName(string typeName)
         {
             return TypeUtil
                 .GetAllLoadedTypes()
@@ -238,11 +239,11 @@ namespace Takenet.MessagingHub.Client.Host
                        Type.GetType(typeName, true, true);
         }
 
-        private class ServiceProvider : IServiceProvider
+        private class LocalServiceProvider : IServiceProvider
         {
             private readonly IServiceProvider _underlyingServiceProvider;
 
-            public ServiceProvider(IServiceProvider underlyingServiceProvider)
+            public LocalServiceProvider(IServiceProvider underlyingServiceProvider)
             {
                 _underlyingServiceProvider = underlyingServiceProvider;
                 TypeDictionary = new Dictionary<Type, object>();
@@ -256,14 +257,22 @@ namespace Takenet.MessagingHub.Client.Host
 
                 // Try to find the serviceType in the underlying service provider
                 if (_underlyingServiceProvider != null)
-                    result = _underlyingServiceProvider.GetService(serviceType);
+                {
+                    try
+                    {
+                        result = _underlyingServiceProvider.GetService(serviceType);
+                    }
+                    catch (Exception e)
+                    {
+                        Trace.WriteLine($"Exception trying to load type {serviceType} from service provider of type {_underlyingServiceProvider.GetType().Name}: {e}");
+                    }
+                }
 
                 // If could not find the serviceType, try to find it in the TypeDictionary
                 if (result == null && TypeDictionary.ContainsKey(serviceType))
                     result = TypeDictionary[serviceType];
 
-                // If could not find the serviceType in neither service providers, returns a default instance
-                return result ?? serviceType.GetDefaultValue();
+                return result;
             }
         }
 
@@ -279,11 +288,14 @@ namespace Takenet.MessagingHub.Client.Host
 
             public Task<T> CreateAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings)
             {
-                var service = serviceProvider.GetService(_type) as T ?? (T)GetService(_type, serviceProvider, settings);
+                var service = serviceProvider.GetService(_type) as T ?? 
+                              GetService(_type, serviceProvider, settings) as T ?? 
+                              _type.GetDefaultValue() as T;
+
                 return Task.FromResult(service);
             }
 
-            private object GetService(Type serviceType, IServiceProvider serviceProvider, params object[] args)
+            private static object GetService(Type serviceType, IServiceProvider serviceProvider, params object[] args)
             {
                 // Check the type constructors
                 try
@@ -300,7 +312,7 @@ namespace Takenet.MessagingHub.Client.Host
 
                     var parameters = serviceConstructor.GetParameters();
                     var serviceArgs = new object[parameters.Length];
-                    for (int i = 0; i < parameters.Length; i++)
+                    for (var i = 0; i < parameters.Length; i++)
                     {
                         var parameter = parameters[i];
 
