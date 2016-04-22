@@ -15,7 +15,7 @@ namespace Switcher
     {
         public async Task ReceiveAsync(Message envelope, IMessagingHubSender sender, CancellationToken cancellationToken = new CancellationToken())        
         {
-            var senderAddress = envelope.GetSender();
+            var senderAddress = envelope.From;
             if (GetPhoneNumberDomains().Contains(senderAddress.Domain))
             {
                 var identities = GetPhoneNumberDomains().Select(d => new Identity(senderAddress.Name, d));
