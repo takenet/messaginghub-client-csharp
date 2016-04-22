@@ -37,5 +37,10 @@ namespace Takenet.MessagingHub.Client.Host
         /// The settings.
         /// </value>
         public IDictionary<string, object> Settings { get; set; }
+
+        /// <summary>
+        /// Gets or sets a type to be used to deserialize the settings property.
+        /// </summary>
+        public string SettingsType { get; set; }
     }
 }
