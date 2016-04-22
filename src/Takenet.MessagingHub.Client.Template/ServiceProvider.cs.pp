@@ -1,7 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 //using SimpleInjector;
-using Lime.Protocol.Serialization;
-using Takenet.MessagingHub.Gold.ProvisionManager;
 
 namespace $rootnamespace$
 {
@@ -9,7 +8,7 @@ namespace $rootnamespace$
     {
         //private Container Container { get; }
 		public Dictionary<Type, object> TypeDictionary { get; }
-		private IServiceProvider _underlyingServiceProvider;
+		private readonly IServiceProvider _underlyingServiceProvider;
 
         public ServiceProvider(IServiceProvider underlyingServiceProvider)
         {
