@@ -22,7 +22,7 @@ namespace Switcher
         private int _nextMessageIndex;
         private Task _sendScheduledMessagesTask;
 
-        public static HashSet<Identity> Destinations = new HashSet<Identity>();
+        public static HashSet<string> Destinations = new HashSet<string>();
 
         public Startup(IMessagingHubSender sender, IDictionary<string, object> settings)
         {
@@ -74,7 +74,7 @@ namespace Switcher
                     {
                         var switcherDestination = new Node()
                         {
-                            Name = Uri.EscapeDataString(destination.ToString()),
+                            Name = destination,
                             Domain = "cs.msging.net"
                         };
 

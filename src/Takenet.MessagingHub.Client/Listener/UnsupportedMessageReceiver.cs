@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
-using Takenet.MessagingHub.Client.Messages;
+using Lime.Protocol.Network;
 using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Listener
@@ -18,7 +18,7 @@ namespace Takenet.MessagingHub.Client.Listener
                 Code = ReasonCodes.MESSAGE_UNSUPPORTED_CONTENT_TYPE,
                 Description = $"{message.Type} messages are not supported"
             };
-            return sender.SendNotificationAsync(message.ToFailedNotification(reason), cancellationToken);
+            throw new LimeException(reason);
         }
     }
 }

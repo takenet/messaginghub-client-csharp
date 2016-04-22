@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Lime.Protocol;
@@ -89,7 +88,8 @@ namespace Takenet.MessagingHub.Client.Textc
                                 var methodName = commandSetting.Method;
                                 var assembly = typeof(TextcMessageReceiverBuilder).Assembly;
                                 var path = new FileInfo(assembly.Location).DirectoryName;
-                                Lime.Protocol.Serialization.TypeUtil.LoadAssembliesAndReferences(path, assemblyFilter: Lime.Protocol.Serialization.TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter);
+                                Lime.Protocol.Serialization.TypeUtil.LoadAssembliesAndReferences(path, assemblyFilter: Lime.Protocol.Serialization.TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter, 
+                                    ignoreExceptionLoadingReferencedAssembly: true);
                                 var processorType = Bootstrapper.ParseTypeName(processorTypeName);
                                 object processor;
                                 if (!ProcessorInstancesDictionary.TryGetValue(processorType, out processor))

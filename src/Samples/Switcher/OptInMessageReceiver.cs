@@ -63,7 +63,7 @@ namespace Switcher
                         }
                     }                    
                 }
-                Startup.Destinations.Add(senderAddress.ToIdentity());
+                Startup.Destinations.Add(senderAddress.Name);
                 await sender.SendMessageAsync($"Done! The contacts {identities.Select(i => i.ToString()).Aggregate((a, b) => $"{a}, {b}").Trim(' ')} are now linked.",
                     senderAddress, cancellationToken);
             }
@@ -92,9 +92,6 @@ namespace Switcher
             yield return "0mn.io";
             yield return "tangram.com.br";
             yield return "msging.net";
-        }
-
-        
-
+        }        
     }
 }

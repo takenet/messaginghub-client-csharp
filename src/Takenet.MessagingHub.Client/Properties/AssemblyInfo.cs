@@ -37,6 +37,7 @@ using System.Runtime.InteropServices;
 
 
 // Custom settings
+[assembly: InternalsVisibleTo("mhh")]
 [assembly: InternalsVisibleTo("Takenet.MessagingHub.Client.Test")]
 [assembly: InternalsVisibleTo("Takenet.MessagingHub.Client.Host.Test")]
 [assembly: InternalsVisibleTo("Takenet.MessagingHub.Client.Textc")]

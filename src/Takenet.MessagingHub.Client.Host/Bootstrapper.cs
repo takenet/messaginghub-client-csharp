@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Serialization;
+using Newtonsoft.Json.Linq;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
 
@@ -36,7 +38,7 @@ namespace Takenet.MessagingHub.Client.Host
 
             if (loadAssembliesFromWorkingDirectory)
             {
-                TypeUtil.LoadAssembliesAndReferences(".", assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter);
+                TypeUtil.LoadAssembliesAndReferences(".", assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter, ignoreExceptionLoadingReferencedAssembly: true);
             }
 
             var builder = new MessagingHubClientBuilder();
@@ -66,19 +68,49 @@ namespace Takenet.MessagingHub.Client.Host
             if (application.SessionEncryption.HasValue) builder = builder.UsingEncryption(application.SessionEncryption.Value);
             if (application.SessionCompression.HasValue) builder = builder.UsingCompression(application.SessionCompression.Value);
 
+            var localServiceProvider = new LocalServiceProvider();
             IServiceProvider serviceProvider = null;
+
             if (application.ServiceProviderType != null)
             {
                 var serviceProviderType = ParseTypeName(application.ServiceProviderType);
-                if (serviceProviderType != null && typeof(IServiceProvider).IsAssignableFrom(serviceProviderType))
-                    serviceProvider = (IServiceProvider)Activator.CreateInstance(serviceProviderType);
+                if (serviceProviderType != null)
+                {
+                    if (!typeof(IServiceProvider).IsAssignableFrom(serviceProviderType))
+                    {
+                        var exceptionMessage = $"{application.ServiceProviderType} must be an implementation of {nameof(IServiceProvider)}!";
+                        throw new InvalidOperationException(exceptionMessage);
+                    }
+
+                    if (serviceProviderType.Name == nameof(LocalServiceProvider))
+                    {
+                        var exceptionMessage = $"{nameof(Application.ServiceProviderType)} cannot be named {serviceProviderType.Name}!";
+                        throw new InvalidOperationException(exceptionMessage);
+                    }
+
+                    if (!serviceProviderType.GetConstructors(BindingFlags.Instance | BindingFlags.Public)
+                        .Any(c => c.GetParameters().Length == 1 &&
+                                  c.GetParameters().Single().ParameterType.Name == nameof(IServiceProvider)))
+                    {
+                        var exceptionMessage =
+                            $"{nameof(Application.ServiceProviderType)} must have a public constructor that receives a single parameter of type {nameof(IServiceProvider)}!";
+                        throw new InvalidOperationException(exceptionMessage);
+                    }
+
+                    serviceProvider = (IServiceProvider)Activator.CreateInstance(serviceProviderType, localServiceProvider);
+
+                    localServiceProvider.ExternalServiceProvider = serviceProvider;
+                }
             }
 
-            var localServiceProvider = new ServiceProvider(serviceProvider);
+            if (serviceProvider == null)
+                serviceProvider = localServiceProvider;
 
             localServiceProvider.TypeDictionary.Add(typeof(MessagingHubClientBuilder), builder);
+            localServiceProvider.TypeDictionary.Add(typeof(Application), application);
+            localServiceProvider.TypeDictionary.Add(typeof(Settings), new Settings(application));
 
-            var client = await BuildMessagingHubClientAsync(application, builder, localServiceProvider);
+            var client = await BuildMessagingHubClientAsync(application, builder, serviceProvider);
             localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubClient), client);
             localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubSender), client);
 
@@ -99,7 +131,7 @@ namespace Takenet.MessagingHub.Client.Host
             return new StoppableWrapper(stoppables);
         }
 
-        private static async Task<IMessagingHubClient> BuildMessagingHubClientAsync(Application application, MessagingHubClientBuilder builder, ServiceProvider localServiceProvider)
+        private static async Task<IMessagingHubClient> BuildMessagingHubClientAsync(Application application, MessagingHubClientBuilder builder, IServiceProvider serviceProvider)
         {
             var client = builder.Build();
 
@@ -107,10 +139,7 @@ namespace Takenet.MessagingHub.Client.Host
             {
                 foreach (var applicationReceiver in application.MessageReceivers)
                 {
-                    var receiver =
-                        await
-                            CreateAsync<IMessageReceiver>(applicationReceiver.Type, localServiceProvider, MergeSettings(application, applicationReceiver))
-                                .ConfigureAwait(false);
+                    var receiver = await CreateAsync<IMessageReceiver>(applicationReceiver.Type, serviceProvider, MergeSettings(application, applicationReceiver)).ConfigureAwait(false);
 
                     Predicate<Message> messagePredicate = m => m != null;
 
@@ -152,9 +181,7 @@ namespace Takenet.MessagingHub.Client.Host
                 {
                     var receiver =
                         await
-                            CreateAsync<INotificationReceiver>(applicationReceiver.Type, localServiceProvider, MergeSettings(application, applicationReceiver))
-                                .ConfigureAwait(false);
-
+                            CreateAsync<INotificationReceiver>(applicationReceiver.Type, serviceProvider, MergeSettings(application, applicationReceiver)).ConfigureAwait(false);
 
                     Predicate<Notification> notificationPredicate = n => n != null;
 
@@ -238,32 +265,20 @@ namespace Takenet.MessagingHub.Client.Host
                        Type.GetType(typeName, true, true);
         }
 
-        private class ServiceProvider : IServiceProvider
+        private class LocalServiceProvider : IServiceProvider
         {
-            private readonly IServiceProvider _underlyingServiceProvider;
-
-            public ServiceProvider(IServiceProvider underlyingServiceProvider)
+            public LocalServiceProvider()
             {
-                _underlyingServiceProvider = underlyingServiceProvider;
                 TypeDictionary = new Dictionary<Type, object>();
             }
 
             public Dictionary<Type, object> TypeDictionary { get; }
+            internal IServiceProvider ExternalServiceProvider { get; set; }
 
             public object GetService(Type serviceType)
             {
-                object result = null;
-
-                // Try to find the serviceType in the underlying service provider
-                if (_underlyingServiceProvider != null)
-                    result = _underlyingServiceProvider.GetService(serviceType);
-
-                // If could not find the serviceType, try to find it in the TypeDictionary
-                if (result == null && TypeDictionary.ContainsKey(serviceType))
-                    result = TypeDictionary[serviceType];
-
-                // If could not find the serviceType in neither service providers, returns a default instance
-                return result ?? serviceType.GetDefaultValue();
+                object result;
+                return TypeDictionary.TryGetValue(serviceType, out result) ? result : null;
             }
         }
 
@@ -279,11 +294,22 @@ namespace Takenet.MessagingHub.Client.Host
 
             public Task<T> CreateAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings)
             {
-                var service = serviceProvider.GetService(_type) as T ?? (T)GetService(_type, serviceProvider, settings);
+                T service;
+                try
+                {
+                    service = serviceProvider.GetService(_type) as T;
+                }
+                catch (Exception)
+                {
+                    service = null;
+                }
+
+                service = service ?? GetService(_type, serviceProvider, settings) as T ?? _type.GetDefaultValue() as T;
+
                 return Task.FromResult(service);
             }
 
-            private object GetService(Type serviceType, IServiceProvider serviceProvider, params object[] args)
+            private static object GetService(Type serviceType, IServiceProvider serviceProvider, params object[] args)
             {
                 // Check the type constructors
                 try
@@ -300,7 +326,7 @@ namespace Takenet.MessagingHub.Client.Host
 
                     var parameters = serviceConstructor.GetParameters();
                     var serviceArgs = new object[parameters.Length];
-                    for (int i = 0; i < parameters.Length; i++)
+                    for (var i = 0; i < parameters.Length; i++)
                     {
                         var parameter = parameters[i];
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -149,7 +150,8 @@ namespace Takenet.MessagingHub.Client.Host.Test
             actual.ShouldNotBeNull();
             SettingsTestStartable._Started.ShouldBeTrue();
             SettingsTestStartable.Settings.ShouldNotBeNull();
-            SettingsTestStartable.Settings.ShouldBe(application.Settings);
+            SettingsTestStartable.Settings["setting1"].ShouldBe("value1");
+            SettingsTestStartable.Settings["setting2"].ShouldBe(2);
             SettingsTestStartable.Sender.ShouldNotBeNull();
         }
 
@@ -172,7 +174,8 @@ namespace Takenet.MessagingHub.Client.Host.Test
             actual.ShouldNotBeNull();
             TestStartable._Started.ShouldBeTrue();
             TestStartableFactory.ServiceProvider.ShouldNotBeNull();
-            TestStartableFactory.Settings.ShouldBeNull();
+            TestStartableFactory.Settings.ShouldNotBeNull();
+            TestStartableFactory.Settings.Count.ShouldBe(0);
         }
 
         [Test]
@@ -199,7 +202,9 @@ namespace Takenet.MessagingHub.Client.Host.Test
             actual.ShouldNotBeNull();
             TestStartable._Started.ShouldBeTrue();
             TestStartableFactory.ServiceProvider.ShouldNotBeNull();
-            TestStartableFactory.Settings.ShouldBe(application.Settings);
+            TestStartableFactory.Settings.ShouldNotBeNull();
+            TestStartableFactory.Settings["setting1"].ShouldBe("value1");
+            TestStartableFactory.Settings["setting2"].ShouldBe(2);
         }
 
         [Test]
@@ -242,13 +247,13 @@ namespace Takenet.MessagingHub.Client.Host.Test
         public async Task Create_With_MessageReceiverType_With_Settings_Should_Return_Instance()
         {
             // Arrange
-            var application = new Application()
+            var application = new Application
             {
                 Identifier = "testlogin",
                 AccessKey = "12345".ToBase64(),
                 MessageReceivers = new[]
                 {
-                    new MessageApplicationReceiver()
+                    new MessageApplicationReceiver
                     {
                         Type = typeof(TestMessageReceiver).Name,
                         MediaType = "text/plain",
@@ -261,7 +266,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
                     }
 
                 },
-                Settings = new Dictionary<string, object>()
+                Settings = new Dictionary<string, object>
                 {
                     { "setting1", "value1" },
                     { "setting2", 2 },
@@ -276,12 +281,17 @@ namespace Takenet.MessagingHub.Client.Host.Test
             // Assert
             actual.ShouldNotBeNull();
             TestMessageReceiver.InstanceCount.ShouldBe(1);
-            TestMessageReceiver.Settings.Keys.Count.ShouldBe(5);
+            TestMessageReceiver.Settings.Count.ShouldBe(4);
             TestMessageReceiver.Settings["setting1"].ShouldBe("value1");
             TestMessageReceiver.Settings["setting2"].ShouldBe(2);
-            TestMessageReceiver.Settings["setting3"].ShouldBe("value3");
-            TestMessageReceiver.Settings["setting4"].ShouldBe(4);
-            TestMessageReceiver.Settings["setting5"].ShouldBe(55);
+            TestMessageReceiver.Settings["setting5"].ShouldBe(5);
+
+            var testMessageReceiverSettings = TestMessageReceiver.Settings[nameof(TestMessageReceiver)] as Settings;
+            testMessageReceiverSettings.ShouldNotBeNull();
+            testMessageReceiverSettings.Count.ShouldBe(3);
+            testMessageReceiverSettings["setting3"].ShouldBe("value3");
+            testMessageReceiverSettings["setting4"].ShouldBe(4);
+            testMessageReceiverSettings["setting5"].ShouldBe(55);
         }
 
         [Test]
@@ -375,13 +385,18 @@ namespace Takenet.MessagingHub.Client.Host.Test
 
     public class TestServiceProvider : IServiceProvider
     {
+        private readonly IServiceProvider _serviceProvider;
+
+        public TestServiceProvider(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
         public Type SingleInjectedType = typeof(TestCustomType);
 
         public object GetService(Type serviceType)
         {
-            if (serviceType == SingleInjectedType)
-                return new TestCustomType();
-            return null;
+            return serviceType == SingleInjectedType ? new TestCustomType() : _serviceProvider.GetService(serviceType);
         }
     }
 
@@ -402,7 +417,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
     {
         public static IMessagingHubSender Sender { get; private set; }
 
-        public SettingsTestStartable(IMessagingHubSender sender, IDictionary<string, object> settings)
+        public SettingsTestStartable(IMessagingHubSender sender, Settings settings)
         {
             Sender = sender;
             Settings = settings;
@@ -412,7 +427,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
 
         public static bool _Started;
 
-        public static IDictionary<string, object> Settings;
+        public static Settings Settings;
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
@@ -426,12 +441,12 @@ namespace Takenet.MessagingHub.Client.Host.Test
     {
         public static IServiceProvider ServiceProvider;
 
-        public static IDictionary<string, object> Settings;
+        public static Settings Settings;
 
         public Task<IStartable> CreateAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings)
         {
             ServiceProvider = serviceProvider;
-            Settings = settings;
+            Settings = (Settings)ServiceProvider.GetService(typeof(Settings));
             return Task.FromResult<IStartable>(new TestStartable());
         }
     }
@@ -440,9 +455,9 @@ namespace Takenet.MessagingHub.Client.Host.Test
     public class TestMessageReceiver : IMessageReceiver
     {
         public static int InstanceCount;
-        public static IDictionary<string, object> Settings;
+        public static Settings Settings;
 
-        public TestMessageReceiver(IDictionary<string, object> settings)
+        public TestMessageReceiver(Settings settings)
         {
             InstanceCount++;
             Settings = settings;
@@ -457,9 +472,9 @@ namespace Takenet.MessagingHub.Client.Host.Test
     public class TestNotificationReceiver : INotificationReceiver
     {
         public static int InstanceCount;
-        public static IDictionary<string, object> Settings;
+        public static Settings Settings;
 
-        public TestNotificationReceiver(IDictionary<string, object> settings)
+        public TestNotificationReceiver(Settings settings)
         {
             InstanceCount++;
             Settings = settings;
