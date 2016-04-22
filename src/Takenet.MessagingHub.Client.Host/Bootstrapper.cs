@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Serialization;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
@@ -108,11 +109,21 @@ namespace Takenet.MessagingHub.Client.Host
 
             localServiceProvider.TypeDictionary.Add(typeof(MessagingHubClientBuilder), builder);
             localServiceProvider.TypeDictionary.Add(typeof(Application), application);
-            localServiceProvider.TypeDictionary.Add(typeof(Settings), new Settings(application));
 
-            var client = await BuildMessagingHubClientAsync(application, builder, serviceProvider);
-            localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubClient), client);
-            localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubSender), client);
+            // Inject Appliaction Settings
+            if (application.SettingsType != null)
+            {
+                var settingsType = ParseTypeName(application.SettingsType);
+                if (settingsType != null)
+                {
+                    var settingsJson = JsonConvert.SerializeObject(application.Settings, Application.SerializerSettings);
+                    var settings = JsonConvert.DeserializeObject(settingsJson, settingsType, Application.SerializerSettings);
+                    localServiceProvider.TypeDictionary.Add(settingsType, settings);
+                }
+
+            }
+
+            var client = await BuildMessagingHubClientAsync(application, builder, serviceProvider, localServiceProvider);
 
             await client.StartAsync().ConfigureAwait(false);
 
@@ -131,15 +142,31 @@ namespace Takenet.MessagingHub.Client.Host
             return new StoppableWrapper(stoppables);
         }
 
-        private static async Task<IMessagingHubClient> BuildMessagingHubClientAsync(Application application, MessagingHubClientBuilder builder, IServiceProvider serviceProvider)
+        private static async Task<IMessagingHubClient> BuildMessagingHubClientAsync(
+            Application application, MessagingHubClientBuilder builder, 
+            IServiceProvider serviceProvider, LocalServiceProvider localServiceProvider)
         {
             var client = builder.Build();
+
+            localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubSender), client);
 
             if (application.MessageReceivers != null && application.MessageReceivers.Length > 0)
             {
                 foreach (var applicationReceiver in application.MessageReceivers)
                 {
-                    var receiver = await CreateAsync<IMessageReceiver>(applicationReceiver.Type, serviceProvider, MergeSettings(application, applicationReceiver)).ConfigureAwait(false);
+                    // Inject ApplicationReceiver settings
+                    if (applicationReceiver.SettingsType != null)
+                    {
+                        var settingsType = ParseTypeName(applicationReceiver.SettingsType);
+                        if (settingsType != null)
+                        {
+                            var settingsJson = JsonConvert.SerializeObject(applicationReceiver.Settings, Application.SerializerSettings);
+                            var settings = JsonConvert.DeserializeObject(settingsJson, settingsType, Application.SerializerSettings);
+                            localServiceProvider.TypeDictionary.Add(settingsType, settings);
+                        }
+                    }
+
+                    var receiver = await CreateAsync<IMessageReceiver>(applicationReceiver.Type, serviceProvider, applicationReceiver.Settings).ConfigureAwait(false);
 
                     Predicate<Message> messagePredicate = m => m != null;
 
@@ -181,7 +208,7 @@ namespace Takenet.MessagingHub.Client.Host
                 {
                     var receiver =
                         await
-                            CreateAsync<INotificationReceiver>(applicationReceiver.Type, serviceProvider, MergeSettings(application, applicationReceiver)).ConfigureAwait(false);
+                            CreateAsync<INotificationReceiver>(applicationReceiver.Type, serviceProvider, applicationReceiver.Settings).ConfigureAwait(false);
 
                     Predicate<Notification> notificationPredicate = n => n != null;
 
@@ -210,28 +237,6 @@ namespace Takenet.MessagingHub.Client.Host
             }
 
             return client;
-        }
-
-        private static IDictionary<string, object> MergeSettings(Application application, ApplicationReceiver applicationReceiver)
-        {
-            IDictionary<string, object> settings;
-            if (application.Settings == null)
-            {
-                settings = applicationReceiver.Settings;
-            }
-            else if (applicationReceiver.Settings == null)
-            {
-                settings = application.Settings;
-            }
-            else
-            {
-                settings = applicationReceiver
-                    .Settings
-                    .Union(application.Settings)
-                    .GroupBy(a => a.Key)
-                    .ToDictionary(a => a.Key, a => a.First().Value);
-            }
-            return settings;
         }
 
         public static Task<T> CreateAsync<T>(string typeName, IServiceProvider serviceProvider, IDictionary<string, object> settings) where T : class

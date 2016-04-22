@@ -14,6 +14,16 @@ namespace Takenet.MessagingHub.Client.Host
     /// </summary>
     public class Application
     {
+        internal static JsonSerializerSettings SerializerSettings { get; private set; }
+
+        static Application()
+        {
+            SerializerSettings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            };
+        }
+
         /// <summary>
         /// Gets or sets the identifier.
         /// </summary>
@@ -100,6 +110,11 @@ namespace Takenet.MessagingHub.Client.Host
         public IDictionary<string, object> Settings { get; set; }
 
         /// <summary>
+        /// Gets or sets a type to be used to deserialize the settings property. It must be an implementation of <see cref="ISettings"/>.
+        /// </summary>
+        public string SettingsType { get; set; }
+
+        /// <summary>
         /// Gets or sets the session encryption mode to be used
         /// </summary>
         /// <value>
@@ -138,17 +153,13 @@ namespace Takenet.MessagingHub.Client.Host
         {
             if (json == null) throw new ArgumentNullException(nameof(json));
 
-            var settings = new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            };
-            settings.Converters.Add(new StringEnumConverter
+            SerializerSettings.Converters.Add(new StringEnumConverter
             {
                 CamelCaseText = true,
                 AllowIntegerValues = true
             });
 
-            return JsonConvert.DeserializeObject<Application>(json, settings);
+            return JsonConvert.DeserializeObject<Application>(json, SerializerSettings);
         }
 
         /// <summary>
