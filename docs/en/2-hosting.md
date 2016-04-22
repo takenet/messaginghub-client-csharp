@@ -56,8 +56,9 @@ Here follows all properties defined in the `application.json` file:
 | sessionEncryption | Encryption mode to be used.                              | None/TLS                   |
 | sessionCompression | Encryption mode to be used.                              | None                   |
 | startupType | Name of the .NET type that will be activated when your client is initialized. It must implement the `IStartable` interface. It may be its simple name (if it is found in the same assembly **assembly** as the file `application.json` file) or a fully qualified name with **assembly** name.    | Startup     |
-| serviceProviderType | A type to be used as a service provider for dependency injection. It must be an implementation of `IServiceProvider`. | ServiceProvider |
-| settings    | General settings for the application, in the key-value format. This value is injected in the instatiated types, such as **receivers** or the **startupType**. To receive values, such types must receive an instance of the type `IDictionary<string, object>` in their constructors. | { "myApiKey": "abcd1234" }   |
+| serviceProviderType | A type to be used as a service provider for dependency injection. It must be an implementation of `IServiceProvider` and have a public constructor with a single parameter of type 'IServiceProvider'. | ServiceProvider |
+| settings    | General settings for the application, in the key-value format. This value is injected in the instantiated types, such as **receivers** or the **startupType**. To receive values, such types must receive an instance of the type `IDictionary<string, object>` in their constructors. | { "myApiKey": "abcd1234" }   |
+| settingsType | Name of the .NET type that will be used to deserialize the settings. It may be its simple name (if it is found in the same assembly **assembly** as the file `application.json` file) or a fully qualified name with **assembly** name.    | ApplicationSettings     |
 | messageReceivers | Array of **message receivers**, that are types specialized in receiving messages. | *See below* |
 | notificationReceivers | Array of **notification receivers**, that are types specialized in receiving notifications. | *See below* |
 
@@ -69,7 +70,8 @@ Each **message receiver** can have the following properties:
 | settings    | General settings for the receiver, in the key-value format. Este valor é injected in the instantiated type. To receive values, the implementation must receive an instance of the type `IDictionary<string, object>` in its constructor. | { "mySetting": "xyzabcd" }   |
 | mediaType   | Define a filter for the message type that the **receiver** will process. Only messages of the specified type will be delivered to the instantiated receiver. | text/plain |
 | content     | Define a regular expression to filter the content of the messages that the **receiver** will process. Only messages that match the expressionn will be delivered to the instantiated receiver. | Hello world |
-| sender     | Define a regular expression to filter the origination of the messages that the **receiver** will process. Only messages sent from accounts that match the expression will be delivered to the instantiated receiver. | sender@domain.com |
+| sender      | Define a regular expression to filter the origination of the messages that the **receiver** will process. Only messages sent from accounts that match the expression will be delivered to the instantiated receiver. | sender@domain.com |
+| settingsType | Name of the .NET type that will be used to deserialize the settings. It may be its simple name (if it is found in the same assembly **assembly** as the file `application.json` file) or a fully qualified name with **assembly** name.    | PlainTextMessageReceiverSettings     |
 
 Each **notification receiver** will have the following properties:
 
@@ -78,6 +80,7 @@ Each **notification receiver** will have the following properties:
 | type        | Name of the .NET to reveice notifications. It must implement the interface `INotificationReceiver`. (if it is located in the same **assembly** as the file `application.json`) or a fully qualified name with **assembly** name. | NotificationReceiver |
 | settings    | General settings for the receiver,  in the key-value format. This value is injected in the instantiated type. To receive values, the implementation must receive an instance of the type `IDictionary<string, object>` in its constructor. | { "mySetting": "xyzabcd" }   |
 | eventType   | Define a filter for the event type the **receiver** will process. Only notifications of the specified event type will be delivered to the instantiated receiver. | received |
+| settingsType | Name of the .NET type that will be used to deserialize the settings. It may be its simple name (if it is found in the same assembly **assembly** as the file `application.json` file) or a fully qualified name with **assembly** name.    | NotificationReceiverSettings     |
 
 ## Publishing your application
 
