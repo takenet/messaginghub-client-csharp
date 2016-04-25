@@ -12,7 +12,7 @@ namespace Takenet.MessagingHub.Client.Listener
     {
         public Task ReceiveAsync(Notification notification, IMessagingHubSender sender, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

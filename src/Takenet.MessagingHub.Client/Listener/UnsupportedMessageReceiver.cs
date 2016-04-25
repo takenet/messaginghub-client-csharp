@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Network;
@@ -13,12 +14,17 @@ namespace Takenet.MessagingHub.Client.Listener
     {
         public Task ReceiveAsync(Message message, IMessagingHubSender sender, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var reason = new Reason
+            if (message.Id != Guid.Empty)
             {
-                Code = ReasonCodes.MESSAGE_UNSUPPORTED_CONTENT_TYPE,
-                Description = $"{message.Type} messages are not supported"
-            };
-            throw new LimeException(reason);
+                throw new LimeException(
+                    new Reason
+                    {
+                        Code = ReasonCodes.MESSAGE_UNSUPPORTED_CONTENT_TYPE,
+                        Description = "There's no processor available to handle the received message"
+                    });
+            }
+
+            return Task.CompletedTask;
         }
     }
 }
