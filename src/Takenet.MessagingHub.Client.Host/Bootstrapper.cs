@@ -69,7 +69,7 @@ namespace Takenet.MessagingHub.Client.Host
             if (application.SessionEncryption.HasValue) builder = builder.UsingEncryption(application.SessionEncryption.Value);
             if (application.SessionCompression.HasValue) builder = builder.UsingCompression(application.SessionCompression.Value);
 
-            var localServiceProvider = new LocalServiceProvider();
+            var localServiceProvider = new TypeServiceProvider();
 
             if (application.ServiceProviderType != null)
             {
@@ -81,7 +81,7 @@ namespace Takenet.MessagingHub.Client.Host
                         throw new InvalidOperationException($"{application.ServiceProviderType} must be an implementation of '{nameof(IServiceProvider)}'");
                     }
 
-                    if (serviceProviderType == typeof(LocalServiceProvider))
+                    if (serviceProviderType == typeof(TypeServiceProvider))
                     {
                         throw new InvalidOperationException($"{nameof(Application.ServiceProviderType)} type cannot be '{serviceProviderType.Name}'");
                     }
@@ -131,33 +131,40 @@ namespace Takenet.MessagingHub.Client.Host
 
         private static async Task<IMessagingHubClient> BuildMessagingHubClientAsync(
             Application application, MessagingHubClientBuilder builder, 
-            LocalServiceProvider localServiceProvider)
-        {
+            TypeServiceProvider typeServiceProvider)
+        {            
+            var applicationReceivers =
+                (application.MessageReceivers ?? new ApplicationReceiver[0]).Union(
+                    application.NotificationReceivers ?? new ApplicationReceiver[0]);
+            
+            // First, register the receivers settings
+            foreach (var applicationReceiver in applicationReceivers.Where(a => a.SettingsType != null))
+            {                                
+                var settingsType = ParseTypeName(applicationReceiver.SettingsType);
+                if (settingsType != null)
+                {
+                    var settingsJson = JsonConvert.SerializeObject(applicationReceiver.Settings,
+                        Application.SerializerSettings);
+                    var settings = JsonConvert.DeserializeObject(settingsJson, settingsType,
+                        Application.SerializerSettings);
+                    typeServiceProvider.RegisterService(settingsType, settings);
+                }                
+            }
+
             var client = builder.Build();
+            typeServiceProvider.RegisterService(typeof(IMessagingHubSender), client);
 
-            localServiceProvider.RegisterService(typeof(IMessagingHubSender), client);
-
+            // Now creates the receivers instances
             if (application.MessageReceivers != null && application.MessageReceivers.Length > 0)
             {
                 foreach (var applicationReceiver in application.MessageReceivers)
                 {
-                    // Inject ApplicationReceiver settings
-                    if (applicationReceiver.SettingsType != null)
-                    {
-                        var settingsType = ParseTypeName(applicationReceiver.SettingsType);
-                        if (settingsType != null)
-                        {
-                            var settingsJson = JsonConvert.SerializeObject(applicationReceiver.Settings, Application.SerializerSettings);
-                            var settings = JsonConvert.DeserializeObject(settingsJson, settingsType, Application.SerializerSettings);
-                            localServiceProvider.RegisterService(settingsType, settings);
-                        }
-                    }
-
-                    var receiver = await CreateAsync<IMessageReceiver>(applicationReceiver.Type, localServiceProvider, applicationReceiver.Settings).ConfigureAwait(false);
+                    var receiver = await CreateAsync<IMessageReceiver>(
+                        applicationReceiver.Type, typeServiceProvider, applicationReceiver.Settings).ConfigureAwait(false);
 
                     Predicate<Message> messagePredicate = m => m != null;
 
-                    if (applicationReceiver.MediaType != null)
+                    if (applicationReceiver.MediaType != null)  
                     {
                         var currentMessagePredicate = messagePredicate;
                         var mediaType = MediaType.Parse(applicationReceiver.MediaType);
@@ -195,7 +202,7 @@ namespace Takenet.MessagingHub.Client.Host
                 {
                     var receiver =
                         await
-                            CreateAsync<INotificationReceiver>(applicationReceiver.Type, localServiceProvider, applicationReceiver.Settings).ConfigureAwait(false);
+                            CreateAsync<INotificationReceiver>(applicationReceiver.Type, typeServiceProvider, applicationReceiver.Settings).ConfigureAwait(false);
 
                     Predicate<Notification> notificationPredicate = n => n != null;
 
