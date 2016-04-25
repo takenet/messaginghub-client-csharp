@@ -14,8 +14,6 @@ namespace Takenet.MessagingHub.Client.Host
         public TypeServiceProvider()
         {
             TypeDictionary = new Dictionary<Type, object>();
-            RegisterService(typeof(IServiceProvider), this);
-            RegisterService(typeof(IServiceContainer), this);
         }
 
         public IServiceProvider SecondaryServiceProvider { get; internal set; }

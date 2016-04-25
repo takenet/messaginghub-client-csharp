@@ -70,7 +70,6 @@ namespace Takenet.MessagingHub.Client.Host
             if (application.SessionCompression.HasValue) builder = builder.UsingCompression(application.SessionCompression.Value);
 
             var localServiceProvider = new TypeServiceProvider();
-
             if (application.ServiceProviderType != null)
             {
                 var serviceProviderType = ParseTypeName(application.ServiceProviderType);
@@ -94,7 +93,9 @@ namespace Takenet.MessagingHub.Client.Host
                     localServiceProvider.SecondaryServiceProvider = (IServiceProvider)Activator.CreateInstance(serviceProviderType);
                 }
             }
-           
+
+            localServiceProvider.RegisterService(typeof(IServiceProvider), localServiceProvider);
+            localServiceProvider.RegisterService(typeof(IServiceContainer), localServiceProvider);
             localServiceProvider.RegisterService(typeof(MessagingHubClientBuilder), builder);
             localServiceProvider.RegisterService(typeof(Application), application);
 
