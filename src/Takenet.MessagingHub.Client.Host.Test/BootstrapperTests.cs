@@ -493,18 +493,11 @@ namespace Takenet.MessagingHub.Client.Host.Test
 
     public class TestServiceProvider : IServiceProvider
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        public TestServiceProvider(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
-
         public Type SingleInjectedType = typeof(TestCustomType);
 
         public object GetService(Type serviceType)
         {
-            return serviceType == SingleInjectedType ? new TestCustomType() : _serviceProvider.GetService(serviceType);
+            return serviceType == SingleInjectedType ? new TestCustomType() : null;
         }
     }
 

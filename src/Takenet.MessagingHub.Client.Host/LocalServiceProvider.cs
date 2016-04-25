@@ -7,7 +7,10 @@ namespace Takenet.MessagingHub.Client.Host
     {
         public LocalServiceProvider()
         {
-            TypeDictionary = new Dictionary<Type, object>();
+            TypeDictionary = new Dictionary<Type, object>
+            {
+                { typeof(IServiceProvider), this }
+            };
         }
 
         public Dictionary<Type, object> TypeDictionary { get; }
@@ -17,8 +20,8 @@ namespace Takenet.MessagingHub.Client.Host
         public object GetService(Type serviceType)
         {
             object result;
-            return TypeDictionary.TryGetValue(serviceType, out result) ? 
+            return TypeDictionary.TryGetValue(serviceType, out result) ?
                 result : SecondaryServiceProvider?.GetService(serviceType);
         }
-    }
+    } 
 }

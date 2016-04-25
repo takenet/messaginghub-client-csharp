@@ -78,26 +78,20 @@ namespace Takenet.MessagingHub.Client.Host
                 {
                     if (!typeof(IServiceProvider).IsAssignableFrom(serviceProviderType))
                     {
-                        var exceptionMessage = $"{application.ServiceProviderType} must be an implementation of '{nameof(IServiceProvider)}'";
-                        throw new InvalidOperationException(exceptionMessage);
+                        throw new InvalidOperationException($"{application.ServiceProviderType} must be an implementation of '{nameof(IServiceProvider)}'");
                     }
 
-                    if (serviceProviderType.Name == nameof(LocalServiceProvider))
+                    if (serviceProviderType == typeof(LocalServiceProvider))
                     {
-                        var exceptionMessage = $"{nameof(Application.ServiceProviderType)} cannot be named '{serviceProviderType.Name}'";
-                        throw new InvalidOperationException(exceptionMessage);
+                        throw new InvalidOperationException($"{nameof(Application.ServiceProviderType)} type cannot be '{serviceProviderType.Name}'");
                     }
 
-                    if (!serviceProviderType.GetConstructors(BindingFlags.Instance | BindingFlags.Public)
-                        .Any(c => c.GetParameters().Length == 1 &&
-                                  c.GetParameters().Single().ParameterType.Name == nameof(IServiceProvider)))
-                    {
-                        var exceptionMessage =
-                            $"{nameof(Application.ServiceProviderType)} must have a public constructor that receives a single parameter of type '{nameof(IServiceProvider)}'";
-                        throw new InvalidOperationException(exceptionMessage);
+                    if (serviceProviderType.GetConstructors(BindingFlags.Instance | BindingFlags.Public).All(c => c.GetParameters().Length != 0))
+                    {                        
+                        throw new InvalidOperationException($"{nameof(Application.ServiceProviderType)} must have an empty public constructor");
                     }
 
-                    localServiceProvider.SecondaryServiceProvider = (IServiceProvider)Activator.CreateInstance(serviceProviderType, localServiceProvider);
+                    localServiceProvider.SecondaryServiceProvider = (IServiceProvider)Activator.CreateInstance(serviceProviderType);
                 }
             }
            
