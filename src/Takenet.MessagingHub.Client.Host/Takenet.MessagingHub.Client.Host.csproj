@@ -52,6 +52,7 @@
     <Compile Include="ApplicationActivator.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Factory.cs" />
+    <Compile Include="IServiceContainer.cs" />
     <Compile Include="Job .cs" />
     <Compile Include="LocalServiceProvider.cs" />
     <Compile Include="Program.cs" />

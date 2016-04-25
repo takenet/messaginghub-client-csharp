@@ -3,25 +3,33 @@ using System.Collections.Generic;
 
 namespace Takenet.MessagingHub.Client.Host
 {
-    internal class LocalServiceProvider : IServiceProvider
+    internal class LocalServiceProvider : IServiceContainer
     {
+        private readonly Dictionary<Type, object> _typeDictionary;
+
         public LocalServiceProvider()
         {
-            TypeDictionary = new Dictionary<Type, object>
-            {
-                { typeof(IServiceProvider), this }
-            };
+            _typeDictionary = new Dictionary<Type, object>();
+            RegisterService(typeof(IServiceProvider), this);
         }
 
-        public Dictionary<Type, object> TypeDictionary { get; }
 
         internal IServiceProvider SecondaryServiceProvider { get; set; }
 
         public object GetService(Type serviceType)
         {
+            if (serviceType == null) throw new ArgumentNullException(nameof(serviceType));
             object result;
-            return TypeDictionary.TryGetValue(serviceType, out result) ?
+            return _typeDictionary.TryGetValue(serviceType, out result) ?
                 result : SecondaryServiceProvider?.GetService(serviceType);
+        }
+
+        public void RegisterService(Type serviceType, object instance)
+        {
+            if (serviceType == null) throw new ArgumentNullException(nameof(serviceType));
+            if (instance == null) throw new ArgumentNullException(nameof(instance));            
+            _typeDictionary.Add(serviceType, instance);
+            (SecondaryServiceProvider as IServiceContainer)?.RegisterService(serviceType, instance);
         }
     } 
 }

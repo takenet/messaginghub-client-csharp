@@ -95,8 +95,8 @@ namespace Takenet.MessagingHub.Client.Host
                 }
             }
            
-            localServiceProvider.TypeDictionary.Add(typeof(MessagingHubClientBuilder), builder);
-            localServiceProvider.TypeDictionary.Add(typeof(Application), application);
+            localServiceProvider.RegisterService(typeof(MessagingHubClientBuilder), builder);
+            localServiceProvider.RegisterService(typeof(Application), application);
 
             // Inject application Settings
             if (application.SettingsType != null)
@@ -106,7 +106,7 @@ namespace Takenet.MessagingHub.Client.Host
                 {
                     var settingsJson = JsonConvert.SerializeObject(application.Settings, Application.SerializerSettings);
                     var settings = JsonConvert.DeserializeObject(settingsJson, settingsType, Application.SerializerSettings);
-                    localServiceProvider.TypeDictionary.Add(settingsType, settings);
+                    localServiceProvider.RegisterService(settingsType, settings);
                 }
             }
 
@@ -135,7 +135,7 @@ namespace Takenet.MessagingHub.Client.Host
         {
             var client = builder.Build();
 
-            localServiceProvider.TypeDictionary.Add(typeof(IMessagingHubSender), client);
+            localServiceProvider.RegisterService(typeof(IMessagingHubSender), client);
 
             if (application.MessageReceivers != null && application.MessageReceivers.Length > 0)
             {
@@ -149,7 +149,7 @@ namespace Takenet.MessagingHub.Client.Host
                         {
                             var settingsJson = JsonConvert.SerializeObject(applicationReceiver.Settings, Application.SerializerSettings);
                             var settings = JsonConvert.DeserializeObject(settingsJson, settingsType, Application.SerializerSettings);
-                            localServiceProvider.TypeDictionary.Add(settingsType, settings);
+                            localServiceProvider.RegisterService(settingsType, settings);
                         }
                     }
 
