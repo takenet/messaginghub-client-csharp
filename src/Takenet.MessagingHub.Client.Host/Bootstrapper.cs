@@ -98,18 +98,7 @@ namespace Takenet.MessagingHub.Client.Host
             localServiceProvider.RegisterService(typeof(IServiceContainer), localServiceProvider);
             localServiceProvider.RegisterService(typeof(MessagingHubClientBuilder), builder);
             localServiceProvider.RegisterService(typeof(Application), application);
-
-            // Inject application Settings
-            if (application.SettingsType != null)
-            {
-                var settingsType = ParseTypeName(application.SettingsType);
-                if (settingsType != null)
-                {
-                    var settingsJson = JsonConvert.SerializeObject(application.Settings, Application.SerializerSettings);
-                    var settings = JsonConvert.DeserializeObject(settingsJson, settingsType, Application.SerializerSettings);
-                    localServiceProvider.RegisterService(settingsType, settings);
-                }
-            }
+            RegisterSettingsContainer(application, localServiceProvider);
 
             var client = await BuildMessagingHubClientAsync(application, builder, localServiceProvider);
 
@@ -130,6 +119,21 @@ namespace Takenet.MessagingHub.Client.Host
             return new StoppableWrapper(stoppables);
         }
 
+        private static void RegisterSettingsContainer(SettingsContainer settingsContainer, IServiceContainer serviceContainer)
+        {
+            if (settingsContainer.SettingsType != null)
+            {
+                var settingsDictionary = settingsContainer.Settings;
+                var settingsType = ParseTypeName(settingsContainer.SettingsType);
+                if (settingsType != null)
+                {
+                    var settingsJson = JsonConvert.SerializeObject(settingsDictionary, Application.SerializerSettings);
+                    var settings = JsonConvert.DeserializeObject(settingsJson, settingsType, Application.SerializerSettings);
+                    serviceContainer.RegisterService(settingsType, settings);
+                }
+            }
+        }
+
         private static async Task<IMessagingHubClient> BuildMessagingHubClientAsync(
             Application application, MessagingHubClientBuilder builder, 
             TypeServiceProvider typeServiceProvider)
@@ -140,16 +144,8 @@ namespace Takenet.MessagingHub.Client.Host
             
             // First, register the receivers settings
             foreach (var applicationReceiver in applicationReceivers.Where(a => a.SettingsType != null))
-            {                                
-                var settingsType = ParseTypeName(applicationReceiver.SettingsType);
-                if (settingsType != null)
-                {
-                    var settingsJson = JsonConvert.SerializeObject(applicationReceiver.Settings,
-                        Application.SerializerSettings);
-                    var settings = JsonConvert.DeserializeObject(settingsJson, settingsType,
-                        Application.SerializerSettings);
-                    typeServiceProvider.RegisterService(settingsType, settings);
-                }                
+            {
+                RegisterSettingsContainer(applicationReceiver, typeServiceProvider);
             }
 
             var client = builder.Build();

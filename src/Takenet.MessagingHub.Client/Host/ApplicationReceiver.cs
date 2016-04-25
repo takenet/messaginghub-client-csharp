@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Takenet.MessagingHub.Client.Host
 {
-    public class ApplicationReceiver
+    public class ApplicationReceiver : SettingsContainer
     {
         /// <summary>
         /// Gets or sets the receiver .NET type. 
@@ -29,18 +29,5 @@ namespace Takenet.MessagingHub.Client.Host
         /// From.
         /// </value>
         public string Destination { get; set; }
-
-        /// <summary>
-        /// Gets or sets the settings to be injected to the startup and receivers types.
-        /// </summary>
-        /// <value>
-        /// The settings.
-        /// </value>
-        public IDictionary<string, object> Settings { get; set; }
-
-        /// <summary>
-        /// Gets or sets a type to be used to deserialize the settings property.
-        /// </summary>
-        public string SettingsType { get; set; }
     }
 }

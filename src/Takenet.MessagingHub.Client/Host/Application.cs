@@ -12,9 +12,9 @@ namespace Takenet.MessagingHub.Client.Host
     /// <summary>
     /// Defines the configuration type for the application.json file.
     /// </summary>
-    public class Application
+    public class Application : SettingsContainer
     {
-        internal static JsonSerializerSettings SerializerSettings { get; private set; }
+        internal static JsonSerializerSettings SerializerSettings { get; }
 
         static Application()
         {
@@ -102,19 +102,6 @@ namespace Takenet.MessagingHub.Client.Host
         public string ServiceProviderType { get; set; }
 
         /// <summary>
-        /// Gets or sets the settings to be injected to the startup and receivers types.
-        /// </summary>
-        /// <value>
-        /// The settings.
-        /// </value>
-        public IDictionary<string, object> Settings { get; set; }
-
-        /// <summary>
-        /// Gets or sets a type to be used to deserialize the settings property. It must be an implementation of <see cref="ISettings"/>.
-        /// </summary>
-        public string SettingsType { get; set; }
-
-        /// <summary>
         /// Gets or sets the session encryption mode to be used
         /// </summary>
         /// <value>
@@ -167,7 +154,6 @@ namespace Takenet.MessagingHub.Client.Host
         /// </summary>
         /// <param name="filePath">The path.</param>
         /// <returns></returns>
-        public static Application ParseFromJsonFile(string filePath) => ParseFromJson(File.ReadAllText(filePath));
-        
+        public static Application ParseFromJsonFile(string filePath) => ParseFromJson(File.ReadAllText(filePath));        
     }
 }
