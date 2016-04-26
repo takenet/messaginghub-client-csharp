@@ -15,7 +15,7 @@ namespace Switcher
     {
         public async Task ReceiveAsync(Message envelope, IMessagingHubSender sender, CancellationToken cancellationToken = new CancellationToken())        
         {
-            var senderAddress = envelope.GetSender();
+            var senderAddress = envelope.From;
             if (GetPhoneNumberDomains().Contains(senderAddress.Domain))
             {
                 var identities = GetPhoneNumberDomains().Select(d => new Identity(senderAddress.Name, d));
@@ -63,7 +63,7 @@ namespace Switcher
                         }
                     }                    
                 }
-                Startup.Destinations.Add(senderAddress.ToIdentity());
+                Startup.Destinations.Add(senderAddress.Name);
                 await sender.SendMessageAsync($"Done! The contacts {identities.Select(i => i.ToString()).Aggregate((a, b) => $"{a}, {b}").Trim(' ')} are now linked.",
                     senderAddress, cancellationToken);
             }
@@ -92,9 +92,6 @@ namespace Switcher
             yield return "0mn.io";
             yield return "tangram.com.br";
             yield return "msging.net";
-        }
-
-        
-
+        }        
     }
 }

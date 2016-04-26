@@ -12,13 +12,13 @@ namespace Switcher
         public async Task ReceiveAsync(Message envelope, IMessagingHubSender sender,
             CancellationToken cancellationToken = new CancellationToken())
         {
-            var senderAddress = envelope.GetSender();
+            var senderAddress = envelope.From;
 
-            Startup.Destinations.Remove(senderAddress.ToIdentity());
+            Startup.Destinations.Remove(senderAddress.Name);
             await sender.SendMessageAsync(
                 "The identity was removed from the destinations list.", 
                 senderAddress, 
                 cancellationToken);
-        }        
+        }
     }
 }

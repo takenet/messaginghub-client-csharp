@@ -395,7 +395,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             TestMessageReceiverWithCustomSettings.InstanceCount.ShouldBe(1);
             TestMessageReceiverWithCustomSettings.DefaultSettings.Count.ShouldBe(2);
             TestMessageReceiverWithCustomSettings.DefaultSettings["setting1"].ShouldBe("value1");
-            TestMessageReceiverWithCustomSettings.DefaultSettings["setting2"].ShouldBe(22);
+            TestMessageReceiverWithCustomSettings.DefaultSettings["setting2"].ShouldBe(22);            
 
             TestMessageReceiverWithCustomSettings.CustomSettings.Setting1.ShouldBe("value1");
             TestMessageReceiverWithCustomSettings.CustomSettings.Setting2.ShouldBe(22);
@@ -407,6 +407,8 @@ namespace Takenet.MessagingHub.Client.Host.Test
 
             TestStartupWithCustomSettings.CustomSettings.Setting2.ShouldBe(2);
             TestStartupWithCustomSettings.CustomSettings.Setting3.ShouldBe("3");
+
+            TestMessageReceiverWithCustomSettings.TestApplicationSettings.ShouldBe(TestStartupWithCustomSettings.CustomSettings);
         }
     }
 
@@ -433,13 +435,15 @@ namespace Takenet.MessagingHub.Client.Host.Test
     public class TestMessageReceiverWithCustomSettings : IMessageReceiver
     {
         public static TestMessageReceiverSettings CustomSettings { get; set; }
+        public static TestApplicationSettings TestApplicationSettings { get; set; }
         public static IDictionary<string, object> DefaultSettings { get; set; }
 
         public static int InstanceCount;
 
-        public TestMessageReceiverWithCustomSettings(TestMessageReceiverSettings customSettings, IDictionary<string, object> defaultSettings)
+        public TestMessageReceiverWithCustomSettings(TestMessageReceiverSettings customSettings, TestApplicationSettings testApplicationSettings, IDictionary<string, object> defaultSettings)
         {
             CustomSettings = customSettings;
+            TestApplicationSettings = testApplicationSettings;
             DefaultSettings = defaultSettings;
             InstanceCount++;
         }
@@ -489,18 +493,11 @@ namespace Takenet.MessagingHub.Client.Host.Test
 
     public class TestServiceProvider : IServiceProvider
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        public TestServiceProvider(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
-
         public Type SingleInjectedType = typeof(TestCustomType);
 
         public object GetService(Type serviceType)
         {
-            return serviceType == SingleInjectedType ? new TestCustomType() : _serviceProvider.GetService(serviceType);
+            return serviceType == SingleInjectedType ? new TestCustomType() : null;
         }
     }
 
