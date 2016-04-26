@@ -236,9 +236,50 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             }
         }
 
+        [Test]
+        public async Task TestOnlyFailedNotificationIsSentWhenMultipleReceiversAreRegistered()
+        {
+            var notifications = new Queue<Notification>();
+            string appShortName1 = null, appShortName2 = null;
+            var sender = GetClientForApplication(ref appShortName1, (m, s, c) => Task.CompletedTask, (n, s, c) =>
+            {
+                notifications.Enqueue(n);
+                return Task.CompletedTask;
+            });
+            var receiver = GetClientForApplication(ref appShortName2, (m, s, c) =>
+            {
+                throw new Exception();
+            }, (n, s, c) => Task.CompletedTask, (m, s, c) => Task.CompletedTask);
+
+            try
+            {
+                await sender.StartAsync(CancellationToken.None);
+                await receiver.StartAsync(CancellationToken.None);
+
+                await sender.SendMessageAsync(Beat, appShortName2, CancellationToken.None);
+
+                await Task.Delay(Timeout, CancellationToken.None);
+
+                notifications.Dequeue(); //Accepted
+                notifications.Dequeue(); //Dispatched
+                notifications.Dequeue(); //Received
+                var notification = notifications.Dequeue(); //Failed
+
+                notifications.Count.ShouldBe(0); // No other notification should arrive
+
+                notification.ShouldNotBeNull();
+                notification.Event.ShouldBe(Event.Failed);
+            }
+            finally
+            {
+                await sender.StopAsync(CancellationToken.None);
+                await receiver.StopAsync(CancellationToken.None);
+            }
+        }
+
         private const string Beat = "Beat";
 
-        private static IMessagingHubClient GetClientForApplication(ref string appShortName, Func<Message, IMessagingHubSender, CancellationToken, Task> onMessageReceived, Func<Notification, IMessagingHubSender, CancellationToken, Task> onNotificationReceived)
+        private static IMessagingHubClient GetClientForApplication(ref string appShortName, Func<Message, IMessagingHubSender, CancellationToken, Task> onMessageReceived, Func<Notification, IMessagingHubSender, CancellationToken, Task> onNotificationReceived, Func<Message, IMessagingHubSender, CancellationToken, Task> secondOnMessageReceived = null)
         {
             appShortName = appShortName ?? CreateAndRegisterApplicationAsync().Result;
             var appAccessKey = GetApplicationAccessKeyAsync(appShortName).Result;
@@ -252,6 +293,9 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
 
             if (onMessageReceived != null)
                 client.AddMessageReceiver(onMessageReceived);
+            if (secondOnMessageReceived != null)
+                client.AddMessageReceiver(secondOnMessageReceived);
+
             client.AddNotificationReceiver(onNotificationReceived);
 
             return client;
