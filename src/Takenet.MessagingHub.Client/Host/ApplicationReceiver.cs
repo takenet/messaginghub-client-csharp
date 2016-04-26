@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Lime.Protocol;
 
 namespace Takenet.MessagingHub.Client.Host
 {
@@ -29,5 +30,14 @@ namespace Takenet.MessagingHub.Client.Host
         /// From.
         /// </value>
         public string Destination { get; set; }
+
+        /// <summary>
+        /// Gets or sets the message to be sent in case of the occurrences of the specified envelope filter.
+        /// This overrides the receiver type definition, if present.
+        /// </summary>
+        /// <value>
+        /// The response.
+        /// </value>
+        public DocumentDefinition Response { get; set; }
     }
 }

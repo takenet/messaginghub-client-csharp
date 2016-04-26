@@ -156,8 +156,20 @@ namespace Takenet.MessagingHub.Client.Host
             {
                 foreach (var applicationReceiver in application.MessageReceivers)
                 {
-                    var receiver = await CreateAsync<IMessageReceiver>(
-                        applicationReceiver.Type, typeServiceProvider, applicationReceiver.Settings).ConfigureAwait(false);
+                    IMessageReceiver receiver;
+                    if (applicationReceiver.Response?.MediaType != null)
+                    {
+                        var content = applicationReceiver.Response.ToDocument();
+                        receiver =
+                            new LambdaMessageReceiver(
+                                (message, sender, c) => sender.SendMessageAsync(content, message.From, c));
+                    }
+                    else
+                    {
+                        receiver = await CreateAsync<IMessageReceiver>(
+                            applicationReceiver.Type, typeServiceProvider, applicationReceiver.Settings)
+                            .ConfigureAwait(false);
+                    }
 
                     Predicate<Message> messagePredicate = m => m != null;
 
@@ -197,9 +209,20 @@ namespace Takenet.MessagingHub.Client.Host
             {
                 foreach (var applicationReceiver in application.NotificationReceivers)
                 {
-                    var receiver =
-                        await
-                            CreateAsync<INotificationReceiver>(applicationReceiver.Type, typeServiceProvider, applicationReceiver.Settings).ConfigureAwait(false);
+                    INotificationReceiver receiver;
+                    if (applicationReceiver.Response?.MediaType != null)
+                    {
+                        var content = applicationReceiver.Response.ToDocument();
+                        receiver =
+                            new LambdaNotificationReceiver(
+                                (notification, sender, c) => sender.SendMessageAsync(content, notification.From, c));
+                    }
+                    else
+                    {
+                        receiver = await CreateAsync<INotificationReceiver>(
+                            applicationReceiver.Type, typeServiceProvider, applicationReceiver.Settings)
+                            .ConfigureAwait(false);
+                    }
 
                     Predicate<Notification> notificationPredicate = n => n != null;
 

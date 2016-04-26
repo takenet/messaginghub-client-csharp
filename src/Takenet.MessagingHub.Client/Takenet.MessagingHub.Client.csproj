@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="Host\Application.cs" />
     <Compile Include="Host\ApplicationReceiver.cs" />
+    <Compile Include="Host\DocumentDefinition.cs" />
     <Compile Include="Host\IFactory.cs" />
     <Compile Include="Host\MessageApplicationReceiver.cs" />
     <Compile Include="Host\NotificationApplicationReceiver.cs" />
