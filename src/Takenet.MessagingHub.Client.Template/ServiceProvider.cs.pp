@@ -1,41 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-//using SimpleInjector;
+using Takenet.MessagingHub.Client.Host;
 
 namespace $rootnamespace$
 {
-    class ServiceProvider : IServiceProvider
+    class ServiceProvider : IServiceContainer
     {
-        //private Container Container { get; }
-		public Dictionary<Type, object> TypeDictionary { get; }
-		private readonly IServiceProvider _underlyingServiceProvider;
+        public Dictionary<Type, object> TypeDictionary { get; }
 
-        public ServiceProvider(IServiceProvider underlyingServiceProvider)
+        public ServiceProvider()
         {
-            /*
-			Container = new Container();
-            // Delegates the resolution of unregistered types to the underlyingServiceProvider
-            Container.ResolveUnregisteredType += (sender, args) =>
-            {
-                var registration = Lifestyle.Singleton.CreateRegistration(
-                    args.UnregisteredServiceType,
-                    () => underlyingServiceProvider.GetService(args.UnregisteredServiceType),
-                    Container);
-
-                args.Register(registration);
-            };
-
-            Container.RegisterSingleton<IMyInterface, MyClass>();
-			*/
-
-			TypeDictionary = new Dictionary<Type, object>();
-			_underlyingServiceProvider = underlyingServiceProvider;
+            TypeDictionary = new Dictionary<Type, object>();
         }
 
         public object GetService(Type serviceType)
         {
-            //return Container.GetInstance(serviceType);
-			return TypeDictionary.ContainsKey(serviceType) ? TypeDictionary[serviceType] : _underlyingServiceProvider.GetService(serviceType);
+            return TypeDictionary[serviceType];
+        }
+
+        public void RegisterService(Type serviceType, object instance)
+        {
+            TypeDictionary[serviceType] = instance;
         }
     }
 }
