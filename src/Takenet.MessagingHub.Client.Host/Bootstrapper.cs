@@ -191,7 +191,7 @@ namespace Takenet.MessagingHub.Client.Host
                     {
                         var currentMessagePredicate = messagePredicate;
                         var senderRegex = new Regex(applicationReceiver.Sender, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-                        messagePredicate = m => currentMessagePredicate(m) && senderRegex.IsMatch(m.GetSender().ToString());
+                        messagePredicate = m => currentMessagePredicate(m) && senderRegex.IsMatch(m.From.ToString());
                     }
 
                     if (applicationReceiver.Destination != null)
@@ -236,7 +236,7 @@ namespace Takenet.MessagingHub.Client.Host
                     {
                         var currentNotificationPredicate = notificationPredicate;
                         var senderRegex = new Regex(applicationReceiver.Sender, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-                        notificationPredicate = n => currentNotificationPredicate(n) && senderRegex.IsMatch(n.GetSender().ToString());
+                        notificationPredicate = n => currentNotificationPredicate(n) && senderRegex.IsMatch(n.From.ToString());
                     }
 
                     if (applicationReceiver.Destination != null)
