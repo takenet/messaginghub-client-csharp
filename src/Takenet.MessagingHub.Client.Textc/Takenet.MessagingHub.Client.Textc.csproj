@@ -32,12 +32,12 @@
     <DocumentationFile>bin\Release\Takenet.MessagingHub.Client.Textc.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lime.Protocol, Version=0.4.53.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Protocol.0.4.53\lib\net461\Lime.Protocol.dll</HintPath>
+    <Reference Include="Lime.Protocol, Version=0.4.68.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Protocol.0.4.68\lib\net461\Lime.Protocol.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Protocol.Serialization.Newtonsoft, Version=0.4.53.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Protocol.Serialization.Newtonsoft.0.4.53\lib\net461\Lime.Protocol.Serialization.Newtonsoft.dll</HintPath>
+    <Reference Include="Lime.Protocol.Serialization.Newtonsoft, Version=0.4.68.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Protocol.Serialization.Newtonsoft.0.4.68\lib\net461\Lime.Protocol.Serialization.Newtonsoft.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
