@@ -1,5 +1,4 @@
 using Lime.Protocol;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -13,7 +12,14 @@ namespace Switcher
 {
     public class OptInMessageReceiver : IMessageReceiver
     {
-        public async Task ReceiveAsync(Message envelope, IMessagingHubSender sender, CancellationToken cancellationToken = new CancellationToken())        
+        private readonly IMessagingHubSender _sender;
+
+        public OptInMessageReceiver(IMessagingHubSender sender)
+        {
+            _sender = sender;
+        }
+
+        public async Task ReceiveAsync(Message envelope, CancellationToken cancellationToken = new CancellationToken())        
         {
             var senderAddress = envelope.From;
             if (GetPhoneNumberDomains().Contains(senderAddress.Domain))
@@ -33,10 +39,10 @@ namespace Switcher
                         }
                     };
 
-                    var addContactResponse = await sender.SendCommandAsync(addContactRequest, cancellationToken);
+                    var addContactResponse = await _sender.SendCommandAsync(addContactRequest, cancellationToken);
                     if (addContactResponse.Status != CommandStatus.Success)
                     {
-                        await sender.SendMessageAsync($"An error occurred while adding a contact with address '{identity}': {addContactResponse.Resource}",
+                        await _sender.SendMessageAsync($"An error occurred while adding a contact with address '{identity}': {addContactResponse.Resource}",
                             senderAddress, cancellationToken);
                         return;
                     }
@@ -54,22 +60,22 @@ namespace Switcher
                             }
                         };
 
-                        var linkContactResponse = await sender.SendCommandAsync(linkContactRequest, cancellationToken);
+                        var linkContactResponse = await _sender.SendCommandAsync(linkContactRequest, cancellationToken);
                         if (linkContactResponse.Status != CommandStatus.Success)
                         {
-                            await sender.SendMessageAsync($"An error occurred while linking the contact '{identity}' to '{linkedIdentity}': {linkContactResponse.Resource}",
+                            await _sender.SendMessageAsync($"An error occurred while linking the contact '{identity}' to '{linkedIdentity}': {linkContactResponse.Resource}",
                                 senderAddress, cancellationToken);
                             return;
                         }
                     }                    
                 }
                 Startup.Destinations.Add(senderAddress.Name);
-                await sender.SendMessageAsync($"Done! The contacts {identities.Select(i => i.ToString()).Aggregate((a, b) => $"{a}, {b}").Trim(' ')} are now linked.",
+                await _sender.SendMessageAsync($"Done! The contacts {identities.Select(i => i.ToString()).Aggregate((a, b) => $"{a}, {b}").Trim(' ')} are now linked.",
                     senderAddress, cancellationToken);
             }
             else
             {
-                await sender.SendMessageAsync("It seems your identifier is not a valid phone number so I cannot subscribe you :(",
+                await _sender.SendMessageAsync("It seems your identifier is not a valid phone number so I cannot subscribe you :(",
                     senderAddress, cancellationToken);
             }
         }

@@ -11,7 +11,14 @@ namespace RssContact
 {
     public class PlainTextMessageReceiver : IMessageReceiver
     {
-        public async Task ReceiveAsync(Message message, IMessagingHubSender sender, CancellationToken cancellationToken)
+        private readonly IMessagingHubSender _sender;
+
+        public PlainTextMessageReceiver(IMessagingHubSender sender)
+        {
+            _sender = sender;
+        }
+
+        public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
         {
             Debug.WriteLine($"From: {message.From} \tContent: {message.Content}");
             try
@@ -19,7 +26,7 @@ namespace RssContact
                 Uri feedUri;
                 if (!Uri.TryCreate(message.Content.ToString(), UriKind.Absolute, out feedUri))
                 {
-                    await sender.SendMessageAsync("URL inválida", message.From, cancellationToken);
+                    await _sender.SendMessageAsync("URL inválida", message.From, cancellationToken);
                     return;
                 }
 
@@ -27,13 +34,13 @@ namespace RssContact
                 var items = FeedParser.Get(feedUri);
                 foreach (var item in items)
                 {
-                    await sender.SendMessageAsync($"[{item.Title}]\n{item.Content}", message.From, cancellationToken);
+                    await _sender.SendMessageAsync($"[{item.Title}]\n{item.Content}", message.From, cancellationToken);
                 }
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
-                await sender.SendMessageAsync("Houve um erro ao processar o feed.\nPor favor, tenta novamente.", message.From, cancellationToken);
+                await _sender.SendMessageAsync("Houve um erro ao processar o feed.\nPor favor, tenta novamente.", message.From, cancellationToken);
             }
         }
     }

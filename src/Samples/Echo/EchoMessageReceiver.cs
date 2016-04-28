@@ -9,7 +9,14 @@ namespace Echo
 {
     public class EchoMessageReceiver : IMessageReceiver
     {
-        public async Task ReceiveAsync(Message message, IMessagingHubSender sender, CancellationToken cancellationToken)
+        private readonly IMessagingHubSender _sender;
+
+        public EchoMessageReceiver(IMessagingHubSender sender)
+        {
+            _sender = sender;
+        }
+
+        public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
         {
             //Fire and forget messages
             if (Guid.Equals(message.Id, Guid.Empty))
@@ -21,7 +28,7 @@ namespace Echo
             echoMessage.Pp = null;
             echoMessage.Id = Guid.NewGuid();
 
-            await sender.SendMessageAsync(echoMessage, cancellationToken);
+            await _sender.SendMessageAsync(echoMessage, cancellationToken);
         }
     }
 }

@@ -18,6 +18,7 @@ namespace Buscape
 {
     public sealed class PlainTextMessageReceiver : IMessageReceiver, IDisposable
     {
+        private readonly IMessagingHubSender _sender;
         private const string StartMessage = "Iniciar";
         private const string FinishMessage = "ENCERRAR";
         private const string MoreResultsMessage = "MAIS RESULTADOS";
@@ -42,22 +43,22 @@ namespace Buscape
 
         private readonly MemoryCache Session = new MemoryCache(nameof(Buscape));
 
-        public PlainTextMessageReceiver(IDictionary<string, object> settings)
+        public PlainTextMessageReceiver(IMessagingHubSender sender, IDictionary<string, object> settings)
         {
+            _sender = sender;
             Settings = settings;
-            
         }
 
-        public async Task ReceiveAsync(Message message, IMessagingHubSender sender, CancellationToken cancellationToken)
+        public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
         {
             try
             {
-                await ProcessMessagesAsync(sender, message, cancellationToken);
+                await ProcessMessagesAsync(_sender, message, cancellationToken);
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Exception processing message: {e}");
-                await sender.SendMessageAsync(@"Falhou :(", message.From, cancellationToken);
+                await _sender.SendMessageAsync(@"Falhou :(", message.From, cancellationToken);
             }
         }
 

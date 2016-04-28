@@ -9,13 +9,20 @@ namespace Switcher
 {
     public class OptOutMessageReceiver : IMessageReceiver
     {
-        public async Task ReceiveAsync(Message envelope, IMessagingHubSender sender,
+        private readonly IMessagingHubSender _sender;
+
+        public OptOutMessageReceiver(IMessagingHubSender sender)
+        {
+            _sender = sender;
+        }
+
+        public async Task ReceiveAsync(Message envelope, 
             CancellationToken cancellationToken = new CancellationToken())
         {
             var senderAddress = envelope.From;
 
             Startup.Destinations.Remove(senderAddress.Name);
-            await sender.SendMessageAsync(
+            await _sender.SendMessageAsync(
                 "The identity was removed from the destinations list.", 
                 senderAddress, 
                 cancellationToken);

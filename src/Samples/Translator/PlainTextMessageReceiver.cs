@@ -10,10 +10,17 @@ namespace Translator
 {
     public class PlainTextMessageReceiver : IMessageReceiver
     {
-        public async Task ReceiveAsync(Message message, IMessagingHubSender sender, CancellationToken cancellationToken)
+        private readonly IMessagingHubSender _sender;
+
+        public PlainTextMessageReceiver(IMessagingHubSender sender)
+        {
+            _sender = sender;
+        }
+
+        public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
         {
             Console.WriteLine($"From: {message.From} \tContent: {message.Content}");
-            await sender.SendMessageAsync("Pong!", message.From, cancellationToken);
+            await _sender.SendMessageAsync("Pong!", message.From, cancellationToken);
         }
     }
 }
