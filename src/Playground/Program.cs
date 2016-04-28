@@ -55,7 +55,7 @@ namespace Playground
                     .BuildAndAddTextcMessageReceiver();
 
 
-            client.AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText);
+            client.AddMessageReceiver(new PlainTextMessageReceiver(client), MediaTypes.PlainText);
             client.AddNotificationReceiver(new PrintNotificationReceiver());
 
             // Starts the client

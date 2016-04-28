@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Network;
-using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
@@ -12,7 +11,7 @@ namespace Takenet.MessagingHub.Client.Listener
     /// </summary>
     public class UnsupportedMessageReceiver : IMessageReceiver
     {
-        public Task ReceiveAsync(Message message, IMessagingHubSender sender, CancellationToken cancellationToken = default(CancellationToken))
+        public Task ReceiveAsync(Message message, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (message.Id != Guid.Empty)
             {

@@ -448,8 +448,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             InstanceCount++;
         }
 
-        public Task ReceiveAsync(Message envelope, IMessagingHubSender sender,
-            CancellationToken cancellationToken = new CancellationToken())
+        public Task ReceiveAsync(Message envelope, CancellationToken cancellationToken = new CancellationToken())
         {
             return Task.CompletedTask;
         }
@@ -480,8 +479,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             InstanceCount++;
         }
 
-        public Task ReceiveAsync(Message envelope, IMessagingHubSender sender,
-            CancellationToken cancellationToken = new CancellationToken())
+        public Task ReceiveAsync(Message envelope, CancellationToken cancellationToken = new CancellationToken())
         {
             return Task.CompletedTask;
         }
@@ -564,7 +562,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             Settings = settings;
         }
 
-        public Task ReceiveAsync(Message message, IMessagingHubSender sender, CancellationToken cancellationToken)
+        public Task ReceiveAsync(Message message, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -581,7 +579,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             Settings = settings;
         }
 
-        public Task ReceiveAsync(Notification envelope, IMessagingHubSender sender, CancellationToken cancellationToken)
+        public Task ReceiveAsync(Notification envelope, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

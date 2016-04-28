@@ -11,6 +11,7 @@ namespace Takenet.MessagingHub.Client.Textc
 {
     public class TextcMessageReceiver : IMessageReceiver
     {
+        private readonly IMessagingHubSender _sender;
         private readonly ITextProcessor _textProcessor;
         private readonly IContextProvider _contextProvider;
         private readonly Func<Message, IMessageReceiver, Task> _matchNotFoundHandler;
@@ -18,17 +19,18 @@ namespace Takenet.MessagingHub.Client.Textc
 
         private static readonly TimeSpan DefaultProcessTimeout = TimeSpan.FromSeconds(60);
 
-        public TextcMessageReceiver(ITextProcessor textProcessor, IContextProvider contextProvider, Func<Message, IMessageReceiver, Task> matchNotFoundHandler = null, TimeSpan? processTimeout = null)
+        public TextcMessageReceiver(IMessagingHubSender sender, ITextProcessor textProcessor, IContextProvider contextProvider, Func<Message, IMessageReceiver, Task> matchNotFoundHandler = null, TimeSpan? processTimeout = null)
         {
             if (textProcessor == null) throw new ArgumentNullException(nameof(textProcessor));
             if (contextProvider == null) throw new ArgumentNullException(nameof(contextProvider));
+            _sender = sender;
             _textProcessor = textProcessor;
             _contextProvider = contextProvider;
             _matchNotFoundHandler = matchNotFoundHandler;
             _processTimeout = processTimeout ?? DefaultProcessTimeout;
         }
 
-        public async Task ReceiveAsync(Message message, IMessagingHubSender sender, CancellationToken cancellationToken)
+        public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
         {
             try
             {
@@ -57,7 +59,7 @@ namespace Takenet.MessagingHub.Client.Textc
             }
             finally
             {
-                await sender.SendNotificationAsync(message.ToConsumedNotification(), cancellationToken).ConfigureAwait(false);
+                await _sender.SendNotificationAsync(message.ToConsumedNotification(), cancellationToken).ConfigureAwait(false);
             }
         }
     }

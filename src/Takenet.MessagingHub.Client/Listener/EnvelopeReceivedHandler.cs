@@ -51,7 +51,7 @@ namespace Takenet.MessagingHub.Client.Listener
         protected Task CallReceiver<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken cancellationToken)
             where TEnvelope : Envelope
         {
-            return envelopeReceiver.ReceiveAsync(envelope, Sender, cancellationToken);
+            return envelopeReceiver.ReceiveAsync(envelope, cancellationToken);
         }
     }
 
