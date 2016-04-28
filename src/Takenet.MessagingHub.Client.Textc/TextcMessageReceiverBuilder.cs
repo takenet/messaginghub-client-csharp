@@ -188,6 +188,7 @@ namespace Takenet.MessagingHub.Client.Textc
                     commandProcessorFactory(_outputProcessor));
             }
             return new TextcMessageReceiver(
+                _client,
                 textProcessor, 
                 _contextProvider ?? new ContextProvider(_cultureProvider, TimeSpan.FromMinutes(5)), 
                 _matchNotFoundHandler);

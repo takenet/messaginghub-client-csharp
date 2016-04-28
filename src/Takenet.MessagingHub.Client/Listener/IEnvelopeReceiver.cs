@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using Lime.Protocol;
 using System.Threading.Tasks;
-using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
@@ -16,9 +15,8 @@ namespace Takenet.MessagingHub.Client.Listener
         /// Receives an envelope
         /// </summary>
         /// <param name="envelope">Envelope type</param>
-        /// <param name="sender">A sender that can be used to send envelopes</param>
         /// <param name="cancellationToken">A cancellation token to allow the task to be canceled</param>
         /// <returns>Task representing the receive operation</returns>
-        Task ReceiveAsync(TEnvelope envelope, IMessagingHubSender sender, CancellationToken cancellationToken = default(CancellationToken));
+        Task ReceiveAsync(TEnvelope envelope, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

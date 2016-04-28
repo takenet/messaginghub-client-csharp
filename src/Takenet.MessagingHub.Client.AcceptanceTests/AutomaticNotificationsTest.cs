@@ -23,12 +23,12 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         {
             var notifications = new Queue<Notification>();
             string appShortName1 = null, appShortName2 = null;
-            var sender = GetClientForApplication(ref appShortName1, (m, s, c) => Task.CompletedTask, (n, s, c) =>
+            var sender = GetClientForApplication(ref appShortName1, (m, c) => Task.CompletedTask, (n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var receiver = GetClientForApplication(ref appShortName2, (m, s, c) => Task.CompletedTask, (n, s, c) => Task.CompletedTask);
+            var receiver = GetClientForApplication(ref appShortName2, (m, c) => Task.CompletedTask, (n, c) => Task.CompletedTask);
 
             try
             {
@@ -56,12 +56,12 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         {
             var notifications = new Queue<Notification>();
             string appShortName1 = null, appShortName2 = null;
-            var sender = GetClientForApplication(ref appShortName1, (m, s, c) => Task.CompletedTask, (n, s, c) =>
+            var sender = GetClientForApplication(ref appShortName1, (m, c) => Task.CompletedTask, (n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var receiver = GetClientForApplication(ref appShortName2, (m, s, c) => Task.CompletedTask, (n, s, c) => Task.CompletedTask);
+            var receiver = GetClientForApplication(ref appShortName2, (m, c) => Task.CompletedTask, (n, c) => Task.CompletedTask);
 
             try
             {
@@ -90,12 +90,12 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         {
             var notifications = new Queue<Notification>();
             string appShortName1 = null, appShortName2 = null;
-            var sender = GetClientForApplication(ref appShortName1, (m, s, c) => Task.CompletedTask, (n, s, c) =>
+            var sender = GetClientForApplication(ref appShortName1, (m, c) => Task.CompletedTask, (n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var receiver = GetClientForApplication(ref appShortName2, (m, s, c) => Task.CompletedTask, (n, s, c) => Task.CompletedTask);
+            var receiver = GetClientForApplication(ref appShortName2, (m, c) => Task.CompletedTask, (n, c) => Task.CompletedTask);
 
             try
             {
@@ -125,15 +125,15 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         {
             var notifications = new Queue<Notification>();
             string appShortName1 = null, appShortName2 = null;
-            var sender = GetClientForApplication(ref appShortName1, (m, s, c) => Task.CompletedTask, (n, s, c) =>
+            var sender = GetClientForApplication(ref appShortName1, (m, c) => Task.CompletedTask, (n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var receiver = GetClientForApplication(ref appShortName2, (m, s, c) =>
+            var receiver = GetClientForApplication(ref appShortName2, (m, c) =>
             {
                 throw new Exception();
-            }, (n, s, c) => Task.CompletedTask);
+            }, (n, c) => Task.CompletedTask);
 
             try
             {
@@ -166,12 +166,12 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         {
             var notifications = new Queue<Notification>();
             string appShortName1 = null, appShortName2 = null;
-            var sender = GetClientForApplication(ref appShortName1, (m, s, c) => Task.CompletedTask, (n, s, c) =>
+            var sender = GetClientForApplication(ref appShortName1, (m, c) => Task.CompletedTask, (n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var receiver = GetClientForApplication(ref appShortName2, (m, s, c) => Task.CompletedTask, (n, s, c) => Task.CompletedTask);
+            var receiver = GetClientForApplication(ref appShortName2, (m, c) => Task.CompletedTask, (n, c) => Task.CompletedTask);
 
             try
             {
@@ -203,12 +203,12 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         {
             var notifications = new Queue<Notification>();
             string appShortName1 = null, appShortName2 = null;
-            var sender = GetClientForApplication(ref appShortName1, (m, s, c) => Task.CompletedTask, (n, s, c) =>
+            var sender = GetClientForApplication(ref appShortName1, (m, c) => Task.CompletedTask, (n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var receiver = GetClientForApplication(ref appShortName2, null, (n, s, c) => Task.CompletedTask);
+            var receiver = GetClientForApplication(ref appShortName2, null, (n, c) => Task.CompletedTask);
 
             try
             {
@@ -241,15 +241,15 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         {
             var notifications = new Queue<Notification>();
             string appShortName1 = null, appShortName2 = null;
-            var sender = GetClientForApplication(ref appShortName1, (m, s, c) => Task.CompletedTask, (n, s, c) =>
+            var sender = GetClientForApplication(ref appShortName1, (m, c) => Task.CompletedTask, (n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var receiver = GetClientForApplication(ref appShortName2, (m, s, c) =>
+            var receiver = GetClientForApplication(ref appShortName2, (m, c) =>
             {
                 throw new Exception();
-            }, (n, s, c) => Task.CompletedTask, (m, s, c) => Task.CompletedTask);
+            }, (n, c) => Task.CompletedTask, (m, c) => Task.CompletedTask);
 
             try
             {
@@ -279,7 +279,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
 
         private const string Beat = "Beat";
 
-        private static IMessagingHubClient GetClientForApplication(ref string appShortName, Func<Message, IMessagingHubSender, CancellationToken, Task> onMessageReceived, Func<Notification, IMessagingHubSender, CancellationToken, Task> onNotificationReceived, Func<Message, IMessagingHubSender, CancellationToken, Task> secondOnMessageReceived = null)
+        private static IMessagingHubClient GetClientForApplication(ref string appShortName, Func<Message, CancellationToken, Task> onMessageReceived, Func<Notification, CancellationToken, Task> onNotificationReceived, Func<Message, CancellationToken, Task> secondOnMessageReceived = null)
         {
             appShortName = appShortName ?? CreateAndRegisterApplicationAsync().Result;
             var appAccessKey = GetApplicationAccessKeyAsync(appShortName).Result;

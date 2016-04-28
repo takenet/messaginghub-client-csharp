@@ -40,7 +40,7 @@ namespace Takenet.MessagingHub.Client.Test
             await Task.Delay(TIME_OUT);
 
             //Assert
-            _notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, null, CancellationToken.None);
+            _notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, CancellationToken.None);
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace Takenet.MessagingHub.Client.Test
             await Task.Delay(TIME_OUT);
 
             //Assert
-            _notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, null, CancellationToken.None);
+            _notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, CancellationToken.None);
         }
 
 
@@ -75,7 +75,7 @@ namespace Takenet.MessagingHub.Client.Test
             await Task.Delay(TIME_OUT);
 
             //Assert
-            notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, null, CancellationToken.None);
+            notificationReceiver.ReceivedWithAnyArgs().ReceiveAsync(null, CancellationToken.None);
         }
 
         private void DispatchNotification()

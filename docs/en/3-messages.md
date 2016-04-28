@@ -47,7 +47,7 @@ Your *MessageReceiver* can be defined as follows:
 ```csharp
 public class PlainTextMessageReceiver : IMessageReceiver
 {
-    public async Task ReceiveAsync(MessagingHubSender sender, Message message, CancellationToken cancellationToken)
+    public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
     {
         // Write the received message to the console
         Console.WriteLine(message.Content.ToString());
@@ -55,17 +55,24 @@ public class PlainTextMessageReceiver : IMessageReceiver
 }
 ```
 
-And you can respond to the received messages using the *sender* parameter:
+And you can respond to the received messages using an *IMessagingHubSender* you can inject in the constructor:
 
 ```csharp
 public class PlainTextMessageReceiver : IMessageReceiver
 {
-    public async Task ReceiveAsync(MessagingHubSender sender, Message message, CancellationToken cancellationToken)
+    private readonly IMessagingHubSender _sender;
+
+    public PlainTextMessageReceiver(IMessagingHubSender sender)
+    {
+        _sender = sender;
+    }
+
+    public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
     {
         // Write the received message to the console
         Console.WriteLine(message.Content.ToString());
         // Responds to the received message
-        sender.SendMessageAsync("Hi. I just received your message!", message.From, cancellationToken);
+        _sender.SendMessageAsync("Hi. I just received your message!", message.From, cancellationToken);
     }
 }
 ```

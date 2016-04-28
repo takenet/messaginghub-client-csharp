@@ -63,7 +63,7 @@ Seu *NotificationReceiver* pode ser definido da seguinte forma:
 ```csharp
 public class ConsumedNotificationReceiver : INotificationReceiver
 {
-    public async Task ReceiveAsync(MessagingHubSender sender, Notification notification, CancellationToken cancellationToken)
+    public async Task ReceiveAsync(Notification notification, CancellationToken cancellationToken)
     {
         // Write the received notification to the console
         Console.WriteLine(notification.ToString());
