@@ -162,7 +162,7 @@ namespace Takenet.MessagingHub.Client.Host
                         var content = applicationReceiver.Response.ToDocument();
                         receiver =
                             new LambdaMessageReceiver(
-                                (message, sender, c) => sender.SendMessageAsync(content, message.From, c));
+                                (message, c) => client.SendMessageAsync(content, message.From, c));
                     }
                     else
                     {
@@ -215,7 +215,7 @@ namespace Takenet.MessagingHub.Client.Host
                         var content = applicationReceiver.Response.ToDocument();
                         receiver =
                             new LambdaNotificationReceiver(
-                                (notification, sender, c) => sender.SendMessageAsync(content, notification.From, c));
+                                (notification, c) => client.SendMessageAsync(content, notification.From, c));
                     }
                     else
                     {
