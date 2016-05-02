@@ -13,7 +13,7 @@ Here follows an example:
 
 ```json
 {
-  "account": "xpto",
+  "identifier": "xpto",
   "accessKey": "cXkzT1Rp",
   "messageReceivers": [
     {
@@ -47,7 +47,7 @@ Here follows all properties defined in the `application.json` file:
 
 | Property    | Description                                                                      | Example                 |
 |-------------|----------------------------------------------------------------------------------|-------------------------|
-| account     | The identifier of the Messaging Hub application, registered through the Portal [messaginghub.io](http://messaginghub.io). | myapplication           |
+| identifier     | The identifier of the Messaging Hub application, registered through the Portal [messaginghub.io](http://messaginghub.io). | myapplication           |
 | domain      | **lime** domain to connect. Currently, the only supported value is `msging.net`.| msging.net              |
 | hostName    | Address of the server.                                  | msging.net              |
 | accessKey   | Access key to authenticate your application, in **base64** format.         | MTIzNDU2                |
