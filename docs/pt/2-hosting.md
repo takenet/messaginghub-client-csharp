@@ -12,7 +12,7 @@ Abaixo um exemplo:
 
 ```json
 {
-  "account": "xpto",
+  "identifier": "xpto",
   "accessKey": "cXkzT1Rp",
   "messageReceivers": [
     {
@@ -46,7 +46,7 @@ Abaixo, todas as propriedades que podem ser definidas no arquivo `application.js
 
 | Propriedade | Descrição                                                                        | Exemplo                 |
 |-------------|----------------------------------------------------------------------------------|-------------------------|
-| account     | O identificador da aplicação no Messaging Hub, gerado através do portal [messaginghub.io](http://messaginghub.io). | myapplication           |
+| identifier     | O identificador da aplicação no Messaging Hub, gerado através do portal [messaginghub.io](http://messaginghub.io). | myapplication           |
 | domain      | O domínio **lime** para conexão. Atualmente o único valor suportado é `msging.net`.| msging.net              |
 | hostName    | O endereço do host para conexão com o servidor.                                  | msging.net              |
 | accessKey   | A chave de acesso da aplicação para autenticação, no formato **base64**.         | MTIzNDU2                |
