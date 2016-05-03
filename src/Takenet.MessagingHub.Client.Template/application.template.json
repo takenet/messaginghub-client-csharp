@@ -12,6 +12,5 @@
     "setting1": "value1"
   },
   "startupType": "Startup",
-  "serviceProviderType":  "ServiceProvider",
   "schemaVersion": 2
 }

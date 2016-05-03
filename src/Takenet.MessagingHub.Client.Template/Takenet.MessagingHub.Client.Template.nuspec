@@ -17,7 +17,6 @@
     <file src="PlainTextMessageReceiver.cs.pp" target="content\PlainTextMessageReceiver.cs.pp"/>
     <file src="Readme.txt" target="" />
     <file src="Startup.cs.pp" target="content\Startup.cs.pp"/>
-    <file src="ServiceProvider.cs.pp" target="content\ServiceProvider.cs.pp"/>
     <file src="install.ps1" target="tools\net461\install.ps1"/>
     <file src="uninstall.ps1" target="tools\net461\uninstall.ps1"/>
     <file src="bin\Release\mhh.exe" target="tools\net461\mhh.exe" />
