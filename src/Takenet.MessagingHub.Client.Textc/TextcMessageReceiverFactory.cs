@@ -20,7 +20,7 @@ namespace Takenet.MessagingHub.Client.Textc
 
         public async Task<IMessageReceiver> CreateAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings)
         {
-            var builder = new TextcMessageReceiverBuilder(serviceProvider.GetService<MessagingHubClientBuilder>());
+            var builder = new TextcMessageReceiverBuilder(serviceProvider.GetService<Sender.IMessagingHubSender>());
             if (settings != null)
             {
                 var textcMessageReceiverSettings = TextcMessageReceiverSettings.ParseFromSettings(settings);
@@ -32,6 +32,11 @@ namespace Takenet.MessagingHub.Client.Textc
                 if (textcMessageReceiverSettings.ScorerType != null)
                 {
                     builder = await SetupScorerAsync(serviceProvider, settings, textcMessageReceiverSettings.ScorerType, builder).ConfigureAwait(false);
+                }
+
+                if (textcMessageReceiverSettings.Context != null)
+                {
+                    builder = await SetupContextAsync(serviceProvider, settings, textcMessageReceiverSettings.Context, builder).ConfigureAwait(false);
                 }
             }
 
@@ -66,8 +71,8 @@ namespace Takenet.MessagingHub.Client.Textc
                             foreach (var returnVariable in returnVariables)
                             {
                                 var returnVariableValue = context
-                                    .GetVariable(returnVariable.TrimStart('{').TrimEnd('}'))?.ToString() ?? "";                                
-                                returnText = returnText.Replace(returnVariable, returnVariableValue);                                
+                                    .GetVariable(returnVariable.TrimStart('{').TrimEnd('}'))?.ToString() ?? "";
+                                returnText = returnText.Replace(returnVariable, returnVariableValue);
                             }
 
                             return returnText.AsCompletedTask();
@@ -88,7 +93,7 @@ namespace Takenet.MessagingHub.Client.Textc
                                 var methodName = commandSetting.Method;
                                 var assembly = typeof(TextcMessageReceiverBuilder).Assembly;
                                 var path = new FileInfo(assembly.Location).DirectoryName;
-                                Lime.Protocol.Serialization.TypeUtil.LoadAssembliesAndReferences(path, assemblyFilter: Lime.Protocol.Serialization.TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter, 
+                                Lime.Protocol.Serialization.TypeUtil.LoadAssembliesAndReferences(path, assemblyFilter: Lime.Protocol.Serialization.TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter,
                                     ignoreExceptionLoadingReferencedAssembly: true);
                                 var processorType = Bootstrapper.ParseTypeName(processorTypeName);
                                 object processor;
@@ -101,7 +106,7 @@ namespace Takenet.MessagingHub.Client.Textc
                                 }
 
                                 var method = processorType.GetMethod(methodName);
-                                if (method == null || method.ReturnType != typeof (Task))
+                                if (method == null || method.ReturnType != typeof(Task))
                                 {
                                     return new ReflectionCommandProcessor(processor, methodName, true, o, syntaxes);
                                 }
@@ -131,6 +136,16 @@ namespace Takenet.MessagingHub.Client.Textc
                 scorer = await Bootstrapper.CreateAsync<IExpressionScorer>(scorerType, serviceProvider, settings).ConfigureAwait(false);
             }
             builder = builder.WithExpressionScorer(scorer);
+            return builder;
+        }
+
+        private static async Task<TextcMessageReceiverBuilder> SetupContextAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings,
+            TextcMessageReceiverContextCommandSettings context, TextcMessageReceiverBuilder builder)
+        {
+            IContextProvider contextProvider;
+            contextProvider = await Bootstrapper.CreateAsync<IContextProvider>(context.Type, serviceProvider, settings).ConfigureAwait(false);
+
+            builder = builder.WithContextProvider(contextProvider);
             return builder;
         }
     }

@@ -57,10 +57,6 @@ namespace Takenet.MessagingHub.Client.Textc
                     await _matchNotFoundHandler(message, this).ConfigureAwait(false);
                 }
             }
-            finally
-            {
-                await _sender.SendNotificationAsync(message.ToConsumedNotification(), cancellationToken).ConfigureAwait(false);
-            }
         }
     }
 }
