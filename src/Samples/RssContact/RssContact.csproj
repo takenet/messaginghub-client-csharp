@@ -89,7 +89,6 @@
     <Compile Include="PlainTextMessageReceiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FeedDB.cs" />
-    <Compile Include="ServiceProvider.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>

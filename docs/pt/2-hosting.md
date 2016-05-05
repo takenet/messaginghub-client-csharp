@@ -12,7 +12,7 @@ Abaixo um exemplo:
 
 ```json
 {
-  "account": "xpto",
+  "identifier": "xpto",
   "accessKey": "cXkzT1Rp",
   "messageReceivers": [
     {
@@ -46,7 +46,7 @@ Abaixo, todas as propriedades que podem ser definidas no arquivo `application.js
 
 | Propriedade | Descrição                                                                        | Exemplo                 |
 |-------------|----------------------------------------------------------------------------------|-------------------------|
-| account     | O identificador da aplicação no Messaging Hub, gerado através do portal [messaginghub.io](http://messaginghub.io). | myapplication           |
+| identifier     | O identificador da aplicação no Messaging Hub, gerado através do portal [messaginghub.io](http://messaginghub.io). | myapplication           |
 | domain      | O domínio **lime** para conexão. Atualmente o único valor suportado é `msging.net`.| msging.net              |
 | hostName    | O endereço do host para conexão com o servidor.                                  | msging.net              |
 | accessKey   | A chave de acesso da aplicação para autenticação, no formato **base64**.         | MTIzNDU2                |
@@ -55,7 +55,7 @@ Abaixo, todas as propriedades que podem ser definidas no arquivo `application.js
 | sessionEncryption | Modo de encriptação a ser usado.                              | None/TLS                   |
 | sessionCompression | Modo de compressão a ser usado.                              | None                   |
 | startupType | Nome do tipo .NET que deve ser ativado quando o cliente foi inicializado. O mesmo deve implementar a interface `IStartable`. Pode ser o nome simples do tipo (se estiver na mesma **assembly** do arquivo `application.json`) ou o nome qualificado com **assembly**.    | Startup     |
-| serviceProviderType | Um tipo a ser usado como provedor de serviços para injeção de dependências. Deve ser uma implementação de `IServiceContainer`. | ServiceProvider |
+| serviceProviderType | Um tipo a ser usado como provedor de serviços para injeção de dependências. Deve ser uma implementação de `IServiceProvider`. | ServiceProvider |
 | settings    | Configurações gerais da aplicação, no formato chave-valor. Este valor é injetado nos tipos criados, sejam **receivers** ou o **startupType**. Para receber os valores, os tipos devem esperar uma instância do tipo `IDictionary<string, object>` no construtor dos mesmos. | { "myApiKey": "abcd1234" }   |
 | settingsType | Nome do tipo .NET que será usado para deserializar as configurações. Pode ser o nome simples do tipo (se estiver na mesma **assembly** do arquivo `application.json`) ou o nome qualificado com **assembly**.    | ApplicationSettings     |
 | messageReceivers | Array de **message receivers**, que são tipos especializados para recebimento de mensagens. | *Veja abaixo* |
