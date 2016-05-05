@@ -24,7 +24,7 @@ namespace Takenet.MessagingHub.Client.Textc
 
             var to = context.GetMessagePp() ?? context.GetMessageFrom();
             if (to == null)  throw new ArgumentException("Could not determine the message sender", nameof(context));
-                        
+
             var content = output as Document;
             if (content != null)
                 return _sender.SendMessageAsync(content, to, cancellationToken);
