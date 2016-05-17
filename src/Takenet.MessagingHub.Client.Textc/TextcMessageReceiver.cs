@@ -32,9 +32,10 @@ namespace Takenet.MessagingHub.Client.Textc
 
         public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
         {
+            var context = _contextProvider.GetContext(message.Pp ?? message.From, message.To);
+
             try
             {
-                var context = _contextProvider.GetContext(message.Pp ?? message.From, message.To);
                 context.SetMessageId(message.Id);
                 context.SetMessageFrom(message.From);
                 context.SetMessageTo(message.To);
@@ -57,9 +58,16 @@ namespace Takenet.MessagingHub.Client.Textc
                     await _matchNotFoundHandler(message, this).ConfigureAwait(false);
                 }
             }
+            catch (Exception ex)
+            {
+                Console.Write(ex.Message);
+            }
             finally
             {
-                await _sender.SendNotificationAsync(message.ToConsumedNotification(), cancellationToken).ConfigureAwait(false);
+                if (context.HasToClearSession())
+                {
+                    context.Clear();
+                }
             }
         }
     }

@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using Lime.Protocol;
 using Takenet.Textc;
+using Lime.Protocol.Serialization.Newtonsoft;
+using Newtonsoft.Json;
+using Lime.Protocol.Serialization;
 
 namespace Takenet.MessagingHub.Client.Textc
 {
@@ -14,6 +17,7 @@ namespace Takenet.MessagingHub.Client.Textc
         public const string TYPE_VARIABLE_NAME = "$type";
         public const string CONTENT_VARIABLE_NAME = "$content";
         public const string METADATA_VARIABLE_NAME = "$metadata";
+        public const string CLEARSESSION_VARIABLE_NAME = "$clearSession";
 
         public static Guid GetMessageId(this IRequestContext context)
         {
@@ -65,14 +69,26 @@ namespace Takenet.MessagingHub.Client.Textc
             context.SetVariable(TYPE_VARIABLE_NAME, type);
         }
 
-        public static Document GetMessageContent(this IRequestContext context)
+        public static Document GetMessageContent<T>(this IRequestContext context) where T : Document
         {
-            return context.GetVariable<Document>(CONTENT_VARIABLE_NAME);
+            var content = context.GetVariable<string>(CONTENT_VARIABLE_NAME);
+            var mediaType = context.GetVariable<MediaType>(TYPE_VARIABLE_NAME);
+
+            if (mediaType.IsJson)
+            {
+                return JsonConvert.DeserializeObject<T>(content, JsonNetSerializer.Settings);
+            }
+            else
+            {
+                object document = null;
+                TypeUtil.TryParseString(content, typeof(T), out document);
+                return (T)document;
+            }
         }
 
         public static void SetMessageContent(this IRequestContext context, Document content)
         {
-            context.SetVariable(CONTENT_VARIABLE_NAME, content);
+            context.SetVariable(CONTENT_VARIABLE_NAME, JsonConvert.SerializeObject(content, JsonNetSerializer.Settings));
         }
 
         public static IDictionary<string, string> GetMessageMetadata(this IRequestContext context)
@@ -83,6 +99,16 @@ namespace Takenet.MessagingHub.Client.Textc
         public static void SetMessageMetadata(this IRequestContext context, IDictionary<string, string> metadata)
         {
             context.SetVariable(METADATA_VARIABLE_NAME, metadata);
+        }
+
+        public static bool HasToClearSession(this IRequestContext context)
+        {
+            return context.GetVariable<bool>(CLEARSESSION_VARIABLE_NAME) == true;
+        }
+
+        public static void SetClearSession(this IRequestContext context)
+        {
+            context.SetVariable(CLEARSESSION_VARIABLE_NAME, true);
         }
     }
 }
