@@ -49,7 +49,7 @@ namespace Takenet.MessagingHub.Client.Test
                     await t.OpenAsync(null, _cts.Token);
 
                     var serverChannel = new ServerChannel(
-                        Guid.NewGuid(),
+                        Guid.NewGuid().ToString(),
                         new Node("postmaster", "msging.net", "instance"),
                         t,
                         TimeSpan.FromSeconds(60),

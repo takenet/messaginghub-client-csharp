@@ -10,8 +10,6 @@ using Lime.Protocol;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
-using Takenet.MessagingHub.Client.Listener;
-using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.AcceptanceTests
 {
@@ -22,13 +20,16 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         public async Task TestAcceptedNotificationIsSentAfterMessageIsReceived()
         {
             var notifications = new Queue<Notification>();
-            string appShortName1 = null, appShortName2 = null;
-            var sender = GetClientForApplication(ref appShortName1, (m, c) => Task.CompletedTask, (n, c) =>
+            var tuple1 = await GetClientForApplicationAsync((m, c) => Task.CompletedTask, (n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var receiver = GetClientForApplication(ref appShortName2, (m, c) => Task.CompletedTask, (n, c) => Task.CompletedTask);
+            var sender = tuple1.Item1;
+            var appShortName1 = tuple1.Item2;
+            var tuple2 = await GetClientForApplicationAsync((m, c) => Task.CompletedTask, (n, c) => Task.CompletedTask);
+            var receiver = tuple2.Item1;
+            var appShortName2 = tuple2.Item2;
 
             try
             {
@@ -55,13 +56,16 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         public async Task TestDispatchedNotificationIsSentAfterMessageIsReceived()
         {
             var notifications = new Queue<Notification>();
-            string appShortName1 = null, appShortName2 = null;
-            var sender = GetClientForApplication(ref appShortName1, (m, c) => Task.CompletedTask, (n, c) =>
+            var tuple1 = await GetClientForApplicationAsync((m, c) => Task.CompletedTask, (n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var receiver = GetClientForApplication(ref appShortName2, (m, c) => Task.CompletedTask, (n, c) => Task.CompletedTask);
+            var sender = tuple1.Item1;
+            var appShortName1 = tuple1.Item2;
+            var tuple2 = await GetClientForApplicationAsync((m, c) => Task.CompletedTask, (n, c) => Task.CompletedTask);
+            var receiver = tuple2.Item1;
+            var appShortName2 = tuple2.Item2;
 
             try
             {
@@ -89,13 +93,16 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         public async Task TestReceivedNotificationIsSentAfterMessageIsReceived()
         {
             var notifications = new Queue<Notification>();
-            string appShortName1 = null, appShortName2 = null;
-            var sender = GetClientForApplication(ref appShortName1, (m, c) => Task.CompletedTask, (n, c) =>
+            var tuple1 = await GetClientForApplicationAsync((m, c) => Task.CompletedTask, (n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var receiver = GetClientForApplication(ref appShortName2, (m, c) => Task.CompletedTask, (n, c) => Task.CompletedTask);
+            var sender = tuple1.Item1;
+            var appShortName1 = tuple1.Item2;
+            var tuple2 = await GetClientForApplicationAsync((m, c) => Task.CompletedTask, (n, c) => Task.CompletedTask);
+            var receiver = tuple2.Item1;
+            var appShortName2 = tuple2.Item2;
 
             try
             {
@@ -124,16 +131,19 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         public async Task TestFailedNotificationIsSentAfterMessageIsReceived()
         {
             var notifications = new Queue<Notification>();
-            string appShortName1 = null, appShortName2 = null;
-            var sender = GetClientForApplication(ref appShortName1, (m, c) => Task.CompletedTask, (n, c) =>
+            var tuple1 = await GetClientForApplicationAsync((m, c) => Task.CompletedTask, (n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var receiver = GetClientForApplication(ref appShortName2, (m, c) =>
+            var sender = tuple1.Item1;
+            var appShortName1 = tuple1.Item2;
+            var tuple2 = await GetClientForApplicationAsync((m, c) =>
             {
                 throw new Exception();
-            }, (n, c) => Task.CompletedTask);
+            }, (n, c) => Task.CompletedTask, (m, c) => Task.CompletedTask);
+            var receiver = tuple2.Item1;
+            var appShortName2 = tuple2.Item2;
 
             try
             {
@@ -165,13 +175,16 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         public async Task TestConsumedNotificationIsSentAfterMessageIsReceived()
         {
             var notifications = new Queue<Notification>();
-            string appShortName1 = null, appShortName2 = null;
-            var sender = GetClientForApplication(ref appShortName1, (m, c) => Task.CompletedTask, (n, c) =>
+            var tuple1 = await GetClientForApplicationAsync((m, c) => Task.CompletedTask, (n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var receiver = GetClientForApplication(ref appShortName2, (m, c) => Task.CompletedTask, (n, c) => Task.CompletedTask);
+            var sender = tuple1.Item1;
+            var appShortName1 = tuple1.Item2;
+            var tuple2 = await GetClientForApplicationAsync((m, c) => Task.CompletedTask, (n, c) => Task.CompletedTask);
+            var receiver = tuple2.Item1;
+            var appShortName2 = tuple2.Item2;
 
             try
             {
@@ -202,13 +215,16 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         public async Task TestOnlyFailedNotificationIsSentWhenNoReceiverIsRegistered()
         {
             var notifications = new Queue<Notification>();
-            string appShortName1 = null, appShortName2 = null;
-            var sender = GetClientForApplication(ref appShortName1, (m, c) => Task.CompletedTask, (n, c) =>
+            var tuple1 = await GetClientForApplicationAsync((m, c) => Task.CompletedTask, (n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var receiver = GetClientForApplication(ref appShortName2, null, (n, c) => Task.CompletedTask);
+            var sender = tuple1.Item1;
+            var appShortName1 = tuple1.Item2;
+            var tuple2 = await GetClientForApplicationAsync(null, (n, c) => Task.CompletedTask);
+            var receiver = tuple2.Item1;
+            var appShortName2 = tuple2.Item2;
 
             try
             {
@@ -240,16 +256,19 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         public async Task TestOnlyFailedNotificationIsSentWhenMultipleReceiversAreRegistered()
         {
             var notifications = new Queue<Notification>();
-            string appShortName1 = null, appShortName2 = null;
-            var sender = GetClientForApplication(ref appShortName1, (m, c) => Task.CompletedTask, (n, c) =>
+            var tuple1 = await GetClientForApplicationAsync((m, c) => Task.CompletedTask, (n, c) =>
             {
                 notifications.Enqueue(n);
                 return Task.CompletedTask;
             });
-            var receiver = GetClientForApplication(ref appShortName2, (m, c) =>
+            var sender = tuple1.Item1;
+            var appShortName1 = tuple1.Item2;
+            var tuple2 = await GetClientForApplicationAsync((m, c) =>
             {
                 throw new Exception();
             }, (n, c) => Task.CompletedTask, (m, c) => Task.CompletedTask);
+            var receiver = tuple2.Item1;
+            var appShortName2 = tuple2.Item2;
 
             try
             {
@@ -279,10 +298,10 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
 
         private const string Beat = "Beat";
 
-        private static IMessagingHubClient GetClientForApplication(ref string appShortName, Func<Message, CancellationToken, Task> onMessageReceived, Func<Notification, CancellationToken, Task> onNotificationReceived, Func<Message, CancellationToken, Task> secondOnMessageReceived = null)
+        private static async Task<Tuple<IMessagingHubClient, string>> GetClientForApplicationAsync(Func<Message, CancellationToken, Task> onMessageReceived, Func<Notification, CancellationToken, Task> onNotificationReceived, Func<Message, CancellationToken, Task> secondOnMessageReceived = null)
         {
-            appShortName = appShortName ?? CreateAndRegisterApplicationAsync().Result;
-            var appAccessKey = GetApplicationAccessKeyAsync(appShortName).Result;
+            var appShortName = await CreateAndRegisterApplicationAsync();
+            var appAccessKey = await GetApplicationAccessKeyAsync(appShortName);
 
             var client = new MessagingHubClientBuilder()
                 .UsingHostName("hmg.msging.net")
@@ -298,7 +317,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
 
             client.AddNotificationReceiver(onNotificationReceived);
 
-            return client;
+            return new Tuple<IMessagingHubClient, string>(client, appShortName);
         }
 
         private static TimeSpan Timeout => TimeSpan.FromSeconds(5);
@@ -332,7 +351,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
         private static async Task<string> CreateAndRegisterApplicationAsync()
         {
             var uri = "http://hmg.api.messaginghub.io/applications/";
-            dynamic application = CreateApplication();
+            var application = CreateApplication();
             var json = JsonConvert.SerializeObject(application);
             using (var content = new StringContent(json, Encoding.UTF8, "application/json"))
             {
@@ -342,14 +361,20 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
             return application.shortName;
         }
 
-        private static object CreateApplication()
+        private static Application CreateApplication()
         {
-            var id = "takeQAApp" + DateTime.UtcNow.Ticks;
-            return new
+            var id = "takeqaapp" + DateTime.UtcNow.Ticks;
+            return new Application
             {
                 shortName = id,
                 name = id
             };
         }
+    }
+
+    class Application
+    {
+        public string shortName;
+        public string name;
     }
 }

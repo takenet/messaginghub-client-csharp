@@ -26,7 +26,7 @@ namespace Echo
             echoMessage.To = message.From;
             echoMessage.From = null;
             echoMessage.Pp = null;
-            echoMessage.Id = Guid.NewGuid();
+            echoMessage.Id = Guid.NewGuid().ToString();
 
             await _sender.SendMessageAsync(echoMessage, cancellationToken);
         }

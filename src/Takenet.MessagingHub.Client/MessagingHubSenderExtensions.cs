@@ -54,7 +54,7 @@ namespace Takenet.MessagingHub.Client
             if (content == null) throw new ArgumentNullException(nameof(content));
             var message = new Message
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.NewGuid().ToString(),
                 To = to,
                 Content = content
             };

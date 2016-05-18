@@ -24,7 +24,7 @@ namespace Takenet.MessagingHub.Client.Textc
             return context.GetVariable<Guid>(ID_VARIABLE_NAME);
         }
 
-        public static void SetMessageId(this IRequestContext context, Guid id)
+        public static void SetMessageId(this IRequestContext context, string id)
         {
             context.SetVariable(ID_VARIABLE_NAME, id);
         }

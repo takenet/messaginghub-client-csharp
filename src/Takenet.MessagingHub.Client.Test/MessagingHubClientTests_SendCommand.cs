@@ -27,7 +27,7 @@ namespace Takenet.MessagingHub.Client.Test
         public async Task Send_Command_And_Receive_Response_With_Success()
         {
             //Arrange
-            var commandId = Guid.NewGuid();
+            var commandId = Guid.NewGuid().ToString();
             var commandResponse = new Command
             {
                 Id = commandId,

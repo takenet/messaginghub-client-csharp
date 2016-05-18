@@ -13,7 +13,7 @@ namespace Takenet.MessagingHub.Client.Listener
     {
         public Task ReceiveAsync(Message message, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (message.Id != Guid.Empty)
+            if (!string.IsNullOrWhiteSpace(message.Id) || message.Id == Guid.Empty.ToString())
             {
                 throw new LimeException(
                     new Reason
