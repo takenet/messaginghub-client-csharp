@@ -14,7 +14,7 @@ var client = new MessagingHubClientBuilder()
 await client.StartAsync();
 ```
 
-**Remark: If you are using the *Takenet.MessagingHub.Client.Template* package, the connection is automatically handled for you. See more in [Hosting](http://messaginghub.io/docs/sdks/hosting).**
+**Remark: If you are using the *Takenet.MessagingHub.Client.Template* package, the connection is automatically handled for you. See more in [Hosting](http://portal.messaginghub.io/#/docs/hosting).**
 
 ## Sending Notifications
 

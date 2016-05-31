@@ -28,7 +28,7 @@ You can perform the following operations using the Messaging Hub Client:
 ## Hosting
 
 You can also host your code with us so that your application become always available.
-See more in [Hosting](http://messaginghub.io/docs/sdks/hosting).
+See more in [Hosting](http://portal.messaginghub.io/#/docs/hosting).
 
 ## Contributions
 
