@@ -56,7 +56,7 @@ client.AddNotificationReceiver(new ConsumedNotificationReceiver(), Event.Consume
 await client.StartAsync();
 ```
 
-**Observação: Se você estiver usando o pacote *Takenet.MessagingHub.Client.Template*, o listener é gerenciado automaticamente. Veja a sessão [hospedagem](http://messaginghub.io/docs/sdks/hosting). para mais detalhes**
+**Observação: Se você estiver usando o pacote *Takenet.MessagingHub.Client.Template*, o listener é gerenciado automaticamente. Veja a sessão [hospedagem](http://portal.messaginghub.io/#/docs/hosting). para mais detalhes**
 
 Seu *NotificationReceiver* pode ser definido da seguinte forma:
 

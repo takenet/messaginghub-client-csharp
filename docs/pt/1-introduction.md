@@ -28,7 +28,7 @@ Você pode realizar as seguintes operações com o client do Messaging Hub:
 ## Hospedagem
 
 Você também pode hospedar seu código conosco para que sua aplicação esteja sempre disponível.
-Veja mais detalhes em [Hospedagem](http://messaginghub.io/docs/sdks/hosting).
+Veja mais detalhes em [Hospedagem](http://portal.messaginghub.io/#/docs/hosting).
 
 ## Contribuições
 
