@@ -13,16 +13,17 @@ A partir do Package Manager Console, instale o template de aplicações usando:
 ## Obtendo sua chave de acesso
 
 Você precisará de um identificador e uma chave de acesso para sua aplicação, para poder interagir com o Messaging Hub. Para obtê-los, faça o seguinte:
-- Acesse o [Console](http://messaginghub.io/home/console) do Messaging Hub.
-- Na aba `Aplicações` clique em [Adicionar](http://messaginghub.io/application/add) para registrar a sua aplicação.
-- Após finalizar o registro, copie o `identificador` e a `chave de acesso` da sua aplicação e utilize-os para se conectar ao Messaging Hub.
+- Acesse o [Painel Omni](http://portal.messaginghub.io).
+- Na aba `Contatos` clique em `Criar Contato`.
+- Preencha com os parâmetros requeridos e na próxima etapa escolha o template `Integração API`
+- Pronto, seu contato foi criado e o identificador e chave de acesso serão exibidos.
 
 ## Trabalhando com Messaging Hub
 
 Você pode realizar as seguintes operações com o client do Messaging Hub:
-- Enviar e receber [mensagens](http://messaginghub.io/docs/sdks/messages)
-- Enviar e receber [notificações](http://messaginghub.io/docs/sdks/notifications)
-- Enviar [comandos](http://messaginghub.io/docs/sdks/commands)
+- Enviar e receber [mensagens](http://portal.messaginghub.io/#/docs/messages)
+- Enviar e receber [notificações](http://portal.messaginghub.io/#/docs/notifications)
+- Enviar [comandos](http://portal.messaginghub.io/#/docs/commands)
 
 ## Hospedagem
 

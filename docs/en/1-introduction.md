@@ -12,17 +12,18 @@ From the Package Manager Console, install the application template using:
 
 ## Getting your access key
 
-You will need an application account and access key to interact with the Messaging Hub. To get those, do as follows:
-- Access the Messaging Hub [Console](http://messaginghub.io/home/console).
-- In the `Applications` tab click [Add](http://messaginghub.io/application/add) to register your application.
-- After finishing the registration, get your application `identifier` and `access key` and use them to connect to the Messaging Hub.
+You will need an application identifier and access key to interact with the Messaging Hub. To get those, do as follows:
+- Access the [Omni Portal](http://portal.messaginghub.io).
+- In the `Contacts` tab go to`Create Contact`.
+- Set the required parameters and choose the `API Integration` template.
+- Now that your contact has been created, the application identifier and access key are shown in the next step.
 
 ## Working with the Messaging Hub Client
 
 You can perform the following operations using the Messaging Hub Client:
-- Send and receive [messages](http://messaginghub.io/docs/sdks/messages)
-- Send and receive [notifications](http://messaginghub.io/docs/sdks/notifications)
-- Send [commands](http://messaginghub.io/docs/sdks/commands)
+- Send and receive [messages](http://portal.messaginghub.io/#/docs/messages)
+- Send and receive [notifications](http://portal.messaginghub.io/#/docs/notifications)
+- Send [commands](http://portal.messaginghub.io/#/docs/commands)
 
 ## Hosting
 
