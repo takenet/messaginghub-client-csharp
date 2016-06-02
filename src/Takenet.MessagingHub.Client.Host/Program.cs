@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Lime.Protocol.Serialization;
@@ -20,26 +21,23 @@ namespace Takenet.MessagingHub.Client.Host
         {
             try
             {
-                var applicationFileName = Bootstrapper.DefaultApplicationFileName;
-                if (args.Length > 0)
+                if (args.Any(a => a.TrimStart('-', '/').Equals("help", StringComparison.OrdinalIgnoreCase)))
                 {
-                    applicationFileName = "application.json";
-                    if (!File.Exists(applicationFileName))
-                    {
-                        applicationFileName = args[0];
-                        if (applicationFileName.Trim('-', '/').Equals("help", StringComparison.OrdinalIgnoreCase))
-                        {
-                            WriteLine();
-                            WriteLine("Messaging Hub client host");
-                            WriteLine();
-                            WriteLine("Usage: mhh <path>");
-                            WriteLine();
-                            WriteLine("- path: The path of the application host JSON file");
-                            WriteLine();
-                            return;
-                        }
-                    }
+                    WriteLine("Messaging Hub client host");
+                    WriteLine();
+                    WriteLine("Usage: mhh <path> [-help] [-pause]");
+                    WriteLine();
+                    WriteLine("- path: The path of the application host JSON file");
+                    WriteLine("- help: Show this help");
+                    WriteLine(
+                        "- pause: Indicates if the application should pause and wait for user input after the execution");
+                    WriteLine();
+                    return;
                 }
+
+                var applicationFileName =
+                    args.FirstOrDefault(a => !a.StartsWith("-") && !a.StartsWith("/")) ??
+                    Bootstrapper.DefaultApplicationFileName;
 
                 if (!File.Exists(applicationFileName))
                 {
@@ -63,10 +61,15 @@ namespace Takenet.MessagingHub.Client.Host
             {
                 WriteLine("Application failed:");
                 WriteLine(ex.ToString(), ConsoleColor.Red);
-#if DEBUG
-                Console.ReadKey(true);
-#endif
             }
+            finally
+            {
+                if (args.Any(a => a.TrimStart('-', '/').Equals("pause", StringComparison.OrdinalIgnoreCase)))
+                {
+                    WriteLine("Press any key to exit.");
+                    Console.ReadKey(true);
+                }
+            }            
         }
 
         private static void ConfigureWorkingDirectory(string applicationFileName)
