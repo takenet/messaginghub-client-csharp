@@ -2,7 +2,7 @@
 
 write-host "Trying to update mhh.exe project reference (if one exists)"
 
-$hostFile = "mhh.exe -pause"
+$hostFile = "mhh.exe"
 $hostPath = Join-Path (Join-Path $installPath "tools\net461\") $hostFile
 
 $projectUri = [uri]$project.FullName;
