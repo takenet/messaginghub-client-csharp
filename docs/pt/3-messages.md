@@ -14,8 +14,6 @@ var client = new MessagingHubClientBuilder()
 await client.StartAsync();
 ```
 
-**Observação: Se você estiver usando o pacote *Takenet.MessagingHub.Client.Template*, a conexão é gerenciada automaticamente. Veja a sessão [hospedagem](http://portal.messaginghub.io/#/docs/hosting). para mais detalhes**
-
 ## Enviando mensagens
 
 Para enviar uma mensagem, você pode usar o método abaixo, ou uma de suas sobrecargas e extensões:
@@ -39,8 +37,6 @@ client.AddMessageReceiver(new PlainTextMessageReceiver(), MediaTypes.PlainText);
 
 await client.StartAsync();
 ```
-
-**Observação: Se você estiver usando o pacote *Takenet.MessagingHub.Client.Template*, o listener é gerenciado automaticamente. Veja a sessão [hospedagem](http://portal.messaginghub.io/#/docs/hosting). para mais detalhes**
 
 Seu *MessageReceiver*  pode ser definido da seguinte forma;
 

@@ -14,8 +14,6 @@ var client = new MessagingHubClientBuilder()
 await client.StartAsync();
 ```
 
-**Observação: Se você estiver usando o pacote *Takenet.MessagingHub.Client.Template*, a conexão é gerenciada automaticamente. Veja a sessão [hospedagem](http://portal.messaginghub.io/#/docs/hosting). para mais detalhes**
-
 ## Enviando notificações
 
 Para enviar uma notificação, você pode usar o seguinte método:
@@ -55,8 +53,6 @@ client.AddNotificationReceiver(new ConsumedNotificationReceiver(), Event.Consume
 
 await client.StartAsync();
 ```
-
-**Observação: Se você estiver usando o pacote *Takenet.MessagingHub.Client.Template*, o listener é gerenciado automaticamente. Veja a sessão [hospedagem](http://portal.messaginghub.io/#/docs/hosting). para mais detalhes**
 
 Seu *NotificationReceiver* pode ser definido da seguinte forma:
 
