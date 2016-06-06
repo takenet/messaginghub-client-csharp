@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client.Host
 {
@@ -15,7 +16,7 @@ namespace Takenet.MessagingHub.Client.Host
         private readonly ConcurrentDictionary<string, Process> _applicationProcessesDictionary;
         private readonly ConcurrentDictionary<string, DateTime> _applicationLastWriteDictionary;
         private readonly string _tempBasePath;
-        private readonly Job _job;                
+        private readonly Job _job;
         private readonly object _syncRoot = new object();
 
         public ApplicationActivator(string basePath, TimeSpan waitForActivationDelay)
@@ -28,13 +29,14 @@ namespace Takenet.MessagingHub.Client.Host
             _watcher = new FileSystemWatcher()
             {
                 Path = basePath,
-                Filter = Bootstrapper.DefaultApplicationFileName,                
+                Filter = Bootstrapper.DefaultApplicationFileName,
                 IncludeSubdirectories = true,
-                NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName
+                InternalBufferSize = 1024 * 64,
+                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName
             };
 
             _watcher.Created += Watcher_Changed;
-            _watcher.Changed += Watcher_Changed;            
+            _watcher.Changed += Watcher_Changed;
             _watcher.Deleted += Watcher_Deleted;
             _watcher.Renamed += Watcher_Renamed; // When moved to the recycle bin
             _watcher.Error += Watcher_Error;
@@ -54,65 +56,74 @@ namespace Takenet.MessagingHub.Client.Host
 
         private void Watcher_Changed(object sender, FileSystemEventArgs e)
         {
-            Trace.TraceError("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
+            Task.Run(() =>
+            {
+                Trace.TraceError("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
 
-            lock (_syncRoot)
-            {                
-                var fileInfo = new FileInfo(e.FullPath);
-                while (IsFileLocked(fileInfo))
+                lock (_syncRoot)
                 {
-                    Thread.Sleep(250);
-                }
-
-                Thread.Sleep(_waitForActivationDelay);
-
-                // Fix for the multiple raises on the FileSystemWatcher
-                var applicationLastWrite = File.GetLastWriteTimeUtc(e.FullPath);
-                if (!_applicationLastWriteDictionary.ContainsKey(e.FullPath) ||
-                    _applicationLastWriteDictionary[e.FullPath] < applicationLastWrite)
-                {                    
-                    Deactivate(e.FullPath);
-                    if (Activate(e.FullPath))
+                    var fileInfo = new FileInfo(e.FullPath);
+                    while (IsFileLocked(fileInfo))
                     {
-                        _applicationLastWriteDictionary.AddOrUpdate(
-                            e.FullPath, 
-                            applicationLastWrite,
-                            (k, v) => applicationLastWrite);
+                        Thread.Sleep(250);
+                    }
+
+                    Thread.Sleep(_waitForActivationDelay);
+
+                    // Fix for the multiple raises on the FileSystemWatcher
+                    var applicationLastWrite = File.GetLastWriteTimeUtc(e.FullPath);
+                    if (!_applicationLastWriteDictionary.ContainsKey(e.FullPath) ||
+                        _applicationLastWriteDictionary[e.FullPath] < applicationLastWrite)
+                    {
+                        Deactivate(e.FullPath);
+                        if (Activate(e.FullPath))
+                        {
+                            _applicationLastWriteDictionary.AddOrUpdate(
+                                e.FullPath,
+                                applicationLastWrite,
+                                (k, v) => applicationLastWrite);
+                        }
                     }
                 }
-            }
+            });
         }
 
         private void Watcher_Deleted(object sender, FileSystemEventArgs e)
         {
-            Trace.TraceError("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
-
-            lock (_syncRoot)
+            Task.Run(() =>
             {
-                Thread.Sleep(_waitForActivationDelay);
-                Deactivate(e.FullPath);
+                Trace.TraceError("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
 
-                DateTime applicationLastWrite;
-                _applicationLastWriteDictionary.TryRemove(e.FullPath, out applicationLastWrite);
-            }
+                lock (_syncRoot)
+                {
+                    Thread.Sleep(_waitForActivationDelay);
+                    Deactivate(e.FullPath);
+
+                    DateTime applicationLastWrite;
+                    _applicationLastWriteDictionary.TryRemove(e.FullPath, out applicationLastWrite);
+                }
+            });
         }
 
         private void Watcher_Renamed(object sender, RenamedEventArgs e)
         {
-            Trace.TraceError("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
-
-            lock (_syncRoot)
+            Task.Run(() =>
             {
-                Thread.Sleep(_waitForActivationDelay);                
-                Deactivate(e.OldFullPath);
+                Trace.TraceError("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
 
-                DateTime applicationLastWrite;
-                _applicationLastWriteDictionary.TryRemove(e.FullPath, out applicationLastWrite);
-            }
+                lock (_syncRoot)
+                {
+                    Thread.Sleep(_waitForActivationDelay);
+                    Deactivate(e.OldFullPath);
+
+                    DateTime applicationLastWrite;
+                    _applicationLastWriteDictionary.TryRemove(e.FullPath, out applicationLastWrite);
+                }
+            });
         }
 
         private void Watcher_Error(object sender, ErrorEventArgs e)
-        {            
+        {
             Trace.TraceError(e.GetException().ToString());
         }
 
@@ -129,14 +140,14 @@ namespace Takenet.MessagingHub.Client.Host
             var tempApplicationDirectory = Path.Combine(
                 _tempBasePath, applicationDirectory.Replace(_basePath, "").TrimStart('\\', '/'));
 
-            Trace.TraceInformation("Copying files from path '{0}' to '{1}'...", 
+            Trace.TraceInformation("Copying files from path '{0}' to '{1}'...",
                 applicationDirectory, tempApplicationDirectory);
 
             RecreateDirectory(tempApplicationDirectory);
-            CopyDirectory(applicationDirectory, tempApplicationDirectory);                        
+            CopyDirectory(applicationDirectory, tempApplicationDirectory);
 
             var tempApplicationPath = Path.Combine(
-                tempApplicationDirectory, 
+                tempApplicationDirectory,
                 Path.GetFileName(applicationPath) ?? Bootstrapper.DefaultApplicationFileName);
 
             Trace.TraceInformation("Starting the process for application '{0}'...",
@@ -187,14 +198,9 @@ namespace Takenet.MessagingHub.Client.Host
                 return false;
             }
 
-            Trace.TraceInformation("Application started from file '{0}' in the path '{1}'", 
+            Trace.TraceInformation("Application started from file '{0}' in the path '{1}'",
                 applicationPath, tempApplicationPath);
             return true;
-        }
-
-        private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         private bool Deactivate(string applicationPath)
@@ -206,7 +212,7 @@ namespace Takenet.MessagingHub.Client.Host
             {
                 Trace.TraceError("No application found at path '{0}'", applicationPath);
                 return false;
-            }            
+            }
             StopProcess(process);
 
             Trace.TraceInformation("Application stopped from file '{0}'", applicationPath);
@@ -217,7 +223,7 @@ namespace Takenet.MessagingHub.Client.Host
         {
             if (!process.HasExited)
             {
-                process.StandardInput.Write(13);             
+                process.StandardInput.Write(13);
                 process.WaitForExit();
             }
         }
