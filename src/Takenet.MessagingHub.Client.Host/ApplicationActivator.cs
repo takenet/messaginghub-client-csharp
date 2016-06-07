@@ -46,6 +46,7 @@ namespace Takenet.MessagingHub.Client.Host
             _tempBasePath = Path.Combine(Path.GetTempPath(), $"{nameof(ApplicationActivator)}-{Guid.NewGuid()}");
             RecreateDirectory(_tempBasePath);
             _job = new Job();
+
             foreach (var applicationPath in Directory.GetFiles(_basePath, Bootstrapper.DefaultApplicationFileName, SearchOption.AllDirectories))
             {
                 Activate(applicationPath);
@@ -70,24 +71,10 @@ namespace Takenet.MessagingHub.Client.Host
 
                     Thread.Sleep(_waitForActivationDelay);
 
-                    // Fix for the multiple raises on the FileSystemWatcher
-                    var applicationLastWrite = File.GetLastWriteTimeUtc(e.FullPath);
-                    if (!_applicationLastWriteDictionary.ContainsKey(e.FullPath) ||
-                        _applicationLastWriteDictionary[e.FullPath] < applicationLastWrite)
-                    {
-                        Deactivate(e.FullPath);
-                        if (Activate(e.FullPath))
-                        {
-                            _applicationLastWriteDictionary.AddOrUpdate(
-                                e.FullPath,
-                                applicationLastWrite,
-                                (k, v) => applicationLastWrite);
-                        }
-                    }
+                    RestartApplication(e.FullPath, e.FullPath);
                 }
             });
         }
-
         private void Watcher_Deleted(object sender, FileSystemEventArgs e)
         {
             Task.Run(() =>
@@ -114,12 +101,24 @@ namespace Takenet.MessagingHub.Client.Host
                 lock (_syncRoot)
                 {
                     Thread.Sleep(_waitForActivationDelay);
-                    Deactivate(e.OldFullPath);
 
-                    DateTime applicationLastWrite;
-                    _applicationLastWriteDictionary.TryRemove(e.FullPath, out applicationLastWrite);
+                    RestartApplication(e.OldFullPath, e.FullPath);
                 }
             });
+        }
+
+        private void RestartApplication(string oldPath, string newPath)
+        {
+            // Fix for the multiple raises on the FileSystemWatcher
+            var applicationLastWrite = File.GetLastWriteTimeUtc(oldPath);
+            if (!_applicationLastWriteDictionary.ContainsKey(oldPath) || _applicationLastWriteDictionary[oldPath] < applicationLastWrite)
+            {
+                Deactivate(oldPath);
+                if ((new FileInfo(newPath).Name == Bootstrapper.DefaultApplicationFileName) && Activate(newPath))
+                {
+                    _applicationLastWriteDictionary.AddOrUpdate(newPath, applicationLastWrite, (k, v) => applicationLastWrite);
+                }
+            }
         }
 
         private void Watcher_Error(object sender, ErrorEventArgs e)
