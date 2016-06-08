@@ -30,6 +30,11 @@ namespace Takenet.MessagingHub.Client.Host
         public string Identifier { get; set; }
 
         /// <summary>
+        /// Gets or sets the instance name for the connection.
+        /// </summary>
+        public string Instance { get; set; }
+
+        /// <summary>
         /// Gets or sets the domain.
         /// </summary>
         /// <value>
