@@ -10,6 +10,9 @@ namespace Takenet.MessagingHub.Client.Host
 {
     public sealed class ApplicationActivator : IDisposable
     {
+        public const string DefaultApplicationFileName = "application.json";
+        public const string DefaultHostFileName = "mhh.exe";
+
         private readonly string _basePath;
         private readonly TimeSpan _waitForActivationDelay;
         private readonly FileSystemWatcher _watcher;
@@ -29,7 +32,7 @@ namespace Takenet.MessagingHub.Client.Host
             _watcher = new FileSystemWatcher()
             {
                 Path = basePath,
-                Filter = Bootstrapper.DefaultApplicationFileName,
+                Filter = DefaultApplicationFileName,
                 IncludeSubdirectories = true,
                 InternalBufferSize = 1024 * 64,
                 NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName
@@ -47,7 +50,7 @@ namespace Takenet.MessagingHub.Client.Host
             RecreateDirectory(_tempBasePath);
             _job = new Job();
 
-            foreach (var applicationPath in Directory.GetFiles(_basePath, Bootstrapper.DefaultApplicationFileName, SearchOption.AllDirectories))
+            foreach (var applicationPath in Directory.GetFiles(_basePath, DefaultApplicationFileName, SearchOption.AllDirectories))
             {
                 Activate(applicationPath);
             }
@@ -114,7 +117,7 @@ namespace Takenet.MessagingHub.Client.Host
             if (!_applicationLastWriteDictionary.ContainsKey(oldPath) || _applicationLastWriteDictionary[oldPath] < applicationLastWrite)
             {
                 Deactivate(oldPath);
-                if ((new FileInfo(newPath).Name == Bootstrapper.DefaultApplicationFileName) && Activate(newPath))
+                if ((new FileInfo(newPath).Name == DefaultApplicationFileName) && Activate(newPath))
                 {
                     _applicationLastWriteDictionary.AddOrUpdate(newPath, applicationLastWrite, (k, v) => applicationLastWrite);
                 }
@@ -125,6 +128,7 @@ namespace Takenet.MessagingHub.Client.Host
         {
             Trace.TraceError(e.GetException().ToString());
         }
+
 
         private bool Activate(string applicationPath)
         {
@@ -147,7 +151,7 @@ namespace Takenet.MessagingHub.Client.Host
 
             var tempApplicationPath = Path.Combine(
                 tempApplicationDirectory,
-                Path.GetFileName(applicationPath) ?? Bootstrapper.DefaultApplicationFileName);
+                Path.GetFileName(applicationPath) ?? DefaultApplicationFileName);
 
             Trace.TraceInformation("Starting the process for application '{0}'...",
                 tempApplicationPath);
@@ -160,7 +164,7 @@ namespace Takenet.MessagingHub.Client.Host
                     RedirectStandardInput = true,
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
-                    FileName = "mhh.exe",
+                    FileName = DefaultHostFileName,
                     Arguments = tempApplicationPath
                 }
             };

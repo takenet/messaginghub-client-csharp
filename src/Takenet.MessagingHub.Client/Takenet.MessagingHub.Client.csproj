@@ -58,12 +58,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Host\Application.cs" />
+    <Compile Include="Host\ApplicationActivator.cs" />
     <Compile Include="Host\ApplicationReceiver.cs" />
+    <Compile Include="Host\Bootstrapper.cs" />
     <Compile Include="Host\DocumentDefinition.cs" />
+    <Compile Include="Host\Factory.cs" />
     <Compile Include="Host\IFactory.cs" />
+    <Compile Include="Host\IServiceContainer.cs" />
+    <Compile Include="Host\Job .cs" />
     <Compile Include="Host\MessageApplicationReceiver.cs" />
     <Compile Include="Host\NotificationApplicationReceiver.cs" />
+    <Compile Include="Host\ServiceProviderExtensions.cs" />
     <Compile Include="Host\SettingsContainer.cs" />
+    <Compile Include="Host\TypeServiceProvider.cs" />
+    <Compile Include="Host\Win32.cs" />
     <Compile Include="IMessagingHubClient.cs" />
     <Compile Include="MessagingHubClient.cs" />
     <Compile Include="MessagingHubClientBuilder.cs" />

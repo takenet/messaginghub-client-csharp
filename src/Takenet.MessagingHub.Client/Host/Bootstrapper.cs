@@ -9,16 +9,15 @@ using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Serialization;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
+using static Takenet.MessagingHub.Client.Host.ApplicationActivator;
+
 
 namespace Takenet.MessagingHub.Client.Host
 {
     public static class Bootstrapper
     {
-        public const string DefaultApplicationFileName = "application.json";
-
         /// <summary>
         /// Creates ans starts an application with the given settings.
         /// </summary>

@@ -37,7 +37,7 @@ namespace Takenet.MessagingHub.Client.Host
 
                 var applicationFileName =
                     args.FirstOrDefault(a => !a.StartsWith("-") && !a.StartsWith("/")) ??
-                    Bootstrapper.DefaultApplicationFileName;
+                    ApplicationActivator.DefaultApplicationFileName;
 
                 if (!File.Exists(applicationFileName))
                 {
