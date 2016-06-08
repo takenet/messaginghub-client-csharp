@@ -63,6 +63,7 @@ namespace Takenet.MessagingHub.Client.Host
                 builder = builder.UsingGuest();
             }
 
+            if (application.Instance != null) builder = builder.UsingInstance(application.Instance);
             if (application.Domain != null) builder = builder.UsingDomain(application.Domain);
             if (application.HostName != null) builder = builder.UsingHostName(application.HostName);
             if (application.SendTimeout != 0) builder = builder.WithSendTimeout(TimeSpan.FromMilliseconds(application.SendTimeout));
