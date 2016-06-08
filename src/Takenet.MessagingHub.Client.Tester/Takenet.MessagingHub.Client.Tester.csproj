@@ -67,8 +67,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccessKey.cs" />
-    <Compile Include="AccountKeyRequest.cs" />
     <Compile Include="ApplicationLoadTester.cs" />
     <Compile Include="ApplicationTesterServiceProvider.cs" />
     <Compile Include="TestClass.cs" />

@@ -66,6 +66,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pt", "pt", "{1963AB75-FD6A-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Switcher", "Samples\Switcher\Switcher.csproj", "{31174433-9470-45BE-A370-357A8B9BD8FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.Tester", "Takenet.MessagingHub.Client.Tester\Takenet.MessagingHub.Client.Tester.csproj", "{F62D83C4-B65A-4961-8054-342A1F1DB9C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -175,6 +177,12 @@ Global
 		{31174433-9470-45BE-A370-357A8B9BD8FD}.Production|Any CPU.Build.0 = Release|Any CPU
 		{31174433-9470-45BE-A370-357A8B9BD8FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31174433-9470-45BE-A370-357A8B9BD8FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F62D83C4-B65A-4961-8054-342A1F1DB9C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F62D83C4-B65A-4961-8054-342A1F1DB9C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F62D83C4-B65A-4961-8054-342A1F1DB9C2}.Production|Any CPU.ActiveCfg = Release|Any CPU
+		{F62D83C4-B65A-4961-8054-342A1F1DB9C2}.Production|Any CPU.Build.0 = Release|Any CPU
+		{F62D83C4-B65A-4961-8054-342A1F1DB9C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F62D83C4-B65A-4961-8054-342A1F1DB9C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
