@@ -31,38 +31,38 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Lime.Messaging, Version=0.5.15.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\MTC2016\packages\Lime.Messaging.0.5.15\lib\net461\Lime.Messaging.dll</HintPath>
+      <HintPath>..\packages\Lime.Messaging.0.5.15\lib\net461\Lime.Messaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Lime.Protocol, Version=0.5.15.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\MTC2016\packages\Lime.Protocol.0.5.15\lib\net461\Lime.Protocol.dll</HintPath>
+      <HintPath>..\packages\Lime.Protocol.0.5.15\lib\net461\Lime.Protocol.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Lime.Protocol.Serialization.Newtonsoft, Version=0.5.15.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\MTC2016\packages\Lime.Protocol.Serialization.Newtonsoft.0.5.15\lib\net461\Lime.Protocol.Serialization.Newtonsoft.dll</HintPath>
+      <HintPath>..\packages\Lime.Protocol.Serialization.Newtonsoft.0.5.15\lib\net461\Lime.Protocol.Serialization.Newtonsoft.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Lime.Transport.Tcp, Version=0.5.15.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\MTC2016\packages\Lime.Transport.Tcp.0.5.15\lib\net461\Lime.Transport.Tcp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="mhh, Version=0.3.75.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\MTC2016\packages\Takenet.MessagingHub.Client.Host.0.3.75\lib\net461\mhh.exe</HintPath>
+      <HintPath>..\packages\Lime.Transport.Tcp.0.5.15\lib\net461\Lime.Transport.Tcp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\MTC2016\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Shouldly, Version=2.7.0.0, Culture=neutral, PublicKeyToken=6042cbcb05cbc941, processorArchitecture=MSIL">
-      <HintPath>..\MTC2016\packages\Shouldly.2.7.0\lib\net40\Shouldly.dll</HintPath>
+      <HintPath>..\packages\Shouldly.2.7.0\lib\net40\Shouldly.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Takenet.MessagingHub.Client, Version=0.3.75.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\MTC2016\packages\Takenet.MessagingHub.Client.0.3.75\lib\net461\Takenet.MessagingHub.Client.dll</HintPath>
+      <HintPath>..\packages\Takenet.MessagingHub.Client.0.3.75\lib\net461\Takenet.MessagingHub.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
