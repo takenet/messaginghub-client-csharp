@@ -27,6 +27,7 @@ namespace Takenet.MessagingHub.Client.Connection
                 () => new TcpTransport(traceWriter: new TraceWriter(), envelopeSerializer: new JsonNetSerializer()), EndPoint)
                                  .WithSendTimeout(SendTimeout)
                                  .WithBuffersLimit(100)
+                                 .AddBuiltHandler((c, t) => Task.FromResult(ThroughputControlChannelModule.CreateAndRegister(c)))
                                  .AddMessageModule(c => new NotifyReceiptChannelModule(c))
                                  .AddCommandModule(c => new ReplyPingChannelModule(c));
 
@@ -38,6 +39,10 @@ namespace Takenet.MessagingHub.Client.Connection
                 .AddEstablishedHandler(SetReceiptAsync)
                 .WithEncryption(Encryption);
 
+            if (Instance != null)
+            {
+                establishedClientChannelBuilder = establishedClientChannelBuilder.WithInstance(Instance);
+            }
 
             var onDemandClientChannelFactory = new OnDemandClientChannelFactory(establishedClientChannelBuilder);
 
