@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Takenet.MessagingHub.Client.Tester</id>
+    <version>$version$</version>
+    <title>Messaging Hub Application Tester</title>
+    <authors>takenet</authors>
+    <owners>takenet</owners>
+    <projectUrl>https://github.com/takenet/messaginghub-client-csharp</projectUrl>
+    <licenseUrl>https://raw.githubusercontent.com/takenet/messaginghub-client-csharp/master/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>The tester library for the C# SDK of the Messaging Hub</description>
+    <copyright>Copyright ©  2016 Curupira S/A</copyright>
+    <tags>lime messaginghub</tags>
+  </metadata>
+</package>
