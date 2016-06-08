@@ -14,7 +14,7 @@ namespace Takenet.MessagingHub.Client.Host
     /// </summary>
     public class Application : SettingsContainer
     {
-        internal static JsonSerializerSettings SerializerSettings { get; }
+        public static JsonSerializerSettings SerializerSettings { get; }
 
         static Application()
         {

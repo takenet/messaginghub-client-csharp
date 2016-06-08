@@ -9,6 +9,8 @@ namespace Takenet.MessagingHub.Client.Connection
         public const string DEFAULT_DOMAIN = "msging.net";
 
         protected string Identifier { get; private set; }
+        protected string Instance { get; private set; }
+
         protected string Password { get; private set; }
         protected string AccessKey { get; private set; }
         protected TimeSpan SendTimeout { get; private set; }
@@ -56,6 +58,12 @@ namespace Takenet.MessagingHub.Client.Connection
             Identifier = identifier;
             AccessKey = accessKey;
 
+            return (TConfigurator)this;
+        }
+
+        public TConfigurator UsingInstance(string instance)
+        {
+            Instance = instance;
             return (TConfigurator)this;
         }
 

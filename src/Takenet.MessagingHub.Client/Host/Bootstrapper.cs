@@ -175,8 +175,8 @@ namespace Takenet.MessagingHub.Client.Host
                     if (applicationReceiver.MediaType != null)  
                     {
                         var currentMessagePredicate = messagePredicate;
-                        var mediaType = MediaType.Parse(applicationReceiver.MediaType);
-                        messagePredicate = m => currentMessagePredicate(m) && m.Type.Equals(mediaType);
+                        var mediaTypeRegex = new Regex(applicationReceiver.MediaType, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                        messagePredicate = m => currentMessagePredicate(m) && mediaTypeRegex.IsMatch(m.Type.ToString());
                     }
 
                     if (applicationReceiver.Content != null)
