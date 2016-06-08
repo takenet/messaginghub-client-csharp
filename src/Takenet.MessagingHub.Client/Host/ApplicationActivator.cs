@@ -156,6 +156,12 @@ namespace Takenet.MessagingHub.Client.Host
             Trace.TraceInformation("Starting the process for application '{0}'...",
                 tempApplicationPath);
 
+            var hostPath = Path.Combine(tempApplicationDirectory, DefaultHostFileName);
+            if (!File.Exists(hostPath))
+            {
+                hostPath = DefaultHostFileName;
+            }
+
             var process = new Process
             {
                 StartInfo =
@@ -164,7 +170,7 @@ namespace Takenet.MessagingHub.Client.Host
                     RedirectStandardInput = true,
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
-                    FileName = DefaultHostFileName,
+                    FileName = hostPath,
                     Arguments = tempApplicationPath
                 }
             };
