@@ -14,7 +14,7 @@ namespace Takenet.MessagingHub.Client.Tester
             try
             {
                 var testService = _testServiceTypes.ContainsKey(serviceType) ? _testServiceTypes[serviceType] : null;
-                return testService ?? ApplicationTester.Current.ApplicationServiceProvider?.GetService(serviceType);
+                return testService ?? ApplicationTester.ApplicationServiceProvider?.GetService(serviceType);
             }
             catch (Exception ex)
             {
@@ -26,7 +26,7 @@ namespace Takenet.MessagingHub.Client.Tester
         {
             try
             {
-                var applicationServiceContainer = ApplicationTester.Current.ApplicationServiceProvider as IServiceContainer;
+                var applicationServiceContainer = ApplicationTester.ApplicationServiceProvider as IServiceContainer;
                 if (applicationServiceContainer != null)
                     applicationServiceContainer.RegisterService(serviceType, instance);
                 else
