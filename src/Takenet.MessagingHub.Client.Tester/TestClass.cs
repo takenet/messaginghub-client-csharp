@@ -17,7 +17,7 @@ namespace Takenet.MessagingHub.Client.Tester
             var loadTesterOptions = Options<TServiceProvider>();
             loadTesterOptions.InstanciateSmartContact = false;
             Tester = CreateApplicationTester<TServiceProvider>();
-            LoadTester = new ApplicationLoadTester(loadTesterOptions, Tester);
+            LoadTester = new ApplicationLoadTester(loadTesterOptions);
         }
 
         protected virtual void TearDown()
