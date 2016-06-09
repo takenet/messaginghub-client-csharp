@@ -13,15 +13,17 @@ namespace Takenet.MessagingHub.Client.Tester
     {
         private readonly IDictionary<int, ApplicationTester> _testers = new ConcurrentDictionary<int, ApplicationTester>();
         private readonly ApplicationTesterOptions _options;
+        private readonly ApplicationTester _applicationTester;
 
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="options"></param>
-        public ApplicationLoadTester(ApplicationTesterOptions options)
+        public ApplicationLoadTester(ApplicationTesterOptions options, ApplicationTester applicationTester)
         {
             _options = options;
+            _applicationTester = applicationTester;
         }
 
 
@@ -34,7 +36,7 @@ namespace Takenet.MessagingHub.Client.Tester
 
                 var options = _options.Clone();
                 options.TesterAccountIndex = testerIndex + 1;
-                var result = new ApplicationTester(options);
+                var result = new ApplicationTester(options, _applicationTester);
                 _testers[testerIndex] = result;
                 return result;
             });
