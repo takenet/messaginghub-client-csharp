@@ -10,6 +10,7 @@ namespace Takenet.MessagingHub.Client.Tester
         public int TesterAccountIndex;
         public bool UseErrorStream;
         public Type TestServiceProviderType;
+        public bool InstanciateSmartContact;
 
         public ApplicationTesterOptions Clone()
         {
@@ -20,7 +21,8 @@ namespace Takenet.MessagingHub.Client.Tester
                 TestServiceProviderType = TestServiceProviderType,
                 UseErrorStream = UseErrorStream,
                 UseSeparateTestingAccount = UseSeparateTestingAccount,
-                TesterAccountIndex = TesterAccountIndex
+                TesterAccountIndex = TesterAccountIndex,
+                InstanciateSmartContact = InstanciateSmartContact
             };
         }
     }

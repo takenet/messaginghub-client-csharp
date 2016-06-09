@@ -1,5 +1,6 @@
 ﻿using Lime.Protocol;
 using System;
+using Lime.Messaging.Resources;
 
 namespace Takenet.MessagingHub.Client.Connection
 {
@@ -19,6 +20,7 @@ namespace Takenet.MessagingHub.Client.Connection
         protected string HostName { get; private set; }
         protected SessionCompression Compression { get; private set; }
         protected SessionEncryption Encryption { get; private set; }
+        protected RoutingRule RoutingRule { get; private set; }
 
         protected Identity Identity => Identity.Parse($"{Identifier}@{Domain}");
         protected Uri EndPoint => new Uri($"net.tcp://{HostName}:55321");
@@ -31,6 +33,7 @@ namespace Takenet.MessagingHub.Client.Connection
             MaxConnectionRetries = 3;
             Compression = SessionCompression.None;
             Encryption = SessionEncryption.TLS;
+            RoutingRule = RoutingRule.Identity;
         }
 
         public TConfigurator UsingPassword(string identifier, string password)
@@ -64,6 +67,12 @@ namespace Takenet.MessagingHub.Client.Connection
         public TConfigurator UsingInstance(string instance)
         {
             Instance = instance;
+            return (TConfigurator)this;
+        }
+
+        public TConfigurator UsingRoutingRule(RoutingRule routingRule)
+        {
+            RoutingRule = routingRule;
             return (TConfigurator)this;
         }
 

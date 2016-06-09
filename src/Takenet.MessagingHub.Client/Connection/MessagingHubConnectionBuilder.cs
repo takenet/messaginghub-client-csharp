@@ -78,12 +78,12 @@ namespace Takenet.MessagingHub.Client.Connection
             return result;
         }
 
-        private static async Task SetPresenceAsync(IClientChannel clientChannel, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task SetPresenceAsync(IClientChannel clientChannel, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!IsGuest(clientChannel.LocalNode.Name))
                 await clientChannel.SetResourceAsync(
                         LimeUri.Parse(UriTemplates.PRESENCE),
-                        new Presence { Status = PresenceStatus.Available, RoutingRule = RoutingRule.Identity, RoundRobin = true },
+                        new Presence { Status = PresenceStatus.Available, RoutingRule = RoutingRule, RoundRobin = true },
                         cancellationToken)
                         .ConfigureAwait(false);
         }
