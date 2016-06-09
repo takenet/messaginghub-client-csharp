@@ -53,6 +53,7 @@ namespace Takenet.MessagingHub.Client.Tester
         /// 
         /// </summary>
         /// <param name="options"></param>
+        /// <param name="applicationTester"></param>
         public ApplicationTester(ApplicationTesterOptions options, ApplicationTester applicationTester = null)
         {
             Current = applicationTester ?? this;

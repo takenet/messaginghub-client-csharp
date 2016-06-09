@@ -20,6 +20,7 @@ namespace Takenet.MessagingHub.Client.Tester
         /// 
         /// </summary>
         /// <param name="options"></param>
+        /// <param name="applicationTester"></param>
         public ApplicationLoadTester(ApplicationTesterOptions options, ApplicationTester applicationTester)
         {
             _options = options;
