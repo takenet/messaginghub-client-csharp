@@ -53,9 +53,9 @@ namespace Takenet.MessagingHub.Client.Tester
         /// 
         /// </summary>
         /// <param name="options"></param>
-        public ApplicationTester(ApplicationTesterOptions options)
+        public ApplicationTester(ApplicationTesterOptions options, ApplicationTester applicationTester = null)
         {
-            Current = this;
+            Current = applicationTester ?? this;
             _options = options;
             StartAsync().Wait();
         }
