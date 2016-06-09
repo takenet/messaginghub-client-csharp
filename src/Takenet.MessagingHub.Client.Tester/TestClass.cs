@@ -16,14 +16,14 @@ namespace Takenet.MessagingHub.Client.Tester
         {
             var loadTesterOptions = Options<TServiceProvider>();
             loadTesterOptions.InstanciateSmartContact = false;
-            LoadTester = new ApplicationLoadTester(loadTesterOptions, Tester);
             Tester = CreateApplicationTester<TServiceProvider>();
+            LoadTester = new ApplicationLoadTester(loadTesterOptions, Tester);
         }
 
         protected virtual void TearDown()
         {
-            Tester.Dispose();
             LoadTester.Dispose();
+            Tester.Dispose();
         }
 
         protected ApplicationTester CreateApplicationTester<TTestServiceProvider>()
