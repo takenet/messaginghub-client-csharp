@@ -53,12 +53,10 @@ namespace Takenet.MessagingHub.Client.Tester
         /// 
         /// </summary>
         /// <param name="options"></param>
-        /// <param name="smartContact"></param>
-        public ApplicationTester(ApplicationTesterOptions options, IStoppable smartContact = null)
+        public ApplicationTester(ApplicationTesterOptions options)
         {
             Current = this;
             _options = options;
-            SmartContact = smartContact;
             StartAsync().Wait();
         }
 
@@ -70,7 +68,10 @@ namespace Takenet.MessagingHub.Client.Tester
             await CreateTestingAccountsAsync();
             PatchApplication();
             DiscardReceivedMessages();
-            await StartSmartContactAsync();
+            if (_options.InstanciateSmartContact)
+            {
+                await StartSmartContactAsync();
+            }
             InstantiateTestClient();
             RegisterTestClientMessageReceivers();
             await StartTestClientAsync();
@@ -187,7 +188,7 @@ namespace Takenet.MessagingHub.Client.Tester
 
         private async Task StartSmartContactAsync()
         {
-            SmartContact = SmartContact ?? await Bootstrapper.StartAsync(Application);
+            SmartContact = await Bootstrapper.StartAsync(Application);
         }
 
         private void LoadApplicationSettings()
@@ -259,7 +260,10 @@ namespace Takenet.MessagingHub.Client.Tester
 
         private async Task StopAsync()
         {
-            await StopSmartContactAsync();
+            if (_options.InstanciateSmartContact)
+            {
+                await StopSmartContactAsync();
+            }
             await StopTestClientAsync();
         }
 

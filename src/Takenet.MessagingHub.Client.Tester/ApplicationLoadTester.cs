@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Lime.Messaging.Contents;
 using Lime.Protocol;
-using Takenet.MessagingHub.Client.Listener;
 
 namespace Takenet.MessagingHub.Client.Tester
 {
@@ -26,7 +25,7 @@ namespace Takenet.MessagingHub.Client.Tester
         }
 
 
-        private Task<ApplicationTester> GetTesterAsync(int testerIndex, IStoppable smartContact)
+        private Task<ApplicationTester> GetTesterAsync(int testerIndex)
         {
             return Task.Run(() =>
             {
@@ -35,7 +34,7 @@ namespace Takenet.MessagingHub.Client.Tester
 
                 var options = _options.Clone();
                 options.TesterAccountIndex = testerIndex + 1;
-                var result = new ApplicationTester(options, smartContact);
+                var result = new ApplicationTester(options);
                 _testers[testerIndex] = result;
                 return result;
             });
@@ -54,13 +53,12 @@ namespace Takenet.MessagingHub.Client.Tester
         /// 
         /// </summary>
         /// <param name="testerCount"></param>
-        /// <param name="smartContact"></param>
         /// <returns></returns>
-        public async Task PrepareTestersAsync(int testerCount, IStoppable smartContact = null)
+        public async Task PrepareTestersAsync(int testerCount)
         {
             foreach (var testerCounter in Enumerable.Range(0, testerCount).AsParallel())
             {
-                await GetTesterAsync(testerCounter, smartContact);
+                await GetTesterAsync(testerCounter);
             }
         }
 
@@ -70,9 +68,8 @@ namespace Takenet.MessagingHub.Client.Tester
         /// <param name="message"></param>
         /// <param name="messageCount"></param>
         /// <param name="testerCount"></param>
-        /// <param name="smartContact"></param>
         /// <returns></returns>
-        public async Task SendMessagesAsync(Document message, int messageCount, int testerCount, IStoppable smartContact = null)
+        public async Task SendMessagesAsync(Document message, int messageCount, int testerCount)
         {
             int rem;
             Math.DivRem(messageCount, testerCount, out rem);
@@ -81,7 +78,7 @@ namespace Takenet.MessagingHub.Client.Tester
             var share = messageCount / testerCount;
             foreach (var testerCounter in Enumerable.Range(0, testerCount).AsParallel())
             {
-                var tester = await GetTesterAsync(testerCounter, smartContact);
+                var tester = await GetTesterAsync(testerCounter);
                 for (var messageCounter = 0; messageCounter < share; messageCounter++)
                 {
                     await tester.SendMessageAsync(message);
@@ -95,11 +92,10 @@ namespace Takenet.MessagingHub.Client.Tester
         /// <param name="message"></param>
         /// <param name="messageCount"></param>
         /// <param name="testerCount"></param>
-        /// <param name="smartContact"></param>
         /// <returns></returns>
-        public Task SendMessagesAsync(string message, int messageCount, int testerCount, IStoppable smartContact = null)
+        public Task SendMessagesAsync(string message, int messageCount, int testerCount)
         {
-            return SendMessagesAsync(new PlainText { Text = message }, messageCount, testerCount, smartContact);
+            return SendMessagesAsync(new PlainText { Text = message }, messageCount, testerCount);
         }
 
         /// <summary>
