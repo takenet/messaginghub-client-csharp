@@ -21,6 +21,7 @@ namespace Takenet.MessagingHub.Client.Connection
         protected SessionCompression Compression { get; private set; }
         protected SessionEncryption Encryption { get; private set; }
         protected RoutingRule RoutingRule { get; private set; }
+        protected TimeSpan Throughput { get; private set; }
 
         protected Identity Identity => Identity.Parse($"{Identifier}@{Domain}");
         protected Uri EndPoint => new Uri($"net.tcp://{HostName}:55321");
@@ -116,6 +117,12 @@ namespace Takenet.MessagingHub.Client.Connection
             if (maxConnectionRetries > 5) throw new ArgumentOutOfRangeException(nameof(maxConnectionRetries));
 
             MaxConnectionRetries = maxConnectionRetries;
+            return (TConfigurator)this;
+        }
+
+        public TConfigurator WithThroughput(TimeSpan throughput)
+        {
+            Throughput = throughput;
             return (TConfigurator)this;
         }
     }
