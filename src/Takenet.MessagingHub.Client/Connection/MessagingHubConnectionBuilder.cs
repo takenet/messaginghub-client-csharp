@@ -27,9 +27,17 @@ namespace Takenet.MessagingHub.Client.Connection
                 () => new TcpTransport(traceWriter: new TraceWriter(), envelopeSerializer: new JsonNetSerializer()), EndPoint)
                                  .WithSendTimeout(SendTimeout)
                                  .WithBuffersLimit(100)
-                                 .AddBuiltHandler((c, t) => Task.FromResult(ThroughputControlChannelModule.CreateAndRegister(c)))
                                  .AddMessageModule(c => new NotifyReceiptChannelModule(c))
                                  .AddCommandModule(c => new ReplyPingChannelModule(c));
+
+            if (Throughput != default(TimeSpan))
+            {
+                channelBuilder =
+                    channelBuilder.AddBuiltHandler(
+                        (c, t) =>
+                            Task.FromResult(ThroughputControlChannelModule.CreateAndRegister(c,
+                                (int)Throughput.TotalMilliseconds)));
+            }
 
             var establishedClientChannelBuilder = new EstablishedClientChannelBuilder(channelBuilder)
                 .WithIdentity(Identity)

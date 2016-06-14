@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Lime.Messaging.Resources;
 using Lime.Protocol;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -129,6 +130,16 @@ namespace Takenet.MessagingHub.Client.Host
         /// The schema application.json version
         /// </value>
         public int SchemaVersion { get; set; }
+
+        /// <summary>
+        /// Informs the routing rule used to connect
+        /// </summary>
+        public RoutingRule? RoutingRule { get; set; }
+
+        /// <summary>
+        /// Informs the throughput interval between envelopes
+        /// </summary>
+        public int Throughput { get; set; }
 
 
         /// <summary>
