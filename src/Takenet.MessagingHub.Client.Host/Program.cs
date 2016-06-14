@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -33,6 +34,11 @@ namespace Takenet.MessagingHub.Client.Host
                         "- pause: Indicates if the application should pause and wait for user input after the execution");
                     WriteLine();
                     return;
+                }
+
+                if (HasArgument(args, "trace"))
+                {
+                    Trace.Listeners.Add(new ConsoleTraceListener());
                 }
 
                 var applicationFileName =
