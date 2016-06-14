@@ -21,7 +21,7 @@ namespace Takenet.MessagingHub.Client.Host
         {
             try
             {
-                if (args.Any(a => a.TrimStart('-', '/').Equals("help", StringComparison.OrdinalIgnoreCase)))
+                if (HasArgument(args, "help"))
                 {
                     WriteLine("Messaging Hub client host");
                     WriteLine();
@@ -64,12 +64,17 @@ namespace Takenet.MessagingHub.Client.Host
             }
             finally
             {
-                if (args.Any(a => a.TrimStart('-', '/').Equals("pause", StringComparison.OrdinalIgnoreCase)))
+                if (HasArgument(args, "pause"))
                 {
                     WriteLine("Press any key to exit.");
                     Console.ReadKey(true);
                 }
             }            
+        }
+
+        private static bool HasArgument(string[] args, string argumentName)
+        {
+            return args.Any(a => a.TrimStart('-', '/').Equals(argumentName, StringComparison.OrdinalIgnoreCase));
         }
 
         private static void ConfigureWorkingDirectory(string applicationFileName)
