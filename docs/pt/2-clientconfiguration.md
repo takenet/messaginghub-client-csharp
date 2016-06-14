@@ -3,7 +3,7 @@
 Independente da linguagem de programação escolhida, você precisará do identificador da aplicação e chave de acesso.
 Seu contato tem que seguir o template `Integração Api` para você ter acesso aos dados.
 Siga os seguintes passos:
-- Acesse o [Painel Omni](http://portal.messaginghub.io).
+- Acesse o [Painel Omni](http://omni.messaginghub.io).
 - Na aba `Contatos` clique no ícone para editar o seu contato.
 - Pronto, os dados serão exibidos na tela.
 
@@ -15,7 +15,7 @@ Abaixo, todas as propriedades que podem ser definidas no arquivo `application.js
 
 | Propriedade | Descrição                                                                        | Exemplo                 |
 |-------------|----------------------------------------------------------------------------------|-------------------------|
-| identifier     | O identificador da aplicação no Messaging Hub, gerado através do portal [messaginghub.io](http://messaginghub.io). | myapplication           |
+| identifier     | O identificador da aplicação no Messaging Hub, gerado através do [Painel Omni](http://omni.messaginghub.io). | myapplication           |
 | domain      | O domínio **lime** para conexão. Atualmente o único valor suportado é `msging.net`.| msging.net              |
 | hostName    | O endereço do host para conexão com o servidor.                                  | msging.net              |
 | accessKey   | A chave de acesso da aplicação para autenticação, no formato **base64**.         | MTIzNDU2                |
