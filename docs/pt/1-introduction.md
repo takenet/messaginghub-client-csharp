@@ -13,7 +13,7 @@ A partir do Package Manager Console, instale o template de aplicações usando:
 ## Obtendo sua chave de acesso
 
 Você precisará de um identificador e uma chave de acesso para sua aplicação, para poder interagir com o Messaging Hub. Para obtê-los, faça o seguinte:
-- Acesse o [Painel Omni](http://portal.messaginghub.io).
+- Acesse o [Painel Omni](http://omni.messaginghub.io).
 - Na aba `Contatos` clique em `Criar Contato`.
 - Preencha com os parâmetros requeridos e na próxima etapa escolha o template `Integração API`
 - Pronto, seu contato foi criado e o identificador e chave de acesso serão exibidos.
