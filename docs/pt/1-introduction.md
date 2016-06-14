@@ -21,14 +21,14 @@ Você precisará de um identificador e uma chave de acesso para sua aplicação,
 ## Trabalhando com Messaging Hub
 
 Você pode realizar as seguintes operações com o client do Messaging Hub:
-- Enviar e receber [mensagens](http://omni.messaginghub.io/#/docs/messages)
-- Enviar e receber [notificações](http://omni.messaginghub.io/#/docs/notifications)
-- Enviar [comandos](http://omni.messaginghub.io/#/docs/commands)
+- Enviar e receber [mensagens](http://omni.messaginghub.io/#/docs/api/messages)
+- Enviar e receber [notificações](http://omni.messaginghub.io/#/docs/api/notifications)
+- Enviar [comandos](http://omni.messaginghub.io/#/docs/api/commands)
 
 ## Hospedagem
 
 Para esse tipo de aplicação, a hospedagem fica a cargo do usuário.
-Veja mais detalhes em [Hospedagem](http://omni.messaginghub.io/#/docs/hosting).
+Veja mais detalhes em [Hospedagem](http://omni.messaginghub.io/#/docs/api/hosting).
 
 ## Contribuições
 
