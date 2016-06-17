@@ -19,7 +19,12 @@ namespace Takenet.MessagingHub.Client.Textc
 
         private static readonly TimeSpan DefaultProcessTimeout = TimeSpan.FromSeconds(60);
 
-        public TextcMessageReceiver(IMessagingHubSender sender, ITextProcessor textProcessor, IContextProvider contextProvider, Func<Message, IMessageReceiver, Task> matchNotFoundHandler = null, TimeSpan? processTimeout = null)
+        public TextcMessageReceiver(
+            IMessagingHubSender sender, 
+            ITextProcessor textProcessor, 
+            IContextProvider contextProvider, 
+            Func<Message, IMessageReceiver, Task> matchNotFoundHandler = null, 
+            TimeSpan? processTimeout = null)
         {
             if (textProcessor == null) throw new ArgumentNullException(nameof(textProcessor));
             if (contextProvider == null) throw new ArgumentNullException(nameof(contextProvider));

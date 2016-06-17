@@ -32,8 +32,20 @@ namespace Takenet.MessagingHub.Client.Textc
         private readonly List<Func<IOutputProcessor, ICommandProcessor>> _commandProcessorFactories;
         private readonly IMessagingHubSender _sender;
 
-        public TextcMessageReceiverBuilder(IMessagingHubSender sender, IOutputProcessor outputProcessor = null, ISyntaxParser syntaxParser = null,
-            IExpressionScorer expressionScorer = null, ICultureProvider cultureProvider = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextcMessageReceiverBuilder"/> class.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="outputProcessor">The output processor.</param>
+        /// <param name="syntaxParser">The syntax parser.</param>
+        /// <param name="expressionScorer">The expression scorer.</param>
+        /// <param name="cultureProvider">The culture provider.</param>
+        public TextcMessageReceiverBuilder(
+            IMessagingHubSender sender, 
+            IOutputProcessor outputProcessor = null, 
+            ISyntaxParser syntaxParser = null,
+            IExpressionScorer expressionScorer = null, 
+            ICultureProvider cultureProvider = null)
         {
             _sender = sender;
             _outputProcessor = outputProcessor ?? new MessageOutputProcessor(sender);
@@ -43,8 +55,20 @@ namespace Takenet.MessagingHub.Client.Textc
             _commandProcessorFactories = new List<Func<IOutputProcessor, ICommandProcessor>>();
         }
 
-        public TextcMessageReceiverBuilder(MessagingHubClientBuilder clientBuilder, IOutputProcessor outputProcessor = null, ISyntaxParser syntaxParser = null,
-            IExpressionScorer expressionScorer = null, ICultureProvider cultureProvider = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextcMessageReceiverBuilder"/> class.
+        /// </summary>
+        /// <param name="clientBuilder">The client builder.</param>
+        /// <param name="outputProcessor">The output processor.</param>
+        /// <param name="syntaxParser">The syntax parser.</param>
+        /// <param name="expressionScorer">The expression scorer.</param>
+        /// <param name="cultureProvider">The culture provider.</param>
+        public TextcMessageReceiverBuilder(
+            MessagingHubClientBuilder clientBuilder, 
+            IOutputProcessor outputProcessor = null, 
+            ISyntaxParser syntaxParser = null,
+            IExpressionScorer expressionScorer = null, 
+            ICultureProvider cultureProvider = null)
             :this(clientBuilder.Build(), outputProcessor, syntaxParser, expressionScorer, cultureProvider)
         {
          
