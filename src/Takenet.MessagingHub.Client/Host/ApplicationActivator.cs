@@ -62,7 +62,7 @@ namespace Takenet.MessagingHub.Client.Host
         {
             Task.Run(() =>
             {
-                Trace.TraceError("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
+                Trace.TraceInformation("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
 
                 lock (_syncRoot)
                 {
@@ -82,7 +82,7 @@ namespace Takenet.MessagingHub.Client.Host
         {
             Task.Run(() =>
             {
-                Trace.TraceError("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
+                Trace.TraceInformation("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
 
                 lock (_syncRoot)
                 {
@@ -99,7 +99,7 @@ namespace Takenet.MessagingHub.Client.Host
         {
             Task.Run(() =>
             {
-                Trace.TraceError("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
+                Trace.TraceInformation("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
 
                 lock (_syncRoot)
                 {
@@ -169,6 +169,7 @@ namespace Takenet.MessagingHub.Client.Host
                     CreateNoWindow = false,
                     RedirectStandardInput = true,
                     RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                     UseShellExecute = false,
                     FileName = hostPath,
                     Arguments = tempApplicationPath
@@ -188,6 +189,20 @@ namespace Takenet.MessagingHub.Client.Host
                 catch (Exception exception)
                 {
                     Trace.TraceError($"Could not write to {outputPath}\nData: {e.Data}\nException: {exception}");
+                }
+            };
+            process.ErrorDataReceived += (sender, e) =>
+            {
+                try
+                {
+                    using (var writer = File.AppendText(outputPath))
+                    {
+                        writer.WriteLine("{0} - ERROR: {1}", DateTime.UtcNow, e.Data);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Trace.TraceError($"Could not write to {outputPath}\nError data: {e.Data}\nException: {exception}");
                 }
             };
 
