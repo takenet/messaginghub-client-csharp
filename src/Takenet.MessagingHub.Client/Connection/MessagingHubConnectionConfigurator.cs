@@ -21,7 +21,7 @@ namespace Takenet.MessagingHub.Client.Connection
         protected SessionCompression Compression { get; private set; }
         protected SessionEncryption Encryption { get; private set; }
         protected RoutingRule RoutingRule { get; private set; }
-        protected TimeSpan Throughput { get; private set; }
+        protected int Throughput { get; private set; }
 
         protected Identity Identity => Identity.Parse($"{Identifier}@{Domain}");
         protected Uri EndPoint => new Uri($"net.tcp://{HostName}:55321");
@@ -120,7 +120,7 @@ namespace Takenet.MessagingHub.Client.Connection
             return (TConfigurator)this;
         }
 
-        public TConfigurator WithThroughput(TimeSpan throughput)
+        public TConfigurator WithThroughput(int throughput)
         {
             Throughput = throughput;
             return (TConfigurator)this;
