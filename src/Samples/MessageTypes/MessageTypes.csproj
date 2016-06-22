@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{15CBE898-930A-41A8-A985-B982DFE48827}</ProjectGuid>
+    <ProjectGuid>{AE832298-1FB0-47C5-9018-5457F088D016}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Translator</RootNamespace>
-    <AssemblyName>Translator</AssemblyName>
+    <RootNamespace>MessageTypes</RootNamespace>
+    <AssemblyName>MessageTypes</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -56,7 +56,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.Services.Client" />
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
@@ -77,13 +76,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Option6MessageReceiver.cs" />
+    <Compile Include="Option5MessageReceiver.cs" />
+    <Compile Include="Option4MessageReceiver.cs" />
+    <Compile Include="Option3MessageReceiver.cs" />
+    <Compile Include="Option2MessageReceiver.cs" />
+    <Compile Include="Option1MessageReceiver.cs" />
     <Compile Include="PlainTextMessageReceiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="TranslatorContainer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="empty.application.json" />
+    <None Include="application.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
