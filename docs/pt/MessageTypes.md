@@ -1,8 +1,8 @@
-**Infraestrutura de Mensagens do Messaging Hub**
+# Infraestrutura de Mensagens do Messaging Hub
 
 O Messaging Hub possui uma infraestrutura que permite que os Chat Bots sejam construídos usando uma linguagem canônica, que é devidamente traduzida para as mensagens específicas de cada um dos canais disponíveis, como Facebook Messenger, Skype, SMS.
 
-**Os seguintes tipos canônicos estão disponíveis:**
+## Os seguintes tipos canônicos estão disponíveis:
 
 - **PlainText:**
   Este é o tipo de mensagem padrão e é utilizado para o envio de mensagens de texto simples.
