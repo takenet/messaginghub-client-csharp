@@ -21,7 +21,7 @@ namespace MessageTypes
         {
             var select = new Select
             {
-                Text = "Olá. Estou aqui para testar tipos canônicos de mensagem. O que prefere que eu lhe envie como resposta?",
+                Text = "Olá. Estou aqui para testar tipos canônicos de mensagem. Como prefere que eu lhe responda?",
                 Options = new []
                 {
                     new SelectOption
@@ -32,7 +32,7 @@ namespace MessageTypes
                     new SelectOption
                     {
                         Order = 2,
-                        Text = "Me envie imagem do dia!"
+                        Text = "Uma imagem motivacional!"
                     },
                     new SelectOption
                     {
@@ -42,17 +42,17 @@ namespace MessageTypes
                     new SelectOption
                     {
                         Order = 4,
-                        Text = "Envie-me uma localização!"
+                        Text = "Mostre-me um lugar magestoso!"
                     },
                     new SelectOption
                     {
                         Order = 5,
-                        Text = "Me envie uma mensagem composta!"
+                        Text = "Resuma em uma mensagem só!"
                     },
                     new SelectOption
                     {
                         Order = 6,
-                        Text = "Cobre pelo seu serviço!"
+                        Text = "Cobre pelo serviço!"
                     },
                 }
             };

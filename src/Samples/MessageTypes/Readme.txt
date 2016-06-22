@@ -5,3 +5,5 @@ Ele pode ser encontrado nos seguintes canais:
 - OMNI: MessageTypes
 - SMS: 90903006164699
 - Facebook: MessageTypes
+- Telegram: MessageTypes
+- Skype: MessageTypes

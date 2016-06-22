@@ -18,24 +18,25 @@ namespace MessageTypes
             _sender = sender;
         }
 
-        public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
+        public Task ReceiveAsync(Message message, CancellationToken cancellationToken)
         {
             var mediaLink = CreateMediaLink();
 
-            await _sender.SendMessageAsync(mediaLink, message.From, cancellationToken);
+            return _sender.SendMessageAsync(mediaLink, message.From, cancellationToken);
         }
 
         internal static MediaLink CreateMediaLink()
         {
-            var imageUrl = new Uri("http://eglu.pontofrio.com.br/wp-content/uploads/2013/05/guia-do-solteiro-cafe.jpg");
+            var imageUrl = new Uri("https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/200px-A_small_cup_of_coffee.JPG");
 
-            var mediaLink = new MediaLink()
+            var mediaLink = new MediaLink
             {
-                Size = 34113,
-                Type = MediaType.Parse("image/jpg"),
+                Size = 6679,
+                Type = MediaType.Parse("image/jpeg"),
                 PreviewUri = imageUrl,
                 Uri = imageUrl
             };
+
             return mediaLink;
         }
     }

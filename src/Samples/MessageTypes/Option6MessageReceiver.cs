@@ -20,7 +20,7 @@ namespace MessageTypes
 
         public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
         {
-
+            
 
             //await _sender.SendMessageAsync(composite, message.From, cancellationToken);
         }
