@@ -25,26 +25,26 @@ O Messaging Hub possui uma infraestrutura que permite que os Chat Bots sejam con
 - **DocumentContainer:**
   Encapsula um conteúdo de forma a ser utilizado junto ao DocumentCollection para envio de multiplos conteúdos diferentes. Util para mandar conteúdos compostos (texto + imagem).
 
-## Mensagens de Texto Simples (PlainText)
+### Mensagens de Texto Simples (PlainText)
 
 ...
 
-## Links para Aquivos de Mídia e Páginas Web (MediaLink e WebLink)
+### Links para Aquivos de Mídia e Páginas Web (MediaLink e WebLink)
 
 ...
 
-## Enviando listas de opções (Select)
+### Enviando listas de opções (Select)
 
 ...
 
-## Geolocalização (Location)
+### Geolocalização (Location)
 
 ...
 
-## Processando Pagamentos (Invoice, InvoiceStatus e PaymentReceipt)
+### Processando Pagamentos (Invoice, InvoiceStatus e PaymentReceipt)
 
 ... 
 
-## Mensagens Compostas (DocumentCollection e DocumentContainer)
+### Mensagens Compostas (DocumentCollection e DocumentContainer)
 
 ...
