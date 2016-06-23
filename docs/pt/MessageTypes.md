@@ -244,8 +244,53 @@ public class InvoiceStatusReceiver : IMessageReceiver
     }
 }
 ```
-Como pode ser visto no exemplo acima, seu Chat Bot deve estar preparado para reagir ao 3 statuses disponíveis como resposta ao seu pedido de pagamento, e deve enviar um recibo de pagamento (tipo PaymentReceipt) como resposta ao cliente.
+Como pode ser visto no exemplo acima, seu Chat Bot deve estar preparado para reagir aos 3 statuses disponíveis como resposta ao seu pedido de pagamento, e deve enviar um recibo de pagamento (tipo PaymentReceipt) como resposta ao cliente.
 
 ### Mensagens Compostas (DocumentCollection e DocumentContainer)
 
-...
+Mensagens compostas podem ser enviadas utilizando os tipos DocumentCollection e DocumentContainer, conforme o exemplo a seguir:
+
+```csharp
+public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
+{
+    var imageUrl = new Uri("https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/200px-A_small_cup_of_coffee.JPG");
+    var url = new Uri("https://pt.wikipedia.org/wiki/Caf%C3%A9");
+    var previewUrl =
+        new Uri(
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Roasted_coffee_beans.jpg/200px-Roasted_coffee_beans.jpg");
+
+    var document = new DocumentCollection
+    {
+        ItemType = DocumentContainer.MediaType,
+        Items = new[]
+        {
+            new DocumentContainer
+            {
+                Value = new PlainText {Text = "... Inspiração, e um pouco de café! E isso me basta!"}
+            },
+            new DocumentContainer
+            {
+                Value = = new MediaLink
+                {
+                    Text = "Café, o que mais seria?",
+                    Size = 6679,
+                    Type = MediaType.Parse("image/jpeg"),
+                    PreviewUri = imageUrl,
+                    Uri = imageUrl
+                }
+            },
+            new DocumentContainer
+            {
+                Value = new WebLink
+                {
+                    Text = "Café, a bebida sagrada!",
+                    PreviewUri = previewUrl,
+                    Uri = url
+                }
+            }
+        }
+    };
+
+    await _sender.SendMessageAsync(document, message.From, cancellationToken);
+}
+```
