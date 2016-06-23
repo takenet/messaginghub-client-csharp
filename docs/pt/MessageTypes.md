@@ -27,7 +27,7 @@ O Messaging Hub possui uma infraestrutura que permite que os Chat Bots sejam con
 
 ## Exemplos:
 
-Veja [este](https://github.com/takenet/messaginghub-client-csharp/tree/master/src/Samples/MessageTypes) Chat Bot para um exemplo de como usar cada um desses tipos.
+Confira o Chat Bot [Message Types](https://github.com/takenet/messaginghub-client-csharp/tree/master/src/Samples/MessageTypes) para ver como usar cada um dois tipos canônicos do Messaging Hub.
 
 ### Mensagens de Texto Simples (PlainText)
 
