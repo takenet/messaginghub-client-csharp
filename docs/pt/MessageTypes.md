@@ -255,9 +255,7 @@ public async Task ReceiveAsync(Message message, CancellationToken cancellationTo
 {
     var imageUrl = new Uri("https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/200px-A_small_cup_of_coffee.JPG");
     var url = new Uri("https://pt.wikipedia.org/wiki/Caf%C3%A9");
-    var previewUrl =
-        new Uri(
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Roasted_coffee_beans.jpg/200px-Roasted_coffee_beans.jpg");
+    var previewUrl = new Uri("https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Roasted_coffee_beans.jpg/200px-Roasted_coffee_beans.jpg");
 
     var document = new DocumentCollection
     {
