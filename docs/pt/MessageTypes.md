@@ -130,11 +130,121 @@ public async Task ReceiveAsync(Message message, CancellationToken cancellationTo
 
 ### Geolocalização (Location)
 
-...
+Um Chat Bot pode enviar uma localização ao cliente ou o canal pode enviar ao Chat Bot a localização do cliente. Em ambos os casos, o tipo Location será usado:
+```csharp
+public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
+{
+    var document = new Location
+    {
+        Latitude = -22.121944,
+        Longitude = -45.128889,
+        Altitude = 1143
+    };
+
+    await _sender.SendMessageAsync(document, message.From, cancellationToken);
+}
+```
+
+*Restrições:*
+- Este tipo não é suportado em nenhum dos canais no momento!
 
 ### Processando Pagamentos (Invoice, InvoiceStatus e PaymentReceipt)
 
-... 
+Para realizar um pagamento através do seu Chat Bot, é necessário envolver um canal de pagamento. No momento apenas o canal PagSeguro é suportado e para solicitar o pagamento, o Chat Bot deve enviar uma mensagem do tipo Invoice para o canal de pagamento informando o endereço no formato abaixo:
+
+```csharp
+var toPagseguro = $"{Uri.EscapeDataString(message.From.ToIdentity().ToString())}@pagseguro.gw.msging.net"; // Ex: 988887777%400mni.io@pagseguro.gw.msging.net
+```
+
+Abaixo um exemplo completo de envio de solicitação de pagamento:
+```csharp
+public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
+{
+    var document = new Invoice
+    {
+        Currency = "BLR",
+        DueTo = DateTime.Now.AddDays(1),
+        Items =
+            new[]
+            {
+                new InvoiceItem
+                {
+                    Currency = "BRL",
+                    Unit = 1,
+                    Description = "Serviços de Teste de Tipos Canônicos",
+                    Quantity = 1,
+                    Total = 1
+                }
+            },
+        Total = 1
+    };
+
+    var toPagseguro = $"{Uri.EscapeDataString(message.From.ToIdentity().ToString())}@pagseguro.gw.msging.net";
+    
+    await _sender.SendMessageAsync(document, toPagseguro, cancellationToken);
+}
+```
+
+*Importante:* Para que esta solicitação de pagamento seja processada, o canal de pagamento PagSeguro deve ser habilitado para a seu Chat Bot no portal do Messaging Hub.
+
+Ao receber esta mensagem, o PagSeguro enviará ao cliente um link para realização do pagamento. Uma vez realizado, ou cancelado, o pagamento, uma mensagem do tipo InvoiceStatus será recebida pelo seu Chat Bot. Para isso um *Receiver* para o MediaType `application/vnd.lime.invoice-status+json`, o qual deve ser registrado no arquivo `application.json` da seguinte forma:
+```json
+  "messageReceivers": [
+  {
+    {
+      "type": "InvoiceStatusReceiver",
+      "mediaType": "application/vnd.lime.invoice-status\\+json"
+    }
+}
+```
+Tal receiver deve ser definido da seguinte forma:
+```csharp
+public class InvoiceStatusReceiver : IMessageReceiver
+{
+    private readonly IMessagingHubSender _sender;
+
+    public InvoiceStatusReceiver(IMessagingHubSender sender)
+    {
+        _sender = sender;
+    }
+
+    public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
+    {
+        var invoiceStatus = message.Content as InvoiceStatus;
+        switch (invoiceStatus?.Status)
+        {
+            case InvoiceStatusStatus.Cancelled:
+                await _sender.SendMessageAsync("Tudo bem, não precisa pagar nada.", message.From, cancellationToken);
+                break;
+            case InvoiceStatusStatus.Completed:
+                await _sender.SendMessageAsync("Obrigado pelo seu pagamento, mas como isso é apenas um teste, você pode pedir o ressarcimento do valor pago ao PagSeguro. Em todo caso, segue o seu recibo:", message.From, cancellationToken);
+                var paymentReceipt = new PaymentReceipt
+                {
+                    Currency = "BLR",
+                    Items =
+                        new[]
+                        {
+                            new InvoiceItem
+                            {
+                                Currency = "BRL",
+                                Unit = 1,
+                                Description = "Serviços de Teste de Tipos Canônicos",
+                                Quantity = 1,
+                                Total = 1
+                            }
+                        },
+                    Total = 1
+                };
+                await _sender.SendMessageAsync(paymentReceipt, message.From, cancellationToken);
+                break;
+            case InvoiceStatusStatus.Refunded:
+                await _sender.SendMessageAsync("Pronto. O valor que você me pagou já foi ressarcido pelo PagSeguro!", message.From, cancellationToken);
+                break;
+        }
+    }
+}
+```
+Como pode ser visto no exemplo acima, seu Chat Bot deve estar preparado para reagir ao 3 statuses disponíveis como resposta ao seu pedido de pagamento, e deve enviar um recibo de pagamento (tipo PaymentReceipt) como resposta ao cliente.
 
 ### Mensagens Compostas (DocumentCollection e DocumentContainer)
 
