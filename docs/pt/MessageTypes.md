@@ -45,12 +45,11 @@ public async Task ReceiveAsync(Message message, CancellationToken cancellationTo
 ```
 *Restrições:*
 
-- Facebook Messenger: Máximo de 320 caractéries
+- Facebook Messenger: Máximo de 320 caractéries. Caso seu Chat Bot envie mensagens maiores que este limite, e esteja utilizando este canal, sua mensagem não será enviada.
 
 ### Links para Arquivos de Mídia e Páginas Web (MediaLink e WebLink)
 
 Para enviar arquivos de mídia, o documento enviado deve ser do tipo MediaLink, conforme abaixo:
-
 ```csharp
 public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
 {
@@ -67,9 +66,7 @@ public async Task ReceiveAsync(Message message, CancellationToken cancellationTo
     await _sender.SendMessageAsync(document, message.From, cancellationToken);
 }
 ```
-
 Já para enviar o link para um página web, use o tipo WebLink:
-
 ```csharp
 public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
 {
@@ -88,10 +85,48 @@ public async Task ReceiveAsync(Message message, CancellationToken cancellationTo
     await _sender.SendMessageAsync(document, message.From, cancellationToken);
 }
 ```
-
 ### Enviando listas de opções (Select)
 
-...
+Para enviar uma lista de opções para que o cliente escolha um delas como resposta, utilize o tipo Select:
+```csharp
+public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
+{
+    var document = new Select
+    {
+        Text = "Escolha uma opção:",
+        Options = new []
+        {
+            new SelectOption
+            {
+                Order = 1,
+                Text = "Um texto inspirador!",
+                Value = new PlainText { Text = "1" }
+            },
+            new SelectOption
+            {
+                Order = 2,
+                Text = "Uma imagem motivacional!",
+                Value = new PlainText { Text = "2" }
+            },
+            new SelectOption
+            {
+                Order = 3,
+                Text = "Um link para algo interessante!",
+                Value = new PlainText { Text = "3" }
+            }
+        }
+    };
+
+    await _sender.SendMessageAsync(document, message.From, cancellationToken);
+}
+```
+*Observações:*
+- A propriedade Value é opcional, Mas caso informada, seu valor seráenviado como resposta quando a opção for escolhida.
+- Caso a propriedade Value não seja informada, ou a propriedade Order ou a propriedade Text deve estar presente. Se apenas uma delas estiver presente, este será o valor enviado como resposta. Caso contrário, o valor da propriedade Order será usado.
+
+*Restrições:*
+- Facebook Messenger: Limite de 3 opções. Caso precise de mais opções e esteja usando este canal, envie multiplas mensagens, cada uma com no máximo 3 opções, caso contrário a mensagem não será enviada.
+- Tangram SMS: A propriedade valor será ignorada e o valor da propriedade Order deverá ser enviado como resposta indicando a opção selecionada.
 
 ### Geolocalização (Location)
 
