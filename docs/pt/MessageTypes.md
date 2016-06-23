@@ -188,12 +188,12 @@ public async Task ReceiveAsync(Message message, CancellationToken cancellationTo
 *Importante:* Para que esta solicitação de pagamento seja processada, o canal de pagamento PagSeguro deve ser habilitado para a seu Chat Bot no portal do Messaging Hub.
 
 Ao receber esta mensagem, o PagSeguro enviará ao cliente um link para realização do pagamento. Uma vez realizado, ou cancelado, o pagamento, uma mensagem do tipo InvoiceStatus será recebida pelo seu Chat Bot. Para isso um *Receiver* para o MediaType `application/vnd.lime.invoice-status+json`, o qual deve ser registrado no arquivo `application.json` da seguinte forma:
-```json
-  "messageReceivers": [
-  {
+```js
+"messageReceivers": [
+{
     {
-      "type": "InvoiceStatusReceiver",
-      "mediaType": "application/vnd.lime.invoice-status\\+json"
+        "type": "InvoiceStatusReceiver",
+        "mediaType": "application/vnd.lime.invoice-status\\+json"
     }
 }
 ```
