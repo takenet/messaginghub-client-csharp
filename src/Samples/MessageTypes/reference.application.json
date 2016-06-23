@@ -1,6 +1,6 @@
 ﻿{
   "identifier": "messagetypes",
-  "accessKey": "eGZGdzJl",
+  "accessKey": "*********",
   "messageReceivers": [
     {
       "type": "PlainTextMessageReceiver",
