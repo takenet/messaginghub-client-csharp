@@ -31,11 +31,63 @@ Confira o Chat Bot [Message Types](https://github.com/takenet/messaginghub-clien
 
 ### Mensagens de Texto Simples (PlainText)
 
-...
+Mensagens de texto simples são suportadas em todos os canais, no entanto restrições podem se aplicar a alguns deles, como por exemplo o tamanho da mensagem.
 
-### Links para Aquivos de Mídia e Páginas Web (MediaLink e WebLink)
+*Exemplo:*
 
-...
+O exemplo abaixo mostra como responder a uma mensagem recém recebida com uma mensagem de texto simples.
+```csharp
+public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
+{
+    var document = new PlainText {Text = "... Inspiração, e um pouco de café! E isso me basta!"};
+    await _sender.SendMessageAsync(document, message.From, cancellationToken);
+}
+```
+*Restrições:*
+
+- Facebook Messenger: Máximo de 320 caractéries
+
+### Links para Arquivos de Mídia e Páginas Web (MediaLink e WebLink)
+
+Para enviar arquivos de mídia, o documento enviado deve ser do tipo MediaLink, conforme abaixo:
+
+```csharp
+public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
+{
+    var imageUri = new Uri("https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/200px-A_small_cup_of_coffee.JPG", UriKind.Absolute);
+
+    var document = new MediaLink
+    {
+        Text = "Café, o que mais seria?",
+        Size = 6679,
+        Type = MediaType.Parse("image/jpeg"),
+        PreviewUri = imageUri,
+        Uri = imageUri
+    };
+    await _sender.SendMessageAsync(document, message.From, cancellationToken);
+}
+```
+
+Já para enviar o link para um página web, use o tipo WebLink:
+
+```csharp
+public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
+{
+    var url = new Uri("https://pt.wikipedia.org/wiki/Caf%C3%A9");
+    var previewUri =
+        new Uri(
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Roasted_coffee_beans.jpg/200px-Roasted_coffee_beans.jpg");
+
+    var document = new WebLink
+    {
+        Text = "Café, a bebida sagrada!",
+        PreviewUri = previewUri,
+        Uri = url
+    };
+
+    await _sender.SendMessageAsync(document, message.From, cancellationToken);
+}
+```
 
 ### Enviando listas de opções (Select)
 
