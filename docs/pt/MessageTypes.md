@@ -120,11 +120,11 @@ public async Task ReceiveAsync(Message message, CancellationToken cancellationTo
     await _sender.SendMessageAsync(document, message.From, cancellationToken);
 }
 ```
-*Observações:*
+**Observações:**
 - A propriedade Value é opcional, Mas caso informada, seu valor seráenviado como resposta quando a opção for escolhida.
 - Caso a propriedade Value não seja informada, ou a propriedade Order ou a propriedade Text deve estar presente. Se apenas uma delas estiver presente, este será o valor enviado como resposta. Caso contrário, o valor da propriedade Order será usado.
 
-*Restrições:*
+**Restrições:**
 - Facebook Messenger: Limite de 3 opções. Caso precise de mais opções e esteja usando este canal, envie multiplas mensagens, cada uma com no máximo 3 opções, caso contrário a mensagem não será enviada.
 - Tangram SMS: A propriedade valor será ignorada e o valor da propriedade Order deverá ser enviado como resposta indicando a opção selecionada.
 
@@ -144,18 +144,15 @@ public async Task ReceiveAsync(Message message, CancellationToken cancellationTo
     await _sender.SendMessageAsync(document, message.From, cancellationToken);
 }
 ```
-
-*Restrições:*
+**Restrições:**
 - Este tipo não é suportado em nenhum dos canais no momento!
 
 ### Processando Pagamentos (Invoice, InvoiceStatus e PaymentReceipt)
 
 Para realizar um pagamento através do seu Chat Bot, é necessário envolver um canal de pagamento. No momento apenas o canal PagSeguro é suportado e para solicitar o pagamento, o Chat Bot deve enviar uma mensagem do tipo Invoice para o canal de pagamento informando o endereço no formato abaixo:
-
 ```csharp
 var toPagseguro = $"{Uri.EscapeDataString(message.From.ToIdentity().ToString())}@pagseguro.gw.msging.net"; // Ex: 5531988887777%400mni.io@pagseguro.gw.msging.net
 ```
-
 Abaixo um exemplo completo de envio de solicitação de pagamento:
 ```csharp
 public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
@@ -184,8 +181,8 @@ public async Task ReceiveAsync(Message message, CancellationToken cancellationTo
     await _sender.SendMessageAsync(document, toPagseguro, cancellationToken);
 }
 ```
-
-*Importante:* Para que esta solicitação de pagamento seja processada, o canal de pagamento PagSeguro deve ser habilitado para a seu Chat Bot no portal do Messaging Hub.
+**Importante:**
+- Para que esta solicitação de pagamento seja processada, o canal de pagamento PagSeguro deve ser habilitado para a seu Chat Bot no portal do Messaging Hub.
 
 Ao receber esta mensagem, o PagSeguro enviará ao cliente um link para realização do pagamento. Uma vez realizado, ou cancelado, o pagamento, uma mensagem do tipo InvoiceStatus será recebida pelo seu Chat Bot. Para isso um *Receiver* para o MediaType `application/vnd.lime.invoice-status+json`, o qual deve ser registrado no arquivo `application.json` da seguinte forma:
 ```js
