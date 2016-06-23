@@ -151,7 +151,7 @@ public async Task ReceiveAsync(Message message, CancellationToken cancellationTo
 
 Para realizar um pagamento através do seu Chat Bot, é necessário envolver um canal de pagamento. No momento apenas o canal PagSeguro é suportado e para solicitar o pagamento, o Chat Bot deve enviar uma mensagem do tipo Invoice para o canal de pagamento informando o endereço no formato abaixo:
 ```csharp
-var toPagseguro = $"{Uri.EscapeDataString(message.From.ToIdentity().ToString())}@pagseguro.gw.msging.net"; // Ex: 5531988887777%400mni.io@pagseguro.gw.msging.net
+var toPagseguro = $"{Uri.EscapeDataString(message.From.ToIdentity().ToString())}@pagseguro.gw.msging.net"; // Ex: 5531988887777%400mn.io@pagseguro.gw.msging.net
 ```
 Abaixo um exemplo completo de envio de solicitação de pagamento:
 ```csharp
