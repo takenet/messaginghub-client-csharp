@@ -13,7 +13,7 @@ O Messaging Hub possui uma infraestrutura que permite que os Chat Bots sejam con
 - **Select:**
   Um Select permite o envio ao cliente do Chat Bot de uma lista de opções, da qual ele pode selecionar uma delas como resposta.
 - **Location:**
-  O tipo Location pode ser usado pelo canal para enviar ao Chat Bot a localização geográfica do cliente.
+  O tipo Location pode ser usado pelo canal para enviar ao Chat Bot a localização geográfica do cliente, ou para que o Chat Bot envie ao cliente uma determinada localização.
 - **Invoice:**
   O tipo Invoice pode ser usado pelo Chat Bot para solicitar um pagamento a um canal de pagamento, como por exemplo o PagSeguro.
 - **InvoiceStatus:**
