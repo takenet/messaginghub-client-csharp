@@ -19,9 +19,14 @@ namespace MessageTypes
 
         public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
         {
-            var select = new Select
+            var title = new PlainText
             {
-                Text = "Olá. Estou aqui para testar tipos canônicos de mensagem. Como prefere que eu lhe responda?",
+                Text = "Olá. Estou aqui para testar tipos canônicos de mensagem. Como prefere que eu lhe responda?"
+            };
+
+            var select1 = new Select
+            {
+                Text = "Texto, Imagem ou Link",
                 Options = new []
                 {
                     new SelectOption
@@ -38,7 +43,15 @@ namespace MessageTypes
                     {
                         Order = 3,
                         Text = "Um link para algo interessante!"
-                    },
+                    }
+                }
+            };
+
+            var select2 = new Select
+            {
+                Text = "Localização, Composição ou Pagamento",
+                Options = new[]
+                {
                     new SelectOption
                     {
                         Order = 4,
@@ -57,7 +70,9 @@ namespace MessageTypes
                 }
             };
 
-            await _sender.SendMessageAsync(select, message.From, cancellationToken);
+            await _sender.SendMessageAsync(title, message.From, cancellationToken);
+            await _sender.SendMessageAsync(select1, message.From, cancellationToken);
+            await _sender.SendMessageAsync(select2, message.From, cancellationToken);
         }
     }
 }

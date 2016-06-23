@@ -21,7 +21,6 @@ namespace MessageTypes
         public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
         {
             var webLink = CreateWebLink();
-
             await _sender.SendMessageAsync(webLink, message.From, cancellationToken);
         }
 
@@ -32,7 +31,7 @@ namespace MessageTypes
                 new Uri(
                     "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Roasted_coffee_beans.jpg/200px-Roasted_coffee_beans.jpg");
 
-            var webLink = new WebLink()
+            var webLink = new WebLink
             {
                 Text = "Café, a bebida sagrada!",
                 PreviewUri = previewUrl,
