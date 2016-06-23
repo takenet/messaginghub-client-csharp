@@ -7,7 +7,7 @@ O Messaging Hub possui uma infraestrutura que permite que os Chat Bots sejam con
 - **PlainText:**
   Este é o tipo de mensagem padrão e é utilizado para o envio de mensagens de texto simples.
 - **MediaLink:**
-  O tipo MediaLink é usado para enviar imagens. Em canais que não suportam mensagens um link para um endereçoi web contendo a imagem é enviado.
+  O tipo MediaLink é usado para enviar imagens, sons, vídeos e outros arquivos de mídia. Em canais que não suportam essas mídias, um link para um endereço web contendo o arquivo será enviado.
 - **WebLink:**
   Um WebLink pode ser usado para enviar links para paginas web. Alguns canais, como o OMNI e o Facebook, fazem um excelente tratamento desse tipo, exibindo uma miniatura da página dentro da própria thread de mensagens.
 - **Select:**
