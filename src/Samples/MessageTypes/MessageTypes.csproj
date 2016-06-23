@@ -4,18 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{86220E54-00C1-4755-ACAB-0A7016270B01}</ProjectGuid>
+    <ProjectGuid>{AE832298-1FB0-47C5-9018-5457F088D016}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ImageSearch</RootNamespace>
-    <AssemblyName>ImageSearch</AssemblyName>
+    <RootNamespace>MessageTypes</RootNamespace>
+    <AssemblyName>MessageTypes</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -25,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -33,13 +29,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lime.Messaging, Version=0.5.29.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Lime.Messaging, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Lime.Messaging.0.5.29\lib\net461\Lime.Messaging.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Lime.Protocol, Version=0.5.29.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Lime.Protocol.0.5.29\lib\net461\Lime.Protocol.dll</HintPath>
@@ -63,7 +56,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.Services.Client" />
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
@@ -82,25 +74,22 @@
       <HintPath>..\..\packages\Takenet.MessagingHub.Client.Template.0.3.92\lib\net461\Takenet.MessagingHub.Client.Template.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Takenet.MessagingHub.Client.Textc, Version=0.3.92.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Takenet.MessagingHub.Client.Textc.0.3.92\lib\net461\Takenet.MessagingHub.Client.Textc.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Takenet.Textc, Version=0.2.16.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Takenet.Textc.0.2.16\lib\net451\Takenet.Textc.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BingSearchContainer.cs" />
-    <Compile Include="ImageProcessor.cs" />
+    <Compile Include="Option6MessageReceiver.cs" />
+    <Compile Include="Option5MessageReceiver.cs" />
+    <Compile Include="Option4MessageReceiver.cs" />
+    <Compile Include="Option3MessageReceiver.cs" />
+    <Compile Include="Option2MessageReceiver.cs" />
+    <Compile Include="Option1MessageReceiver.cs" />
     <Compile Include="PlainTextMessageReceiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="empty.application.json" />
+    <None Include="application.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

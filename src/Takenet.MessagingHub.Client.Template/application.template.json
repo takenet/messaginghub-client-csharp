@@ -1,5 +1,4 @@
 ﻿{
-  /* Retrieve your application's identifier and access key at http://messaginghub.io */
   "identifier": "",
   "accessKey": "",
   "messageReceivers": [

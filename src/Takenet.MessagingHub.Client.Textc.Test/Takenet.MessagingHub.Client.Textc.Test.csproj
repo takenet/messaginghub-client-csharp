@@ -50,14 +50,14 @@
       <HintPath>..\packages\NUnit.3.0.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Shouldly, Version=2.7.0.0, Culture=neutral, PublicKeyToken=6042cbcb05cbc941, processorArchitecture=MSIL">
-      <HintPath>..\packages\Shouldly.2.7.0\lib\net40\Shouldly.dll</HintPath>
+    <Reference Include="Shouldly, Version=2.8.0.0, Culture=neutral, PublicKeyToken=6042cbcb05cbc941, processorArchitecture=MSIL">
+      <HintPath>..\packages\Shouldly.2.8.0\lib\net40\Shouldly.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="Takenet.Textc, Version=0.2.15.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Takenet.Textc.0.2.15\lib\net451\Takenet.Textc.dll</HintPath>
+    <Reference Include="Takenet.Textc, Version=0.2.16.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Takenet.Textc.0.2.16\lib\net451\Takenet.Textc.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

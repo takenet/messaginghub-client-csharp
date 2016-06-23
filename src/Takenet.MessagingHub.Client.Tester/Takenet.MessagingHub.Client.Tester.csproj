@@ -50,8 +50,8 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Shouldly, Version=2.7.0.0, Culture=neutral, PublicKeyToken=6042cbcb05cbc941, processorArchitecture=MSIL">
-      <HintPath>..\packages\Shouldly.2.7.0\lib\net40\Shouldly.dll</HintPath>
+    <Reference Include="Shouldly, Version=2.8.0.0, Culture=neutral, PublicKeyToken=6042cbcb05cbc941, processorArchitecture=MSIL">
+      <HintPath>..\packages\Shouldly.2.8.0\lib\net40\Shouldly.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -61,8 +61,8 @@
       <HintPath>..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Takenet.MessagingHub.Client, Version=0.3.75.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Takenet.MessagingHub.Client.0.3.75\lib\net461\Takenet.MessagingHub.Client.dll</HintPath>
+    <Reference Include="Takenet.MessagingHub.Client, Version=0.3.92.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Takenet.MessagingHub.Client.0.3.92\lib\net461\Takenet.MessagingHub.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
