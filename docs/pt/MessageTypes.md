@@ -25,6 +25,10 @@ O Messaging Hub possui uma infraestrutura que permite que os Chat Bots sejam con
 - **DocumentContainer:**
   Encapsula um conteúdo de forma a ser utilizado junto ao DocumentCollection para envio de multiplos conteúdos diferentes. Util para mandar conteúdos compostos (texto + imagem).
 
+## Exemplos:
+
+Veja [este](https://github.com/takenet/messaginghub-client-csharp/tree/master/src/Samples/MessageTypes) Chat Bot para um exemplo de como usar cada um desses tipos.
+
 ### Mensagens de Texto Simples (PlainText)
 
 ...
