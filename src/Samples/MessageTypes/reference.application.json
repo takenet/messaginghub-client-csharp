@@ -5,7 +5,7 @@
     {
       "type": "PlainTextMessageReceiver",
       "mediaType": "text/plain",
-      "content": "^((?!([0-6])|invoicestatus).)*$"
+      "content": "^((?!([0-6])).)*$"
     },
     {
       "type": "Option1MessageReceiver",
@@ -39,7 +39,7 @@
     },
     {
       "type": "Option6Part2MessageReceiver",
-      "mediaType": ".*invoicestatus.*"
+      "mediaType": "application/vnd.lime.invoice-status\\+json"
     }
   ],
   "settings": {

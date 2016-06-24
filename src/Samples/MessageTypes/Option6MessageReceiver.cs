@@ -26,7 +26,18 @@ namespace MessageTypes
             {
                 Currency = "BLR",
                 DueTo = DateTime.Now.AddDays(1),
-                Items = new[] { new InvoiceItem { Currency = "BRL", Unit = 1, Description = "Serviços de Teste de Tipos Canônicos", Quantity = 1, Total = 1 } },
+                Items =
+                    new[]
+                    {
+                        new InvoiceItem
+                        {
+                            Currency = "BRL",
+                            Unit = 1,
+                            Description = "Serviços de Teste de Tipos Canônicos",
+                            Quantity = 1,
+                            Total = 1
+                        }
+                    },
                 Total = 1
             };
 
@@ -56,7 +67,25 @@ namespace MessageTypes
                     await _sender.SendMessageAsync("Tudo bem, não precisa pagar nada.", message.From, cancellationToken);
                     break;
                 case InvoiceStatusStatus.Completed:
-                    await _sender.SendMessageAsync("Obrigado pelo seu pagamento, mas como isso é apenas um teste, você pode pedir o ressarcimento do valor pago ao PagSeguro.", message.From, cancellationToken);
+                    await _sender.SendMessageAsync("Obrigado pelo seu pagamento, mas como isso é apenas um teste, você pode pedir o ressarcimento do valor pago ao PagSeguro. Em todo caso, segue o seu recibo:", message.From, cancellationToken);
+                    var paymentReceipt = new PaymentReceipt
+                    {
+                        Currency = "BLR",
+                        Items =
+                            new[]
+                            {
+                                new InvoiceItem
+                                {
+                                    Currency = "BRL",
+                                    Unit = 1,
+                                    Description = "Serviços de Teste de Tipos Canônicos",
+                                    Quantity = 1,
+                                    Total = 1
+                                }
+                            },
+                        Total = 1
+                    };
+                    await _sender.SendMessageAsync(paymentReceipt, message.From, cancellationToken);
                     break;
                 case InvoiceStatusStatus.Refunded:
                     await _sender.SendMessageAsync("Pronto. O valor que você me pagou já foi ressarcido pelo PagSeguro!", message.From, cancellationToken);

@@ -29,15 +29,15 @@ namespace MessageTypes
 
         internal static MediaLink CreateMediaLink()
         {
-            var imageUrl = new Uri("https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/200px-A_small_cup_of_coffee.JPG", UriKind.Absolute);
+            var imageUri = new Uri("https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/200px-A_small_cup_of_coffee.JPG");
 
             var mediaLink = new MediaLink
             {
                 Text = "Café, o que mais seria?",
                 Size = 6679,
                 Type = MediaType.Parse("image/jpeg"),
-                PreviewUri = imageUrl,
-                Uri = imageUrl
+                PreviewUri = imageUri,
+                Uri = imageUri
             };
 
             return mediaLink;
