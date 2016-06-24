@@ -27,14 +27,14 @@ namespace MessageTypes
         internal static WebLink CreateWebLink()
         {
             var url = new Uri("https://pt.wikipedia.org/wiki/Caf%C3%A9");
-            var previewUrl =
+            var previewUri =
                 new Uri(
                     "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Roasted_coffee_beans.jpg/200px-Roasted_coffee_beans.jpg");
 
             var webLink = new WebLink
             {
                 Text = "Café, a bebida sagrada!",
-                PreviewUri = previewUrl,
+                PreviewUri = previewUri,
                 Uri = url
             };
             return webLink;
