@@ -121,7 +121,7 @@ public async Task ReceiveAsync(Message message, CancellationToken cancellationTo
 }
 ```
 **Observações:**
-- A propriedade Value é opcional, Mas caso informada, seu valor seráenviado como resposta quando a opção for escolhida.
+- A propriedade Value é opcional, Mas caso informada, seu valor será enviado como resposta quando a opção for escolhida.
 - Caso a propriedade Value não seja informada, ou a propriedade Order ou a propriedade Text deve estar presente. Se apenas uma delas estiver presente, este será o valor enviado como resposta. Caso contrário, o valor da propriedade Order será usado.
 
 **Restrições:**
