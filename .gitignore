@@ -1,7 +1,7 @@
 # Created by https://www.gitignore.io/api/bower,node,visualstudio,webstorm,visualstudiocode
 
 config.json
-application.json
+#application.json
 
 ### Bower ###
 .bower-cache
