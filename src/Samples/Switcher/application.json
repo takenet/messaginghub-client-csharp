@@ -1,0 +1,30 @@
+﻿{
+  /* Retrieve your application's login and access key at http://messaginghub.io */
+  "identifier": "switcher",
+  "accessKey": "",
+  "hostName": "hmg.msging.net",
+  "messageReceivers": [
+    {
+      "type": "OptInMessageReceiver",
+      "mediaType": "text/plain",
+      "content": "^(in|start|assinar|entrar)$"
+    },
+    {
+      "type": "OptOutMessageReceiver",
+      "mediaType": "text/plain",
+      "content": "^(out|stop|cancelar|sair)$"
+    }
+  ],
+  "startupType": "Startup",
+  "settings": {
+    "messageInterval": "00:00:30",
+    "messages": [
+      "This is the first message",
+      "This is the second message",
+      "This is the third message",
+      "This is the forth message",
+      "This is the fifth message"
+    ]
+  },
+  "schemaVersion": 2 
+}

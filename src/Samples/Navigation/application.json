@@ -1,6 +1,6 @@
 ﻿{
-  "identifier": "navigationsample",
-  "accessKey": "QkRYOHAz",
+  "identifier": "",
+  "accessKey": "",
   "messageReceivers": [
     {
       "mediaType": "text/plain",
@@ -17,7 +17,7 @@
               "value": "texto"
             },
             {
-              "order": 2,
+              "order": 2, 
               "text": "Uma IMAGEM",
               "type": "text/plain",
               "value": "imagem"
