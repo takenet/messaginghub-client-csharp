@@ -13,7 +13,7 @@ A partir do Package Manager Console, instale o template de aplicações usando:
 ## Obtendo sua chave de acesso
 
 Você precisará de um identificador e uma chave de acesso para sua aplicação, para poder interagir com o Messaging Hub. Para obtê-los, faça o seguinte:
-- Acesse o [Painel Omni](http://omni.messaginghub.io).
+- Acesse o [Painel Omni](http://omni.messaginghub.io/portal).
 - Na aba `Contatos` clique em `Criar Contato`.
 - Preencha com os parâmetros requeridos e na próxima etapa escolha o template `Integração API`
 - Pronto, seu contato foi criado e o identificador e chave de acesso serão exibidos.
@@ -21,14 +21,14 @@ Você precisará de um identificador e uma chave de acesso para sua aplicação,
 ## Trabalhando com Messaging Hub
 
 Você pode realizar as seguintes operações com o client do Messaging Hub:
-- Enviar e receber [mensagens](http://omni.messaginghub.io/#/docs/api/messages)
-- Enviar e receber [notificações](http://omni.messaginghub.io/#/docs/api/notifications)
-- Enviar [comandos](http://omni.messaginghub.io/#/docs/api/commands)
+- Enviar e receber [mensagens](http://omni.messaginghub.io/portal/#/docs/api/messages)
+- Enviar e receber [notificações](http://omni.messaginghub.io/portal/#/docs/api/notifications)
+- Enviar [comandos](http://omni.messaginghub.io/portal/#/docs/api/commands)
 
 ## Hospedagem
 
 Para esse tipo de aplicação, a hospedagem fica a cargo do usuário.
-Veja mais detalhes em [Hospedagem](http://omni.messaginghub.io/#/docs/api/hosting).
+Veja mais detalhes em [Hospedagem](http://omni.messaginghub.io/portal/#/docs/api/hosting).
 
 ## Contribuições
 
