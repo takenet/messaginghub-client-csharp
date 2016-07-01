@@ -10,25 +10,22 @@ namespace Takenet.MessagingHub.Client.Listener
     internal class EnvelopeListenerRegistrar
     {
         private readonly IMessagingHubListener _listener;
-        private readonly IDictionary<int, IList<ReceiverFactoryPredicate<Message>>> _messageReceiversDictionary;
-        private readonly IDictionary<int, IList<ReceiverFactoryPredicate<Notification>>> _notificationReceiversDictionary;
-        private readonly object _syncRoot;
-
+        private readonly IList<ReceiverFactoryPredicate<Message>> _messageReceivers;
+        private readonly IList<ReceiverFactoryPredicate<Notification>> _notificationReceivers;
         private static readonly IEnumerable<ReceiverFactoryPredicate<Message>> DefaultMessageReceivers = new[]
         {
-            new ReceiverFactoryPredicate<Message>(() => new UnsupportedMessageReceiver(), m => true, CancellationToken.None)
+            new ReceiverFactoryPredicate<Message>(() => new UnsupportedMessageReceiver(), m => true, int.MaxValue)
         };
         private static readonly IEnumerable<ReceiverFactoryPredicate<Notification>> DefaultNotificationReceivers = new []
         {
-            new ReceiverFactoryPredicate<Notification>(() => new BlackholeNotificationReceiver(), m => true, CancellationToken.None)
+            new ReceiverFactoryPredicate<Notification>(() => new BlackholeNotificationReceiver(), m => true, int.MaxValue)
         };
 
         internal EnvelopeListenerRegistrar(IMessagingHubListener listener)
         {
             _listener = listener;
-            _messageReceiversDictionary = new Dictionary<int, IList<ReceiverFactoryPredicate<Message>>>();
-            _notificationReceiversDictionary = new Dictionary<int, IList<ReceiverFactoryPredicate<Notification>>>();
-            _syncRoot = new object();
+            _messageReceivers = new List<ReceiverFactoryPredicate<Message>>();
+            _notificationReceivers = new List<ReceiverFactoryPredicate<Notification>>();
         }
 
         /// <summary>
@@ -39,7 +36,7 @@ namespace Takenet.MessagingHub.Client.Listener
         /// <param name="priority"></param>
         /// <param name="cancellationToken">A cancellation token to allow the operation to be canceled</param>
         public void AddMessageReceiver(Func<IMessageReceiver> receiverFactory, Predicate<Message> predicate, int priority, CancellationToken cancellationToken) => 
-            AddEnvelopeReceiver(_messageReceiversDictionary, receiverFactory, predicate, priority, cancellationToken);
+            AddEnvelopeReceiver(_messageReceivers, receiverFactory, predicate, priority);
 
         /// <summary>
         /// Add a notification receiver listener to handle received notifications.
@@ -49,9 +46,9 @@ namespace Takenet.MessagingHub.Client.Listener
         /// <param name="priority"></param>
         /// <param name="cancellationToken">A cancellation token to allow the operation to be canceled</param>
         public void AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Predicate<Notification> predicate, int priority, CancellationToken cancellationToken) =>        
-            AddEnvelopeReceiver(_notificationReceiversDictionary, receiverFactory, predicate, priority, cancellationToken);
+            AddEnvelopeReceiver(_notificationReceivers, receiverFactory, predicate, priority);
         
-        public bool HasRegisteredReceivers => _messageReceiversDictionary.Any() || _notificationReceiversDictionary.Any();
+        public bool HasRegisteredReceivers => _messageReceivers.Any() || _notificationReceivers.Any();
 
         public IEnumerable<ReceiverFactoryPredicate<TEnvelope>> GetReceiversFor<TEnvelope>(TEnvelope envelope)
             where TEnvelope : Envelope, new()
@@ -61,14 +58,14 @@ namespace Takenet.MessagingHub.Client.Listener
             if (envelope is Message)
             {
                 return (IEnumerable<ReceiverFactoryPredicate<TEnvelope>>) 
-                    GetReceiversFor(_messageReceiversDictionary, envelope as Message)
+                    FilterReceivers(_messageReceivers, envelope as Message)
                         .Coalesce(DefaultMessageReceivers);
             }
 
             if (envelope is Notification)
             {
                 return (IEnumerable<ReceiverFactoryPredicate<TEnvelope>>) 
-                    GetReceiversFor(_notificationReceiversDictionary, envelope as Notification)
+                    FilterReceivers(_notificationReceivers, envelope as Notification)
                         .Coalesce(DefaultNotificationReceivers);
             }
 
@@ -76,54 +73,43 @@ namespace Takenet.MessagingHub.Client.Listener
         }
 
         private void AddEnvelopeReceiver<T>(
-            IDictionary<int, IList<ReceiverFactoryPredicate<T>>> envelopeReceiversDictionary,
+            IList<ReceiverFactoryPredicate<T>> envelopeReceivers,
             Func<IEnvelopeReceiver<T>> receiverFactory, 
             Predicate<T> predicate, 
-            int priority, 
-            CancellationToken cancellationToken) where T : Envelope, new()
+            int priority) where T : Envelope, new()
         {
             if (_listener.Listening) throw new InvalidOperationException("Cannot add receivers when the listener is already started listening");
             if (receiverFactory == null) throw new ArgumentNullException(nameof(receiverFactory));
             if (predicate == null) throw new ArgumentNullException(nameof(predicate));
-            IList<ReceiverFactoryPredicate<T>> envelopeReceivers;
 
-            lock (_syncRoot)
-            {
-                if (!envelopeReceiversDictionary.TryGetValue(priority, out envelopeReceivers))
-                {
-                    envelopeReceivers = new List<ReceiverFactoryPredicate<T>>();
-                    envelopeReceiversDictionary.Add(priority, envelopeReceivers);
-                }
-            }
-
-            var predicateReceiverFactory = new ReceiverFactoryPredicate<T>(receiverFactory, predicate, cancellationToken);
+            var predicateReceiverFactory = new ReceiverFactoryPredicate<T>(receiverFactory, predicate, priority);
             envelopeReceivers.Add(predicateReceiverFactory);
         }
 
-        private static IEnumerable<ReceiverFactoryPredicate<TEnvelope>> GetReceiversFor<TEnvelope>(
-            IEnumerable<ReceiverFactoryPredicate<TEnvelope>> envelopeReceivers, TEnvelope envelope) 
+        private static IEnumerable<ReceiverFactoryPredicate<TEnvelope>> FilterReceivers<TEnvelope>(
+            IEnumerable<ReceiverFactoryPredicate<TEnvelope>> envelopeReceivers, 
+            TEnvelope envelope) 
             where TEnvelope : Envelope, new()
         {
-            return envelopeReceivers.Where(r => r.EnvelopeFilter(envelope));
+            return envelopeReceivers.Where(r => r.Predicate(envelope));
         }
 
         internal class ReceiverFactoryPredicate<T> where T : Envelope, new()
         {
-            public ReceiverFactoryPredicate(Func<IEnvelopeReceiver<T>> receiverFactory, Predicate<T> envelopeFilter, CancellationToken cancellationToken)
+            public ReceiverFactoryPredicate(Func<IEnvelopeReceiver<T>> receiverFactory, Predicate<T> predicate, int priority)
             {
                 if (receiverFactory == null) throw new ArgumentNullException(nameof(receiverFactory));
-                if (envelopeFilter == null) throw new ArgumentNullException(nameof(envelopeFilter));
+                if (predicate == null) throw new ArgumentNullException(nameof(predicate));
 
                 ReceiverFactory = receiverFactory;
-                EnvelopeFilter = envelopeFilter;
-                CancellationToken = cancellationToken;
+                Predicate = predicate;
+                Priority = priority;
             }
 
             public Func<IEnvelopeReceiver<T>> ReceiverFactory { get; }
 
-            public Predicate<T> EnvelopeFilter { get; }
-
-            public CancellationToken CancellationToken { get; set; }
+            public Predicate<T> Predicate { get; }
+            public int Priority { get; set; }
         }
     }
 }

@@ -22,12 +22,12 @@ namespace Takenet.MessagingHub.Client.Listener
             _registrar = registrar;
         }
 
-        public async Task<bool> HandleAsync<TEnvelope>(TEnvelope envelope)
+        public async Task<bool> HandleAsync<TEnvelope>(TEnvelope envelope, CancellationToken cancellationToken)
             where TEnvelope : Envelope, new()
         {
             try
             {
-                await CallReceivers(envelope);
+                await CallReceiversAsync(envelope, cancellationToken);
 
                 return true;
             }
@@ -39,16 +39,22 @@ namespace Takenet.MessagingHub.Client.Listener
             }
         }
 
-        protected virtual async Task CallReceivers<TEnvelope>(TEnvelope envelope) where TEnvelope : Envelope, new()
+        protected virtual async Task CallReceiversAsync<TEnvelope>(TEnvelope envelope, CancellationToken cancellationToken) where TEnvelope : Envelope, new()
         {
-            var tasks = _registrar
+            var receiverGroups = _registrar
                 .GetReceiversFor(envelope)
-                .Select(r => CallReceiver(r.ReceiverFactory(), envelope, r.CancellationToken));
+                .GroupBy(r => r.Priority)
+                .OrderBy(r => r.Key);
 
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+            foreach (var receivers in receiverGroups)
+            {
+                await
+                    Task.WhenAll(
+                        receivers.Select(r => CallReceiverAsync(r.ReceiverFactory(), envelope, cancellationToken)));
+            }            
         }
 
-        protected Task CallReceiver<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken cancellationToken)
+        protected Task CallReceiverAsync<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken cancellationToken)
             where TEnvelope : Envelope
         {
             return envelopeReceiver.ReceiveAsync(envelope, cancellationToken);
@@ -61,12 +67,12 @@ namespace Takenet.MessagingHub.Client.Listener
         {
         }
 
-        protected override async Task CallReceivers<TEnvelope>(TEnvelope envelope)
+        protected override async Task CallReceiversAsync<TEnvelope>(TEnvelope envelope, CancellationToken cancellationToken)
         {
             var message = envelope as Message;
             try
             {
-                await base.CallReceivers(envelope);
+                await base.CallReceiversAsync(envelope, cancellationToken);
                 await Sender.SendNotificationAsync(message.ToConsumedNotification(), CancellationToken.None);
             }
             catch (LimeException e)
