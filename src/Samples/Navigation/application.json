@@ -1,6 +1,6 @@
 ﻿{
-  "identifier": "",
-  "accessKey": "",
+  "identifier": "navigationsample",
+  "accessKey": "QkRYOHAz",
   "messageReceivers": [
     {
       "mediaType": "text/plain",
@@ -118,6 +118,13 @@
       "settings": {
         "culture": "en-US",
         "message": "The current date is {0}." 
+      }
+    },
+	{
+	  "priority": "100",
+      "response": {		
+        "mediaType": "text/plain",
+        "plainContent": "Ops, não entendi o que você quis dizer. Envie a palavra AJUDA caso precise.\nOps, I didn't understand what you said. You can try send the word HELP if you are lost."
       }
     }
   ],

@@ -39,19 +39,18 @@ namespace Takenet.MessagingHub.Client.Listener
             }
         }
 
-        protected virtual async Task CallReceiversAsync<TEnvelope>(TEnvelope envelope, CancellationToken cancellationToken) where TEnvelope : Envelope, new()
+        protected virtual Task CallReceiversAsync<TEnvelope>(TEnvelope envelope, CancellationToken cancellationToken) where TEnvelope : Envelope, new()
         {
-            var receiverGroups = _registrar
+            // Gets the first non empty group, ordered by priority
+            var receiverGroup = _registrar
                 .GetReceiversFor(envelope)
                 .GroupBy(r => r.Priority)
-                .OrderBy(r => r.Key);
-
-            foreach (var receivers in receiverGroups)
-            {
-                await
-                    Task.WhenAll(
-                        receivers.Select(r => CallReceiverAsync(r.ReceiverFactory(), envelope, cancellationToken)));
-            }            
+                .OrderBy(r => r.Key)
+                .First(r => r.Any());
+            
+            return
+                Task.WhenAll(
+                    receiverGroup.Select(r => CallReceiverAsync(r.ReceiverFactory(), envelope, cancellationToken)));               
         }
 
         protected Task CallReceiverAsync<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken cancellationToken)

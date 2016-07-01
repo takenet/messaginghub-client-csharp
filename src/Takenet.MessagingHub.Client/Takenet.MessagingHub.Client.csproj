@@ -79,7 +79,6 @@
     <Compile Include="Connection\IMessagingHubConnectionConfigurator.cs" />
     <Compile Include="Connection\MessagingHubConnection.cs" />
     <Compile Include="Connection\MessagingHubConnectionConfigurator.cs" />
-    <Compile Include="Listener\EnumerableExtensions.cs" />
     <Compile Include="Listener\IMessagingHubListener.cs" />
     <Compile Include="Listener\IStartable.cs" />
     <Compile Include="Listener\IStoppable.cs" />

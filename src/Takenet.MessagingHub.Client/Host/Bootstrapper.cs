@@ -203,7 +203,7 @@ namespace Takenet.MessagingHub.Client.Host
                         messagePredicate = m => currentMessagePredicate(m) && destinationRegex.IsMatch(m.To.ToString());
                     }
 
-                    client.AddMessageReceiver(receiver, messagePredicate);
+                    client.AddMessageReceiver(receiver, messagePredicate, applicationReceiver.Priority);
                 }
             }
 
@@ -248,7 +248,7 @@ namespace Takenet.MessagingHub.Client.Host
                         notificationPredicate = n => currentNotificationPredicate(n) && destinationRegex.IsMatch(n.To.ToString());
                     }
 
-                    client.AddNotificationReceiver(receiver, notificationPredicate);
+                    client.AddNotificationReceiver(receiver, notificationPredicate, applicationReceiver.Priority);
                 }
             }
 

@@ -12,20 +12,18 @@ namespace Takenet.MessagingHub.Client.Listener
         private readonly IMessagingHubListener _listener;
         private readonly IList<ReceiverFactoryPredicate<Message>> _messageReceivers;
         private readonly IList<ReceiverFactoryPredicate<Notification>> _notificationReceivers;
-        private static readonly IEnumerable<ReceiverFactoryPredicate<Message>> DefaultMessageReceivers = new[]
-        {
-            new ReceiverFactoryPredicate<Message>(() => new UnsupportedMessageReceiver(), m => true, int.MaxValue)
-        };
-        private static readonly IEnumerable<ReceiverFactoryPredicate<Notification>> DefaultNotificationReceivers = new []
-        {
-            new ReceiverFactoryPredicate<Notification>(() => new BlackholeNotificationReceiver(), m => true, int.MaxValue)
-        };
 
         internal EnvelopeListenerRegistrar(IMessagingHubListener listener)
         {
             _listener = listener;
-            _messageReceivers = new List<ReceiverFactoryPredicate<Message>>();
-            _notificationReceivers = new List<ReceiverFactoryPredicate<Notification>>();
+            _messageReceivers = new List<ReceiverFactoryPredicate<Message>>(new[]
+            {
+                new ReceiverFactoryPredicate<Message>(() => new UnsupportedMessageReceiver(), m => true, int.MaxValue)
+            });
+            _notificationReceivers = new List<ReceiverFactoryPredicate<Notification>>(new[]
+            {
+                new ReceiverFactoryPredicate<Notification>(() => new BlackholeNotificationReceiver(), m => true, int.MaxValue)
+            });
         }
 
         /// <summary>
@@ -57,16 +55,14 @@ namespace Takenet.MessagingHub.Client.Listener
 
             if (envelope is Message)
             {
-                return (IEnumerable<ReceiverFactoryPredicate<TEnvelope>>) 
-                    FilterReceivers(_messageReceivers, envelope as Message)
-                        .Coalesce(DefaultMessageReceivers);
+                return (IEnumerable<ReceiverFactoryPredicate<TEnvelope>>)
+                    FilterReceivers(_messageReceivers, envelope as Message);
             }
 
             if (envelope is Notification)
             {
-                return (IEnumerable<ReceiverFactoryPredicate<TEnvelope>>) 
-                    FilterReceivers(_notificationReceivers, envelope as Notification)
-                        .Coalesce(DefaultNotificationReceivers);
+                return (IEnumerable<ReceiverFactoryPredicate<TEnvelope>>)
+                    FilterReceivers(_notificationReceivers, envelope as Notification);
             }
 
             return Enumerable.Empty<ReceiverFactoryPredicate<TEnvelope>>();
