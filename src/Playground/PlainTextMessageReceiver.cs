@@ -1,29 +1,34 @@
-﻿using System;
+using System;
+using System.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
+using NLog;
 using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
 
 namespace Playground
 {
-    /// <summary>
-    /// Example of a plain text message receiver
-    /// </summary>
     public class PlainTextMessageReceiver : IMessageReceiver
     {
         private readonly IMessagingHubSender _sender;
+        private readonly ILogger _log;
 
-        public PlainTextMessageReceiver(IMessagingHubSender sender)
+        public PlainTextMessageReceiver(IMessagingHubSender sender, ILogger log)
         {
             _sender = sender;
+            _log = log;
         }
 
         public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
         {
-            Console.WriteLine(message.Content.ToString());
-            await _sender.SendMessageAsync("Thanks for your message!", message.From, cancellationToken);
+            _log.Trace($"From: {message.From} \tContent: {message.Content}");
+
+            if (message.Content.ToString() == "Ping!")
+            {
+                await _sender.SendMessageAsync("Pong!", message.From, cancellationToken);
+            }
         }
     }
 }
