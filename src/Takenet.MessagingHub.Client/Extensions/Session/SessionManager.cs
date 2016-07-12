@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Lime.Protocol;
 using Takenet.MessagingHub.Client.Extensions.Bucket;
 
-namespace Takenet.MessagingHub.Client
+namespace Takenet.MessagingHub.Client.Extensions.Session
 {
     public class SessionManager : ISessionManager
     {
@@ -95,5 +95,10 @@ namespace Takenet.MessagingHub.Client
             if (node == null) throw new ArgumentNullException(nameof(node));
             return $"sessions:{node.ToIdentity()}".ToLowerInvariant();
         }
+    }
+
+    public class SessionSettings
+    {
+        public int ExpirationInMinutes { get; set; }
     }
 }
