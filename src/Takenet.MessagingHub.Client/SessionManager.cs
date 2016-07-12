@@ -83,7 +83,6 @@ namespace Takenet.MessagingHub.Client
             return await GetSessionAsync(node, cancellationToken) ??
                           new NavigationSession()
                           {
-                              Identity = node.ToIdentity(),
                               Creation = DateTimeOffset.UtcNow
                           };
         }
