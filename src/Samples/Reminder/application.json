@@ -1,0 +1,36 @@
+﻿{
+  "login": "reminder",
+  "accessKey": "",
+  "messageReceivers": [
+    {
+      "type": "TextcMessageReceiverFactory",
+      "mediaType": "text/plain",
+      "settings": {
+        "commands": [
+          {
+            "syntaxes": [
+              "^[:Word?(ola,oi,ok) :LDWord?(calendario,agenda) :LDWord?(adicione,novo,crie) :Word?(um,me) command+:LDWord(lembrete,lembre) :Word?(para,da,de,do) when+:LDWord?(hoje,amanha,eventualmente)]"
+            ],
+            "returnText": "Do quê você deseja ser lembrado {when}?"
+          },
+          {
+            "syntaxes": [
+              "^[:Word?(ola,oi,ok) :LDWord?(calendario,agenda) :LDWord?(adicione,novo,crie) :Word?(um,me) command:LDWord(lembrete,lembre) :Word~(para,da,de,do) text:Text when:LDWord?(hoje,amanha,eventualmente)]"
+            ],
+            "processorType": "ReminderProcessor",
+            "method": "AddReminderAsync"
+          },
+          {
+            "syntaxes": [
+              "[when:LDWord?(hoje,amanha,eventualmente) :LDWord(lembretes)]",
+              "[:LDWord(lembretes) :Word?(de,para) when:LDWord(hoje,amanha,eventualmente)]"
+            ],
+            "processorType": "ReminderProcessor",
+            "method": "GetRemindersAsync"
+          }
+        ]
+      }
+    }
+  ],
+  "startupType": "Startup"
+}

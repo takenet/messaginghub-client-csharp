@@ -1,0 +1,50 @@
+﻿{
+  "identifier": "messagetypes",
+  "accessKey": "",
+  "messageReceivers": [
+    {
+      "type": "PlainTextMessageReceiver",
+      "mediaType": "text/plain",
+      "content": "^((?!([0-6])).)*$"
+    },
+    {
+      "type": "Option1MessageReceiver",
+      "mediaType": "text/plain",
+      "content": "1"
+    },
+    {
+      "type": "Option2MessageReceiver",
+      "mediaType": "text/plain",
+      "content": "2"
+    },
+    {
+      "type": "Option3MessageReceiver",
+      "mediaType": "text/plain",
+      "content": "3"
+    },
+    {
+      "type": "Option4MessageReceiver",
+      "mediaType": "text/plain",
+      "content": "4"
+    },
+    {
+      "type": "Option5MessageReceiver",
+      "mediaType": "text/plain",
+      "content": "5"
+    },
+    {
+      "type": "Option6MessageReceiver",
+      "mediaType": "text/plain",
+      "content": "6"
+    },
+    {
+      "type": "Option6Part2MessageReceiver",
+      "mediaType": "application/vnd.lime.invoice-status\\+json"
+    }
+  ],
+  "settings": {
+    "setting1": "value1"
+  },
+  "startupType": "Startup",
+  "schemaVersion": 2
+}

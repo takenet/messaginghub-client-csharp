@@ -9,7 +9,7 @@ namespace Takenet.MessagingHub.Client.Textc
         public string ReturnText { get; set; }
 
         public Dictionary<string, object> ReturnJson { get; set; }
-
+            
         public string ReturnJsonMediaType { get; set; }
 
         public string ProcessorType { get; set; }
