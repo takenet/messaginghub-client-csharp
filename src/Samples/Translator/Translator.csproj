@@ -83,7 +83,7 @@
     <Compile Include="TranslatorContainer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="empty.application.json" />
+    <None Include="application.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

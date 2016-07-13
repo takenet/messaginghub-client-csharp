@@ -60,6 +60,8 @@
   <ItemGroup>
     <Compile Include="Extensions\Bucket\BucketExtension.cs" />
     <Compile Include="Extensions\Bucket\IBucketExtension.cs" />
+    <Compile Include="Extensions\Delegation\DelegationExtension.cs" />
+    <Compile Include="Extensions\Delegation\IDelegationExtension.cs" />
     <Compile Include="Host\Application.cs" />
     <Compile Include="Host\ApplicationActivator.cs" />
     <Compile Include="Host\ApplicationReceiver.cs" />
