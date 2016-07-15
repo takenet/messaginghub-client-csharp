@@ -67,7 +67,7 @@ namespace Takenet.MessagingHub.Client.Tester
             await CreateTestingAccountsAsync();
             PatchApplication();
             DiscardReceivedMessages();
-            if (_options.InstantiateSmartContact)
+            if (_options.InstantiateApplication)
             {
                 await StartSmartContactAsync();
             }
@@ -259,7 +259,7 @@ namespace Takenet.MessagingHub.Client.Tester
 
         private async Task StopAsync()
         {
-            if (_options.InstantiateSmartContact)
+            if (_options.InstantiateApplication)
             {
                 await StopSmartContactAsync();
             }
