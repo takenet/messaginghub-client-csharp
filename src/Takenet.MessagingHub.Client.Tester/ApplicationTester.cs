@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Takenet.MessagingHub.Client.Extensions.Delegation;
 using Takenet.MessagingHub.Client.Host;
 using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Tester
 {
@@ -29,7 +30,7 @@ namespace Takenet.MessagingHub.Client.Tester
         private TimeSpan DefaultTimeout { get; set; }
 
         private IMessagingHubClient Tester { get; set; }
-        public IMessagingHubClient Application { get; private set; }
+        public IStoppable Application { get; private set; }
 
         private ConcurrentQueue<Message> LattestMessages
         {
@@ -183,7 +184,7 @@ namespace Takenet.MessagingHub.Client.Tester
             {
                 var domain = ApplicationConfig.Domain ?? "msging.net";
                 var testerIdentity = Identity.Parse($"{TesterIdentifier}@{domain}");
-                var delegationExtension = new DelegationExtension(Application);
+                var delegationExtension = new DelegationExtension(GetService<IMessagingHubSender>());
                 await delegationExtension.DelegateAsync(testerIdentity);
             }
         }
@@ -195,7 +196,7 @@ namespace Takenet.MessagingHub.Client.Tester
 
         private async Task StartApplicationAsync()
         {
-            Application = (IMessagingHubClient) await Bootstrapper.StartAsync(ApplicationConfig);
+            Application = await Bootstrapper.StartAsync(ApplicationConfig);
             if (_options.EnableMutualDelegation)
             {
                 var domain = ApplicationConfig.Domain ?? "msging.net";
