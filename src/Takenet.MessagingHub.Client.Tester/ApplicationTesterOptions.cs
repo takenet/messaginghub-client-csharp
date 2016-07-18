@@ -23,6 +23,10 @@ namespace Takenet.MessagingHub.Client.Tester
         /// </remarks>
         public bool UseSeparateTestingAccount { get; set; } = true;
         /// <summary>
+        /// Allow the testing account to send messages in the name of the application and vice versa
+        /// </summary>
+        public bool EnableMutualDelegation { get; set; } = false;
+        /// <summary>
         /// Index included in the testing account
         /// </summary>
         public int TesterAccountIndex { get; set; }

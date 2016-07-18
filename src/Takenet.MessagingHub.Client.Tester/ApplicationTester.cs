@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Serialization;
 using Newtonsoft.Json;
+using Takenet.MessagingHub.Client.Extensions.Delegation;
 using Takenet.MessagingHub.Client.Host;
 using Takenet.MessagingHub.Client.Listener;
 
@@ -27,8 +28,8 @@ namespace Takenet.MessagingHub.Client.Tester
         private ConcurrentQueue<Message> _lattestMessages;
         private TimeSpan DefaultTimeout { get; set; }
 
-        private IMessagingHubClient TestClient { get; set; }
-        public IStoppable SmartContact { get; private set; }
+        private IMessagingHubClient Tester { get; set; }
+        public IMessagingHubClient Application { get; private set; }
 
         private ConcurrentQueue<Message> LattestMessages
         {
@@ -46,7 +47,7 @@ namespace Takenet.MessagingHub.Client.Tester
         /// <summary>
         /// 
         /// </summary>
-        public Application Application { get; private set; }
+        public Application ApplicationConfig { get; private set; }
 
         /// <summary>
         /// 
@@ -69,7 +70,7 @@ namespace Takenet.MessagingHub.Client.Tester
             DiscardReceivedMessages();
             if (_options.InstantiateApplication)
             {
-                await StartSmartContactAsync();
+                await StartApplicationAsync();
             }
             InstantiateTestClient();
             RegisterTestClientMessageReceivers();
@@ -90,14 +91,14 @@ namespace Takenet.MessagingHub.Client.Tester
             {
                 //TODO: Testing account should be a total clone of the application account
 
-                var testingAccountManager = new TestingAccountManager(Application, DefaultTimeout);
+                var testingAccountManager = new TestingAccountManager(ApplicationConfig, DefaultTimeout);
 
-                TesterPassword = TestingPassword = (Application.AccessKey ?? Application.Password).FromBase64();
+                TesterPassword = TestingPassword = (ApplicationConfig.AccessKey ?? ApplicationConfig.Password).FromBase64();
 
-                TestingIdentifier = Application.Identifier + "$testing";
+                TestingIdentifier = ApplicationConfig.Identifier + "$testing";
                 await testingAccountManager.CreateAccountAsync(TestingIdentifier, TestingPassword);
 
-                TesterIdentifier = Application.Identifier + "$tester";
+                TesterIdentifier = ApplicationConfig.Identifier + "$tester";
                 if (_options.TesterAccountIndex > 0)
                 {
                     TesterIdentifier = $"{TesterIdentifier}{_options.TesterAccountIndex}";
@@ -106,22 +107,22 @@ namespace Takenet.MessagingHub.Client.Tester
             }
             else
             {
-                TesterIdentifier = Application.Identifier;
-                TesterPassword = Application.AccessKey;
+                TesterIdentifier = ApplicationConfig.Identifier;
+                TesterPassword = ApplicationConfig.AccessKey;
             }
         }
 
         private void PatchApplication()
         {
-            Application.Instance = Guid.NewGuid().ToString();
-            Application.Identifier = TestingIdentifier;
-            Application.Password = TestingPassword;
-            Application.AccessKey = null;
+            ApplicationConfig.Instance = Guid.NewGuid().ToString();
+            ApplicationConfig.Identifier = TestingIdentifier;
+            ApplicationConfig.Password = TestingPassword;
+            ApplicationConfig.AccessKey = null;
 
-            if (Application.ServiceProviderType != null)
+            if (ApplicationConfig.ServiceProviderType != null)
             {
-                ValidateApplicationServiceProviderType(Application.ServiceProviderType);
-                var applicationServiceProviderType = ParseTypeName(Application.ServiceProviderType);
+                ValidateApplicationServiceProviderType(ApplicationConfig.ServiceProviderType);
+                var applicationServiceProviderType = ParseTypeName(ApplicationConfig.ServiceProviderType);
 
                 ApplicationServiceProvider = ApplicationServiceProvider ?? (IServiceProvider)Activator.CreateInstance(applicationServiceProviderType);
             }
@@ -129,7 +130,7 @@ namespace Takenet.MessagingHub.Client.Tester
             if (_options.TestServiceProviderType != null)
             {
                 ValidateTestServiceProviderType(_options.TestServiceProviderType);
-                Application.ServiceProviderType = _options.TestServiceProviderType.Name;
+                ApplicationConfig.ServiceProviderType = _options.TestServiceProviderType.Name;
             }
         }
 
@@ -172,22 +173,36 @@ namespace Takenet.MessagingHub.Client.Tester
 
         private async Task StopSmartContactAsync()
         {
-            await SmartContact.StopAsync();
+            await Application.StopAsync();
         }
 
         private async Task StartTestClientAsync()
         {
-            await TestClient.StartAsync();
+            await Tester.StartAsync();
+            if (_options.EnableMutualDelegation)
+            {
+                var domain = ApplicationConfig.Domain ?? "msging.net";
+                var testerIdentity = Identity.Parse($"{TesterIdentifier}@{domain}");
+                var delegationExtension = new DelegationExtension(Application);
+                await delegationExtension.DelegateAsync(testerIdentity);
+            }
         }
 
         private async Task StopTestClientAsync()
         {
-            await TestClient.StopAsync();
+            await Tester.StopAsync();
         }
 
-        private async Task StartSmartContactAsync()
+        private async Task StartApplicationAsync()
         {
-            SmartContact = await Bootstrapper.StartAsync(Application);
+            Application = (IMessagingHubClient) await Bootstrapper.StartAsync(ApplicationConfig);
+            if (_options.EnableMutualDelegation)
+            {
+                var domain = ApplicationConfig.Domain ?? "msging.net";
+                var testingIdentity = Identity.Parse($"{TestingIdentifier}@{domain}");
+                var delegationExtension = new DelegationExtension(Tester);
+                await delegationExtension.DelegateAsync(testingIdentity);
+            }
         }
 
         private void LoadApplicationSettings()
@@ -227,24 +242,24 @@ namespace Takenet.MessagingHub.Client.Tester
                 .WithSendTimeout(DefaultTimeout)
                 .WithMaxConnectionRetries(1);
 
-            if (Application.SessionEncryption.HasValue)
-                builder = builder.UsingEncryption(Application.SessionEncryption.Value);
+            if (ApplicationConfig.SessionEncryption.HasValue)
+                builder = builder.UsingEncryption(ApplicationConfig.SessionEncryption.Value);
 
-            if (Application.SessionCompression.HasValue)
-                builder = builder.UsingCompression(Application.SessionCompression.Value);
+            if (ApplicationConfig.SessionCompression.HasValue)
+                builder = builder.UsingCompression(ApplicationConfig.SessionCompression.Value);
 
-            if (!string.IsNullOrWhiteSpace(Application.HostName))
-                builder = builder.UsingHostName(Application.HostName);
+            if (!string.IsNullOrWhiteSpace(ApplicationConfig.HostName))
+                builder = builder.UsingHostName(ApplicationConfig.HostName);
 
-            if (!string.IsNullOrWhiteSpace(Application.Domain))
-                builder = builder.UsingDomain(Application.Domain);
+            if (!string.IsNullOrWhiteSpace(ApplicationConfig.Domain))
+                builder = builder.UsingDomain(ApplicationConfig.Domain);
 
-            TestClient = builder.Build();
+            Tester = builder.Build();
         }
 
         private void RegisterTestClientMessageReceivers()
         {
-            TestClient.AddMessageReceiver((m, c) =>
+            Tester.AddMessageReceiver((m, c) =>
             {
                 LattestMessages.Enqueue(m);
                 return Task.CompletedTask;
@@ -254,7 +269,7 @@ namespace Takenet.MessagingHub.Client.Tester
         private void LoadApplicationJson(string appJson)
         {
             var appJsonContent = File.ReadAllText(appJson);
-            Application = JsonConvert.DeserializeObject<Application>(appJsonContent);
+            ApplicationConfig = JsonConvert.DeserializeObject<Application>(appJsonContent);
         }
 
         private async Task StopAsync()
@@ -290,7 +305,7 @@ namespace Takenet.MessagingHub.Client.Tester
         /// <returns></returns>
         public async Task SendMessageAsync(string message)
         {
-            await TestClient.SendMessageAsync(message, Application.Identifier);
+            await Tester.SendMessageAsync(message, ApplicationConfig.Identifier);
         }
 
         /// <summary>
@@ -300,7 +315,7 @@ namespace Takenet.MessagingHub.Client.Tester
         /// <returns></returns>
         public async Task SendMessageAsync(Document message)
         {
-            await TestClient.SendMessageAsync(message, Application.Identifier);
+            await Tester.SendMessageAsync(message, ApplicationConfig.Identifier);
         }
 
         /// <summary>
