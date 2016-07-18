@@ -183,9 +183,13 @@ namespace Takenet.MessagingHub.Client.Tester
             if (_options.EnableMutualDelegation)
             {
                 var domain = ApplicationConfig.Domain ?? "msging.net";
+                var testingIdentity = Identity.Parse($"{TestingIdentifier}@{domain}");
+                var testingDelegationExtension = new DelegationExtension(Tester);
+                await testingDelegationExtension.DelegateAsync(testingIdentity);
+
                 var testerIdentity = Identity.Parse($"{TesterIdentifier}@{domain}");
-                var delegationExtension = new DelegationExtension(GetService<IMessagingHubSender>());
-                await delegationExtension.DelegateAsync(testerIdentity);
+                var testerDelegationExtension = new DelegationExtension(GetService<IMessagingHubSender>());
+                await testerDelegationExtension.DelegateAsync(testerIdentity);
             }
         }
 
@@ -197,13 +201,6 @@ namespace Takenet.MessagingHub.Client.Tester
         private async Task StartApplicationAsync()
         {
             Application = await Bootstrapper.StartAsync(ApplicationConfig);
-            if (_options.EnableMutualDelegation)
-            {
-                var domain = ApplicationConfig.Domain ?? "msging.net";
-                var testingIdentity = Identity.Parse($"{TestingIdentifier}@{domain}");
-                var delegationExtension = new DelegationExtension(Tester);
-                await delegationExtension.DelegateAsync(testingIdentity);
-            }
         }
 
         private void LoadApplicationSettings()
