@@ -4,6 +4,9 @@ namespace Takenet.MessagingHub.Client.Tester
 {
     public class ApplicationTesterOptions
     {
+        /// <summary>
+        /// Default timeout for sending evenlopes using the tester account
+        /// </summary>
         public TimeSpan DefaultTimeout { get; set; }
         /// <summary>
         /// Enable writing tracing information to the console output (Default value: false)
@@ -23,9 +26,9 @@ namespace Takenet.MessagingHub.Client.Tester
         /// </remarks>
         public bool UseSeparateTestingAccount { get; set; } = true;
         /// <summary>
-        /// Allow the testing account to send messages in the name of the application and vice versa
+        /// Allow the testing account to send messages in the name of the application and vice versa (Default value: false)
         /// </summary>
-        public bool EnableMutualDelegation { get; set; } = false;
+        public bool EnableMutualDelegation { get; set; }
         /// <summary>
         /// Index included in the testing account
         /// </summary>
@@ -39,6 +42,11 @@ namespace Takenet.MessagingHub.Client.Tester
         /// </summary>
         public bool InstantiateApplication { get; set; } = true;
 
+        /// <summary>
+        /// Inform the default name, or name prefix, to use as tester account (Default value: {ApplicationAccountName}$tester)
+        /// </summary>
+        public string TesterAccountName { get; set; }
+
         public ApplicationTesterOptions Clone()
         {
             return new ApplicationTesterOptions
@@ -47,9 +55,11 @@ namespace Takenet.MessagingHub.Client.Tester
                 EnableConsoleListener = EnableConsoleListener,
                 UseErrorStream = UseErrorStream,
                 UseSeparateTestingAccount = UseSeparateTestingAccount,
+                EnableMutualDelegation = EnableMutualDelegation,
                 TesterAccountIndex = TesterAccountIndex,
                 TestServiceProviderType = TestServiceProviderType,
-                InstantiateApplication = InstantiateApplication
+                InstantiateApplication = InstantiateApplication,
+                TesterAccountName = TesterAccountName
             };
         }
     }
