@@ -47,10 +47,10 @@ namespace Takenet.MessagingHub.Client.Test
                 .WithMaxConnectionRetries(1)
                 .UsingHostName("invalid.iris.io")
                 .UsingGuest()
-                .WithSendTimeout(TimeSpan.FromSeconds(2))
+                .WithSendTimeout(TimeSpan.FromSeconds(1))
                 .Build();
 
-            Should.ThrowAsync<TimeoutException>(async () => await client.StartAsync().ConfigureAwait(false)).Wait();
+            Should.ThrowAsync<TaskCanceledException>(client.StartAsync());
         }
     }
 }
