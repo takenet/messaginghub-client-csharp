@@ -2,21 +2,21 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Lime.Messaging.Resources;
 using Lime.Protocol;
 using Takenet.MessagingHub.Client.LimeProtocol;
 using Lime.Protocol.Client;
 using Lime.Protocol.Network;
-
+using Lime.Protocol.Util;
 
 namespace Takenet.MessagingHub.Client.Connection
 {
     public sealed class MessagingHubConnection : IMessagingHubConnection
     {
-        private static readonly TimeSpan ChannelDiscardedDelay = TimeSpan.FromMilliseconds(300);
+        private static readonly TimeSpan ChannelDiscardedDelay = TimeSpan.FromSeconds(5);
 
         private readonly SemaphoreSlim _semaphore;
         private readonly IOnDemandClientChannelFactory _onDemandClientChannelFactory;
+        private bool _isDisconnecting;
 
         internal MessagingHubConnection(
             TimeSpan sendTimeout,
@@ -29,7 +29,7 @@ namespace Takenet.MessagingHub.Client.Connection
             _onDemandClientChannelFactory = onDemandClientChannelFactory;
         }
 
-        public bool IsConnected { get; private set; }
+        public bool IsConnected => OnDemandClientChannel?.IsEstablished ?? false;
 
         public int MaxConnectionRetries { get; set; }
 
@@ -43,24 +43,16 @@ namespace Takenet.MessagingHub.Client.Connection
 
             try
             {
-                if (IsConnected)
-                    throw new InvalidOperationException("The client is already started");
+                if (IsConnected) throw new InvalidOperationException("The client is already started");
 
                 CreateOnDemandClientChannel();
-
-                for (var i = 0; i < MaxConnectionRetries; i++)
+                using (var cts = new CancellationTokenSource(SendTimeout))
+                using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts.Token))
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    if (await EnsureConnectionIsOkayAsync(cancellationToken))
-                    {
-                        IsConnected = true;
-                        return;
-                    }
-                    await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, i)), cancellationToken);
+                    await OnDemandClientChannel.EstablishAsync(linkedCts.Token).ConfigureAwait(false);
                 }
 
-                throw new TimeoutException("Could not connect to server");
+                _isDisconnecting = false;
             }
             finally
             {
@@ -76,14 +68,16 @@ namespace Takenet.MessagingHub.Client.Connection
             {
                 if (OnDemandClientChannel != null)
                 {
-                    using (var cancellationTokenSource = new CancellationTokenSource(SendTimeout))
+                    _isDisconnecting = true;
+
+                    using (var cts = new CancellationTokenSource(SendTimeout))
+                    using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts.Token))
                     {
-                        await OnDemandClientChannel.FinishAsync(cancellationTokenSource.Token).ConfigureAwait(false);
+                        await OnDemandClientChannel.FinishAsync(linkedCts.Token).ConfigureAwait(false);
                     }
 
                     OnDemandClientChannel.DisposeIfDisposable();
                 }
-                IsConnected = false;
             }
             finally
             {
@@ -94,58 +88,42 @@ namespace Takenet.MessagingHub.Client.Connection
         private void CreateOnDemandClientChannel()
         {
             OnDemandClientChannel = _onDemandClientChannelFactory.Create();
-            OnDemandClientChannel.ChannelCreationFailedHandlers.Add(StopOnLimeExceptionAsync);
-            OnDemandClientChannel.ChannelDiscardedHandlers.Add(ChannelDiscarded);
+            OnDemandClientChannel.ChannelCreatedHandlers.Add(ChannelCreatedAsync);
+            OnDemandClientChannel.ChannelCreationFailedHandlers.Add(ChannelCreationFailedAsync);
+            OnDemandClientChannel.ChannelDiscardedHandlers.Add(ChannelDiscardedAsync);
+            OnDemandClientChannel.ChannelOperationFailedHandlers.Add(ChannelOperationFailedAsync);
         }
 
+        private Task ChannelCreatedAsync(ChannelInformation channelInformation)
+        {
+            Trace.TraceInformation("Channel '{0}' created", channelInformation.SessionId);
+            return Task.CompletedTask;
+        }
         /// <summary>
         /// In this context, a LimeException usually means that some credential information is wrong,
         /// and should be checked.
         /// </summary>
         /// <param name="failedChannelInformation">Information about the failure</param>
-        private static Task<bool> StopOnLimeExceptionAsync(FailedChannelInformation failedChannelInformation)
+        private async Task<bool> ChannelCreationFailedAsync(FailedChannelInformation failedChannelInformation)
         {
-            return (!(failedChannelInformation.Exception is LimeException)).AsCompletedTask();
-        }
+            Trace.TraceError("Channel '{0}' operation failed: {1}", failedChannelInformation.SessionId, failedChannelInformation.Exception);
+            if (failedChannelInformation.Exception is LimeException) return false;            
+            await Task.Delay(ChannelDiscardedDelay).ConfigureAwait(false);
+            return !_isDisconnecting;
+        }        
 
-        private async Task<bool> EnsureConnectionIsOkayAsync(CancellationToken cancellationToken)
+        private Task ChannelDiscardedAsync(ChannelInformation channelInformation)
         {
-            try
-            {
-                using (var timeoutTokenSource = new CancellationTokenSource(SendTimeout))
-                {
-                    using (
-                        var linkedCancellationTokenSource =
-                            CancellationTokenSource.CreateLinkedTokenSource(timeoutTokenSource.Token, cancellationToken)
-                        )
-                    {
-                        {
-                            var command = new Command
-                            {
-                                Method = CommandMethod.Get,
-                                Uri = new LimeUri(UriTemplates.PING)
-                            };
-
-                            var result =
-                                await
-                                    OnDemandClientChannel.ProcessCommandAsync(command,
-                                        linkedCancellationTokenSource.Token)
-                                        .ConfigureAwait(false);
-                            return result.Status == CommandStatus.Success;
-                        }
-                    }
-                }
-            }
-            catch (OperationCanceledException ex)
-            {
-                Trace.WriteLine($"Exception connecting to Messaging Hub: {ex}");
-                return false;
-            }
-        }
-
-        private static Task ChannelDiscarded(ChannelInformation channelInformation)
-        {
+            Trace.TraceInformation("Channel '{0}' discarded", channelInformation.SessionId);
+            if (_isDisconnecting) return Task.CompletedTask;
             return Task.Delay(ChannelDiscardedDelay);
+        }
+
+        private Task<bool> ChannelOperationFailedAsync(FailedChannelInformation failedChannelInformation)
+        {
+            Trace.TraceError("Channel '{0}' operation failed: {1}", failedChannelInformation.SessionId, failedChannelInformation.Exception);
+            if (_isDisconnecting) return TaskUtil.FalseCompletedTask;
+            return TaskUtil.TrueCompletedTask;
         }
     }
 }
