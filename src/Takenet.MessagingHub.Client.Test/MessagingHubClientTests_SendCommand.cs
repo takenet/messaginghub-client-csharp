@@ -34,6 +34,8 @@ namespace Takenet.MessagingHub.Client.Test
                 Status = CommandStatus.Success,
             };
 
+            OnDemandClientChannel.IsEstablished.Returns(true);
+
             OnDemandClientChannel.ProcessCommandAsync(null, CancellationToken.None).ReturnsForAnyArgs(commandResponse);
             await MessagingHubConnection.ConnectAsync();
 
