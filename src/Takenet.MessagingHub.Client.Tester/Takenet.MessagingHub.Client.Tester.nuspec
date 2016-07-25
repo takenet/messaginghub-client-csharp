@@ -13,4 +13,11 @@
     <copyright>Copyright ©  2016 Curupira S/A</copyright>
     <tags>lime messaginghub</tags>
   </metadata>
+  <files>
+    <file src="TemplateItems\AcceptanceTests\Base\TestClass.cs.pp" target="content\AcceptanceTests\Base\TestClass.cs.pp"/>
+    <file src="TemplateItems\AcceptanceTests\Base\TestServiceProvider.cs.pp" target="content\AcceptanceTests\Base\TestServiceProvider.cs.pp"/>
+    <file src="TemplateItems\AcceptanceTests\Mocks\FakeBucketExtension.cs.pp" target="content\AcceptanceTests\Mocks\FakeBucketExtension.cs.pp"/>
+    <file src="TemplateItems\AcceptanceTests\Mocks\FakeServiceProvider.cs.pp" target="content\AcceptanceTests\Mocks\FakeServiceProvider.cs.pp"/>
+    <file src="TemplateItems\AcceptanceTests\ApplicationTests.cs.pp" target="content\AcceptanceTests\ApplicationTests.cs.pp"/>
+  </files>
 </package>

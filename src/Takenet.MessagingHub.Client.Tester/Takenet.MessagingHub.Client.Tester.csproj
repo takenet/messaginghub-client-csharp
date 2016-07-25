@@ -69,6 +69,11 @@
   <ItemGroup>
     <Compile Include="ApplicationLoadTester.cs" />
     <Compile Include="ApplicationTesterServiceProvider.cs" />
+    <None Include="TemplateItems\AcceptanceTests\Base\TestClass.cs.pp" />
+    <None Include="TemplateItems\AcceptanceTests\Base\TestServiceProvider.cs.pp" />
+    <None Include="TemplateItems\AcceptanceTests\Mocks\FakeBucketExtension.cs.pp" />
+    <None Include="TemplateItems\AcceptanceTests\Mocks\FakeServiceProvider.cs.pp" />
+    <None Include="TemplateItems\AcceptanceTests\ApplicationTests.cs.pp" />
     <Compile Include="TestClass.cs" />
     <Compile Include="TestingAccountManager.cs" />
     <Compile Include="ApplicationTester.cs" />
