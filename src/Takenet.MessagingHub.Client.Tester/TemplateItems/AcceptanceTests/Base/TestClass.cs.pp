@@ -3,7 +3,7 @@ using Takenet.MessagingHub.Client.Tester;
 
 namespace $rootnamespace$.AcceptanceTests.Base
 {
-    public class TestClass<TServiceProvider> : MessagingHub.Client.Tester.TestClass<TServiceProvider>
+    public class TestClass<TServiceProvider> : Takenet.MessagingHub.Client.Tester.TestClass<TServiceProvider>
         where TServiceProvider : ApplicationTesterServiceProvider
     {
         protected override ApplicationTesterOptions Options<TTestServiceProvider>()
