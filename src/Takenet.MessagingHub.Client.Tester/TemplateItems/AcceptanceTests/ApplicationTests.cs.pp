@@ -6,6 +6,8 @@ using Lime.Protocol.Serialization.Newtonsoft;
 using Newtonsoft.Json;
 using Shouldly;
 using Takenet.MessagingHub.Client.Host;
+using $rootnamespace$.AcceptanceTests.Base;
+using $rootnamespace$.AcceptanceTests.Mocks;
 
 namespace $rootnamespace$.AcceptanceTests
 {
