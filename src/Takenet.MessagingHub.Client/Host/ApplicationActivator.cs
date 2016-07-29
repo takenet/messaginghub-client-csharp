@@ -299,6 +299,7 @@ namespace Takenet.MessagingHub.Client.Host
             }
             _job.Close();
             _job.Dispose();
+            Directory.Delete(_tempBasePath, true);
         }
     }
 }
