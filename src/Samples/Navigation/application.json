@@ -31,7 +31,7 @@
           ]
         }
       },
-      "outputState": "answer" 
+      "outState": "answer" 
     },
     {
       "mediaType": "text/plain",
@@ -125,8 +125,18 @@
       "type": "DateMessageReceiver",
       "settings": {
         "culture": "en-US",
-        "message": "The current date is {0}." 
+        "message": "The current date is {0}."
       }
+    },
+    {
+      "mediaType": "text/plain",
+      "content": "^(sair|parar|cancelar)$",
+      "state": "answer",
+      "response": {
+        "mediaType": "text/plain",
+        "plainContent": "Obrigado por usar nosso serviço. Volte sempre!"
+      },
+      "outState": "default" 
     },
     {
       "priority": "100",

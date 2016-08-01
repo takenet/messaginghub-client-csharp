@@ -210,9 +210,9 @@ namespace Takenet.MessagingHub.Client.Host
                         messagePredicate = m => currentMessagePredicate(m) && StateManager.Instance.GetState(m.From).Equals(applicationReceiver.State, StringComparison.OrdinalIgnoreCase);
                     }
 
-                    if (applicationReceiver.OutputState != null)
+                    if (applicationReceiver.OutState != null)
                     {
-                        receiver = new SetStateMessageReceiver(receiver, applicationReceiver.OutputState);
+                        receiver = new SetStateMessageReceiver(receiver, applicationReceiver.OutState);
                     }
 
                     client.AddMessageReceiver(receiver, messagePredicate, applicationReceiver.Priority);
@@ -267,9 +267,9 @@ namespace Takenet.MessagingHub.Client.Host
                         notificationPredicate = n => currentNotificationPredicate(n) && StateManager.Instance.GetState(n.From).Equals(applicationReceiver.State, StringComparison.OrdinalIgnoreCase);
                     }
 
-                    if (applicationReceiver.OutputState != null)
+                    if (applicationReceiver.OutState != null)
                     {
-                        receiver = new SetStateNotificationReceiver(receiver, applicationReceiver.OutputState);
+                        receiver = new SetStateNotificationReceiver(receiver, applicationReceiver.OutState);
                     }
 
                     client.AddNotificationReceiver(receiver, notificationPredicate, applicationReceiver.Priority);

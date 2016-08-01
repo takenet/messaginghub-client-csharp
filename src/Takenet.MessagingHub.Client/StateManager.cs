@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Caching;
 using System.Text;
 using System.Threading.Tasks;
 using Lime.Protocol;
@@ -17,12 +18,12 @@ namespace Takenet.MessagingHub.Client
         
         private static readonly object SyncRoot = new object();
         private static StateManager _instance;
-
-        private readonly ConcurrentDictionary<Node, string> _nodeStateDictionary;
+        private readonly ObjectCache _nodeStateCache;
 
         private StateManager()
         {
-            _nodeStateDictionary = new ConcurrentDictionary<Node, string>();
+            _nodeStateCache = new MemoryCache(nameof(StateManager));
+            StateTimeout = TimeSpan.FromMinutes(30);
         }
 
         /// <summary>
@@ -51,6 +52,14 @@ namespace Takenet.MessagingHub.Client
         }
 
         /// <summary>
+        /// Gets or sets the state expiration timeout.
+        /// </summary>
+        /// <value>
+        /// The state timeout.
+        /// </value>
+        public TimeSpan StateTimeout { get; set; }
+
+        /// <summary>
         /// Gets the last known node state.
         /// </summary>
         /// <param name="node">The node.</param>
@@ -59,12 +68,7 @@ namespace Takenet.MessagingHub.Client
         public string GetState(Node node)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
-            string state;
-            if (!_nodeStateDictionary.TryGetValue(node, out state))
-            {
-                state = DEFAULT_STATE;
-            }
-            return state;
+            return _nodeStateCache.Get(GetCacheKey(node)) as string ?? DEFAULT_STATE;
         }
 
         /// <summary>
@@ -98,14 +102,14 @@ namespace Takenet.MessagingHub.Client
             if (state == null) throw new ArgumentNullException(nameof(state));
             if (state.Equals(DEFAULT_STATE, StringComparison.OrdinalIgnoreCase))
             {
-                _nodeStateDictionary.TryRemove(node, out state);
+                _nodeStateCache.Remove(GetCacheKey(node));
             }
             else
             {
-                _nodeStateDictionary.AddOrUpdate(
-                    node,
-                    n => state,
-                    (n, o) => state);
+                _nodeStateCache.Set(GetCacheKey(node), state, new CacheItemPolicy()
+                {
+                    SlidingExpiration = StateTimeout
+                });                
             }
 
             if (raiseEvent)
@@ -113,6 +117,8 @@ namespace Takenet.MessagingHub.Client
                 StateChanged?.Invoke(this, new StateEventArgs(node, state));
             }
         }
+
+        private static string GetCacheKey(Node node) => node.ToString().ToLowerInvariant();
     }
 
     /// <summary>

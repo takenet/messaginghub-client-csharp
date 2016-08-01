@@ -18,7 +18,7 @@ namespace Takenet.MessagingHub.Client.Host
         public int Priority { get; set; }
 
         /// <summary>
-        /// Gets or sets the required state to the validity of the receiver.
+        /// Gets or sets the required caller state to ensure the validity of the receiver.
         /// </summary>
         /// <value>
         /// The state filter.
@@ -26,12 +26,12 @@ namespace Takenet.MessagingHub.Client.Host
         public string State { get; set; }
 
         /// <summary>
-        /// Gets or sets the state to be set after the execution of the receiver.
+        /// Gets or sets the state of the caller to be set after the execution of the receiver.
         /// </summary>
         /// <value>
-        /// The state filter.
+        /// The state to be set.
         /// </value>
-        public string OutputState { get; set; }
+        public string OutState { get; set; }
 
         /// <summary>
         /// Gets or sets the receiver .NET type. 
