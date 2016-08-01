@@ -110,6 +110,7 @@
     <Compile Include="MessagingHubSenderExtensions.cs" />
     <Compile Include="Sender\MessagingHubSender.cs" />
     <Compile Include="Extensions\Session\SessionManager.cs" />
+    <Compile Include="StateManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

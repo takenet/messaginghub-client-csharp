@@ -27,14 +27,14 @@ namespace Takenet.MessagingHub.Client.Listener
 
         internal EnvelopeListenerRegistrar EnvelopeRegistrar { get; }
 
-        public void AddMessageReceiver(IMessageReceiver messageReceiver, Predicate<Message> messageFilter, int priority = 0, CancellationToken cancellationToken = default(CancellationToken))
+        public void AddMessageReceiver(IMessageReceiver messageReceiver, Predicate<Message> messageFilter, int priority = 0)
         {
-            EnvelopeRegistrar.AddMessageReceiver(() => messageReceiver, messageFilter, priority, cancellationToken);
+            EnvelopeRegistrar.AddMessageReceiver(() => messageReceiver, messageFilter, priority);
         }
 
-        public void AddNotificationReceiver(INotificationReceiver notificationReceiver, Predicate<Notification> notificationFilter, int priority = 0, CancellationToken cancellationToken = default(CancellationToken))
+        public void AddNotificationReceiver(INotificationReceiver notificationReceiver, Predicate<Notification> notificationFilter, int priority = 0)
         {
-            EnvelopeRegistrar.AddNotificationReceiver(() => notificationReceiver, notificationFilter, priority, cancellationToken);
+            EnvelopeRegistrar.AddNotificationReceiver(() => notificationReceiver, notificationFilter, priority);
         }
 
         public Task StartAsync(CancellationToken cancellationToken = default(CancellationToken))
