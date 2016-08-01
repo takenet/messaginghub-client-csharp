@@ -52,32 +52,5 @@ namespace Takenet.MessagingHub.Client.Extensions.Session
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task RemoveVariableAsync(Node node, string key, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Adds an state to a node session. If the session doesn't exists, it will be created.
-        /// </summary>
-        /// <param name="node">The node.</param>
-        /// <param name="state">The state.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task AddStateAsync(Node node, string state, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Determines whether a state exists in a node session.
-        /// </summary>
-        /// <param name="node">The node.</param>
-        /// <param name="state">The state.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task<bool> HasStateAsync(Node node, string state, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Removes an existing state from a node session.
-        /// </summary>
-        /// <param name="node">The node.</param>
-        /// <param name="state">The state.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task RemoveStateAsync(Node node, string state, CancellationToken cancellationToken);
     }
 }

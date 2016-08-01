@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
@@ -45,33 +44,6 @@ namespace Takenet.MessagingHub.Client.Extensions.Session
             var session = await GetSessionAsync(node, cancellationToken).ConfigureAwait(false);
             if (session?.Variables == null || !session.Variables.ContainsKey(key)) return;
             session.Variables.Remove(key);
-            await SaveSessionAsync(node, session, cancellationToken).ConfigureAwait(false);
-        }
-
-        public async Task AddStateAsync(Node node, string state, CancellationToken cancellationToken)
-        {
-            if (state == null) throw new ArgumentNullException(nameof(state));
-            var session = await GetOrCreateSessionAsync(node, cancellationToken).ConfigureAwait(false);
-            var states = session.States?.ToList() ?? new List<string>();
-            states.Add(state);
-            session.States = states.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
-            await SaveSessionAsync(node, session, cancellationToken).ConfigureAwait(false);
-        }
-
-        public async Task<bool> HasStateAsync(Node node, string state, CancellationToken cancellationToken)
-        {
-            if (state == null) throw new ArgumentNullException(nameof(state));
-            var session = await GetSessionAsync(node, cancellationToken).ConfigureAwait(false);
-            if (session?.States == null) return false;
-            return session.States.Contains(state, StringComparer.OrdinalIgnoreCase);
-        }
-
-        public async Task RemoveStateAsync(Node node, string state, CancellationToken cancellationToken)
-        {
-            if (state == null) throw new ArgumentNullException(nameof(state));
-            var session = await GetSessionAsync(node, cancellationToken).ConfigureAwait(false);
-            if (session?.States == null || session.States.Length == 0) return;
-            session.States = session.States.Where(s => s.Equals(state, StringComparison.OrdinalIgnoreCase)).ToArray();
             await SaveSessionAsync(node, session, cancellationToken).ConfigureAwait(false);
         }
 
