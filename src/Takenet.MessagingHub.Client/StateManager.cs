@@ -25,6 +25,12 @@ namespace Takenet.MessagingHub.Client
             _nodeStateDictionary = new ConcurrentDictionary<Node, string>();
         }
 
+        /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        /// <value>
+        /// The instance.
+        /// </value>
         public static StateManager Instance
         {
             get
@@ -109,8 +115,19 @@ namespace Takenet.MessagingHub.Client
         }
     }
 
+    /// <summary>
+    /// Represents an event for the user state.
+    /// </summary>
+    /// <seealso cref="System.EventArgs" />
     public class StateEventArgs : EventArgs
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StateEventArgs"/> class.
+        /// </summary>
+        /// <param name="node">The node.</param>
+        /// <param name="state">The state.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// </exception>
         public StateEventArgs(Node node, string state)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
@@ -119,8 +136,20 @@ namespace Takenet.MessagingHub.Client
             State = state;
         }
 
+        /// <summary>
+        /// Gets the node.
+        /// </summary>
+        /// <value>
+        /// The node.
+        /// </value>
         public Node Node { get; }
 
+        /// <summary>
+        /// Gets the state.
+        /// </summary>
+        /// <value>
+        /// The state.
+        /// </value>
         public string State { get; }
     }
 }
