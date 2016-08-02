@@ -13,6 +13,8 @@ namespace Takenet.MessagingHub.Client.Host
         public const string DefaultApplicationFileName = "application.json";
         public const string DefaultHostFileName = "mhh.exe";
 
+        private static readonly TimeSpan PathMutexTimeout = TimeSpan.FromSeconds(30);
+
         private readonly string _basePath;
         private readonly TimeSpan _waitForActivationDelay;
         private readonly FileSystemWatcher _watcher;
@@ -20,7 +22,6 @@ namespace Takenet.MessagingHub.Client.Host
         private readonly ConcurrentDictionary<string, DateTime> _applicationLastWriteDictionary;
         private readonly string _tempBasePath;
         private readonly Job _job;
-        private readonly object _syncRoot = new object();
 
         public ApplicationActivator(string basePath, TimeSpan waitForActivationDelay)
         {
@@ -37,7 +38,7 @@ namespace Takenet.MessagingHub.Client.Host
                 InternalBufferSize = 1024 * 64,
                 NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName
             };
-
+            
             _watcher.Created += Watcher_Changed;
             _watcher.Changed += Watcher_Changed;
             _watcher.Deleted += Watcher_Deleted;
@@ -50,11 +51,10 @@ namespace Takenet.MessagingHub.Client.Host
             RecreateDirectory(_tempBasePath);
             _job = new Job();
 
-            foreach (var applicationPath in Directory.GetFiles(_basePath, DefaultApplicationFileName, SearchOption.AllDirectories))
-            {
-                Activate(applicationPath);
-            }
-
+            Parallel.ForEach(
+                Directory.GetFiles(_basePath, DefaultApplicationFileName, SearchOption.AllDirectories),
+                applicationPath => Activate(applicationPath));
+            
             _watcher.EnableRaisingEvents = true;
         }
 
@@ -62,19 +62,41 @@ namespace Takenet.MessagingHub.Client.Host
         {
             Task.Run(() =>
             {
-                Trace.TraceInformation("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
+                Trace.TraceInformation("{0} event raised for path '{1}', waiting {2} ms...", e.ChangeType, e.FullPath, _waitForActivationDelay.TotalMilliseconds);
+                Thread.Sleep(_waitForActivationDelay);
 
-                lock (_syncRoot)
+                using (var mutex = new Mutex(false, e.FullPath))
                 {
-                    var fileInfo = new FileInfo(e.FullPath);
-                    while (IsFileLocked(fileInfo))
+                    try
                     {
-                        Thread.Sleep(250);
+                        if (mutex.WaitOne(PathMutexTimeout))
+                        {
+                            var fileInfo = new FileInfo(e.FullPath);
+
+                            var tryCount = 3;
+                            while (IsFileLocked(fileInfo) && tryCount-- > 0)
+                            {
+                                Thread.Sleep(100);
+                            }
+
+                            if (tryCount == 0)
+                            {
+                                Trace.TraceError("The file on path '{0}' is locked", e.FullPath);
+                                return;
+                            }
+
+                            RestartApplication(e.FullPath, e.FullPath);
+                        }
+                        else
+                        {
+                            Trace.TraceError("Failed to acquire mutex for {0} event on path '{1}'", e.ChangeType, e.FullPath);
+                        }
+
                     }
-
-                    Thread.Sleep(_waitForActivationDelay);
-
-                    RestartApplication(e.FullPath, e.FullPath);
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
                 }
             });
         }
@@ -82,15 +104,27 @@ namespace Takenet.MessagingHub.Client.Host
         {
             Task.Run(() =>
             {
-                Trace.TraceInformation("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
-
-                lock (_syncRoot)
+                Trace.TraceInformation("{0} event raised for path '{1}', waiting {2} ms...", e.ChangeType, e.FullPath, _waitForActivationDelay.TotalMilliseconds);
+                Thread.Sleep(_waitForActivationDelay);
+                using (var mutex = new Mutex(false, e.FullPath))
                 {
-                    Thread.Sleep(_waitForActivationDelay);
-                    Deactivate(e.FullPath);
-
-                    DateTime applicationLastWrite;
-                    _applicationLastWriteDictionary.TryRemove(e.FullPath, out applicationLastWrite);
+                    try
+                    {
+                        if (mutex.WaitOne(PathMutexTimeout))
+                        {
+                            Deactivate(e.FullPath);
+                            DateTime applicationLastWrite;
+                            _applicationLastWriteDictionary.TryRemove(e.FullPath, out applicationLastWrite);
+                        }
+                        else
+                        {
+                            Trace.TraceError("Failed to acquire mutex for {0} event on path '{1}'", e.ChangeType, e.FullPath);
+                        }
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
                 }
             });
         }
@@ -99,13 +133,26 @@ namespace Takenet.MessagingHub.Client.Host
         {
             Task.Run(() =>
             {
-                Trace.TraceInformation("{0} event raised for path '{1}'", e.ChangeType, e.FullPath);
+                Trace.TraceInformation("{0} event raised for path '{1}', waiting {2} ms...", e.ChangeType, e.FullPath, _waitForActivationDelay.TotalMilliseconds);
+                Thread.Sleep(_waitForActivationDelay);
 
-                lock (_syncRoot)
+                using (var mutex = new Mutex(false, e.FullPath))
                 {
-                    Thread.Sleep(_waitForActivationDelay);
-
-                    RestartApplication(e.OldFullPath, e.FullPath);
+                    try
+                    {
+                        if (mutex.WaitOne(PathMutexTimeout))
+                        {
+                            RestartApplication(e.OldFullPath, e.FullPath);
+                        }
+                        else
+                        {
+                            Trace.TraceError("Failed to acquire mutex for {0} event on path '{1}'", e.ChangeType, e.FullPath);
+                        }
+                    }
+                    finally
+                    {
+                        mutex.ReleaseMutex();
+                    }
                 }
             });
         }
@@ -114,13 +161,20 @@ namespace Takenet.MessagingHub.Client.Host
         {
             // Fix for the multiple raises on the FileSystemWatcher
             var applicationLastWrite = File.GetLastWriteTimeUtc(oldPath);
-            if (!_applicationLastWriteDictionary.ContainsKey(oldPath) || _applicationLastWriteDictionary[oldPath] < applicationLastWrite)
+            if (!_applicationLastWriteDictionary.ContainsKey(oldPath) || 
+                _applicationLastWriteDictionary[oldPath] < applicationLastWrite)
             {
+                Trace.TraceInformation("The file '{0}' was changed at '{1}' and the application will be restarted with path '{2}'", oldPath, applicationLastWrite, newPath);
+
                 Deactivate(oldPath);
                 if ((new FileInfo(newPath).Name == DefaultApplicationFileName) && Activate(newPath))
                 {
                     _applicationLastWriteDictionary.AddOrUpdate(newPath, applicationLastWrite, (k, v) => applicationLastWrite);
                 }
+            }
+            else
+            {
+                Trace.TraceWarning("The file '{0}' was recently changed at '{1}' and the application will NOT be restarted", oldPath, applicationLastWrite);
             }
         }
 
@@ -128,7 +182,6 @@ namespace Takenet.MessagingHub.Client.Host
         {
             Trace.TraceError(e.GetException().ToString());
         }
-
 
         private bool Activate(string applicationPath)
         {
