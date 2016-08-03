@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 
 namespace Takenet.MessagingHub.Client.Host
 {
@@ -29,6 +30,7 @@ namespace Takenet.MessagingHub.Client.Host
             _waitForActivationDelay = waitForActivationDelay;
             if (basePath == null) throw new ArgumentNullException(nameof(basePath));
             if (!Path.IsPathRooted(basePath)) throw new ArgumentException("The path should be rooted", nameof(basePath));
+
 
             _watcher = new FileSystemWatcher()
             {
@@ -58,123 +60,67 @@ namespace Takenet.MessagingHub.Client.Host
             _watcher.EnableRaisingEvents = true;
         }
 
-        private void Watcher_Changed(object sender, FileSystemEventArgs e)
+        private async void Watcher_Changed(object sender, FileSystemEventArgs e)
         {
-            Task.Run(() =>
-            {
-                Trace.TraceInformation("{0} event raised for path '{1}', waiting {2} ms...", e.ChangeType, e.FullPath, _waitForActivationDelay.TotalMilliseconds);
-                Thread.Sleep(_waitForActivationDelay);
+            // The FileWatcher raises the Changed event twice
+            if (IsDuplicateEvent(e)) return;
 
-                using (var mutex = new Mutex(false, e.FullPath))
-                {
-                    try
-                    {
-                        if (mutex.WaitOne(PathMutexTimeout))
-                        {
-                            var fileInfo = new FileInfo(e.FullPath);
-
-                            var tryCount = 3;
-                            while (IsFileLocked(fileInfo) && tryCount-- > 0)
-                            {
-                                Thread.Sleep(100);
-                            }
-
-                            if (tryCount == 0)
-                            {
-                                Trace.TraceError("The file on path '{0}' is locked", e.FullPath);
-                                return;
-                            }
-
-                            RestartApplication(e.FullPath, e.FullPath);
-                        }
-                        else
-                        {
-                            Trace.TraceError("Failed to acquire mutex for {0} event on path '{1}'", e.ChangeType, e.FullPath);
-                        }
-
-                    }
-                    finally
-                    {
-                        mutex.ReleaseMutex();
-                    }
-                }
-            });
-        }
-        private void Watcher_Deleted(object sender, FileSystemEventArgs e)
-        {
-            Task.Run(() =>
-            {
-                Trace.TraceInformation("{0} event raised for path '{1}', waiting {2} ms...", e.ChangeType, e.FullPath, _waitForActivationDelay.TotalMilliseconds);
-                Thread.Sleep(_waitForActivationDelay);
-                using (var mutex = new Mutex(false, e.FullPath))
-                {
-                    try
-                    {
-                        if (mutex.WaitOne(PathMutexTimeout))
-                        {
-                            Deactivate(e.FullPath);
-                            DateTime applicationLastWrite;
-                            _applicationLastWriteDictionary.TryRemove(e.FullPath, out applicationLastWrite);
-                        }
-                        else
-                        {
-                            Trace.TraceError("Failed to acquire mutex for {0} event on path '{1}'", e.ChangeType, e.FullPath);
-                        }
-                    }
-                    finally
-                    {
-                        mutex.ReleaseMutex();
-                    }
-                }
-            });
+            await Task.Delay(_waitForActivationDelay).ConfigureAwait(false);
+            RestartApplication(e.FullPath, e.FullPath);           
         }
 
-        private void Watcher_Renamed(object sender, RenamedEventArgs e)
+        private async void Watcher_Deleted(object sender, FileSystemEventArgs e)
         {
-            Task.Run(() =>
-            {
-                Trace.TraceInformation("{0} event raised for path '{1}', waiting {2} ms...", e.ChangeType, e.FullPath, _waitForActivationDelay.TotalMilliseconds);
-                Thread.Sleep(_waitForActivationDelay);
+            await Task.Delay(_waitForActivationDelay).ConfigureAwait(false);
 
-                using (var mutex = new Mutex(false, e.FullPath))
+            Deactivate(e.FullPath);
+            DateTime applicationLastWrite;
+            _applicationLastWriteDictionary.TryRemove(e.FullPath, out applicationLastWrite);
+        }
+
+        private async void Watcher_Renamed(object sender, RenamedEventArgs e)
+        {
+            await Task.Delay(_waitForActivationDelay).ConfigureAwait(false);
+            RestartApplication(e.OldFullPath, e.FullPath);
+        }
+
+        private bool IsDuplicateEvent(FileSystemEventArgs e)
+        {
+            var applicationLastWrite = File.GetLastWriteTimeUtc(e.FullPath);
+
+            if (!_applicationLastWriteDictionary.TryAdd(e.FullPath, applicationLastWrite))
+            {
+                DateTime existingApplicationLastWrite;
+
+                if (_applicationLastWriteDictionary.TryGetValue(e.FullPath, out existingApplicationLastWrite) &&
+                    existingApplicationLastWrite == applicationLastWrite)
                 {
-                    try
-                    {
-                        if (mutex.WaitOne(PathMutexTimeout))
-                        {
-                            RestartApplication(e.OldFullPath, e.FullPath);
-                        }
-                        else
-                        {
-                            Trace.TraceError("Failed to acquire mutex for {0} event on path '{1}'", e.ChangeType, e.FullPath);
-                        }
-                    }
-                    finally
-                    {
-                        mutex.ReleaseMutex();
-                    }
+                    Trace.TraceWarning(
+                        "The file '{0}' was recently changed at '{1}' and the application will NOT be restarted", e.FullPath,
+                        applicationLastWrite);
+                    return true;
                 }
-            });
+
+                _applicationLastWriteDictionary.AddOrUpdate(e.FullPath, applicationLastWrite, (k, v) => applicationLastWrite);
+            }
+            return false;
         }
 
         private void RestartApplication(string oldPath, string newPath)
         {
-            // Fix for the multiple raises on the FileSystemWatcher
-            var applicationLastWrite = File.GetLastWriteTimeUtc(oldPath);
-            if (!_applicationLastWriteDictionary.ContainsKey(oldPath) || 
-                _applicationLastWriteDictionary[oldPath] < applicationLastWrite)
-            {
-                Trace.TraceInformation("The file '{0}' was changed at '{1}' and the application will be restarted with path '{2}'", oldPath, applicationLastWrite, newPath);
+            Trace.TraceInformation("The file '{0}' was changed  and the application will be restarted with path '{1}'", oldPath, newPath);
 
-                Deactivate(oldPath);
-                if ((new FileInfo(newPath).Name == DefaultApplicationFileName) && Activate(newPath))
+            Deactivate(oldPath);
+            if (new FileInfo(newPath).Name == DefaultApplicationFileName)
+            {
+                if (!Activate(newPath))
                 {
-                    _applicationLastWriteDictionary.AddOrUpdate(newPath, applicationLastWrite, (k, v) => applicationLastWrite);
+                    Trace.TraceError("Could not activate the application on path '{0}'", newPath);
                 }
             }
             else
             {
-                Trace.TraceWarning("The file '{0}' was recently changed at '{1}' and the application will NOT be restarted", oldPath, applicationLastWrite);
+                Trace.TraceError("Invalid application file name on path '{0}'", newPath);
             }
         }
 
@@ -303,24 +249,6 @@ namespace Takenet.MessagingHub.Client.Host
                 process.StandardInput.Write(13);
                 process.WaitForExit();
             }
-        }
-
-        private static bool IsFileLocked(FileInfo file)
-        {
-            FileStream stream = null;
-            try
-            {
-                stream = file.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None);
-            }
-            catch (IOException)
-            {
-                return true;
-            }
-            finally
-            {
-                stream?.Close();
-            }
-            return false;
         }
 
         private static void RecreateDirectory(string sourcePath)
