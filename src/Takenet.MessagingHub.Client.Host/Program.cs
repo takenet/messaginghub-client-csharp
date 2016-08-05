@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Lime.Protocol.Serialization;
 
 namespace Takenet.MessagingHub.Client.Host
 {
@@ -43,7 +42,7 @@ namespace Takenet.MessagingHub.Client.Host
 
                 var applicationFileName =
                     args.FirstOrDefault(a => !a.StartsWith("-") && !a.StartsWith("/")) ??
-                    ApplicationActivator.DefaultApplicationFileName;
+                    Bootstrapper.DefaultApplicationFileName;
 
                 if (!File.Exists(applicationFileName))
                 {
