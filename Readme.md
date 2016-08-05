@@ -5,7 +5,7 @@ The **Messaging Hub Client** is a set of Nuget packages that allow the creation 
 
 ## Getting Started
 
-To get started with the Messaging Hub Client, see our SDK documentation [here](http://messaginghub.io/docs/sdks/introduction).
+To get started with the Messaging Hub Client, see our SDK documentation [here](http://omni.messaginghub.io/portal/#/docs/home).
 
 An introdutory application can be found [here](https://github.com/takenet/messaginghub-client-csharp/tree/master/src/Samples/GettingStarted), but we encourage you to use the *Messaging Hub Application Template* as described below.
 
@@ -13,10 +13,10 @@ An introdutory application can be found [here](https://github.com/takenet/messag
 
 To easily create Messaging Hub applications, create a new *class library* project in the *Visual Studio 2015* and import the *Messaging Hub Application Template* package from [here](https://www.nuget.org/packages/Takenet.MessagingHub.Client.Template).
 
-## Documentation 
+## Documentation
 
-The full documentation can be found at [http://messaginghub.io/docs](http://messaginghub.io/docs).
+The full documentation can be found at [http://omni.messaginghub.io/portal/#/docs/home](http://omni.messaginghub.io/portal/#/docs/home).
 
 ## License
 
-[Apache 2.0 License](https://github.com/takenet/messaginghub-client-csharp/blob/master/LICENSE) 
+[Apache 2.0 License](https://github.com/takenet/messaginghub-client-csharp/blob/master/LICENSE)
