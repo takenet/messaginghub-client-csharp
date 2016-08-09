@@ -28,5 +28,14 @@ namespace Takenet.MessagingHub.Client.Extensions
                     new Reason() { Code = ReasonCodes.COMMAND_PROCESSING_ERROR, Description = "An error occurred" });
             }
         }
+
+        protected Command CreateSetCommandRequest<T>(T resource, string uriPath, Node to = null) where T : Document =>
+            new Command()
+            {
+                To = to,
+                Method = CommandMethod.Set,
+                Uri = new LimeUri(uriPath),
+                Resource = resource
+            };
     }
 }
