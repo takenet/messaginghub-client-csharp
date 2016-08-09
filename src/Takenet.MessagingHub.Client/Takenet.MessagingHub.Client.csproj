@@ -68,6 +68,7 @@
     <Compile Include="Extensions\Bucket\IBucketExtension.cs" />
     <Compile Include="Extensions\Delegation\DelegationExtension.cs" />
     <Compile Include="Extensions\Delegation\IDelegationExtension.cs" />
+    <Compile Include="Extensions\ServiceContainerExtensions.cs" />
     <Compile Include="Host\Application.cs" />
     <Compile Include="Host\ApplicationReceiver.cs" />
     <Compile Include="Host\Bootstrapper.cs" />

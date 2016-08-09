@@ -9,6 +9,11 @@ using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Serialization;
 using Newtonsoft.Json;
+using Takenet.MessagingHub.Client.Extensions;
+using Takenet.MessagingHub.Client.Extensions.Broadcast;
+using Takenet.MessagingHub.Client.Extensions.Bucket;
+using Takenet.MessagingHub.Client.Extensions.Delegation;
+using Takenet.MessagingHub.Client.Extensions.Session;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
 
@@ -153,6 +158,7 @@ namespace Takenet.MessagingHub.Client.Host
 
             var client = builder.Build();
             typeServiceProvider.RegisterService(typeof(IMessagingHubSender), client);
+            typeServiceProvider.RegisterExtensions();
 
             // Now creates the receivers instances
             if (application.MessageReceivers != null && application.MessageReceivers.Length > 0)
@@ -280,6 +286,7 @@ namespace Takenet.MessagingHub.Client.Host
             return client;
         }
 
+
         public static Task<T> CreateAsync<T>(string typeName, IServiceProvider serviceProvider, IDictionary<string, object> settings) where T : class
         {
             if (typeName == null) throw new ArgumentNullException(nameof(typeName));
@@ -310,7 +317,8 @@ namespace Takenet.MessagingHub.Client.Host
                 .FirstOrDefault(t => t.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase)) ??
                        Type.GetType(typeName, true, true);
         }
-                
+
+
         private class StoppableWrapper : IStoppable
         {
             private readonly IStoppable[] _stoppables;
