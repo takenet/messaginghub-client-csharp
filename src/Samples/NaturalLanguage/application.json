@@ -3,8 +3,19 @@
   "accessKey": "",
   "messageReceivers": [
     {
-      "type": "PlainTextMessageReceiver",
-      "mediaType": "text/plain"
+      "type": "TextcMessageReceiverFactory",
+      "mediaType": "text/plain",
+      "settings": {
+        "commands": [
+          {
+            "syntaxes": [
+              ":Word?(qu)",
+              ":Word?(olá)"
+            ] 
+
+          }
+        ]
+      }
     }
   ],
   "settings": {

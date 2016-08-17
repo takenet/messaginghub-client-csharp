@@ -52,8 +52,7 @@ namespace Takenet.MessagingHub.Client.Textc
                 var syntaxes = commandSetting.Syntaxes.Select(CsdlParser.Parse).ToArray();
                 if (syntaxes.Length > 0)
                 {
-                    var syntaxBuilder = builder
-                        .ForSyntaxes(syntaxes);
+                    var syntaxBuilder = builder.ForSyntaxes(syntaxes);
 
                     if (!string.IsNullOrEmpty(commandSetting.ReturnText))
                     {
@@ -142,8 +141,7 @@ namespace Takenet.MessagingHub.Client.Textc
         private static async Task<TextcMessageReceiverBuilder> SetupContextAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings,
             TextcMessageReceiverContextCommandSettings context, TextcMessageReceiverBuilder builder)
         {
-            IContextProvider contextProvider;
-            contextProvider = await Bootstrapper.CreateAsync<IContextProvider>(context.Type, serviceProvider, settings).ConfigureAwait(false);
+            var contextProvider = await Bootstrapper.CreateAsync<IContextProvider>(context.Type, serviceProvider, settings).ConfigureAwait(false);
 
             builder = builder.WithContextProvider(contextProvider);
             return builder;
