@@ -17,7 +17,10 @@ namespace Takenet.MessagingHub.Client.Listener
 
         protected IMessagingHubSender Sender { get; }
 
-        protected EnvelopeReceivedHandler(IMessagingHubSender sender, EnvelopeListenerRegistrar registrar, CancellationTokenSource cts)
+        protected EnvelopeReceivedHandler(
+            IMessagingHubSender sender, 
+            EnvelopeListenerRegistrar registrar, 
+            CancellationTokenSource cts)
         {
             Sender = sender;
             _registrar = registrar;
