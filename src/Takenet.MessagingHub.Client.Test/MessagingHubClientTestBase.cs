@@ -16,8 +16,6 @@ namespace Takenet.MessagingHub.Client.Test
     {
         protected readonly TimeSpan TIME_OUT = TimeSpan.FromSeconds(5);
 
-        protected bool IsEstablished;
-
         protected IMessagingHubConnection MessagingHubConnection;
         protected IOnDemandClientChannel OnDemandClientChannel;
         protected IOnDemandClientChannelFactory OnDemandClientChannelFactory;
@@ -54,11 +52,8 @@ namespace Takenet.MessagingHub.Client.Test
         }
 
         private void SubstituteOnDemandClientChannel()
-        {
-            IsEstablished = false;
+        {            
             OnDemandClientChannel = Substitute.For<IOnDemandClientChannel>();            
-            OnDemandClientChannel.IsEstablished.Returns((c) => IsEstablished);
-            OnDemandClientChannel.WhenForAnyArgs(d => d.EstablishAsync(CancellationToken.None)).Do((c) => IsEstablished = true);
             OnDemandClientChannel.ReceiveMessageAsync(CancellationToken.None).ReturnsForAnyArgs(callInfo => MessageProducer.Take());
             OnDemandClientChannel.ReceiveNotificationAsync(CancellationToken.None).ReturnsForAnyArgs(callInfo => NotificationProducer.Take());
             OnDemandClientChannel.ReceiveCommandAsync(CancellationToken.None).ReturnsForAnyArgs(callInfo => CommandProducer.Take());
