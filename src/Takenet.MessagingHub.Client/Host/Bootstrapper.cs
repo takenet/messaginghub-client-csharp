@@ -158,6 +158,7 @@ namespace Takenet.MessagingHub.Client.Host
 
             var client = builder.Build();
             typeServiceProvider.RegisterService(typeof(IMessagingHubSender), client);
+            typeServiceProvider.RegisterService(typeof(IStateManager), StateManager.Instance);
             typeServiceProvider.RegisterExtensions();
 
             // Now creates the receivers instances

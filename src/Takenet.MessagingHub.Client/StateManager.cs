@@ -12,7 +12,7 @@ namespace Takenet.MessagingHub.Client
     /// <summary>
     /// Provides the management of states for filtering message and notification receivers registered in the application.
     /// </summary>
-    public sealed class StateManager
+    internal sealed class StateManager : IStateManager
     {
         public const string DEFAULT_STATE = "default";
         
@@ -94,7 +94,7 @@ namespace Takenet.MessagingHub.Client
         /// Occurs when a node state is changed.
         /// This event should be used to synchronize multiple application instances states.
         /// </summary>
-        public EventHandler<StateEventArgs> StateChanged;
+        public event EventHandler<StateEventArgs> StateChanged;
 
         internal void SetState(Node node, string state, bool raiseEvent)
         {
