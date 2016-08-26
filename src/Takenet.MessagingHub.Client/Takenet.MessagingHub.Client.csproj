@@ -84,6 +84,8 @@
     <Compile Include="IMessagingHubClient.cs" />
     <Compile Include="Extensions\Session\ISessionManager.cs" />
     <Compile Include="IStateManager.cs" />
+    <Compile Include="Listener\MessageReceivedHandler.cs" />
+    <Compile Include="Listener\NotificationReceivedHandler.cs" />
     <Compile Include="MessagingHubClient.cs" />
     <Compile Include="MessagingHubClientBuilder.cs" />
     <Compile Include="Connection\IMessagingHubConnection.cs" />

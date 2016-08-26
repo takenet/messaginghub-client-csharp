@@ -15,7 +15,9 @@ namespace Takenet.MessagingHub.Client.Listener
         private readonly IMessagingHubSender _sender;
         private ChannelListener _channelListener;
         private CancellationTokenSource _cts;
-        
+        private MessageReceivedHandler _messageHandler;
+        private NotificationReceivedHandler _notificationHandler;
+
         public MessagingHubListener(IMessagingHubConnection connection, IMessagingHubSender sender = null)
         {
             _connection = connection;
@@ -53,12 +55,13 @@ namespace Takenet.MessagingHub.Client.Listener
 
         private void StartEnvelopeListeners()
         {
-            var messageHandler = new MessageReceivedHandler(_sender, EnvelopeRegistrar);
-            var notificationHandler = new NotificationReceivedHandler(_sender, EnvelopeRegistrar);
             _cts = new CancellationTokenSource();
+            _messageHandler = new MessageReceivedHandler(_sender, EnvelopeRegistrar, _cts);
+            _notificationHandler = new NotificationReceivedHandler(_sender, EnvelopeRegistrar, _cts);
+            
             _channelListener = new ChannelListener(
-                m => messageHandler.HandleAsync(m, _cts.Token),
-                n => notificationHandler.HandleAsync(n, _cts.Token),
+                m => _messageHandler.HandleAsync(m, _cts.Token),
+                n => _notificationHandler.HandleAsync(n, _cts.Token),
                 c => TaskUtil.TrueCompletedTask);
             _channelListener.Start(_connection.OnDemandClientChannel);
         }
