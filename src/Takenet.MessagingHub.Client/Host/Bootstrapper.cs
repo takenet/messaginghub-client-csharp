@@ -94,7 +94,7 @@ namespace Takenet.MessagingHub.Client.Host
                     }
 
                     if (serviceProviderType.GetConstructors(BindingFlags.Instance | BindingFlags.Public).All(c => c.GetParameters().Length != 0))
-                    {                        
+                    {
                         throw new InvalidOperationException($"{nameof(Application.ServiceProviderType)} must have an empty public constructor");
                     }
 
@@ -143,13 +143,13 @@ namespace Takenet.MessagingHub.Client.Host
         }
 
         private static async Task<IMessagingHubClient> BuildMessagingHubClientAsync(
-            Application application, MessagingHubClientBuilder builder, 
+            Application application, MessagingHubClientBuilder builder,
             TypeServiceProvider typeServiceProvider)
-        {            
+        {
             var applicationReceivers =
                 (application.MessageReceivers ?? new ApplicationReceiver[0]).Union(
                     application.NotificationReceivers ?? new ApplicationReceiver[0]);
-            
+
             // First, register the receivers settings
             foreach (var applicationReceiver in applicationReceivers.Where(a => a.SettingsType != null))
             {
@@ -183,7 +183,7 @@ namespace Takenet.MessagingHub.Client.Host
 
                     Predicate<Message> messagePredicate = m => m != null;
 
-                    if (applicationReceiver.MediaType != null)  
+                    if (applicationReceiver.MediaType != null)
                     {
                         var currentMessagePredicate = messagePredicate;
                         var mediaTypeRegex = new Regex(applicationReceiver.MediaType, RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -214,7 +214,7 @@ namespace Takenet.MessagingHub.Client.Host
                     if (applicationReceiver.State != null)
                     {
                         var currentMessagePredicate = messagePredicate;
-                        messagePredicate = m => currentMessagePredicate(m) && StateManager.Instance.GetState(m.From).Equals(applicationReceiver.State, StringComparison.OrdinalIgnoreCase);
+                        messagePredicate = m => currentMessagePredicate(m) && StateManager.Instance.GetState(m.From.ToIdentity()).Equals(applicationReceiver.State, StringComparison.OrdinalIgnoreCase);
                     }
 
                     if (applicationReceiver.OutState != null)
@@ -270,7 +270,7 @@ namespace Takenet.MessagingHub.Client.Host
                     if (applicationReceiver.State != null)
                     {
                         var currentNotificationPredicate = notificationPredicate;
-                        notificationPredicate = n => currentNotificationPredicate(n) && StateManager.Instance.GetState(n.From).Equals(applicationReceiver.State, StringComparison.OrdinalIgnoreCase);
+                        notificationPredicate = n => currentNotificationPredicate(n) && StateManager.Instance.GetState(n.From.ToIdentity()).Equals(applicationReceiver.State, StringComparison.OrdinalIgnoreCase);
                     }
 
                     if (applicationReceiver.OutState != null)
@@ -366,7 +366,7 @@ namespace Takenet.MessagingHub.Client.Host
             public async Task ReceiveAsync(T envelope, CancellationToken cancellationToken = new CancellationToken())
             {
                 await _receiver.ReceiveAsync(envelope, cancellationToken).ConfigureAwait(false);
-                StateManager.Instance.SetState(envelope.From, _state);
+                StateManager.Instance.SetState(envelope.From.ToIdentity(), _state);
             }
         }
     }

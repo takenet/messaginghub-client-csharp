@@ -19,23 +19,23 @@ namespace Takenet.MessagingHub.Client
         /// <summary>
         /// Gets the last known node state.
         /// </summary>
-        /// <param name="node">The node.</param>
+        /// <param name="identity">The identity.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException"></exception>
-        string GetState(Node node);
+        string GetState(Identity identity);
 
         /// <summary>
         /// Sets the node state.
         /// </summary>
-        /// <param name="node">The node.</param>
+        /// <param name="identity">The identity.</param>
         /// <param name="state">The state.</param>
-        void SetState(Node node, string state);
+        void SetState(Identity identity, string state);
 
         /// <summary>
         /// Resets the node state to the default value.
         /// </summary>
-        /// <param name="node">The node.</param>
-        void ResetState(Node node);
+        /// <param name="identity">The identity.</param>
+        void ResetState(Identity identity);
 
         /// <summary>
         /// Occurs when a state for a node is changed.
