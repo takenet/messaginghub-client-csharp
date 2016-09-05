@@ -1,9 +1,11 @@
 using Lime.Protocol;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Mime;
 using System.Runtime.Caching;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,13 +21,14 @@ namespace Buscape
     public sealed class PlainTextMessageReceiver : IMessageReceiver, IDisposable
     {
         private readonly IMessagingHubSender _sender;
+        private const string TelegramStartMessage = "/start";
         private const string StartMessage = "Iniciar";
         private const string FinishMessage = "ENCERRAR";
         private const string MoreResultsMessage = "MAIS RESULTADOS";
 
         private static readonly MediaType ResponseMediaType = new MediaType("application", "vnd.omni.text", "json");
 
-        private IDictionary<string, object> Settings { get; }
+        private Settings Settings { get; }
 
         private HttpClient _webClient;
         private HttpClient WebClient
@@ -35,7 +38,7 @@ namespace Buscape
                 if (_webClient == null)
                 {
                     _webClient = new HttpClient();
-                    _webClient.DefaultRequestHeaders.Add("app-token", Settings["buscapeAppToken"].ToString());
+                    _webClient.DefaultRequestHeaders.Add("app-token", Settings.BuscapeAppToken);
                 }
                 return _webClient;
             }
@@ -43,7 +46,7 @@ namespace Buscape
 
         private readonly MemoryCache Session = new MemoryCache(nameof(Buscape));
 
-        public PlainTextMessageReceiver(IMessagingHubSender sender, IDictionary<string, object> settings)
+        public PlainTextMessageReceiver(IMessagingHubSender sender, Settings settings)
         {
             _sender = sender;
             Settings = settings;
@@ -84,7 +87,7 @@ namespace Buscape
 
         private static async Task<bool> HandleStartMessageAsync(IMessagingHubSender sender, Message message, string keyword, CancellationToken cancellationToken)
         {
-            if (keyword != StartMessage)
+            if (keyword != StartMessage && keyword != TelegramStartMessage)
                 return false;
 
             Console.WriteLine($"Start message received from {message.From}!");
@@ -135,7 +138,7 @@ namespace Buscape
             if (Session.Contains(message.From.ToString()))
                 page = ((Tuple<string, int>)Session[message.From.ToString()]).Item2;
 
-            var parameters = $"{Settings["buscapeAppToken"]}/BR?results={pageSize}&page={page}&keyword={keyword}&format=json&sort=price";
+            var parameters = $"{Settings.BuscapeAppToken}/BR?results={pageSize}&page={page}&keyword={keyword}&format=json&sort=price";
             if (categoryId > 0)
                 parameters += $"&categoryId={categoryId}";
 
@@ -160,7 +163,7 @@ namespace Buscape
                 if (keywords.Length > 1)
                 {
                     var category = keywords[0];
-                    var categoryParameters = $"{Settings["buscapeAppToken"]}/BR?keyword={category}&format=json";
+                    var categoryParameters = $"{Settings.BuscapeAppToken}/BR?keyword={category}&format=json";
                     var categoryUri = $"http://sandbox.buscape.com.br/service/findCategoryList/{categoryParameters}";
                     using (var request = new HttpRequestMessage(HttpMethod.Get, categoryUri))
                     {
@@ -220,7 +223,27 @@ namespace Buscape
                             return;
                         }
                         await Task.Delay(TimeSpan.FromSeconds(2), cancellationTokenSource.Token);
-                        await sender.SendMessageAsync($"Envie: {FinishMessage}; {MoreResultsMessage}", message.From, cancellationToken);
+                        var select = new Select
+                        {
+                            Text = "Deseja mais resultados?",
+                            Options = new []
+                            {
+                                new SelectOption
+                                {
+                                    Text = FinishMessage,
+                                    Order = 1,
+                                    Value = new PlainText { Text = FinishMessage }
+                                },
+                                new SelectOption
+                                {
+                                    Text = MoreResultsMessage,
+                                    Order = 2,
+                                    Value = new PlainText { Text = MoreResultsMessage }
+                                }
+                            }
+                        };
+
+                        await sender.SendMessageAsync(select, message.From, cancellationToken);
                         Console.WriteLine("Response sent!");
                     }
                 }
@@ -251,41 +274,37 @@ namespace Buscape
 
         private static Document BuildMessage(string imageUri, string text, string link)
         {
-            if (imageUri == null)
+            var req = WebRequest.Create(imageUri);
+            req.Method = "HEAD";
+            var size = 350;
+            using (WebResponse resp = req.GetResponse())
             {
-                return new PlainText
+                int ContentLength;
+                if (int.TryParse(resp.Headers.Get("Content-Length"), out ContentLength))
                 {
-                    Text = link != null ? $"{text}\n{link}" : text
-                };
-            }
-
-            var document = new JsonDocument(ResponseMediaType)
-            {
-                {
-                    nameof(text), link != null ? $"{text}\n{link}" : text
+                    size = ContentLength;
                 }
-            };
-
-            var attachments = new List<IDictionary<string, object>>();
-
-            var attachment = new Dictionary<string, object>
+            }
+            var result = new MediaLink
             {
-                {"mimeType", "image/jpeg"},
-                {"mediaType", "image"},
-                {"size", 100},
-                {"remoteUri", imageUri},
-                {"thumbnailUri", imageUri}
+                Text = text,
+                PreviewType = MediaType.Parse("image/jpeg"),
+                PreviewUri = new Uri(imageUri),
+                Uri = new Uri(link),
+                Type = MediaType.Parse("image/jpeg"),
+                Size = size
             };
-            attachments.Add(attachment);
-
-            document.Add(nameof(attachments), attachments);
-
-            return document;
+            return result;
         }
 
         public void Dispose()
         {
             Session.Dispose();
         }
+    }
+
+    public class Settings
+    {
+        public string BuscapeAppToken { get; set; }
     }
 }

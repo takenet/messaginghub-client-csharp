@@ -1,4 +1,5 @@
-﻿Navigate to http://omni.messaginghub.io to retrieve your application's identifier and access key.
+﻿This is a sample bot only.
 
-See more information about how to build your application at http://omni.messaginghub.io/#/docs.
-  
+The Buscapé Company is not responsible for this bot.
+
+Available at http://goo.gl/xUoziN
