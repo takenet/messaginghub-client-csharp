@@ -4,42 +4,49 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Lime.Protocol.Network;
-using Takenet.MessagingHub.Client.Messages;
+using System.Threading.Tasks.Dataflow;
 using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
-    internal abstract class EnvelopeReceivedHandler
+    internal abstract class EnvelopeReceivedHandler<TEnvelope> where TEnvelope : Envelope, new()
     {
         private readonly EnvelopeListenerRegistrar _registrar;
+        private readonly ActionBlock<TEnvelope> _envelopeActionBlock;
+        private readonly CancellationTokenSource _cts;
 
         protected IMessagingHubSender Sender { get; }
 
-        protected EnvelopeReceivedHandler(IMessagingHubSender sender, EnvelopeListenerRegistrar registrar)
+        protected EnvelopeReceivedHandler(
+            IMessagingHubSender sender, 
+            EnvelopeListenerRegistrar registrar, 
+            CancellationTokenSource cts)
         {
             Sender = sender;
             _registrar = registrar;
+            _cts = cts;
+            _envelopeActionBlock = new ActionBlock<TEnvelope>(async envelope =>
+            {
+                try
+                {
+                    await CallReceiversAsync(envelope, _cts.Token);
+                }
+                catch (Exception ex)
+                {
+                    //TODO: Create a ILogger interface to notify about errors on EnvelopeProcessor.
+                    Trace.TraceError(ex.ToString());
+                }
+            },
+            new ExecutionDataflowBlockOptions()
+            {
+                MaxDegreeOfParallelism = DataflowBlockOptions.Unbounded
+            });
         }
 
-        public async Task<bool> HandleAsync<TEnvelope>(TEnvelope envelope, CancellationToken cancellationToken)
-            where TEnvelope : Envelope, new()
-        {
-            try
-            {
-                await CallReceiversAsync(envelope, cancellationToken);
+        public Task<bool> HandleAsync(TEnvelope envelope, CancellationToken cancellationToken) => 
+            _envelopeActionBlock.SendAsync(envelope, cancellationToken);
 
-                return true;
-            }
-            catch (Exception ex)
-            {
-                //TODO: Create a ILogger interface to notify about errors on EnvelopeProcessor.
-                Trace.TraceError(ex.ToString());
-                return true;
-            }
-        }
-
-        protected virtual Task CallReceiversAsync<TEnvelope>(TEnvelope envelope, CancellationToken cancellationToken) where TEnvelope : Envelope, new()
+        protected virtual Task CallReceiversAsync(TEnvelope envelope, CancellationToken cancellationToken)
         {
             // Gets the first non empty group, ordered by priority
             var receiverGroup = _registrar
@@ -53,50 +60,9 @@ namespace Takenet.MessagingHub.Client.Listener
                     receiverGroup.Select(r => CallReceiverAsync(r.ReceiverFactory(), envelope, cancellationToken)));               
         }
 
-        protected Task CallReceiverAsync<TEnvelope>(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken cancellationToken)
-            where TEnvelope : Envelope
+        protected Task CallReceiverAsync(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken cancellationToken)            
         {
             return envelopeReceiver.ReceiveAsync(envelope, cancellationToken);
-        }
-    }
-
-    internal class MessageReceivedHandler : EnvelopeReceivedHandler
-    {
-        public MessageReceivedHandler(IMessagingHubSender sender, EnvelopeListenerRegistrar registrar) : base(sender, registrar)
-        {
-        }
-
-        protected override async Task CallReceiversAsync<TEnvelope>(TEnvelope envelope, CancellationToken cancellationToken)
-        {
-            var message = envelope as Message;
-            try
-            {
-                await base.CallReceiversAsync(envelope, cancellationToken);
-                await Sender.SendNotificationAsync(message.ToConsumedNotification(), CancellationToken.None);
-            }
-            catch (LimeException e)
-            {
-                await Sender.SendNotificationAsync(message.ToFailedNotification(e.Reason), CancellationToken.None);
-                throw;
-            }
-            catch (Exception e)
-            {
-                var reason = new Reason
-                {
-                    Code = ReasonCodes.APPLICATION_ERROR,
-                    Description = e.Message
-                };
-                await Sender.SendNotificationAsync(
-                    message.ToFailedNotification(reason), CancellationToken.None);
-                throw;
-            }
-        }
-    }
-
-    internal class NotificationReceivedHandler : EnvelopeReceivedHandler
-    {
-        public NotificationReceivedHandler(IMessagingHubSender sender, EnvelopeListenerRegistrar registrar) : base(sender, registrar)
-        {
         }
     }
 }

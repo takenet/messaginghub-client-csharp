@@ -12,7 +12,7 @@ namespace Takenet.MessagingHub.Client
     /// <summary>
     /// Provides the management of states for filtering message and notification receivers registered in the application.
     /// </summary>
-    public sealed class StateManager
+    internal sealed class StateManager : IStateManager
     {
         public const string DEFAULT_STATE = "default";
         
@@ -60,53 +60,53 @@ namespace Takenet.MessagingHub.Client
         public TimeSpan StateTimeout { get; set; }
 
         /// <summary>
-        /// Gets the last known node state.
+        /// Gets the last known identity state.
         /// </summary>
-        /// <param name="node">The node.</param>
+        /// <param name="identity">The node.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public string GetState(Node node)
+        public string GetState(Identity identity)
         {
-            if (node == null) throw new ArgumentNullException(nameof(node));
-            return _nodeStateCache.Get(GetCacheKey(node)) as string ?? DEFAULT_STATE;
+            if (identity == null) throw new ArgumentNullException(nameof(identity));
+            return _nodeStateCache.Get(GetCacheKey(identity)) as string ?? DEFAULT_STATE;
         }
 
         /// <summary>
-        /// Sets the node state.
+        /// Sets the identity state.
         /// </summary>
-        /// <param name="node">The node.</param>
+        /// <param name="identity">The identity.</param>
         /// <param name="state">The state.</param>
-        public void SetState(Node node, string state)
+        public void SetState(Identity identity, string state)
         {
-            SetState(node, state, true);
+            SetState(identity, state, true);
         }
 
         /// <summary>
-        /// Resets the node state to the default value.
+        /// Resets the identity state to the default value.
         /// </summary>
-        /// <param name="node">The node.</param>
-        public void ResetState(Node node)
+        /// <param name="identity">The node.</param>
+        public void ResetState(Identity identity)
         {
-            SetState(node, DEFAULT_STATE);
+            SetState(identity, DEFAULT_STATE);
         }
 
         /// <summary>
-        /// Occurs when a node state is changed.
+        /// Occurs when a identity state is changed.
         /// This event should be used to synchronize multiple application instances states.
         /// </summary>
-        public EventHandler<StateEventArgs> StateChanged;
+        public event EventHandler<StateEventArgs> StateChanged;
 
-        internal void SetState(Node node, string state, bool raiseEvent)
+        internal void SetState(Identity identity, string state, bool raiseEvent)
         {
-            if (node == null) throw new ArgumentNullException(nameof(node));
+            if (identity == null) throw new ArgumentNullException(nameof(identity));
             if (state == null) throw new ArgumentNullException(nameof(state));
             if (state.Equals(DEFAULT_STATE, StringComparison.OrdinalIgnoreCase))
             {
-                _nodeStateCache.Remove(GetCacheKey(node));
+                _nodeStateCache.Remove(GetCacheKey(identity));
             }
             else
             {
-                _nodeStateCache.Set(GetCacheKey(node), state, new CacheItemPolicy()
+                _nodeStateCache.Set(GetCacheKey(identity), state, new CacheItemPolicy()
                 {
                     SlidingExpiration = StateTimeout
                 });                
@@ -114,11 +114,11 @@ namespace Takenet.MessagingHub.Client
 
             if (raiseEvent)
             {                
-                StateChanged?.Invoke(this, new StateEventArgs(node, state));
+                StateChanged?.Invoke(this, new StateEventArgs(identity, state));
             }
         }
 
-        private static string GetCacheKey(Node node) => node.ToString().ToLowerInvariant();
+        private static string GetCacheKey(Identity identity) => identity.ToString().ToLowerInvariant();
     }
 
     /// <summary>
@@ -130,25 +130,25 @@ namespace Takenet.MessagingHub.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="StateEventArgs"/> class.
         /// </summary>
-        /// <param name="node">The node.</param>
+        /// <param name="identity">The node.</param>
         /// <param name="state">The state.</param>
         /// <exception cref="System.ArgumentNullException">
         /// </exception>
-        public StateEventArgs(Node node, string state)
+        public StateEventArgs(Identity identity, string state)
         {
-            if (node == null) throw new ArgumentNullException(nameof(node));
+            if (identity == null) throw new ArgumentNullException(nameof(identity));
             if (state == null) throw new ArgumentNullException(nameof(state));
-            Node = node;
+            Identity = identity;
             State = state;
         }
 
         /// <summary>
-        /// Gets the node.
+        /// Gets the identity.
         /// </summary>
         /// <value>
         /// The node.
         /// </value>
-        public Node Node { get; }
+        public Identity Identity { get; }
 
         /// <summary>
         /// Gets the state.

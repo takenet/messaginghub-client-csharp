@@ -52,7 +52,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +83,9 @@
     <Compile Include="Host\TypeServiceProvider.cs" />
     <Compile Include="IMessagingHubClient.cs" />
     <Compile Include="Extensions\Session\ISessionManager.cs" />
+    <Compile Include="IStateManager.cs" />
+    <Compile Include="Listener\MessageReceivedHandler.cs" />
+    <Compile Include="Listener\NotificationReceivedHandler.cs" />
     <Compile Include="MessagingHubClient.cs" />
     <Compile Include="MessagingHubClientBuilder.cs" />
     <Compile Include="Connection\IMessagingHubConnection.cs" />
