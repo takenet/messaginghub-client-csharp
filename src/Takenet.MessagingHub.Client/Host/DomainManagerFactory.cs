@@ -31,10 +31,7 @@ namespace Takenet.MessagingHub.Client.Host
 
             var appDomain = AppDomain.CreateDomain(domainName, null, domaininfo);
             var domainManager = appDomain.CreateInstanceFromAndUnwrap(Path.Combine(assemblyPath, "Takenet.MessagingHub.Client.dll"), "Takenet.MessagingHub.Client.Host.DomainManager") as IDomainManager;
-            domainManager.Start(assemblyPath);
             return domainManager;
         }
-
-
     }
 }
