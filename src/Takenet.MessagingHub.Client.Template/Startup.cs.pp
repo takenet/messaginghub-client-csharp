@@ -20,6 +20,7 @@ namespace $rootnamespace$
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
+			Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
             return Task.CompletedTask;
         }
     }
