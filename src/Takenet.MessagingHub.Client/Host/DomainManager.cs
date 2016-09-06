@@ -41,7 +41,7 @@ namespace Takenet.MessagingHub.Client.Host
             }
 
             var application = Application.ParseFromJsonFile(Path.Combine(_path, Bootstrapper.DefaultApplicationFileName));
-            _stoppable = Bootstrapper.StartAsync(application).Result;
+            _stoppable = Bootstrapper.StartAsync(application, loadAssembliesFromWorkingDirectory: false).Result;
         }
 
         public void Stop()
