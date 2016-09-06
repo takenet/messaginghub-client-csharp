@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
@@ -65,7 +66,7 @@ namespace Takenet.MessagingHub.Client.Textc
             }
             catch (Exception ex)
             {
-                Console.Write(ex.Message);
+                Trace.TraceError(ex.ToString());
             }
             finally
             {

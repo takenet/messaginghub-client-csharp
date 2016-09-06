@@ -7,8 +7,6 @@ namespace Takenet.MessagingHub.Client.Connection
     public class MessagingHubConnectionConfigurator<TConfigurator> : IMessagingHubConnectionConfigurator<TConfigurator>
         where TConfigurator : MessagingHubConnectionConfigurator<TConfigurator>
     {
-        public const string DEFAULT_DOMAIN = "msging.net";
-
         protected string Identifier { get; private set; }
         protected string Instance { get; private set; }
 
@@ -28,8 +26,8 @@ namespace Takenet.MessagingHub.Client.Connection
 
         public MessagingHubConnectionConfigurator()
         {
-            HostName = DEFAULT_DOMAIN;
-            Domain = DEFAULT_DOMAIN;
+            HostName = Constants.DEFAULT_DOMAIN;
+            Domain = Constants.DEFAULT_DOMAIN;
             SendTimeout = TimeSpan.FromSeconds(20);
             MaxConnectionRetries = 3;
             Compression = SessionCompression.None;

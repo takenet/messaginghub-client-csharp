@@ -18,6 +18,22 @@ namespace Takenet.MessagingHub.Client.Host
         public int Priority { get; set; }
 
         /// <summary>
+        /// Gets or sets the required caller state to ensure the validity of the receiver.
+        /// </summary>
+        /// <value>
+        /// The state filter.
+        /// </value>
+        public string State { get; set; }
+
+        /// <summary>
+        /// Gets or sets the state of the caller to be set after the execution of the receiver.
+        /// </summary>
+        /// <value>
+        /// The state to be set.
+        /// </value>
+        public string OutState { get; set; }
+
+        /// <summary>
         /// Gets or sets the receiver .NET type. 
         /// The type constructor must be parameterless or receive only a <see cref="IServiceProvider"/> instance plus a <see cref="IDictionary{TKey,TValue}"/> settings instance.
         /// </summary>

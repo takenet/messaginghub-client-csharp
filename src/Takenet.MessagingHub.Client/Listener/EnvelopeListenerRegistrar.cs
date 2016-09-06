@@ -32,8 +32,7 @@ namespace Takenet.MessagingHub.Client.Listener
         /// <param name="receiverFactory">A function used to build the notification listener</param>
         /// <param name="predicate">The message predicate used as a filter of messages received by listener.</param>
         /// <param name="priority"></param>
-        /// <param name="cancellationToken">A cancellation token to allow the operation to be canceled</param>
-        public void AddMessageReceiver(Func<IMessageReceiver> receiverFactory, Predicate<Message> predicate, int priority, CancellationToken cancellationToken) => 
+        public void AddMessageReceiver(Func<IMessageReceiver> receiverFactory, Predicate<Message> predicate, int priority) => 
             AddEnvelopeReceiver(_messageReceivers, receiverFactory, predicate, priority);
 
         /// <summary>
@@ -42,8 +41,7 @@ namespace Takenet.MessagingHub.Client.Listener
         /// <param name="receiverFactory">A function used to build the notification listener</param>
         /// <param name="predicate">The notification predicate used as a filter of notifications received by listener.</param>
         /// <param name="priority"></param>
-        /// <param name="cancellationToken">A cancellation token to allow the operation to be canceled</param>
-        public void AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Predicate<Notification> predicate, int priority, CancellationToken cancellationToken) =>        
+        public void AddNotificationReceiver(Func<INotificationReceiver> receiverFactory, Predicate<Notification> predicate, int priority) =>        
             AddEnvelopeReceiver(_notificationReceivers, receiverFactory, predicate, priority);
         
         public bool HasRegisteredReceivers => _messageReceivers.Any() || _notificationReceivers.Any();

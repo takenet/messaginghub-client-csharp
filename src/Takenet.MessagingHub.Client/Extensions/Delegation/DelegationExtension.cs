@@ -7,26 +7,25 @@ using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Extensions.Delegation
 {
-    public class DelegationExtension : IDelegationExtension
+    public class DelegationExtension : ExtensionBase, IDelegationExtension
     {
-        private readonly IMessagingHubSender _messagingHubSender;
+        const string DELEGATIONS_URI = "/delegations";
 
-        public DelegationExtension(IMessagingHubSender messagingHubSender)
+
+        public DelegationExtension(IMessagingHubSender sender)
+            : base(sender)
         {
-            _messagingHubSender = messagingHubSender;
+
         }
 
         public async Task DelegateAsync(Identity target, EnvelopeType[] envelopeTypes = null,
             CancellationToken cancellationToken = new CancellationToken())
         {
-            if (target == null) throw new ArgumentNullException(nameof(target));
-
-            var uri = "/delegations";
-            
-            var setRequestCommand = new Command()
+            if (target == null) throw new ArgumentNullException(nameof(target));                        
+            var requestCommand = new Command()
             {
                 Method = CommandMethod.Set,
-                Uri = new LimeUri(uri),
+                Uri = new LimeUri(DELEGATIONS_URI),
                 Resource = new Lime.Messaging.Resources.Delegation()
                 {
                     EnvelopeTypes = envelopeTypes,
@@ -34,15 +33,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Delegation
                 }
             };
 
-            var setResponseCommand = await _messagingHubSender.SendCommandAsync(
-                setRequestCommand,
-                cancellationToken);
-            if (setResponseCommand.Status != CommandStatus.Success)
-            {
-                throw new LimeException(
-                    setResponseCommand.Reason ??
-                    new Reason() { Code = ReasonCodes.COMMAND_PROCESSING_ERROR, Description = "An error occurred" });
-            }
+            await ProcessCommandAsync(requestCommand, cancellationToken);
         }
 
         public Task UndelegateAsync(Identity target, EnvelopeType[] envelopeTypes = null,

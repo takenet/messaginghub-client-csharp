@@ -33,15 +33,6 @@ namespace Takenet.MessagingHub.Client.Extensions.Session
         public DateTimeOffset Creation { get; set; }
 
         /// <summary>
-        /// Gets or sets the session states.
-        /// </summary>
-        /// <value>
-        /// The states.
-        /// </value>
-        [DataMember(Name = "states")]
-        public string[] States { get; set; }
-
-        /// <summary>
         /// Gets or sets the session variables.
         /// </summary>
         /// <value>

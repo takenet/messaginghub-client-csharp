@@ -15,7 +15,7 @@ namespace Takenet.MessagingHub.Client.Listener
         private readonly IMessagingHubSender _sender;
         private ChannelListener _channelListener;
         private CancellationTokenSource _cts;
-        
+
         public MessagingHubListener(IMessagingHubConnection connection, IMessagingHubSender sender = null)
         {
             _connection = connection;
@@ -27,14 +27,14 @@ namespace Takenet.MessagingHub.Client.Listener
 
         internal EnvelopeListenerRegistrar EnvelopeRegistrar { get; }
 
-        public void AddMessageReceiver(IMessageReceiver messageReceiver, Predicate<Message> messageFilter, int priority = 0, CancellationToken cancellationToken = default(CancellationToken))
+        public void AddMessageReceiver(IMessageReceiver messageReceiver, Predicate<Message> messageFilter, int priority = 0)
         {
-            EnvelopeRegistrar.AddMessageReceiver(() => messageReceiver, messageFilter, priority, cancellationToken);
+            EnvelopeRegistrar.AddMessageReceiver(() => messageReceiver, messageFilter, priority);
         }
 
-        public void AddNotificationReceiver(INotificationReceiver notificationReceiver, Predicate<Notification> notificationFilter, int priority = 0, CancellationToken cancellationToken = default(CancellationToken))
+        public void AddNotificationReceiver(INotificationReceiver notificationReceiver, Predicate<Notification> notificationFilter, int priority = 0)
         {
-            EnvelopeRegistrar.AddNotificationReceiver(() => notificationReceiver, notificationFilter, priority, cancellationToken);
+            EnvelopeRegistrar.AddNotificationReceiver(() => notificationReceiver, notificationFilter, priority);
         }
 
         public Task StartAsync(CancellationToken cancellationToken = default(CancellationToken))
@@ -53,9 +53,10 @@ namespace Takenet.MessagingHub.Client.Listener
 
         private void StartEnvelopeListeners()
         {
-            var messageHandler = new MessageReceivedHandler(_sender, EnvelopeRegistrar);
-            var notificationHandler = new NotificationReceivedHandler(_sender, EnvelopeRegistrar);
             _cts = new CancellationTokenSource();
+            var messageHandler = new MessageReceivedHandler(_sender, EnvelopeRegistrar, _cts);
+            var notificationHandler = new NotificationReceivedHandler(_sender, EnvelopeRegistrar, _cts);
+            
             _channelListener = new ChannelListener(
                 m => messageHandler.HandleAsync(m, _cts.Token),
                 n => notificationHandler.HandleAsync(n, _cts.Token),

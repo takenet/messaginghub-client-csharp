@@ -9,15 +9,21 @@ using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Serialization;
 using Newtonsoft.Json;
+using Takenet.MessagingHub.Client.Extensions;
+using Takenet.MessagingHub.Client.Extensions.Broadcast;
+using Takenet.MessagingHub.Client.Extensions.Bucket;
+using Takenet.MessagingHub.Client.Extensions.Delegation;
+using Takenet.MessagingHub.Client.Extensions.Session;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
-using static Takenet.MessagingHub.Client.Host.ApplicationActivator;
 
 
 namespace Takenet.MessagingHub.Client.Host
 {
     public static class Bootstrapper
     {
+        public const string DefaultApplicationFileName = "application.json";
+
         /// <summary>
         /// Creates ans starts an application with the given settings.
         /// </summary>
@@ -88,7 +94,7 @@ namespace Takenet.MessagingHub.Client.Host
                     }
 
                     if (serviceProviderType.GetConstructors(BindingFlags.Instance | BindingFlags.Public).All(c => c.GetParameters().Length != 0))
-                    {                        
+                    {
                         throw new InvalidOperationException($"{nameof(Application.ServiceProviderType)} must have an empty public constructor");
                     }
 
@@ -137,13 +143,13 @@ namespace Takenet.MessagingHub.Client.Host
         }
 
         private static async Task<IMessagingHubClient> BuildMessagingHubClientAsync(
-            Application application, MessagingHubClientBuilder builder, 
+            Application application, MessagingHubClientBuilder builder,
             TypeServiceProvider typeServiceProvider)
-        {            
+        {
             var applicationReceivers =
                 (application.MessageReceivers ?? new ApplicationReceiver[0]).Union(
                     application.NotificationReceivers ?? new ApplicationReceiver[0]);
-            
+
             // First, register the receivers settings
             foreach (var applicationReceiver in applicationReceivers.Where(a => a.SettingsType != null))
             {
@@ -152,6 +158,8 @@ namespace Takenet.MessagingHub.Client.Host
 
             var client = builder.Build();
             typeServiceProvider.RegisterService(typeof(IMessagingHubSender), client);
+            typeServiceProvider.RegisterService(typeof(IStateManager), StateManager.Instance);
+            typeServiceProvider.RegisterExtensions();
 
             // Now creates the receivers instances
             if (application.MessageReceivers != null && application.MessageReceivers.Length > 0)
@@ -175,7 +183,7 @@ namespace Takenet.MessagingHub.Client.Host
 
                     Predicate<Message> messagePredicate = m => m != null;
 
-                    if (applicationReceiver.MediaType != null)  
+                    if (applicationReceiver.MediaType != null)
                     {
                         var currentMessagePredicate = messagePredicate;
                         var mediaTypeRegex = new Regex(applicationReceiver.MediaType, RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -201,6 +209,17 @@ namespace Takenet.MessagingHub.Client.Host
                         var currentMessagePredicate = messagePredicate;
                         var destinationRegex = new Regex(applicationReceiver.Destination, RegexOptions.Compiled | RegexOptions.IgnoreCase);
                         messagePredicate = m => currentMessagePredicate(m) && destinationRegex.IsMatch(m.To.ToString());
+                    }
+
+                    if (applicationReceiver.State != null)
+                    {
+                        var currentMessagePredicate = messagePredicate;
+                        messagePredicate = m => currentMessagePredicate(m) && StateManager.Instance.GetState(m.From.ToIdentity()).Equals(applicationReceiver.State, StringComparison.OrdinalIgnoreCase);
+                    }
+
+                    if (applicationReceiver.OutState != null)
+                    {
+                        receiver = new SetStateMessageReceiver(receiver, applicationReceiver.OutState);
                     }
 
                     client.AddMessageReceiver(receiver, messagePredicate, applicationReceiver.Priority);
@@ -248,12 +267,24 @@ namespace Takenet.MessagingHub.Client.Host
                         notificationPredicate = n => currentNotificationPredicate(n) && destinationRegex.IsMatch(n.To.ToString());
                     }
 
+                    if (applicationReceiver.State != null)
+                    {
+                        var currentNotificationPredicate = notificationPredicate;
+                        notificationPredicate = n => currentNotificationPredicate(n) && StateManager.Instance.GetState(n.From.ToIdentity()).Equals(applicationReceiver.State, StringComparison.OrdinalIgnoreCase);
+                    }
+
+                    if (applicationReceiver.OutState != null)
+                    {
+                        receiver = new SetStateNotificationReceiver(receiver, applicationReceiver.OutState);
+                    }
+
                     client.AddNotificationReceiver(receiver, notificationPredicate, applicationReceiver.Priority);
                 }
             }
 
             return client;
         }
+
 
         public static Task<T> CreateAsync<T>(string typeName, IServiceProvider serviceProvider, IDictionary<string, object> settings) where T : class
         {
@@ -285,7 +316,8 @@ namespace Takenet.MessagingHub.Client.Host
                 .FirstOrDefault(t => t.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase)) ??
                        Type.GetType(typeName, true, true);
         }
-                
+
+
         private class StoppableWrapper : IStoppable
         {
             private readonly IStoppable[] _stoppables;
@@ -302,6 +334,39 @@ namespace Takenet.MessagingHub.Client.Host
                     if (stoppable != null)
                         await stoppable.StopAsync(cancellationTokenn).ConfigureAwait(false);
                 }
+            }
+        }
+
+        private class SetStateMessageReceiver : SetStateEnvelopeReceiver<Message>, IMessageReceiver
+        {
+            public SetStateMessageReceiver(IEnvelopeReceiver<Message> receiver, string state) : base(receiver, state)
+            {
+            }
+        }
+
+        private class SetStateNotificationReceiver : SetStateEnvelopeReceiver<Notification>, INotificationReceiver
+        {
+            public SetStateNotificationReceiver(IEnvelopeReceiver<Notification> receiver, string state) : base(receiver, state)
+            {
+            }
+        }
+
+        private class SetStateEnvelopeReceiver<T> : IEnvelopeReceiver<T> where T : Envelope
+        {
+            private readonly IEnvelopeReceiver<T> _receiver;
+            private readonly string _state;
+
+            protected SetStateEnvelopeReceiver(IEnvelopeReceiver<T> receiver, string state)
+            {
+                if (state == null) throw new ArgumentNullException(nameof(state));
+                _receiver = receiver;
+                _state = state;
+            }
+
+            public async Task ReceiveAsync(T envelope, CancellationToken cancellationToken = new CancellationToken())
+            {
+                await _receiver.ReceiveAsync(envelope, cancellationToken).ConfigureAwait(false);
+                StateManager.Instance.SetState(envelope.From.ToIdentity(), _state);
             }
         }
     }

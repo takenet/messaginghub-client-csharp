@@ -37,14 +37,14 @@ namespace Takenet.MessagingHub.Client
 
         public bool Listening => Listener.Listening;
 
-        public void AddMessageReceiver(IMessageReceiver messageReceiver, Predicate<Message> messageFilter, int priority = 0, CancellationToken cancellationToken = default(CancellationToken))
+        public void AddMessageReceiver(IMessageReceiver messageReceiver, Predicate<Message> messageFilter, int priority = 0)
         {
-            Listener.AddMessageReceiver(messageReceiver, messageFilter, priority, cancellationToken);
+            Listener.AddMessageReceiver(messageReceiver, messageFilter, priority);
         }
 
-        public void AddNotificationReceiver(INotificationReceiver notificationReceiver, Predicate<Notification> notificationFilter, int priority = 0, CancellationToken cancellationToken = default(CancellationToken))
+        public void AddNotificationReceiver(INotificationReceiver notificationReceiver, Predicate<Notification> notificationFilter, int priority = 0)
         {
-            Listener.AddNotificationReceiver(notificationReceiver, notificationFilter, priority, cancellationToken);
+            Listener.AddNotificationReceiver(notificationReceiver, notificationFilter, priority);
         }
 
         public Task<Command> SendCommandAsync(Command command, CancellationToken cancellationToken = new CancellationToken())

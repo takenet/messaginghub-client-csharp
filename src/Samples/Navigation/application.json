@@ -1,7 +1,6 @@
 ﻿{
   "identifier": "navigationsample",
   "accessKey": "QkRYOHAz",
-  
   "messageReceivers": [
     {
       "mediaType": "text/plain",
@@ -31,11 +30,13 @@
             }
           ]
         }
-      }
+      },
+      "outState": "answer" 
     },
     {
       "mediaType": "text/plain",
       "content": "^(texto|um texto|1)$",
+      "state": "answer",
       "response": {
         "mediaType": "text/plain",
         "plainContent": "Este é um texto simples, sem nada de especial."
@@ -44,6 +45,7 @@
     {
       "mediaType": "text/plain",
       "content": "^(imagem|uma imagem|2)$",
+      "state": "answer",
       "response": {
         "mediaType": "application/vnd.lime.media-link+json",
         "jsonContent": {
@@ -56,6 +58,7 @@
     {
       "mediaType": "text/plain",
       "content": "^(data|a data atual|3)$",
+      "state": "answer",
       "type": "DateMessageReceiver",
       "settings": {
         "culture": "pt-BR",
@@ -65,6 +68,7 @@
     {
       "mediaType": "text/plain",
       "content": "(start|help|begin|activate)",
+      "state": "answer",
       "response": {
         "mediaType": "application/vnd.lime.select+json",
         "jsonContent": {
@@ -95,6 +99,7 @@
     {
       "mediaType": "text/plain",
       "content": "^(text|a text)$",
+      "state": "answer",
       "response": {
         "mediaType": "text/plain",
         "plainContent": "This is a simple text, with nothing of special."
@@ -103,6 +108,7 @@
     {
       "mediaType": "text/plain",
       "content": "^(image|an image)$",
+      "state": "answer",
       "response": {
         "mediaType": "application/vnd.lime.media-link+json",
         "jsonContent": {
@@ -115,11 +121,22 @@
     {
       "mediaType": "text/plain",
       "content": "^(date|the current date)$",
+      "state": "answer",
       "type": "DateMessageReceiver",
       "settings": {
         "culture": "en-US",
-        "message": "The current date is {0}." 
+        "message": "The current date is {0}."
       }
+    },
+    {
+      "mediaType": "text/plain",
+      "content": "^(sair|parar|cancelar)$",
+      "state": "answer",
+      "response": {
+        "mediaType": "text/plain",
+        "plainContent": "Obrigado por usar nosso serviço. Volte sempre!"
+      },
+      "outState": "default" 
     },
     {
       "priority": "100",
