@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -23,18 +24,23 @@ namespace Takenet.MessagingHub.Client.Host
             }
         }
 
-        public void Start(string path)
+        public void Start(string logPath, string assemblyPath)
         {
-            _path = path;
+            _path = assemblyPath;
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            var file = File.CreateText(Path.Combine(logPath, "Output.txt"));
+            Trace.AutoFlush = true;
 
-            foreach (var item in new DirectoryInfo(path).GetFiles("*.dll"))
+            Trace.Listeners.Clear();
+            Trace.Listeners.Add(new TextWriterTraceListener(file));
+
+            foreach (var item in new DirectoryInfo(_path).GetFiles("*.dll"))
             {
-                var binaries = File.ReadAllBytes(Path.Combine(path, item.Name));
+                var binaries = File.ReadAllBytes(Path.Combine(_path, item.Name));
                 Assembly.Load(binaries);
             }
 
-            var application = Application.ParseFromJsonFile(Path.Combine(path, Bootstrapper.DefaultApplicationFileName));
+            var application = Application.ParseFromJsonFile(Path.Combine(_path, Bootstrapper.DefaultApplicationFileName));
             _stoppable = Bootstrapper.StartAsync(application).Result;
         }
 

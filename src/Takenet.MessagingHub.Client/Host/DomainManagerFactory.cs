@@ -16,6 +16,7 @@ using Takenet.MessagingHub.Client.Extensions.Delegation;
 using Takenet.MessagingHub.Client.Extensions.Session;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
+using System.Security.Permissions;
 
 namespace Takenet.MessagingHub.Client.Host
 {
@@ -26,10 +27,14 @@ namespace Takenet.MessagingHub.Client.Host
             var domaininfo = new AppDomainSetup
             {
                 ApplicationBase = assemblyPath,
-                ApplicationName = domainName
+                ApplicationName = domainName,
+                PrivateBinPath = assemblyPath
             };
 
-            var appDomain = AppDomain.CreateDomain(domainName, null, domaininfo);
+            var evidence = AppDomain.CurrentDomain.Evidence;
+            var permission = AppDomain.CurrentDomain.PermissionSet;
+            permission.AddPermission(new FileIOPermission(FileIOPermissionAccess.AllAccess, assemblyPath));
+            var appDomain = AppDomain.CreateDomain(domainName, evidence, domaininfo, permission);
             var domainManager = appDomain.CreateInstanceFromAndUnwrap(Path.Combine(assemblyPath, "Takenet.MessagingHub.Client.dll"), "Takenet.MessagingHub.Client.Host.DomainManager") as IDomainManager;
             return domainManager;
         }

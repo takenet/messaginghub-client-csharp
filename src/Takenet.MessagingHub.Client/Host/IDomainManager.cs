@@ -10,7 +10,7 @@ namespace Takenet.MessagingHub.Client.Host
     public interface IDomainManager : IDisposable
     {
         AppDomain Domain { get; }
-        void Start(string path);
+        void Start(string originalPath, string tempPath);
         void Stop();
     }
 }
