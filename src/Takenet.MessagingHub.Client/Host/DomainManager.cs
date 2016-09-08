@@ -54,6 +54,11 @@ namespace Takenet.MessagingHub.Client.Host
             Stop();
         }
 
+        public override object InitializeLifetimeService()
+        {
+            return null;
+        }
+
         public Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             var binaries = File.ReadAllBytes(Path.Combine(_path, args.Name.Split(',')[0]) + ".dll");
