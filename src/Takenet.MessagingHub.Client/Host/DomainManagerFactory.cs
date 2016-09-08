@@ -33,7 +33,6 @@ namespace Takenet.MessagingHub.Client.Host
 
             var evidence = AppDomain.CurrentDomain.Evidence;
             var permission = AppDomain.CurrentDomain.PermissionSet;
-            permission.AddPermission(new FileIOPermission(FileIOPermissionAccess.AllAccess, assemblyPath));
             var appDomain = AppDomain.CreateDomain(domainName, evidence, domaininfo, permission);
             var domainManager = appDomain.CreateInstanceFromAndUnwrap(Path.Combine(assemblyPath, "Takenet.MessagingHub.Client.dll"), "Takenet.MessagingHub.Client.Host.DomainManager") as IDomainManager;
             return domainManager;

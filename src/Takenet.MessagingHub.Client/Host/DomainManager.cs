@@ -26,22 +26,29 @@ namespace Takenet.MessagingHub.Client.Host
 
         public void Start(string logPath, string assemblyPath)
         {
-            _path = assemblyPath;
-            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-            var file = File.CreateText(Path.Combine(logPath, "Output.txt"));
-            Trace.AutoFlush = true;
-
-            Trace.Listeners.Clear();
-            Trace.Listeners.Add(new TextWriterTraceListener(file));
-
-            foreach (var item in new DirectoryInfo(_path).GetFiles("*.dll"))
+            try
             {
-                var binaries = File.ReadAllBytes(Path.Combine(_path, item.Name));
-                Assembly.Load(binaries);
-            }
+                _path = assemblyPath;
+                AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+                var file = File.CreateText(Path.Combine(logPath, "Output.txt"));
+                Trace.AutoFlush = true;
 
-            var application = Application.ParseFromJsonFile(Path.Combine(_path, Bootstrapper.DefaultApplicationFileName));
-            _stoppable = Bootstrapper.StartAsync(application, loadAssembliesFromWorkingDirectory: false).Result;
+                Trace.Listeners.Clear();
+                Trace.Listeners.Add(new TextWriterTraceListener(file));
+
+                foreach (var item in new DirectoryInfo(_path).GetFiles("*.dll"))
+                {
+                    var binaries = File.ReadAllBytes(Path.Combine(_path, item.Name));
+                    Assembly.Load(binaries);
+                }
+
+                var application = Application.ParseFromJsonFile(Path.Combine(_path, Bootstrapper.DefaultApplicationFileName));
+                _stoppable = Bootstrapper.StartAsync(application, loadAssembliesFromWorkingDirectory: false).Result;
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError(ex.ToString());
+            }
         }
 
         public void Stop()
@@ -61,8 +68,16 @@ namespace Takenet.MessagingHub.Client.Host
 
         public Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            var binaries = File.ReadAllBytes(Path.Combine(_path, args.Name.Split(',')[0]) + ".dll");
-            return Assembly.Load(binaries);
+            try
+            {
+                var binaries = File.ReadAllBytes(Path.Combine(_path, args.Name.Split(',')[0]) + ".dll");
+                return Assembly.Load(binaries);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError(ex.ToString());
+                return null;
+            }
         }
     }
 }
