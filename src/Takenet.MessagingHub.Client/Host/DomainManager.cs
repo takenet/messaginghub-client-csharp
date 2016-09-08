@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lime.Protocol;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -15,6 +16,7 @@ namespace Takenet.MessagingHub.Client.Host
     {
         private IStoppable _stoppable;
         private string _path;
+        private TextWriterTraceListener _file;
 
         public AppDomain Domain
         {
@@ -34,7 +36,8 @@ namespace Takenet.MessagingHub.Client.Host
                 Trace.AutoFlush = true;
 
                 Trace.Listeners.Clear();
-                Trace.Listeners.Add(new TextWriterTraceListener(file));
+                _file = new TextWriterTraceListener(file);
+                Trace.Listeners.Add(_file);
 
                 foreach (var item in new DirectoryInfo(_path).GetFiles("*.dll"))
                 {
@@ -53,6 +56,7 @@ namespace Takenet.MessagingHub.Client.Host
 
         public void Stop()
         {
+            _file.DisposeIfDisposable();
             _stoppable.StopAsync().Wait();
         }
 
