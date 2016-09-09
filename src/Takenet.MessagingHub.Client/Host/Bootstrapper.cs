@@ -29,12 +29,13 @@ namespace Takenet.MessagingHub.Client.Host
         /// </summary>
         /// <param name="application">The application instance. If not defined, the class will look for an application.json file in the current directory.</param>
         /// <param name="loadAssembliesFromWorkingDirectory">if set to <c>true</c> indicates to the bootstrapper to load all assemblies from the current working directory.</param>
+        /// <param name="path">Assembly path to load</param>
         /// <returns></returns>
         /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="ArgumentException">At least an access key or password must be defined</exception>
         /// <exception cref="FileNotFoundException">Could not find the 'application.json' file</exception>
         /// <exception cref="ArgumentException">At least an access key or password must be defined</exception>
-        public static async Task<IStoppable> StartAsync(Application application = null, bool loadAssembliesFromWorkingDirectory = true)
+        public static async Task<IStoppable> StartAsync(Application application = null, bool loadAssembliesFromWorkingDirectory = true, string path = ".")
         {
             if (application == null)
             {
@@ -44,7 +45,7 @@ namespace Takenet.MessagingHub.Client.Host
 
             if (loadAssembliesFromWorkingDirectory)
             {
-                TypeUtil.LoadAssembliesAndReferences(".", assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter, ignoreExceptionLoadingReferencedAssembly: true);
+                TypeUtil.LoadAssembliesAndReferences(path, assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter, ignoreExceptionLoadingReferencedAssembly: true);
             }
 
             var builder = new MessagingHubClientBuilder();
