@@ -74,6 +74,16 @@ namespace Takenet.MessagingHub.Client.Host
         {
             try
             {
+                var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+                foreach (var assembly in loadedAssemblies)
+                {
+                    if (assembly.FullName == args.Name)
+                    {
+                        return assembly;
+                    }
+                }
+
                 var binaries = File.ReadAllBytes(Path.Combine(_path, args.Name.Split(',')[0]) + ".dll");
                 return Assembly.Load(binaries);
             }
