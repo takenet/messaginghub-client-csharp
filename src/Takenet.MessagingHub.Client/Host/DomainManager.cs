@@ -63,7 +63,6 @@ namespace Takenet.MessagingHub.Client.Host
                         var methodInfo = typeof(TypeUtil).GetMethod("RegisterDocument", BindingFlags.Public | BindingFlags.Static);
                         var generic = methodInfo.MakeGenericMethod(item);
                         generic.Invoke(null, null);
-                        Trace.TraceInformation("Register: " + item.Name + " " + item.Assembly.CodeBase);
                     }
                     catch (Exception ex) { }
                 }
