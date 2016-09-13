@@ -3,8 +3,7 @@
   "accessKey": "",
   "messageReceivers": [
     {
-      "type": "PlainTextMessageReceiver",
-      "mediaType": "text/plain"
+      "type": "EchoMessageReceiver"
     }
   ],
   "settings": {
