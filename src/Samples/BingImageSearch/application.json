@@ -1,0 +1,15 @@
+﻿{
+  "identifier": "{identifier}",
+  "accessKey": "{accessKey}",
+  "messageReceivers": [
+    {
+      "type": "PlainTextMessageReceiver",
+      "mediaType": "text/plain"
+    }
+  ],
+  "settings": {
+    "BingApiKey": "{BingApiKey}"
+  },
+  "startupType": "Startup",
+  "schemaVersion": 2
+}
