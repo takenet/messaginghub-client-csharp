@@ -12,12 +12,12 @@ namespace BingImageSearch
     public class Startup : IStartable
     {
         private readonly IMessagingHubSender _sender;
-        private readonly IDictionary<string, object> _settings;
+        public static IDictionary<string, object> Settings;
 
         public Startup(IMessagingHubSender sender, IDictionary<string, object> settings)
         {
             _sender = sender;
-            _settings = settings;
+            Settings = settings;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
