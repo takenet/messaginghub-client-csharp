@@ -1,6 +1,6 @@
 ﻿{
-  "identifier": "{identifier}",
-  "accessKey": "{accessKey}",
+  "identifier": "{YOUR_IDENTIFIER}",
+  "accessKey": "{YOUR_ACCESSKEY}",
   "messageReceivers": [
     {
       "type": "PlainTextMessageReceiver",
@@ -8,7 +8,7 @@
     }
   ],
   "settings": {
-    "BingApiKey": "{BingApiKey}"
+    "BingApiKey": "{YOUR_BING_KEY}"
   },
   "startupType": "Startup",
   "schemaVersion": 2

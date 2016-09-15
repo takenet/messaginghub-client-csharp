@@ -34,7 +34,7 @@ namespace Takenet.MessagingHub.Client.Host
                 _path = assemblyPath;
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-                var file = File.CreateText(Path.Combine(logPath, "Output.txt"));
+                var file = File.CreateText(Path.Combine(logPath, $"Output-{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt"));
                 Trace.AutoFlush = true;
 
                 Trace.Listeners.Clear();

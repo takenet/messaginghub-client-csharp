@@ -73,6 +73,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BingContainer.cs" />
     <Compile Include="BingSearchContainer.cs" />
     <Compile Include="PlainTextMessageReceiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -83,6 +84,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <None Include="Readme.md" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />
