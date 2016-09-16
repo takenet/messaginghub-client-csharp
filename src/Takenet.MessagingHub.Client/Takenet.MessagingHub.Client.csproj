@@ -73,7 +73,11 @@
     <Compile Include="Host\ApplicationReceiver.cs" />
     <Compile Include="Host\Bootstrapper.cs" />
     <Compile Include="Host\DocumentDefinition.cs" />
+    <Compile Include="Host\DomainManager.cs" />
+    <Compile Include="Host\DomainManagerFactory.cs" />
     <Compile Include="Host\Factory.cs" />
+    <Compile Include="Host\IDomainManagerFactory.cs" />
+    <Compile Include="Host\IDomainManager.cs" />
     <Compile Include="Host\IFactory.cs" />
     <Compile Include="Host\IServiceContainer.cs" />
     <Compile Include="Host\MessageApplicationReceiver.cs" />

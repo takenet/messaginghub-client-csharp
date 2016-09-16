@@ -1,0 +1,15 @@
+﻿{
+  "identifier": "bingimagesearch",
+  "accessKey": "eXY5eDhkaWs2OHNwemthaWpPbEI=",
+  "messageReceivers": [
+    {
+      "type": "PlainTextMessageReceiver",
+      "mediaType": "text/plain"
+    }
+  ],
+  "settings": {
+    "BingApiKey": "d80d5c1e5523455b8bc8dad406587c86"
+  },
+  "startupType": "Startup",
+  "schemaVersion": 2
+}

@@ -2,7 +2,6 @@
   /* Retrieve your application's login and access key at http://messaginghub.io */
   "identifier": "switcher",
   "accessKey": "",
-  "hostName": "hmg.msging.net",
   "messageReceivers": [
     {
       "type": "OptInMessageReceiver",

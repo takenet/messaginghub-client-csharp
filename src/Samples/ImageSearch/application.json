@@ -3,13 +3,33 @@
   "accessKey": "",
   "messageReceivers": [
     {
-      "type": "PlainTextMessageReceiver",
-      "mediaType": "text/plain"
+      "type": "TextcMessageReceiverFactory",
+      "mediaType": "text/plain",
+      "settings": {
+        "commands": [
+          {
+            "syntaxes": [
+              "[:Word(mais,more,top) top:Integer? query+:Text]"
+            ],
+            "processorType": "ImageProcessor",
+            "method": "GetImageDocumentAsync"
+          },
+          {
+            "syntaxes": [
+              "[query+:Text]"
+            ],
+            "processorType": "ImageProcessor",
+            "method": "GetFirstImageDocumentAsync"
+          }
+        ],
+        "scorer": "MatchCountExpressionScorer"
+      }
     }
   ],
   "settings": {
-    "setting1": "value1"
+    // Get an API key here: https://datamarket.azure.com/dataset/bing/search    
+    "bingApiKey": ""
   },
-  "startupType": "Startup",
+  "settingsType": "Settings",
   "schemaVersion": 2
 }

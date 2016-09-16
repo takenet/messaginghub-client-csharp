@@ -52,8 +52,13 @@ namespace Takenet.MessagingHub.Client.Sender
             }
         }
 
+        /// <summary>
+        /// Dispatch a notification, if its id is not null or empty.
+        /// </summary>
         public async Task SendNotificationAsync(Notification notification, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (string.IsNullOrWhiteSpace(notification.Id)) return;
+
             if (!Connection.IsConnected)
                 throw new InvalidOperationException("A connection must be established before to proceed with this operation!");
 

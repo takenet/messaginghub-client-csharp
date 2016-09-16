@@ -4,18 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{86220E54-00C1-4755-ACAB-0A7016270B01}</ProjectGuid>
+    <ProjectGuid>{33049C01-E17A-4153-882E-19482E75BF11}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ImageSearch</RootNamespace>
-    <AssemblyName>ImageSearch</AssemblyName>
+    <RootNamespace>BingImageSearch</RootNamespace>
+    <AssemblyName>BingImageSearch</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -25,16 +22,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Lime.Messaging, Version=0.6.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -49,8 +42,12 @@
       <HintPath>..\..\packages\Lime.Transport.Tcp.0.6.2\lib\net461\Lime.Transport.Tcp.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="mhh, Version=0.3.153.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.MessagingHub.Client.Host.0.3.153\lib\net461\mhh.exe</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -66,45 +63,37 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Takenet.Textc, Version=0.2.16.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Takenet.Textc.0.2.16\lib\net451\Takenet.Textc.dll</HintPath>
+    <Reference Include="Takenet.MessagingHub.Client, Version=0.3.153.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.MessagingHub.Client.0.3.153\lib\net461\Takenet.MessagingHub.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Takenet.MessagingHub.Client.Template, Version=0.3.153.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.MessagingHub.Client.Template.0.3.153\lib\net461\Takenet.MessagingHub.Client.Template.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BingContainer.cs" />
     <Compile Include="BingSearchContainer.cs" />
-    <Compile Include="ImageProcessor.cs" />
     <Compile Include="PlainTextMessageReceiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings.cs" />
+    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="application.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.config" />
+    <None Include="Readme.md" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Takenet.MessagingHub.Client.Host\Takenet.MessagingHub.Client.Host.csproj">
-      <Project>{288513c0-fcd1-47b0-9c98-00b34ce99b63}</Project>
-      <Name>Takenet.MessagingHub.Client.Host</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Takenet.MessagingHub.Client.Textc\Takenet.MessagingHub.Client.Textc.csproj">
-      <Project>{1492f9e8-eaa1-42ab-9ac7-0f0b711fb343}</Project>
-      <Name>Takenet.MessagingHub.Client.Textc</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Takenet.MessagingHub.Client\Takenet.MessagingHub.Client.csproj">
-      <Project>{628f8ee4-956a-49ce-b9d6-bd5f6800fe6f}</Project>
-      <Name>Takenet.MessagingHub.Client</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

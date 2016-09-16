@@ -66,6 +66,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageTypes", "Samples\Mes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Navigation", "Samples\Navigation\Navigation.csproj", "{73FDE559-E93F-4584-9AAA-6755718E0CE7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingImageSearch", "Samples\BingImageSearch\BingImageSearch.csproj", "{33049C01-E17A-4153-882E-19482E75BF11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
