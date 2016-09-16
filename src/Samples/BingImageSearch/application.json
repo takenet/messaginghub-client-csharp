@@ -1,6 +1,6 @@
 ﻿{
-  "identifier": "{YOUR_IDENTIFIER}",
-  "accessKey": "{YOUR_ACCESSKEY}",
+  "identifier": "bingimagesearch",
+  "accessKey": "eXY5eDhkaWs2OHNwemthaWpPbEI=",
   "messageReceivers": [
     {
       "type": "PlainTextMessageReceiver",
@@ -8,7 +8,7 @@
     }
   ],
   "settings": {
-    "BingApiKey": "{YOUR_BING_KEY}"
+    "BingApiKey": "d80d5c1e5523455b8bc8dad406587c86"
   },
   "startupType": "Startup",
   "schemaVersion": 2

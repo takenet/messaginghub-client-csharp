@@ -12,6 +12,7 @@ using System.Linq;
 using Lime.Messaging.Contents;
 using System.Net.Http;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace BingImageSearch
 {
@@ -61,6 +62,8 @@ namespace BingImageSearch
                     //Cria um conteudo de imagem para a mensagem de resposta
                     messageToSend.Content = new MediaLink
                     {
+                        Size = string.IsNullOrEmpty(imageResult.contentSize) ? 0 : long.Parse(Regex.Match(imageResult.contentSize, "\\d+").Value),
+                        Type = MediaType.Parse($"image/{imageResult.encodingFormat}"),
                         PreviewUri = imageResult.thumbnailUrl != null ? new Uri(imageResult.thumbnailUrl) : null,
                         //Unico campo obrigatorio
                         Uri = new Uri(imageResult.contentUrl)

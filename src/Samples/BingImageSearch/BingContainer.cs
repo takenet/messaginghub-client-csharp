@@ -34,7 +34,7 @@ namespace BingImageSearch
         public string name { get; set; }
         public string webSearchUrl { get; set; }
         public string thumbnailUrl { get; set; }
-        public DateTime datePublished { get; set; }
+        public string datePublished { get; set; }
         public string contentUrl { get; set; }
         public string hostPageUrl { get; set; }
         public string contentSize { get; set; }
