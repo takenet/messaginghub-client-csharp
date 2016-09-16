@@ -64,6 +64,7 @@ namespace BingImageSearch
                     {
                         Size = string.IsNullOrEmpty(imageResult.contentSize) ? 0 : long.Parse(Regex.Match(imageResult.contentSize, "\\d+").Value),
                         Type = MediaType.Parse($"image/{imageResult.encodingFormat}"),
+                        PreviewType = MediaType.Parse($"image/{imageResult.encodingFormat}"),
                         PreviewUri = imageResult.thumbnailUrl != null ? new Uri(imageResult.thumbnailUrl) : null,
                         //Unico campo obrigatorio
                         Uri = new Uri(imageResult.contentUrl)
