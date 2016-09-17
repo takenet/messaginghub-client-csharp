@@ -34,7 +34,7 @@ namespace Takenet.MessagingHub.Client.Host
                 _path = assemblyPath;
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-                var file = File.CreateText(Path.Combine(logPath, "Output.txt"));
+                var file = File.CreateText(Path.Combine(logPath, $"Output-{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt"));
                 Trace.AutoFlush = true;
 
                 Trace.Listeners.Clear();
@@ -47,7 +47,8 @@ namespace Takenet.MessagingHub.Client.Host
                     if (allAssemblies.FirstOrDefault(x => x.GetName().Name == item.Name.Replace(".dll", string.Empty)) == null)
                     {
                         var binaries = File.ReadAllBytes(Path.Combine(_path, item.Name));
-                        Assembly.Load(binaries);
+                        var thisAssembly = Assembly.Load(binaries);
+                        LoadResource(thisAssembly);
                     }
                 }
 
@@ -96,23 +97,53 @@ namespace Takenet.MessagingHub.Client.Host
         {
             try
             {
+                var keyName = new AssemblyName(args.Name).Name;
+                if (keyName.Contains(".resources"))
+                {
+                    return null;
+                }
+
                 var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 
                 foreach (var assembly in loadedAssemblies)
                 {
                     if (assembly.FullName == args.Name)
                     {
+                        LoadResource(assembly);
                         return assembly;
                     }
                 }
 
                 var binaries = File.ReadAllBytes(Path.Combine(_path, args.Name.Split(',')[0]) + ".dll");
-                return Assembly.Load(binaries);
+                var assemblyLoaded = Assembly.Load(binaries);
+                LoadResource(assemblyLoaded);
+                return assemblyLoaded;
             }
             catch (Exception ex)
             {
                 Trace.TraceError(ex.ToString());
                 return null;
+            }
+        }
+
+        public static void LoadResource(Assembly assembly)
+        {
+            var resources = assembly.GetManifestResourceNames();
+            if (resources.Any())
+            {
+                var resourceName = resources.First();
+                using (var stream = assembly.GetManifestResourceStream(resourceName))
+                {
+                    if (stream == null) return;
+                    var block = new byte[stream.Length];
+
+                    try
+                    {
+                        stream.Read(block, 0, block.Length);
+                        Assembly.Load(block);
+                    }
+                    catch (Exception) { }
+                }
             }
         }
 
