@@ -73,6 +73,7 @@ namespace Takenet.MessagingHub.Client.Host
             if (application.RoutingRule != null) builder = builder.UsingRoutingRule(application.RoutingRule.Value);
             if (application.Domain != null) builder = builder.UsingDomain(application.Domain);
             if (application.HostName != null) builder = builder.UsingHostName(application.HostName);
+            if (application.Port != null) builder = builder.UsingPort(application.Port.Value);
             if (application.SendTimeout != 0) builder = builder.WithSendTimeout(TimeSpan.FromMilliseconds(application.SendTimeout));
             if (application.SessionEncryption.HasValue) builder = builder.UsingEncryption(application.SessionEncryption.Value);
             if (application.SessionCompression.HasValue) builder = builder.UsingCompression(application.SessionCompression.Value);

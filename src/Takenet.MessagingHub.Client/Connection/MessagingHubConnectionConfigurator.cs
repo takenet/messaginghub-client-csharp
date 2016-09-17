@@ -15,6 +15,7 @@ namespace Takenet.MessagingHub.Client.Connection
         protected TimeSpan SendTimeout { get; private set; }
         protected int MaxConnectionRetries { get; private set; }
         protected string Domain { get; private set; }
+        protected int Port { get; private set; }
         protected string HostName { get; private set; }
         protected SessionCompression Compression { get; private set; }
         protected SessionEncryption Encryption { get; private set; }
@@ -22,12 +23,13 @@ namespace Takenet.MessagingHub.Client.Connection
         protected int Throughput { get; private set; }
 
         protected Identity Identity => Identity.Parse($"{Identifier}@{Domain}");
-        protected Uri EndPoint => new Uri($"net.tcp://{HostName}:55321");
+        protected Uri EndPoint => new Uri($"net.tcp://{HostName}:{Port}");
 
         public MessagingHubConnectionConfigurator()
         {
             HostName = Constants.DEFAULT_DOMAIN;
             Domain = Constants.DEFAULT_DOMAIN;
+            Port = Constants.DEFAULT_PORT;
             SendTimeout = TimeSpan.FromSeconds(20);
             MaxConnectionRetries = 3;
             Compression = SessionCompression.None;
@@ -80,6 +82,14 @@ namespace Takenet.MessagingHub.Client.Connection
             if (string.IsNullOrEmpty(hostName)) throw new ArgumentNullException(nameof(hostName));
 
             HostName = hostName;
+            return (TConfigurator)this;
+        }
+
+        public TConfigurator UsingPort(int port)
+        {            
+            if (port <= 0) throw new ArgumentOutOfRangeException(nameof(port));
+
+            Port = port;
             return (TConfigurator)this;
         }
 

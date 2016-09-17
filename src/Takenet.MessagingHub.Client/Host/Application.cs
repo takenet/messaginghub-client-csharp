@@ -52,6 +52,14 @@ namespace Takenet.MessagingHub.Client.Host
         public string HostName { get; set; }
 
         /// <summary>
+        /// Gets or sets the port to be used.
+        /// </summary>
+        /// <value>
+        /// The port.
+        /// </value>
+        public int? Port { get; set; }
+
+        /// <summary>
         /// Gets or sets the access key.
         /// </summary>
         /// <value>
