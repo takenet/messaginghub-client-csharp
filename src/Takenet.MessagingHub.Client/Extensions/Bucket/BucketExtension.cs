@@ -23,7 +23,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Bucket
             var getRequestCommand = new Command()
             {
                 Method = CommandMethod.Get,
-                Uri = new LimeUri($"/buckets/{id}")
+                Uri = new LimeUri($"/buckets/{Uri.EscapeDataString(id)}")
             };
 
             var getResponseCommand = await _messagingHubSender.SendCommandAsync(
@@ -49,7 +49,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Bucket
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (document == null) throw new ArgumentNullException(nameof(document));
 
-            var uri = $"/buckets/{id}";
+            var uri = $"/buckets/{Uri.EscapeDataString(id)}";
             if (expiration != default(TimeSpan))
             {
                 uri = $"{uri}?expiration={expiration.TotalMilliseconds}";
@@ -79,7 +79,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Bucket
             var deleteRequestCommand = new Command()
             {
                 Method = CommandMethod.Delete,
-                Uri = new LimeUri($"/buckets/{id}")
+                Uri = new LimeUri($"/buckets/{Uri.EscapeDataString(id)}")
             };
 
             var deleteResponseCommand = await _messagingHubSender.SendCommandAsync(

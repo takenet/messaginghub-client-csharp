@@ -49,7 +49,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Broadcast
                 Id = EnvelopeId.NewId(),
                 To = DistributionListAddress,
                 Method = CommandMethod.Delete,
-                Uri = new LimeUri($"/lists/{listIdentity}")
+                Uri = new LimeUri($"/lists/{Uri.EscapeDataString(listIdentity.ToString())}")
             };
 
             await ProcessCommandAsync(requestCommand, cancellationToken);
@@ -65,7 +65,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Broadcast
                 Id = EnvelopeId.NewId(),
                 To = DistributionListAddress,
                 Method = CommandMethod.Set,
-                Uri = new LimeUri($"/lists/{listIdentity}/recipients"),
+                Uri = new LimeUri($"/lists/{Uri.EscapeDataString(listIdentity.ToString())}/recipients"),
                 Resource = new IdentityDocument()
                 {
                     Value = recipientIdentity
@@ -85,7 +85,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Broadcast
                 Id = EnvelopeId.NewId(),
                 To = DistributionListAddress,
                 Method = CommandMethod.Delete,
-                Uri = new LimeUri($"/lists/{listIdentity}/recipients/{recipientIdentity}")
+                Uri = new LimeUri($"/lists/{Uri.EscapeDataString(listIdentity.ToString())}/recipients/{Uri.EscapeDataString(recipientIdentity.ToString())}")
             };
 
             await ProcessCommandAsync(requestCommand, cancellationToken);
