@@ -12,6 +12,7 @@ namespace Takenet.MessagingHub.Client.WebHost
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
+            MessagingHubConfig.StartAsync().Wait();
         }
     }
 }
