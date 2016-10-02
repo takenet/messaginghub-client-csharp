@@ -66,6 +66,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Navigation", "Samples\Navig
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingImageSearch", "Samples\BingImageSearch\BingImageSearch.csproj", "{33049C01-E17A-4153-882E-19482E75BF11}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.WebHost", "Takenet.MessagingHub.Client.WebHost\Takenet.MessagingHub.Client.WebHost.csproj", "{5ED33BDE-A2BA-480B-B487-C5C896DA726E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -175,6 +177,12 @@ Global
 		{33049C01-E17A-4153-882E-19482E75BF11}.Production|Any CPU.Build.0 = Release|Any CPU
 		{33049C01-E17A-4153-882E-19482E75BF11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33049C01-E17A-4153-882E-19482E75BF11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5ED33BDE-A2BA-480B-B487-C5C896DA726E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ED33BDE-A2BA-480B-B487-C5C896DA726E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5ED33BDE-A2BA-480B-B487-C5C896DA726E}.Production|Any CPU.ActiveCfg = Release|Any CPU
+		{5ED33BDE-A2BA-480B-B487-C5C896DA726E}.Production|Any CPU.Build.0 = Release|Any CPU
+		{5ED33BDE-A2BA-480B-B487-C5C896DA726E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5ED33BDE-A2BA-480B-B487-C5C896DA726E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
