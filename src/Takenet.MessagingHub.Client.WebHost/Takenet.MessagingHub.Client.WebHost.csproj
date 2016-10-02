@@ -120,6 +120,10 @@
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Samples\Echo\Echo.csproj">
+      <Project>{3a9fde75-7089-4591-a57f-8825ec131a1d}</Project>
+      <Name>Echo</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Takenet.MessagingHub.Client\Takenet.MessagingHub.Client.csproj">
       <Project>{628f8ee4-956a-49ce-b9d6-bd5f6800fe6f}</Project>
       <Name>Takenet.MessagingHub.Client</Name>

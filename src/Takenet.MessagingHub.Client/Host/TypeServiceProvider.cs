@@ -16,7 +16,7 @@ namespace Takenet.MessagingHub.Client.Host
             TypeDictionary = new Dictionary<Type, object>();
         }
 
-        public IServiceProvider SecondaryServiceProvider { get; internal set; }
+        public IServiceProvider SecondaryServiceProvider { get; set; }
 
         /// <summary>
         /// Gets the service.
@@ -45,6 +45,11 @@ namespace Takenet.MessagingHub.Client.Host
             if (instance == null) throw new ArgumentNullException(nameof(instance));            
             TypeDictionary.Add(serviceType, instance);
             (SecondaryServiceProvider as IServiceContainer)?.RegisterService(serviceType, instance);
+        }
+
+        public void RegisterExtensions()
+        {
+            throw new NotImplementedException();
         }
     } 
 }
