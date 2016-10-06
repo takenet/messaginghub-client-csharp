@@ -1,11 +1,11 @@
 
-The **Messaging Hub Client** is a set of Nuget packages that allow the creation of [Messaging Hub](https://messaginghub.io/) applications.
+The **Blip Messaging Hub Client** is a set of Nuget packages that allow the creation of [Blip Messaging Hub](https://blip.ai/) applications.
 
 <a href="https://www.nuget.org/packages/Takenet.MessagingHub.Client.Template/" rel="NuGet">![NuGet](https://img.shields.io/nuget/v/Takenet.MessagingHub.Client.Template.svg)</a>
 
 ## Getting Started
 
-To get started with the Messaging Hub Client, see our SDK documentation [here](http://omni.messaginghub.io/portal/#/docs/home).
+To get started with the Blip Messaging Hub Client, see our SDK documentation [here](https://blip.ai/portal/#/docs/home).
 
 An introdutory application can be found [here](https://github.com/takenet/messaginghub-client-csharp/tree/master/src/Samples/GettingStarted), but we encourage you to use the *Messaging Hub Application Template* as described below.
 
@@ -15,7 +15,7 @@ To easily create Messaging Hub applications, create a new *class library* projec
 
 ## Documentation
 
-The full documentation can be found at [http://omni.messaginghub.io/portal/#/docs/home](http://omni.messaginghub.io/portal/#/docs/home).
+The full documentation can be found at [https://blip.ai/portal/#/docs/home](https://blip.ai/portal/#/docs/home).
 
 ## License
 
