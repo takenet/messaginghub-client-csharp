@@ -21,6 +21,7 @@ namespace Takenet.MessagingHub.Client.Connection
         protected SessionEncryption Encryption { get; private set; }
         protected RoutingRule RoutingRule { get; private set; }
         protected int Throughput { get; private set; }
+        protected bool AutoNotify { get; private set; }
 
         protected Identity Identity => Identity.Parse($"{Identifier}@{Domain}");
         protected Uri EndPoint => new Uri($"net.tcp://{HostName}:{Port}");
@@ -35,6 +36,7 @@ namespace Takenet.MessagingHub.Client.Connection
             Compression = SessionCompression.None;
             Encryption = SessionEncryption.TLS;
             RoutingRule = RoutingRule.Identity;
+            AutoNotify = true;
         }
 
         public TConfigurator UsingPassword(string identifier, string password)
@@ -86,7 +88,7 @@ namespace Takenet.MessagingHub.Client.Connection
         }
 
         public TConfigurator UsingPort(int port)
-        {            
+        {
             if (port <= 0) throw new ArgumentOutOfRangeException(nameof(port));
 
             Port = port;
@@ -116,6 +118,12 @@ namespace Takenet.MessagingHub.Client.Connection
         public TConfigurator WithSendTimeout(TimeSpan timeout)
         {
             SendTimeout = timeout;
+            return (TConfigurator)this;
+        }
+
+        public TConfigurator WithAutoNotify(bool enabled)
+        {
+            AutoNotify = enabled;
             return (TConfigurator)this;
         }
 

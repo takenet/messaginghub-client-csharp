@@ -78,6 +78,7 @@ namespace Takenet.MessagingHub.Client.Host
             if (application.SessionEncryption.HasValue) builder = builder.UsingEncryption(application.SessionEncryption.Value);
             if (application.SessionCompression.HasValue) builder = builder.UsingCompression(application.SessionCompression.Value);
             if (application.Throughput != 0) builder = builder.WithThroughput(application.Throughput);
+            if (application.DisableNotify) builder = builder.WithAutoNotify(false);
 
             var localServiceProvider = new TypeServiceProvider();
             if (application.ServiceProviderType != null)

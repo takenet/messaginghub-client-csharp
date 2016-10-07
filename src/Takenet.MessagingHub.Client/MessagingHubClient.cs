@@ -16,11 +16,11 @@ namespace Takenet.MessagingHub.Client
 
         public IMessagingHubSender Sender { get; }
 
-        public MessagingHubClient(IMessagingHubConnection connection)
+        public MessagingHubClient(IMessagingHubConnection connection, bool autoNotify = true)
         {
             Connection = connection;
             Sender = new MessagingHubSender(connection);
-            Listener = new MessagingHubListener(connection, Sender);
+            Listener = new MessagingHubListener(connection, Sender, autoNotify);
         }
 
         public async Task StartAsync(CancellationToken cancellationToken = new CancellationToken())

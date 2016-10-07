@@ -10,7 +10,7 @@ namespace Takenet.MessagingHub.Client
         public new IMessagingHubClient Build()
         {
             var connection = base.Build();
-            var client = new MessagingHubClient(connection);
+            var client = new MessagingHubClient(connection, this.AutoNotify);
             return client;
         }
     }

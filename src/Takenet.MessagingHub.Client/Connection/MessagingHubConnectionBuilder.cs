@@ -23,13 +23,15 @@ namespace Takenet.MessagingHub.Client.Connection
         /// <returns>An inactive connection with the Messaging Hub. Call <see cref="IMessagingHubConnection.ConnectAsync"/> to activate it</returns>
         public IMessagingHubConnection Build()
         {
-            var channelBuilder = ClientChannelBuilder.Create(
-                () => new TcpTransport(traceWriter: new TraceWriter(), envelopeSerializer: new JsonNetSerializer()), EndPoint)
+            var channelBuilder = ClientChannelBuilder.Create(() => new TcpTransport(traceWriter: new TraceWriter(), envelopeSerializer: new JsonNetSerializer()), EndPoint)
                                  .WithSendTimeout(SendTimeout)
                                  .WithBuffersLimit(100)
-                                 .AddMessageModule(c => new NotifyReceiptChannelModule(c))
                                  .AddCommandModule(c => new ReplyPingChannelModule(c));
 
+            if (this.AutoNotify)
+            {
+                channelBuilder.AddMessageModule(c => new NotifyReceiptChannelModule(c));
+            }
 
             channelBuilder =
                 channelBuilder.AddBuiltHandler(

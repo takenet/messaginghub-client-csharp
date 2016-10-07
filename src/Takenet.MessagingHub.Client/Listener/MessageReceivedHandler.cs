@@ -10,9 +10,12 @@ namespace Takenet.MessagingHub.Client.Listener
 {
     internal class MessageReceivedHandler : EnvelopeReceivedHandler<Message>
     {
-        public MessageReceivedHandler(IMessagingHubSender sender, EnvelopeListenerRegistrar registrar, CancellationTokenSource cts) 
+        private readonly bool _autoNotifiy;
+
+        public MessageReceivedHandler(IMessagingHubSender sender, bool autoNotifiy, EnvelopeListenerRegistrar registrar, CancellationTokenSource cts)
             : base(sender, registrar, cts)
         {
+            _autoNotifiy = autoNotifiy;
         }
 
         protected override async Task CallReceiversAsync(Message message, CancellationToken cancellationToken)
@@ -20,22 +23,31 @@ namespace Takenet.MessagingHub.Client.Listener
             try
             {
                 await base.CallReceiversAsync(message, cancellationToken);
-                await Sender.SendNotificationAsync(message.ToConsumedNotification(), cancellationToken);
-            }
-            catch (LimeException ex)
-            {
-                await Sender.SendNotificationAsync(message.ToFailedNotification(ex.Reason), cancellationToken);
-                throw;
+                if (_autoNotifiy)
+                {
+                    await Sender.SendNotificationAsync(message.ToConsumedNotification(), cancellationToken);
+                }
             }
             catch (Exception ex)
             {
-                var reason = new Reason
+                Reason reason = null;
+                if (ex is LimeException)
                 {
-                    Code = ReasonCodes.APPLICATION_ERROR,
-                    Description = ex.Message
-                };
-                await Sender.SendNotificationAsync(
-                    message.ToFailedNotification(reason), CancellationToken.None);
+                    reason = ((LimeException)ex).Reason;
+                }
+                else
+                {
+                    reason = new Reason
+                    {
+                        Code = ReasonCodes.APPLICATION_ERROR,
+                        Description = ex.Message
+                    };
+                }
+
+                if (_autoNotifiy)
+                {
+                    await Sender.SendNotificationAsync(message.ToFailedNotification(reason), CancellationToken.None);
+                }
                 throw;
             }
         }

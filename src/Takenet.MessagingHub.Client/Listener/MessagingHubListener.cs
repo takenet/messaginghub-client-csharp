@@ -11,16 +11,18 @@ namespace Takenet.MessagingHub.Client.Listener
 {
     internal sealed class MessagingHubListener : IMessagingHubListener
     {
+        private readonly bool _autoNotify;
         private readonly IMessagingHubConnection _connection;
         private readonly IMessagingHubSender _sender;
         private ChannelListener _channelListener;
         private CancellationTokenSource _cts;
 
-        public MessagingHubListener(IMessagingHubConnection connection, IMessagingHubSender sender = null)
+        public MessagingHubListener(IMessagingHubConnection connection, IMessagingHubSender sender = null, bool autoNotify = true)
         {
             _connection = connection;
             _sender = sender ?? new MessagingHubSender(connection);
             EnvelopeRegistrar = new EnvelopeListenerRegistrar(this);
+            _autoNotify = autoNotify;
         }
         
         public bool Listening { get; private set; }
@@ -54,7 +56,7 @@ namespace Takenet.MessagingHub.Client.Listener
         private void StartEnvelopeListeners()
         {
             _cts = new CancellationTokenSource();
-            var messageHandler = new MessageReceivedHandler(_sender, EnvelopeRegistrar, _cts);
+            var messageHandler = new MessageReceivedHandler(_sender, _autoNotify, EnvelopeRegistrar, _cts);
             var notificationHandler = new NotificationReceivedHandler(_sender, EnvelopeRegistrar, _cts);
             
             _channelListener = new ChannelListener(

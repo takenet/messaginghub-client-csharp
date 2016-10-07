@@ -149,6 +149,8 @@ namespace Takenet.MessagingHub.Client.Host
         /// </summary>
         public int Throughput { get; set; }
 
+        public bool DisableNotify { get; set; }
+
 
         /// <summary>
         /// Indicates which schema version must be used to publish new applications
