@@ -92,19 +92,22 @@ namespace Takenet.MessagingHub.Client.WebHost
             return _envelopeBuffer.Notifications.ReceiveAsync(cancellationToken);
         }
 
-        public Task SendCommandAsync(Command command, CancellationToken cancellationToken)
+        public async Task SendCommandAsync(Command command, CancellationToken cancellationToken)
         {
-            return _client.PostAsJsonAsync($"{_baseUrl}/commands", command, cancellationToken);
+            var response = await _client.PostAsJsonAsync($"{_baseUrl}/commands", command, cancellationToken);
+            response.EnsureSuccessStatusCode();
         }
 
-        public Task SendMessageAsync(Message message, CancellationToken cancellationToken)
+        public async Task SendMessageAsync(Message message, CancellationToken cancellationToken)
         {
-            return _client.PostAsJsonAsync($"{_baseUrl}/messages", message, cancellationToken);
+            var response = await _client.PostAsJsonAsync($"{_baseUrl}/messages", message, cancellationToken);
+            response.EnsureSuccessStatusCode();
         }
 
-        public Task SendNotificationAsync(Notification notification, CancellationToken cancellationToken)
+        public async Task SendNotificationAsync(Notification notification, CancellationToken cancellationToken)
         {
-            return _client.PostAsJsonAsync($"{_baseUrl}/notifications", notification, cancellationToken);
+            var response = await _client.PostAsJsonAsync($"{_baseUrl}/notifications", notification, cancellationToken);
+            response.EnsureSuccessStatusCode();
         }
     }
 }

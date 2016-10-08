@@ -104,6 +104,7 @@
     <Compile Include="HttpMessagingHubConnection.cs" />
     <Compile Include="HttpOnDemandClientChannel.cs" />
     <Compile Include="IEnvelopeBuffer.cs" />
+    <Compile Include="MessagingHubClientResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Http;
 using System.Web.Routing;
+using Takenet.MessagingHub.Client.WebHost.Controllers;
 
 namespace Takenet.MessagingHub.Client.WebHost
 {
@@ -12,7 +13,12 @@ namespace Takenet.MessagingHub.Client.WebHost
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
-            MessagingHubConfig.StartAsync().Wait();
+
+            var serviceContainer = MessagingHubConfig.StartAsync().Result;
+            serviceContainer.RegisterService(
+                typeof(EnvelopeController), 
+                () => new EnvelopeController(serviceContainer.GetService(typeof(IEnvelopeBuffer)) as IEnvelopeBuffer));
+            GlobalConfiguration.Configuration.DependencyResolver = new MessagingHubClientResolver(serviceContainer);
         }
     }
 }
