@@ -11,7 +11,7 @@ using System.Threading.Tasks.Dataflow;
 
 namespace Takenet.MessagingHub.Client.WebHost
 {
-    internal class HttpOnDemandClientChannel : IOnDemandClientChannel
+    internal class HttpOnDemandClientChannel : IOnDemandClientChannel, IDisposable
     {
         private readonly IEnvelopeBuffer _envelopeBuffer;
         private readonly string _baseUrl;
@@ -108,6 +108,11 @@ namespace Takenet.MessagingHub.Client.WebHost
         {
             var response = await _client.PostAsJsonAsync($"{_baseUrl}/notifications", notification, cancellationToken);
             response.EnsureSuccessStatusCode();
+        }
+
+        public void Dispose()
+        {
+            _client.Dispose();
         }
     }
 }
