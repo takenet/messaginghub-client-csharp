@@ -18,5 +18,7 @@ namespace Takenet.MessagingHub.Client.Host
         /// <param name="serviceType">Type of the service.</param>
         /// <param name="instance">The instance.</param>
         void RegisterService(Type serviceType, object instance);
+
+        void RegisterService(Type serviceType, Func<object> instanceFactory);
     }
 }
