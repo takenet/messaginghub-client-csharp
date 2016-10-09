@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Lime.Protocol.Client;
 using Takenet.MessagingHub.Client.Connection;
+using Takenet.MessagingHub.Client.Host;
 
 namespace Takenet.MessagingHub.Client.WebHost
 {
@@ -19,9 +20,9 @@ namespace Takenet.MessagingHub.Client.WebHost
 
         public IOnDemandClientChannel OnDemandClientChannel { get; }
 
-        public HttpMessagingHubConnection(IEnvelopeBuffer envelopeBuffer)
+        public HttpMessagingHubConnection(IEnvelopeBuffer envelopeBuffer, Application applicationSettings)
         {
-            OnDemandClientChannel = new HttpOnDemandClientChannel(envelopeBuffer);
+            OnDemandClientChannel = new HttpOnDemandClientChannel(envelopeBuffer, applicationSettings);
         }
 
         public Task ConnectAsync(CancellationToken cancellationToken = default(CancellationToken))

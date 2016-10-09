@@ -8,6 +8,8 @@ using Lime.Protocol.Network;
 using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks.Dataflow;
+using Takenet.MessagingHub.Client.Host;
+using System.Net.Http.Headers;
 
 namespace Takenet.MessagingHub.Client.WebHost
 {
@@ -16,12 +18,15 @@ namespace Takenet.MessagingHub.Client.WebHost
         private readonly IEnvelopeBuffer _envelopeBuffer;
         private readonly string _baseUrl;
         private readonly HttpClient _client;
+        private readonly Application _applicationSettings;
 
-        public HttpOnDemandClientChannel(IEnvelopeBuffer envelopeBuffer)
+        public HttpOnDemandClientChannel(IEnvelopeBuffer envelopeBuffer, Application applicationSettings)
         {
             _baseUrl = ConfigurationManager.AppSettings["MessagingHub.BaseUrl"];
             _client = new HttpClient();
-           _envelopeBuffer = envelopeBuffer;
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Key", GetAuthCredentials(applicationSettings));
+            _envelopeBuffer = envelopeBuffer;
+            _applicationSettings = applicationSettings;
         }
 
         public ICollection<Func<ChannelInformation, Task>> ChannelCreatedHandlers
@@ -114,5 +119,8 @@ namespace Takenet.MessagingHub.Client.WebHost
         {
             _client.Dispose();
         }
+
+        private string GetAuthCredentials(Application applicationSettings) => 
+            $"{applicationSettings.Identifier}:{applicationSettings.AccessKey.FromBase64()}".ToBase64();
     }
 }

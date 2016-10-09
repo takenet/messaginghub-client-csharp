@@ -22,7 +22,7 @@ namespace Takenet.MessagingHub.Client.WebHost
 
             var envelopeBuffer = new EnvelopeBuffer();
             localServiceProvider.RegisterService(typeof(IEnvelopeBuffer), envelopeBuffer);
-            var client = await Bootstrapper.BuildMessagingHubClientAsync(application, () => new MessagingHubClient(new HttpMessagingHubConnection(envelopeBuffer)), localServiceProvider);
+            var client = await Bootstrapper.BuildMessagingHubClientAsync(application, () => new MessagingHubClient(new HttpMessagingHubConnection(envelopeBuffer, application)), localServiceProvider);
 
             await client.StartAsync().ConfigureAwait(false);
 
