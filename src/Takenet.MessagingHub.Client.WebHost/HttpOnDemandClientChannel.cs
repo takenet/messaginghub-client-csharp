@@ -1,32 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Lime.Protocol;
+﻿using Lime.Protocol;
 using Lime.Protocol.Client;
 using Lime.Protocol.Network;
+using Lime.Protocol.Serialization;
+using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Takenet.MessagingHub.Client.Host;
-using System.Net.Http.Headers;
 
 namespace Takenet.MessagingHub.Client.WebHost
 {
     internal class HttpOnDemandClientChannel : IOnDemandClientChannel, IDisposable
     {
+        private readonly IEnvelopeSerializer _serializer;
         private readonly IEnvelopeBuffer _envelopeBuffer;
         private readonly string _baseUrl;
         private readonly HttpClient _client;
         private readonly Application _applicationSettings;
 
-        public HttpOnDemandClientChannel(IEnvelopeBuffer envelopeBuffer, Application applicationSettings)
+        public HttpOnDemandClientChannel(IEnvelopeBuffer envelopeBuffer, IEnvelopeSerializer serializer, Application applicationSettings)
         {
             _baseUrl = ConfigurationManager.AppSettings["MessagingHub.BaseUrl"];
             _client = new HttpClient();
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Key", GetAuthCredentials(applicationSettings));
             _envelopeBuffer = envelopeBuffer;
             _applicationSettings = applicationSettings;
+            _serializer = serializer;
         }
 
         public ICollection<Func<ChannelInformation, Task>> ChannelCreatedHandlers
@@ -99,26 +103,40 @@ namespace Takenet.MessagingHub.Client.WebHost
 
         public async Task SendCommandAsync(Command command, CancellationToken cancellationToken)
         {
-            var response = await _client.PostAsJsonAsync($"{_baseUrl}/commands", command, cancellationToken);
-            response.EnsureSuccessStatusCode();
+            using (var content = GetContent(command))
+            using (var response = await _client.PostAsync($"{_baseUrl}commands", content, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+                _envelopeBuffer.Commands.Post(
+                    _serializer.Deserialize((await response.Content.ReadAsStringAsync())) as Command);
+            }
         }
 
         public async Task SendMessageAsync(Message message, CancellationToken cancellationToken)
         {
-            var response = await _client.PostAsJsonAsync($"{_baseUrl}/messages", message, cancellationToken);
-            response.EnsureSuccessStatusCode();
+            using (var content = GetContent(message))
+            using (var response = await _client.PostAsync($"{_baseUrl}messages", content, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+            }
         }
 
         public async Task SendNotificationAsync(Notification notification, CancellationToken cancellationToken)
         {
-            var response = await _client.PostAsJsonAsync($"{_baseUrl}/notifications", notification, cancellationToken);
-            response.EnsureSuccessStatusCode();
+            using(var content = GetContent(notification))
+            using (var response = await _client.PostAsync($"{_baseUrl}notifications", content, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+            }
         }
 
         public void Dispose()
         {
             _client.Dispose();
         }
+
+        private HttpContent GetContent(Envelope envelope) => 
+            new StringContent(_serializer.Serialize(envelope), Encoding.UTF8, "application/json");
 
         private string GetAuthCredentials(Application applicationSettings) => 
             $"{applicationSettings.Identifier}:{applicationSettings.AccessKey.FromBase64()}".ToBase64();
