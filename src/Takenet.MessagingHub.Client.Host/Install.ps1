@@ -1,5 +1,44 @@
 ﻿param($installPath, $toolsPath, $package, $project)
 
+function HasStartAction ($item)
+{
+    foreach ($property in $item.Properties)
+    {
+       if ($property.Name -eq "StartAction")
+       {
+           return $true
+       }            
+    } 
+
+    return $false
+}
+
+function ModifyConfigurations
+{
+    $configurationManager = $project.ConfigurationManager
+
+    foreach ($name in $configurationManager.ConfigurationRowNames)
+    {
+        $projectConfigurations = $configurationManager.ConfigurationRow($name)
+
+        foreach ($projectConfiguration in $projectConfigurations)
+        {                
+
+            if (HasStartAction $projectConfiguration)
+            {
+                $newStartAction = 1
+                [String]$newStartProgram = $toolsPath + "\mhh.exe"                
+                Write-Host "Changing project start action to " $newStartAction
+                Write-Host "Changing project start program to " $newStartProgram                
+                $projectConfiguration.Properties.Item("StartAction").Value = $newStartAction
+                $projectConfiguration.Properties.Item("StartProgram").Value = $newStartProgram                
+            }
+        }
+    }
+
+    $project.Save
+}
+
 write-host "Trying to update mhh.exe project reference (if one exists)"
 
 $hostFile = "mhh.exe"
@@ -19,3 +58,5 @@ $project.ProjectItems | ForEach-Object {
 		continue
 	}
 }
+
+ModifyConfigurations
