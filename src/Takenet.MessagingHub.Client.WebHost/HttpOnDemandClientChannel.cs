@@ -22,12 +22,15 @@ namespace Takenet.MessagingHub.Client.WebHost
         private readonly string _baseUrl;
         private readonly HttpClient _client;
         private readonly Application _applicationSettings;
+        private readonly string _webhookKey;
 
         public HttpOnDemandClientChannel(IEnvelopeBuffer envelopeBuffer, IEnvelopeSerializer serializer, Application applicationSettings)
         {
             _baseUrl = ConfigurationManager.AppSettings["MessagingHub.BaseUrl"];
+            _webhookKey = ConfigurationManager.AppSettings["MessagingHub.WebhookKey"];
             _client = new HttpClient();
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Key", GetAuthCredentials(applicationSettings));
+            _client.DefaultRequestHeaders.Authorization = 
+                new AuthenticationHeaderValue("Key", _webhookKey ?? GetAuthCredentials(applicationSettings));
             _envelopeBuffer = envelopeBuffer;
             _applicationSettings = applicationSettings;
             _serializer = serializer;
