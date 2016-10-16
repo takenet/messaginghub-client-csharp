@@ -15,7 +15,7 @@ namespace Takenet.MessagingHub.Client.WebHost
     {
         public bool IsConnected { get; private set; }
 
-        public TimeSpan SendTimeout { get; }
+        public TimeSpan SendTimeout { get; private set; }
 
         public int MaxConnectionRetries { get; set; }
 
@@ -24,6 +24,7 @@ namespace Takenet.MessagingHub.Client.WebHost
         public HttpMessagingHubConnection(IEnvelopeBuffer envelopeBuffer, IEnvelopeSerializer serializer, Application applicationSettings)
         {
             OnDemandClientChannel = new HttpOnDemandClientChannel(envelopeBuffer, serializer, applicationSettings);
+            SendTimeout = TimeSpan.FromMilliseconds(applicationSettings.SendTimeout <= 0 ? 10000 : applicationSettings.SendTimeout);
         }
 
         public Task ConnectAsync(CancellationToken cancellationToken = default(CancellationToken))
