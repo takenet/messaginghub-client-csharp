@@ -21,6 +21,8 @@ namespace Takenet.MessagingHub.Client.Textc
 
         public string ScorerType { get; set; }
 
+        public string[] TextPreprocessorTypes { get; set; }
+
         public TextcMessageReceiverContextCommandSettings Context { get; set; }
 
         public static TextcMessageReceiverSettings ParseFromSettings(IDictionary<string, object> settings)

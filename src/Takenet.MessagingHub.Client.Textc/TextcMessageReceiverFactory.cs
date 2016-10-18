@@ -9,6 +9,7 @@ using Takenet.MessagingHub.Client.Host;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.Textc;
 using Takenet.Textc.Csdl;
+using Takenet.Textc.PreProcessors;
 using Takenet.Textc.Processors;
 using Takenet.Textc.Scorers;
 
@@ -32,6 +33,11 @@ namespace Takenet.MessagingHub.Client.Textc
                 if (textcMessageReceiverSettings.ScorerType != null)
                 {
                     builder = await SetupScorerAsync(serviceProvider, settings, textcMessageReceiverSettings.ScorerType, builder).ConfigureAwait(false);
+                }
+
+                if (textcMessageReceiverSettings.TextPreprocessorTypes != null)
+                {
+                    builder = await SetupTextPreprocessorsAsync(serviceProvider, settings, textcMessageReceiverSettings.TextPreprocessorTypes, builder).ConfigureAwait(false);
                 }
 
                 if (textcMessageReceiverSettings.Context != null)
@@ -137,6 +143,17 @@ namespace Takenet.MessagingHub.Client.Textc
             builder = builder.WithExpressionScorer(scorer);
             return builder;
         }
+
+        private static async Task<TextcMessageReceiverBuilder> SetupTextPreprocessorsAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings, string[] textPreprocessorTypes, TextcMessageReceiverBuilder builder)
+        {
+            foreach (var textPreProcessorType in textPreprocessorTypes)
+            {
+                var textPreProcessor = await Bootstrapper.CreateAsync<ITextPreprocessor>(textPreProcessorType, serviceProvider, settings).ConfigureAwait(false);
+                builder = builder.AddTextPreProcessor(textPreProcessor);
+            }
+            return builder;
+        }
+
 
         private static async Task<TextcMessageReceiverBuilder> SetupContextAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings,
             TextcMessageReceiverContextCommandSettings context, TextcMessageReceiverBuilder builder)

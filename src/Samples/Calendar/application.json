@@ -1,0 +1,41 @@
+﻿{
+  "identifier": "calendar",
+  "accessKey": "MnE1Mmlm",
+  "messageReceivers": [
+    {
+      "type": "TextcMessageReceiverFactory",
+      "mediaType": "text/plain",
+      "settings": {
+        "commands": [
+          {
+            "syntaxes": [
+              ":Word(lembrar) :Word?(de) reminder:Text"
+            ],
+            "processorType": "CalendarProcessor",
+            "method": "AddReminderAsync"
+          },
+          {
+            "syntaxes": [
+              ":Word(lembre) :Word?(me) date:Word?(hoje,amanha,eventualmente) :Word?(de) reminder:Text"
+            ],
+            "processorType": "CalendarProcessor",
+            "method": "AddReminderForDateAsync"
+          },
+          {
+            "syntaxes": [
+              ":Word?(me) :Word(lembre) :Word~(de) reminder:Text date:Word?(hoje,amanha,eventualmente) :Word?(a) time:Word?(manha,tarde,noite)"
+            ],
+            "processorType": "CalendarProcessor",
+            "method": "AddReminderForDateAndTimeAsync"
+          }
+        ],
+        "scorer": "MatchCountExpressionScorer",
+        "textPreprocessorTypes": [
+          "TextNormalizerPreprocessor",
+          "ToLowerCasePreprocessor"
+        ] 
+      }
+    }
+  ],  
+  "schemaVersion": 2
+}

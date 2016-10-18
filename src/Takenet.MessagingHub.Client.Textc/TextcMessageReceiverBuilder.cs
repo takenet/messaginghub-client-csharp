@@ -13,6 +13,7 @@ using Takenet.Textc.Csdl;
 using Takenet.Textc.Processors;
 using Takenet.Textc.Scorers;
 using Takenet.MessagingHub.Client.Sender;
+using Takenet.Textc.PreProcessors;
 
 namespace Takenet.MessagingHub.Client.Textc
 {
@@ -29,6 +30,7 @@ namespace Takenet.MessagingHub.Client.Textc
         private ISyntaxParser _syntaxParser;
         private IExpressionScorer _expressionScorer;
         private ICultureProvider _cultureProvider;
+        private List<ITextPreprocessor> _textPreProcessors;
         private readonly List<Func<IOutputProcessor, ICommandProcessor>> _commandProcessorFactories;
         private readonly IMessagingHubSender _sender;
 
@@ -52,6 +54,7 @@ namespace Takenet.MessagingHub.Client.Textc
             _syntaxParser = syntaxParser ?? new SyntaxParser();
             _expressionScorer = expressionScorer ?? new RatioExpressionScorer();
             _cultureProvider = cultureProvider ?? new DefaultCultureProvider(CultureInfo.InvariantCulture);
+            _textPreProcessors = new List<ITextPreprocessor>();
             _commandProcessorFactories = new List<Func<IOutputProcessor, ICommandProcessor>>();
         }
 
@@ -205,6 +208,18 @@ namespace Takenet.MessagingHub.Client.Textc
         }
 
         /// <summary>
+        /// Adds the specified text pre processor to the builder.
+        /// </summary>
+        /// <param name="textPreprocessor">The text preprocessor.</param>
+        /// <returns></returns>
+        public TextcMessageReceiverBuilder AddTextPreProcessor(ITextPreprocessor textPreprocessor)
+        {
+            if (textPreprocessor == null) throw new ArgumentNullException(nameof(textPreprocessor));
+            _textPreProcessors.Add(textPreprocessor);
+            return this;
+        }
+
+        /// <summary>
         /// Builds a new instance of <see cref="TextcMessageReceiver"/> using the defined configurations.
         /// </summary>
         /// <returns></returns>
@@ -216,6 +231,12 @@ namespace Takenet.MessagingHub.Client.Textc
                 textProcessor.CommandProcessors.Add(
                     commandProcessorFactory(_outputProcessor));
             }
+
+            foreach (var textPreprocessor in _textPreProcessors)
+            {
+                textProcessor.TextPreprocessors.Add(textPreprocessor);                
+            }
+
             return new TextcMessageReceiver(
                 _sender,
                 textProcessor, 
