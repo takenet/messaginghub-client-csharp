@@ -68,5 +68,5 @@ namespace Takenet.MessagingHub.Client.Host
             throw new NotImplementedException();
         }
 
-    } 
+    }
 }
