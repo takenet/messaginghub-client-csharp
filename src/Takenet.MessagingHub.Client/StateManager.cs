@@ -12,7 +12,7 @@ namespace Takenet.MessagingHub.Client
     /// <summary>
     /// Provides the management of states for filtering message and notification receivers registered in the application.
     /// </summary>
-    internal sealed class StateManager : IStateManager
+    public sealed class StateManager : IStateManager
     {
         public const string DEFAULT_STATE = "default";
         

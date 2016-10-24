@@ -80,6 +80,44 @@ namespace Takenet.MessagingHub.Client.Host
             if (application.Throughput != 0) builder = builder.WithThroughput(application.Throughput);
             if (application.DisableNotify) builder = builder.WithAutoNotify(false);
 
+            var localServiceProvider = BuildServiceProvider(application);
+
+            localServiceProvider.RegisterService(typeof(IServiceProvider), localServiceProvider);
+            localServiceProvider.RegisterService(typeof(IServiceContainer), localServiceProvider);
+            localServiceProvider.RegisterService(typeof(MessagingHubClientBuilder), builder);
+            localServiceProvider.RegisterService(typeof(Application), application);
+            RegisterSettingsContainer(application, localServiceProvider);
+
+            var client = await BuildMessagingHubClientAsync(application, builder.Build, localServiceProvider);
+
+            await client.StartAsync().ConfigureAwait(false);
+
+            var stoppables = new IStoppable[2];
+            stoppables[0] = client;
+            var startable = await BuildStartupAsync(application, localServiceProvider);
+            if (startable != null)
+            {
+                stoppables[1] = startable as IStoppable;
+            }
+
+            return new StoppableWrapper(stoppables);
+        }
+
+        public static async Task<IStartable> BuildStartupAsync(Application application, IServiceContainer localServiceProvider)
+        {
+            if (application.StartupType == null) return null;
+
+            var startable = await CreateAsync<IStartable>(
+                application.StartupType,
+                localServiceProvider,
+                application.Settings)
+                .ConfigureAwait(false);
+            await startable.StartAsync().ConfigureAwait(false);
+            return startable;
+        }
+
+        public static IServiceContainer BuildServiceProvider(Application application)
+        {
             var localServiceProvider = new TypeServiceProvider();
             if (application.ServiceProviderType != null)
             {
@@ -105,32 +143,10 @@ namespace Takenet.MessagingHub.Client.Host
                 }
             }
 
-            localServiceProvider.RegisterService(typeof(IServiceProvider), localServiceProvider);
-            localServiceProvider.RegisterService(typeof(IServiceContainer), localServiceProvider);
-            localServiceProvider.RegisterService(typeof(MessagingHubClientBuilder), builder);
-            localServiceProvider.RegisterService(typeof(Application), application);
-            RegisterSettingsContainer(application, localServiceProvider);
-
-            var client = await BuildMessagingHubClientAsync(application, builder, localServiceProvider);
-
-            await client.StartAsync().ConfigureAwait(false);
-
-            var stoppables = new IStoppable[2];
-            stoppables[0] = client;
-            if (application.StartupType != null)
-            {
-                var startable = await CreateAsync<IStartable>(
-                    application.StartupType,
-                    localServiceProvider,
-                    application.Settings)
-                    .ConfigureAwait(false);
-                await startable.StartAsync().ConfigureAwait(false);
-                stoppables[1] = startable as IStoppable;
-            }
-            return new StoppableWrapper(stoppables);
+            return localServiceProvider;
         }
 
-        private static void RegisterSettingsContainer(SettingsContainer settingsContainer, IServiceContainer serviceContainer)
+        public static void RegisterSettingsContainer(SettingsContainer settingsContainer, IServiceContainer serviceContainer)
         {
             if (settingsContainer.SettingsType != null)
             {
@@ -145,9 +161,25 @@ namespace Takenet.MessagingHub.Client.Host
             }
         }
 
-        private static async Task<IMessagingHubClient> BuildMessagingHubClientAsync(
-            Application application, MessagingHubClientBuilder builder,
-            TypeServiceProvider typeServiceProvider)
+        public static async Task<IMessagingHubClient> BuildMessagingHubClientAsync(
+            Application application, Func<IMessagingHubClient> builder,
+            IServiceContainer serviceContainer)
+        {
+            RegisterSettingsTypes(application, serviceContainer);
+
+            var client = builder();
+            serviceContainer.RegisterService(typeof(IMessagingHubSender), client);
+            serviceContainer.RegisterService(typeof(IStateManager), StateManager.Instance);
+            serviceContainer.RegisterExtensions();
+
+            // Now creates the receivers instances
+            await AddMessageReceivers(application, serviceContainer, client);
+            await AddNotificationReceivers(application, serviceContainer, client);
+
+            return client;
+        }
+
+        public static void RegisterSettingsTypes(Application application, IServiceContainer serviceContainer)
         {
             var applicationReceivers =
                 (application.MessageReceivers ?? new ApplicationReceiver[0]).Union(
@@ -156,15 +188,71 @@ namespace Takenet.MessagingHub.Client.Host
             // First, register the receivers settings
             foreach (var applicationReceiver in applicationReceivers.Where(a => a.SettingsType != null))
             {
-                RegisterSettingsContainer(applicationReceiver, typeServiceProvider);
+                RegisterSettingsContainer(applicationReceiver, serviceContainer);
             }
+        }
 
-            var client = builder.Build();
-            typeServiceProvider.RegisterService(typeof(IMessagingHubSender), client);
-            typeServiceProvider.RegisterService(typeof(IStateManager), StateManager.Instance);
-            typeServiceProvider.RegisterExtensions();
+        private static async Task AddNotificationReceivers(Application application, IServiceContainer serviceContainer, IMessagingHubClient client)
+        {
+            if (application.NotificationReceivers != null && application.NotificationReceivers.Length > 0)
+            {
+                foreach (var applicationReceiver in application.NotificationReceivers)
+                {
+                    INotificationReceiver receiver;
+                    if (applicationReceiver.Response?.MediaType != null)
+                    {
+                        var content = applicationReceiver.Response.ToDocument();
+                        receiver =
+                            new LambdaNotificationReceiver(
+                                (notification, c) => client.SendMessageAsync(content, notification.From, c));
+                    }
+                    else
+                    {
+                        receiver = await CreateAsync<INotificationReceiver>(
+                            applicationReceiver.Type, serviceContainer, applicationReceiver.Settings)
+                            .ConfigureAwait(false);
+                    }
 
-            // Now creates the receivers instances
+                    Predicate<Notification> notificationPredicate = n => n != null;
+
+                    if (applicationReceiver.EventType != null)
+                    {
+                        var currentNotificationPredicate = notificationPredicate;
+                        notificationPredicate = n => currentNotificationPredicate(n) && n.Event.Equals(applicationReceiver.EventType);
+                    }
+
+                    if (applicationReceiver.Sender != null)
+                    {
+                        var currentNotificationPredicate = notificationPredicate;
+                        var senderRegex = new Regex(applicationReceiver.Sender, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                        notificationPredicate = n => currentNotificationPredicate(n) && senderRegex.IsMatch(n.From.ToString());
+                    }
+
+                    if (applicationReceiver.Destination != null)
+                    {
+                        var currentNotificationPredicate = notificationPredicate;
+                        var destinationRegex = new Regex(applicationReceiver.Destination, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                        notificationPredicate = n => currentNotificationPredicate(n) && destinationRegex.IsMatch(n.To.ToString());
+                    }
+
+                    if (applicationReceiver.State != null)
+                    {
+                        var currentNotificationPredicate = notificationPredicate;
+                        notificationPredicate = n => currentNotificationPredicate(n) && StateManager.Instance.GetState(n.From.ToIdentity()).Equals(applicationReceiver.State, StringComparison.OrdinalIgnoreCase);
+                    }
+
+                    if (applicationReceiver.OutState != null)
+                    {
+                        receiver = new SetStateNotificationReceiver(receiver, applicationReceiver.OutState);
+                    }
+
+                    client.AddNotificationReceiver(receiver, notificationPredicate, applicationReceiver.Priority);
+                }
+            }
+        }
+
+        public static async Task AddMessageReceivers(Application application, IServiceContainer serviceContainer, IMessagingHubClient client)
+        {
             if (application.MessageReceivers != null && application.MessageReceivers.Length > 0)
             {
                 foreach (var applicationReceiver in application.MessageReceivers)
@@ -180,7 +268,7 @@ namespace Takenet.MessagingHub.Client.Host
                     else
                     {
                         receiver = await CreateAsync<IMessageReceiver>(
-                            applicationReceiver.Type, typeServiceProvider, applicationReceiver.Settings)
+                            applicationReceiver.Type, serviceContainer, applicationReceiver.Settings)
                             .ConfigureAwait(false);
                     }
 
@@ -228,66 +316,7 @@ namespace Takenet.MessagingHub.Client.Host
                     client.AddMessageReceiver(receiver, messagePredicate, applicationReceiver.Priority);
                 }
             }
-
-            if (application.NotificationReceivers != null && application.NotificationReceivers.Length > 0)
-            {
-                foreach (var applicationReceiver in application.NotificationReceivers)
-                {
-                    INotificationReceiver receiver;
-                    if (applicationReceiver.Response?.MediaType != null)
-                    {
-                        var content = applicationReceiver.Response.ToDocument();
-                        receiver =
-                            new LambdaNotificationReceiver(
-                                (notification, c) => client.SendMessageAsync(content, notification.From, c));
-                    }
-                    else
-                    {
-                        receiver = await CreateAsync<INotificationReceiver>(
-                            applicationReceiver.Type, typeServiceProvider, applicationReceiver.Settings)
-                            .ConfigureAwait(false);
-                    }
-
-                    Predicate<Notification> notificationPredicate = n => n != null;
-
-                    if (applicationReceiver.EventType != null)
-                    {
-                        var currentNotificationPredicate = notificationPredicate;
-                        notificationPredicate = n => currentNotificationPredicate(n) && n.Event.Equals(applicationReceiver.EventType);
-                    }
-
-                    if (applicationReceiver.Sender != null)
-                    {
-                        var currentNotificationPredicate = notificationPredicate;
-                        var senderRegex = new Regex(applicationReceiver.Sender, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-                        notificationPredicate = n => currentNotificationPredicate(n) && senderRegex.IsMatch(n.From.ToString());
-                    }
-
-                    if (applicationReceiver.Destination != null)
-                    {
-                        var currentNotificationPredicate = notificationPredicate;
-                        var destinationRegex = new Regex(applicationReceiver.Destination, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-                        notificationPredicate = n => currentNotificationPredicate(n) && destinationRegex.IsMatch(n.To.ToString());
-                    }
-
-                    if (applicationReceiver.State != null)
-                    {
-                        var currentNotificationPredicate = notificationPredicate;
-                        notificationPredicate = n => currentNotificationPredicate(n) && StateManager.Instance.GetState(n.From.ToIdentity()).Equals(applicationReceiver.State, StringComparison.OrdinalIgnoreCase);
-                    }
-
-                    if (applicationReceiver.OutState != null)
-                    {
-                        receiver = new SetStateNotificationReceiver(receiver, applicationReceiver.OutState);
-                    }
-
-                    client.AddNotificationReceiver(receiver, notificationPredicate, applicationReceiver.Priority);
-                }
-            }
-
-            return client;
         }
-
 
         public static Task<T> CreateAsync<T>(string typeName, IServiceProvider serviceProvider, IDictionary<string, object> settings) where T : class
         {

@@ -16,7 +16,7 @@ namespace Takenet.MessagingHub.Client.Host
             TypeDictionary = new Dictionary<Type, object>();
         }
 
-        public IServiceProvider SecondaryServiceProvider { get; internal set; }
+        public IServiceProvider SecondaryServiceProvider { get; set; }
 
         /// <summary>
         /// Gets the service.
@@ -28,8 +28,16 @@ namespace Takenet.MessagingHub.Client.Host
         {
             if (serviceType == null) throw new ArgumentNullException(nameof(serviceType));
             object result;
-            return TypeDictionary.TryGetValue(serviceType, out result) ?
+            var service = TypeDictionary.TryGetValue(serviceType, out result) ?
                 result : SecondaryServiceProvider?.GetService(serviceType);
+
+            var factory = service as Func<object>;
+            if (factory != null)
+            {
+                return factory();
+            }
+
+            return service;
         }
 
         /// <summary>
@@ -46,5 +54,19 @@ namespace Takenet.MessagingHub.Client.Host
             TypeDictionary.Add(serviceType, instance);
             (SecondaryServiceProvider as IServiceContainer)?.RegisterService(serviceType, instance);
         }
+
+        public void RegisterService(Type serviceType, Func<object> instanceFactory)
+        {
+            if (serviceType == null) throw new ArgumentNullException(nameof(serviceType));
+            if (instanceFactory == null) throw new ArgumentNullException(nameof(instanceFactory));
+            TypeDictionary.Add(serviceType, instanceFactory);
+            (SecondaryServiceProvider as IServiceContainer)?.RegisterService(serviceType, instanceFactory);
+        }
+
+        public void RegisterExtensions()
+        {
+            throw new NotImplementedException();
+        }
+
     } 
 }
