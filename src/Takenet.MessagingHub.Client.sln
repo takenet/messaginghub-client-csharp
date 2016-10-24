@@ -68,7 +68,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingImageSearch", "Samples\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calendar", "Samples\Calendar\Calendar.csproj", "{331B3C63-8BFB-47C1-A6D8-B90190487B0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.WebHost", "Takenet.MessagingHub.Client.WebHost\Takenet.MessagingHub.Client.WebHost.csproj", "{38975695-6886-40CD-A7A0-14DB33AFF27D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.WebTemplate", "Takenet.MessagingHub.Client.WebTemplate\Takenet.MessagingHub.Client.WebTemplate.csproj", "{38975695-6886-40CD-A7A0-14DB33AFF27D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
