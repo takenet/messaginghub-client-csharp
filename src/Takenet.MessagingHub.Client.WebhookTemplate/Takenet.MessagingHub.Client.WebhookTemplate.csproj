@@ -91,7 +91,7 @@
     <None Include="IEnvelopeBuffer.cs.pp" />
     <None Include="MessagingHubClientResolver.cs.pp" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Content Include="Takenet.MessagingHub.Client.Template.nuspec">
+    <Content Include="Takenet.MessagingHub.Client.WebhookTemplate.nuspec">
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>

@@ -12,15 +12,6 @@
     <copyright>Copyright © 2016 Curupira S/A</copyright>
     <tags>messagingHub blip</tags>
   </metadata>
-  <dependencies>
-    <dependency id="Lime.Protocol" version="0.6.24" />
-    <dependency id="Microsoft.AspNet.WebApi" version="5.2.3" />
-    <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
-    <dependency id="Microsoft.AspNet.WebApi.Core" version="5.2.3" />
-    <dependency id="Microsoft.AspNet.WebApi.WebHost" version="5.2.3" />
-    <dependency id="Microsoft.Tpl.Dataflow" version="4.5.24" />
-    <dependency id="Newtonsoft.Json" version="9.0.1" />
-  </dependencies>
   <files>
     <file src="App_Start\MessagingHubConfig.cs.pp" target="content\App_Start\MessagingHubConfig.cs.pp"/>
     <file src="App_Start\WebApiConfig.cs.pp" target="content\App_Start\WebApiConfig.cs.pp"/>

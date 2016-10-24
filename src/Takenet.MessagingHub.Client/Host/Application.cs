@@ -44,6 +44,14 @@ namespace Takenet.MessagingHub.Client.Host
         public string Domain { get; set; }
 
         /// <summary>
+        /// Gets or sets the Uri scheme.
+        /// </summary>
+        /// <value>
+        /// The scheme.
+        /// </value>
+        public string Scheme { get; set; }
+
+        /// <summary>
         /// Gets or sets the name of the host.
         /// </summary>
         /// <value>
@@ -150,6 +158,7 @@ namespace Takenet.MessagingHub.Client.Host
         public int Throughput { get; set; }
 
         public bool DisableNotify { get; set; }
+        
 
 
         /// <summary>

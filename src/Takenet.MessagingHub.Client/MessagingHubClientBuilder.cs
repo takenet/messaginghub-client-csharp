@@ -4,6 +4,17 @@ namespace Takenet.MessagingHub.Client
 {
     public class MessagingHubClientBuilder : MessagingHubConnectionBuilder<MessagingHubClientBuilder>
     {
+        public MessagingHubClientBuilder()
+            : this(new TcpTransportFactory())
+        {
+            
+        }
+
+        public MessagingHubClientBuilder(ITransportFactory transportFactory) 
+            : base(transportFactory)
+        {
+        }
+
         /// <summary>
         /// Builds a <see cref="IMessagingHubClient"/> with the configured parameters
         /// </summary>

@@ -31,7 +31,7 @@
           ]
         }
       },
-      "outState": "answer" 
+      "outState": "answer"
     },
     {
       "mediaType": "text/plain",
@@ -136,13 +136,13 @@
         "mediaType": "text/plain",
         "plainContent": "Obrigado por usar nosso serviço. Volte sempre!"
       },
-      "outState": "default" 
+      "outState": "default"
     },
     {
       "priority": "100",
       "response": {
-      "mediaType": "text/plain",
-      "plainContent": "Ops, não entendi o que você quis dizer. Envie a palavra AJUDA caso precise.\nOps, I didn't understand what you said. You can try send the word HELP if you are lost."
+        "mediaType": "text/plain",
+        "plainContent": "Ops, não entendi o que você quis dizer. Envie a palavra AJUDA caso precise.\nOps, I didn't understand what you said. You can try send the word HELP if you are lost."
       }
     }
   ],

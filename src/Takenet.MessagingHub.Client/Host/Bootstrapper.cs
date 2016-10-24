@@ -30,12 +30,15 @@ namespace Takenet.MessagingHub.Client.Host
         /// <param name="application">The application instance. If not defined, the class will look for an application.json file in the current directory.</param>
         /// <param name="loadAssembliesFromWorkingDirectory">if set to <c>true</c> indicates to the bootstrapper to load all assemblies from the current working directory.</param>
         /// <param name="path">Assembly path to load</param>
+        /// <param name="builder">The builder instance to be used.</param>
         /// <returns></returns>
+        /// <exception cref="System.IO.FileNotFoundException">Could not find the '{DefaultApplicationFileName}'</exception>
+        /// <exception cref="System.ArgumentException">At least an access key or password must be defined</exception>
         /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="ArgumentException">At least an access key or password must be defined</exception>
-        /// <exception cref="FileNotFoundException">Could not find the 'application.json' file</exception>
+        /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="ArgumentException">At least an access key or password must be defined</exception>
-        public static async Task<IStoppable> StartAsync(Application application = null, bool loadAssembliesFromWorkingDirectory = true, string path = ".")
+        public static async Task<IStoppable> StartAsync(Application application = null, bool loadAssembliesFromWorkingDirectory = true, string path = ".", MessagingHubClientBuilder builder = null)
         {
             if (application == null)
             {
@@ -48,7 +51,7 @@ namespace Takenet.MessagingHub.Client.Host
                 TypeUtil.LoadAssembliesAndReferences(path, assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter, ignoreExceptionLoadingReferencedAssembly: true);
             }
 
-            var builder = new MessagingHubClientBuilder();
+            if (builder == null) builder = new MessagingHubClientBuilder();
             if (application.Identifier != null)
             {
                 if (application.Password != null)
@@ -72,6 +75,7 @@ namespace Takenet.MessagingHub.Client.Host
             if (application.Instance != null) builder = builder.UsingInstance(application.Instance);
             if (application.RoutingRule != null) builder = builder.UsingRoutingRule(application.RoutingRule.Value);
             if (application.Domain != null) builder = builder.UsingDomain(application.Domain);
+            if (application.Scheme != null) builder = builder.UsingScheme(application.Scheme);
             if (application.HostName != null) builder = builder.UsingHostName(application.HostName);
             if (application.Port != null) builder = builder.UsingPort(application.Port.Value);
             if (application.SendTimeout != 0) builder = builder.WithSendTimeout(TimeSpan.FromMilliseconds(application.SendTimeout));

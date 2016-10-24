@@ -15,8 +15,9 @@ namespace Takenet.MessagingHub.Client.Connection
         protected TimeSpan SendTimeout { get; private set; }
         protected int MaxConnectionRetries { get; private set; }
         protected string Domain { get; private set; }
-        protected int Port { get; private set; }
+        protected string Scheme { get; private set; }
         protected string HostName { get; private set; }
+        protected int Port { get; private set; }        
         protected SessionCompression Compression { get; private set; }
         protected SessionEncryption Encryption { get; private set; }
         protected RoutingRule RoutingRule { get; private set; }
@@ -24,12 +25,13 @@ namespace Takenet.MessagingHub.Client.Connection
         protected bool AutoNotify { get; private set; }
 
         protected Identity Identity => Identity.Parse($"{Identifier}@{Domain}");
-        protected Uri EndPoint => new Uri($"net.tcp://{HostName}:{Port}");
+        protected Uri EndPoint => new Uri($"{Scheme}://{HostName}:{Port}");
 
         public MessagingHubConnectionConfigurator()
         {
-            HostName = Constants.DEFAULT_DOMAIN;
             Domain = Constants.DEFAULT_DOMAIN;
+            Scheme = Constants.DEFAULT_SCHEME;
+            HostName = Constants.DEFAULT_DOMAIN;
             Port = Constants.DEFAULT_PORT;
             SendTimeout = TimeSpan.FromSeconds(20);
             MaxConnectionRetries = 3;
@@ -76,6 +78,13 @@ namespace Takenet.MessagingHub.Client.Connection
         public TConfigurator UsingRoutingRule(RoutingRule routingRule)
         {
             RoutingRule = routingRule;
+            return (TConfigurator)this;
+        }
+
+        public TConfigurator UsingScheme(string scheme)
+        {
+            if (string.IsNullOrEmpty(scheme)) throw new ArgumentNullException(nameof(scheme));
+            Scheme = scheme;
             return (TConfigurator)this;
         }
 

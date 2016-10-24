@@ -16,14 +16,20 @@ namespace Takenet.MessagingHub.Client.Connection
     public class MessagingHubConnectionBuilder<TConfigurator> : MessagingHubConnectionConfigurator<TConfigurator>
         where TConfigurator : MessagingHubConnectionBuilder<TConfigurator>
     {
+        private readonly ITransportFactory _transportFactory;
+
+        public MessagingHubConnectionBuilder(ITransportFactory transportFactory)
+        {
+            _transportFactory = transportFactory;
+        }
 
         /// <summary>
         /// Builds a <see cref="IMessagingHubConnection">connection</see> with the configured parameters
         /// </summary>
         /// <returns>An inactive connection with the Messaging Hub. Call <see cref="IMessagingHubConnection.ConnectAsync"/> to activate it</returns>
         public IMessagingHubConnection Build()
-        {
-            var channelBuilder = ClientChannelBuilder.Create(() => new TcpTransport(traceWriter: new TraceWriter(), envelopeSerializer: new JsonNetSerializer()), EndPoint)
+        {            
+            var channelBuilder = ClientChannelBuilder.Create(() => _transportFactory.Create(EndPoint), EndPoint)
                                  .WithSendTimeout(SendTimeout)
                                  .WithBuffersLimit(100)
                                  .AddCommandModule(c => new ReplyPingChannelModule(c));
