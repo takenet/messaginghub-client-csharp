@@ -17,20 +17,20 @@ namespace Takenet.MessagingHub.Client.WebHost
             var application = Application.ParseFromJsonFile(Path.Combine(GetAssemblyRoot(), applicationFileName));
             ApplyConfigurationOverrides(application);
 
-            var localServiceProvider = Bootstrapper.BuildServiceProvider(application, TypeProvider.Instance);
+            var localServiceProvider = Bootstrapper.BuildServiceProvider(application, TypeResolver.Instance);
 
             localServiceProvider.RegisterService(typeof(IServiceProvider), localServiceProvider);
             localServiceProvider.RegisterService(typeof(IServiceContainer), localServiceProvider);
             localServiceProvider.RegisterService(typeof(Application), application);
-            Bootstrapper.RegisterSettingsContainer(application, localServiceProvider, TypeProvider.Instance);
+            Bootstrapper.RegisterSettingsContainer(application, localServiceProvider, TypeResolver.Instance);
 
             var envelopeBuffer = new EnvelopeBuffer();
             localServiceProvider.RegisterService(typeof(IEnvelopeBuffer), envelopeBuffer);
-            var client = await Bootstrapper.BuildMessagingHubClientAsync(application, () => new MessagingHubClient(new HttpMessagingHubConnection(envelopeBuffer, new JsonNetSerializer(), application)), localServiceProvider, TypeProvider.Instance);
+            var client = await Bootstrapper.BuildMessagingHubClientAsync(application, () => new MessagingHubClient(new HttpMessagingHubConnection(envelopeBuffer, new JsonNetSerializer(), application)), localServiceProvider, TypeResolver.Instance);
 
             await client.StartAsync().ConfigureAwait(false);
 
-            await Bootstrapper.BuildStartupAsync(application, localServiceProvider, TypeProvider.Instance);
+            await Bootstrapper.BuildStartupAsync(application, localServiceProvider, TypeResolver.Instance);
 
             return localServiceProvider;
         }

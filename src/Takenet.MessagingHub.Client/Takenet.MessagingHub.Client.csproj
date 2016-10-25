@@ -82,12 +82,12 @@
     <Compile Include="Host\IDomainManager.cs" />
     <Compile Include="Host\IFactory.cs" />
     <Compile Include="Host\IServiceContainer.cs" />
-    <Compile Include="Host\ITypeProvider.cs" />
+    <Compile Include="Host\ITypeResolver.cs" />
     <Compile Include="Host\MessageApplicationReceiver.cs" />
     <Compile Include="Host\NotificationApplicationReceiver.cs" />
     <Compile Include="Host\ServiceProviderExtensions.cs" />
     <Compile Include="Host\SettingsContainer.cs" />
-    <Compile Include="Host\TypeProvider.cs" />
+    <Compile Include="Host\TypeResolver.cs" />
     <Compile Include="Host\TypeServiceProvider.cs" />
     <Compile Include="IMessagingHubClient.cs" />
     <Compile Include="Extensions\Session\ISessionManager.cs" />

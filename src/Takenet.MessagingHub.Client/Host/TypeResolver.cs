@@ -4,14 +4,14 @@ using Lime.Protocol.Serialization;
 
 namespace Takenet.MessagingHub.Client.Host
 {
-    public sealed class TypeProvider : ITypeProvider
+    public sealed class TypeResolver : ITypeResolver
     {
-        private TypeProvider()
+        private TypeResolver()
         {
             
         }
 
-        public static TypeProvider Instance => new TypeProvider();
+        public static TypeResolver Instance => new TypeResolver();
 
         public Type GetType(string typeName) => 
             TypeUtil

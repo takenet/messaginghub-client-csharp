@@ -94,7 +94,7 @@ namespace Takenet.MessagingHub.Client.Textc
                                 var path = new FileInfo(assembly.Location).DirectoryName;
                                 Lime.Protocol.Serialization.TypeUtil.LoadAssembliesAndReferences(path, assemblyFilter: Lime.Protocol.Serialization.TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter,
                                     ignoreExceptionLoadingReferencedAssembly: true);
-                                var processorType = TypeProvider.Instance.GetType(processorTypeName);
+                                var processorType = TypeResolver.Instance.GetType(processorTypeName);
                                 object processor;
                                 if (!ProcessorInstancesDictionary.TryGetValue(processorType, out processor))
                                 {
@@ -132,7 +132,7 @@ namespace Takenet.MessagingHub.Client.Textc
             }
             else
             {
-                scorer = await Bootstrapper.CreateAsync<IExpressionScorer>(scorerType, serviceProvider, settings, TypeProvider.Instance).ConfigureAwait(false);
+                scorer = await Bootstrapper.CreateAsync<IExpressionScorer>(scorerType, serviceProvider, settings, TypeResolver.Instance).ConfigureAwait(false);
             }
             builder = builder.WithExpressionScorer(scorer);
             return builder;
@@ -141,7 +141,7 @@ namespace Takenet.MessagingHub.Client.Textc
         private static async Task<TextcMessageReceiverBuilder> SetupContextAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings,
             TextcMessageReceiverContextCommandSettings context, TextcMessageReceiverBuilder builder)
         {
-            var contextProvider = await Bootstrapper.CreateAsync<IContextProvider>(context.Type, serviceProvider, settings, TypeProvider.Instance).ConfigureAwait(false);
+            var contextProvider = await Bootstrapper.CreateAsync<IContextProvider>(context.Type, serviceProvider, settings, TypeResolver.Instance).ConfigureAwait(false);
 
             builder = builder.WithContextProvider(contextProvider);
             return builder;
