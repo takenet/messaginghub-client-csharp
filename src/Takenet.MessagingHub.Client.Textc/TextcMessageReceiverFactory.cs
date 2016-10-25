@@ -94,7 +94,7 @@ namespace Takenet.MessagingHub.Client.Textc
                                 var path = new FileInfo(assembly.Location).DirectoryName;
                                 Lime.Protocol.Serialization.TypeUtil.LoadAssembliesAndReferences(path, assemblyFilter: Lime.Protocol.Serialization.TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter,
                                     ignoreExceptionLoadingReferencedAssembly: true);
-                                var processorType = TypeResolver.Instance.GetType(processorTypeName);
+                                var processorType = TypeResolver.Instance.Resolve(processorTypeName);
                                 object processor;
                                 if (!ProcessorInstancesDictionary.TryGetValue(processorType, out processor))
                                 {

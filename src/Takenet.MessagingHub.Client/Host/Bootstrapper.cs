@@ -129,7 +129,7 @@ namespace Takenet.MessagingHub.Client.Host
             var localServiceProvider = new TypeServiceProvider();
             if (application.ServiceProviderType != null)
             {
-                var serviceProviderType = typeResolver.GetType(application.ServiceProviderType);
+                var serviceProviderType = typeResolver.Resolve(application.ServiceProviderType);
                 if (serviceProviderType != null)
                 {
                     if (!typeof(IServiceProvider).IsAssignableFrom(serviceProviderType))
@@ -159,7 +159,7 @@ namespace Takenet.MessagingHub.Client.Host
             if (settingsContainer.SettingsType != null)
             {
                 var settingsDictionary = settingsContainer.Settings;
-                var settingsType = typeResolver.GetType(settingsContainer.SettingsType);
+                var settingsType = typeResolver.Resolve(settingsContainer.SettingsType);
                 if (settingsType != null)
                 {
                     var settingsJson = JsonConvert.SerializeObject(settingsDictionary, Application.SerializerSettings);
@@ -331,7 +331,7 @@ namespace Takenet.MessagingHub.Client.Host
         public static Task<T> CreateAsync<T>(string typeName, IServiceProvider serviceProvider, IDictionary<string, object> settings, ITypeResolver typeResolver) where T : class
         {
             if (typeName == null) throw new ArgumentNullException(nameof(typeName));
-            var type = typeResolver.GetType(typeName);
+            var type = typeResolver.Resolve(typeName);
             return CreateAsync<T>(type, serviceProvider, settings);
         }
 

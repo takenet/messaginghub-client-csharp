@@ -12,6 +12,6 @@ namespace Takenet.MessagingHub.Client.Host
         /// </summary>
         /// <param name="typeName">Name of the type.</param>
         /// <returns></returns>
-        Type GetType(string typeName);
+        Type Resolve(string typeName);
     }
 }
