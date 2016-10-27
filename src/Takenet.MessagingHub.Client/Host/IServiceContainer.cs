@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client.Host
 {
@@ -19,6 +15,14 @@ namespace Takenet.MessagingHub.Client.Host
         /// <param name="instance">The instance.</param>
         void RegisterService(Type serviceType, object instance);
 
+        /// <summary>
+        /// Registers a factory for the service instance.
+        /// </summary>
+        /// <param name="serviceType">Type of the service.</param>
+        /// <param name="instanceFactory">
+        /// A factory function which will be called 
+        /// only when a instance of <paramref name="serviceType"/> is requested.
+        /// </param>
         void RegisterService(Type serviceType, Func<object> instanceFactory);
     }
 }
