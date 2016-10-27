@@ -17,6 +17,10 @@ namespace $rootnamespace$
 {
     internal class HttpOnDemandClientChannel : IOnDemandClientChannel, IDisposable
     {
+        private const string WebhookKeyConfigurationName = "MessagingHub.WebhookKey";
+        private const string BaseUrlConfigurationName = "MessagingHub.BaseUrl";
+        private const string DefaultBaseUrl = "https://msging.net";
+
         private readonly IEnvelopeSerializer _serializer;
         private readonly IEnvelopeBuffer _envelopeBuffer;
         private readonly string _baseUrl;
@@ -26,14 +30,17 @@ namespace $rootnamespace$
 
         public HttpOnDemandClientChannel(IEnvelopeBuffer envelopeBuffer, IEnvelopeSerializer serializer, Application applicationSettings)
         {
-            _baseUrl = ConfigurationManager.AppSettings["MessagingHub.BaseUrl"];
-            _webhookKey = ConfigurationManager.AppSettings["MessagingHub.WebhookKey"];
-            _client = new HttpClient();
-            _client.DefaultRequestHeaders.Authorization = 
-                new AuthenticationHeaderValue("Key", _webhookKey ?? GetAuthCredentials(applicationSettings));
             _envelopeBuffer = envelopeBuffer;
             _applicationSettings = applicationSettings;
             _serializer = serializer;
+            _webhookKey = ConfigurationManager.AppSettings[WebhookKeyConfigurationName];
+            _baseUrl = ConfigurationManager.AppSettings[BaseUrlConfigurationName];
+            if (string.IsNullOrWhiteSpace(_baseUrl)) _baseUrl = DefaultBaseUrl;
+            CheckCredentialsOrThrow();
+
+            _client = new HttpClient();
+            _client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Key", _webhookKey ?? GetAuthCredentials(applicationSettings));
         }
 
         public ICollection<Func<ChannelInformation, Task>> ChannelCreatedHandlers
@@ -140,6 +147,13 @@ namespace $rootnamespace$
 
         private HttpContent GetContent(Envelope envelope) => 
             new StringContent(_serializer.Serialize(envelope), Encoding.UTF8, "application/json");
+
+        private void CheckCredentialsOrThrow()
+        {
+            if (string.IsNullOrWhiteSpace(_webhookKey) &&
+                (string.IsNullOrWhiteSpace(_applicationSettings.Identifier) || string.IsNullOrWhiteSpace(_applicationSettings.AccessKey)))
+                throw new InvalidOperationException($"Define {WebhookKeyConfigurationName} key or the pair MessagingHub.{nameof(_applicationSettings.Identifier)}/MessagingHub.{nameof(_applicationSettings.AccessKey)} in your Web.config");
+        }
 
         private string GetAuthCredentials(Application applicationSettings) => 
             $"{applicationSettings.Identifier}:{applicationSettings.AccessKey.FromBase64()}".ToBase64();

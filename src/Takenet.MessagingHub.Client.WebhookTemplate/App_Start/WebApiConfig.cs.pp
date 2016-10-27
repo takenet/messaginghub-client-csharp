@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
-using Takenet.MessagingHub.Client.WebHost.Models;
+using $rootnamespace$.Models;
 
 namespace $rootnamespace$
 {

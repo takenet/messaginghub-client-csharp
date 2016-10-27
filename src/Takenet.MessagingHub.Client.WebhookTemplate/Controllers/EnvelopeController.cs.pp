@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Web.Http;
-using Takenet.MessagingHub.Client.WebHost.Models;
+using $rootnamespace$.Models;
 
-namespace $rootnamespace$
+namespace $rootnamespace$.Controllers
 {
     public class EnvelopeController : ApiController
     {
