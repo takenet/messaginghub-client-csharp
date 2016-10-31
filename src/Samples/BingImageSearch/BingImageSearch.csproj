@@ -42,10 +42,6 @@
       <HintPath>..\..\packages\Lime.Transport.Tcp.0.6.40\lib\net461\Lime.Transport.Tcp.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="mhh, Version=0.3.153.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Takenet.MessagingHub.Client.Host.0.3.153\lib\net461\mhh.exe</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -63,14 +59,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Takenet.MessagingHub.Client, Version=0.3.153.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Takenet.MessagingHub.Client.0.3.153\lib\net461\Takenet.MessagingHub.Client.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Takenet.MessagingHub.Client.Template, Version=0.3.153.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Takenet.MessagingHub.Client.Template.0.3.153\lib\net461\Takenet.MessagingHub.Client.Template.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Reference Include="Takenet.Iris.Common, Version=1.8.229.0, Culture=neutral, PublicKeyToken=null" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BingContainer.cs" />
@@ -88,7 +77,14 @@
     <None Include="Readme.md" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Readme.txt" />
+    <ProjectReference Include="..\..\Takenet.MessagingHub.Client.Host\Takenet.MessagingHub.Client.Host.csproj">
+      <Project>{288513c0-fcd1-47b0-9c98-00b34ce99b63}</Project>
+      <Name>Takenet.MessagingHub.Client.Host</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Takenet.MessagingHub.Client\Takenet.MessagingHub.Client.csproj">
+      <Project>{628f8ee4-956a-49ce-b9d6-bd5f6800fe6f}</Project>
+      <Name>Takenet.MessagingHub.Client</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
