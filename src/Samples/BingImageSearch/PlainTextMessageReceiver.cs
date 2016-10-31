@@ -13,6 +13,8 @@ using Lime.Messaging.Contents;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
+using Takenet.MessagingHub.Client.Extensions.EventTracker;
+using Takenet.Iris.Common.Resources;
 
 namespace BingImageSearch
 {

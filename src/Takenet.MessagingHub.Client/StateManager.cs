@@ -15,7 +15,7 @@ namespace Takenet.MessagingHub.Client
     public sealed class StateManager : IStateManager
     {
         public const string DEFAULT_STATE = "default";
-        
+
         private static readonly object SyncRoot = new object();
         private static StateManager _instance;
         private readonly ObjectCache _nodeStateCache;
@@ -109,16 +109,19 @@ namespace Takenet.MessagingHub.Client
                 _nodeStateCache.Set(GetCacheKey(identity), state, new CacheItemPolicy()
                 {
                     SlidingExpiration = StateTimeout
-                });                
+                });
             }
 
             if (raiseEvent)
-            {                
+            {
                 StateChanged?.Invoke(this, new StateEventArgs(identity, state));
             }
         }
 
-        private static string GetCacheKey(Identity identity) => identity.ToString().ToLowerInvariant();
+        private static string GetCacheKey(Identity identity)
+        {
+            return $"{identity.Name}@{identity.Domain}".ToLowerInvariant();
+        }
     }
 
     /// <summary>
