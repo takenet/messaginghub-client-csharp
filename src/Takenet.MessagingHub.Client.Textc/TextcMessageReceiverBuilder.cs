@@ -23,9 +23,9 @@ namespace Takenet.MessagingHub.Client.Textc
     {
         //private readonly MessagingHubClientBuilder _clientBuilder;
         private IContextProvider _contextProvider;
-        private Func<Message, IMessageReceiver, Task> _matchNotFoundHandler;
+        private IMatchNotFoundHandler _matchNotFoundHandler;
 
-        private IOutputProcessor _outputProcessor;
+        private readonly IOutputProcessor _outputProcessor;
         private ISyntaxParser _syntaxParser;
         private IExpressionScorer _expressionScorer;
         private ICultureProvider _cultureProvider;
@@ -133,16 +133,14 @@ namespace Takenet.MessagingHub.Client.Textc
         /// <param name="matchNotFoundMessage">The message text.</param>
         /// <returns></returns>
         public TextcMessageReceiverBuilder WithMatchNotFoundMessage(string matchNotFoundMessage) => 
-            WithMatchNotFoundHandler(
-                (message, receiver) =>
-                    _sender.SendMessageAsync(matchNotFoundMessage, message.Pp ?? message.From, CancellationToken.None));
+            WithMatchNotFoundHandler(new MessageMatchNotFoundHandler(_sender, matchNotFoundMessage));
 
         /// <summary>
         /// Sets a handler to be called in case of no match of the user input.
         /// </summary>
         /// <param name="matchNotFoundHandler">The handler.</param>
         /// <returns></returns>
-        public TextcMessageReceiverBuilder WithMatchNotFoundHandler(Func<Message, IMessageReceiver, Task> matchNotFoundHandler)
+        public TextcMessageReceiverBuilder WithMatchNotFoundHandler(IMatchNotFoundHandler matchNotFoundHandler)
         {
             _matchNotFoundHandler = matchNotFoundHandler;
             return this;
@@ -217,7 +215,6 @@ namespace Takenet.MessagingHub.Client.Textc
                     commandProcessorFactory(_outputProcessor));
             }
             return new TextcMessageReceiver(
-                _sender,
                 textProcessor, 
                 _contextProvider ?? new ContextProvider(_cultureProvider, TimeSpan.FromMinutes(5)), 
                 _matchNotFoundHandler);

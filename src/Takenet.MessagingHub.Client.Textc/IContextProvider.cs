@@ -1,4 +1,5 @@
-﻿using Lime.Protocol;
+﻿using System.Threading.Tasks;
+using Lime.Protocol;
 using Takenet.Textc;
 
 namespace Takenet.MessagingHub.Client.Textc
@@ -9,11 +10,20 @@ namespace Takenet.MessagingHub.Client.Textc
     public interface IContextProvider
     {
         /// <summary>
-        /// Gets a <see cref="IRequestContext"/> instance for the given sender and destination.
+        /// Gets an <see cref="IRequestContext"/> instance for the given sender and destination.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="destination"></param>
         /// <returns></returns>
-        IRequestContext GetContext(Node sender, Node destination);
+        Task<IRequestContext> GetContextAsync(Node sender, Node destination);
+
+        /// <summary>
+        /// Saves an <see cref="IRequestContext"/> instance for the given sender and destination.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="destination">The destination.</param>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
+        Task SaveContextAsync(Node sender, Node destination, IRequestContext context);
     }
 }

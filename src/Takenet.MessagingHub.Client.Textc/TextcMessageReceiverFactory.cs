@@ -36,7 +36,17 @@ namespace Takenet.MessagingHub.Client.Textc
 
                 if (textcMessageReceiverSettings.Context != null)
                 {
-                    builder = await SetupContextAsync(serviceProvider, settings, textcMessageReceiverSettings.Context, builder).ConfigureAwait(false);
+                    builder = await SetupContextProviderAsync(serviceProvider, settings, textcMessageReceiverSettings.Context, builder).ConfigureAwait(false);
+                }
+
+                if (textcMessageReceiverSettings.MatchNotFoundMessage != null)
+                {
+                    builder = builder.WithMatchNotFoundMessage(textcMessageReceiverSettings.MatchNotFoundMessage);
+                }
+
+                if (textcMessageReceiverSettings.MatchNotFoundHandlerType != null)
+                {
+                    builder = await SetupMatchNotFoundHandlerAsync(serviceProvider, settings, textcMessageReceiverSettings.MatchNotFoundHandlerType, builder).ConfigureAwait(false);
                 }
             }
 
@@ -138,12 +148,19 @@ namespace Takenet.MessagingHub.Client.Textc
             return builder;
         }
 
-        private static async Task<TextcMessageReceiverBuilder> SetupContextAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings,
+        private static async Task<TextcMessageReceiverBuilder> SetupContextProviderAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings,
             TextcMessageReceiverContextCommandSettings context, TextcMessageReceiverBuilder builder)
         {
             var contextProvider = await Bootstrapper.CreateAsync<IContextProvider>(context.Type, serviceProvider, settings, TypeResolver.Instance).ConfigureAwait(false);
-
             builder = builder.WithContextProvider(contextProvider);
+            return builder;
+        }
+
+        private static async Task<TextcMessageReceiverBuilder> SetupMatchNotFoundHandlerAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings,
+            string matchNotFoundHandlerType, TextcMessageReceiverBuilder builder)
+        {
+            var matchNotFoundHandler = await Bootstrapper.CreateAsync<IMatchNotFoundHandler>(matchNotFoundHandlerType, serviceProvider, settings, TypeResolver.Instance).ConfigureAwait(false);
+            builder = builder.WithMatchNotFoundHandler(matchNotFoundHandler);
             return builder;
         }
     }
