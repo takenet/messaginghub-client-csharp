@@ -4,7 +4,7 @@ using System;
 using System.Web.Http.Controllers;
 using System.Web.Http.ModelBinding;
 
-namespace $rootnamespace$
+namespace $rootnamespace$.Models
 {
     public class EnvelopeModelBinder : IModelBinder
     {

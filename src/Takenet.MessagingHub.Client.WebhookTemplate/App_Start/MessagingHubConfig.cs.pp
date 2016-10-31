@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Host;
 
 namespace $rootnamespace$
@@ -17,20 +18,20 @@ namespace $rootnamespace$
             var application = Application.ParseFromJsonFile(Path.Combine(GetAssemblyRoot(), applicationFileName));
             ApplyConfigurationOverrides(application);
 
-            var localServiceProvider = Bootstrapper.BuildServiceProvider(application);
+            var localServiceProvider = Bootstrapper.BuildServiceProvider(application, TypeResolver.Instance);
 
             localServiceProvider.RegisterService(typeof(IServiceProvider), localServiceProvider);
             localServiceProvider.RegisterService(typeof(IServiceContainer), localServiceProvider);
             localServiceProvider.RegisterService(typeof(Application), application);
-            Bootstrapper.RegisterSettingsContainer(application, localServiceProvider);
+            Bootstrapper.RegisterSettingsContainer(application, localServiceProvider, TypeResolver.Instance);
 
             var envelopeBuffer = new EnvelopeBuffer();
             localServiceProvider.RegisterService(typeof(IEnvelopeBuffer), envelopeBuffer);
-            var client = await Bootstrapper.BuildMessagingHubClientAsync(application, () => new MessagingHubClient(new HttpMessagingHubConnection(envelopeBuffer, new JsonNetSerializer(), application)), localServiceProvider);
+            var client = await Bootstrapper.BuildMessagingHubClientAsync(application, () => new MessagingHubClient(new HttpMessagingHubConnection(envelopeBuffer, new JsonNetSerializer(), application)), localServiceProvider, TypeResolver.Instance);
 
             await client.StartAsync().ConfigureAwait(false);
 
-            await Bootstrapper.BuildStartupAsync(application, localServiceProvider);
+            await Bootstrapper.BuildStartupAsync(application, localServiceProvider, TypeResolver.Instance);
 
             return localServiceProvider;
         }
