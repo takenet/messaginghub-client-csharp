@@ -19,9 +19,9 @@ namespace Takenet.MessagingHub.Client.Textc
         public const string METADATA_VARIABLE_NAME = "$metadata";
         public const string CLEARSESSION_VARIABLE_NAME = "$clearSession";
 
-        public static Guid GetMessageId(this IRequestContext context)
+        public static string GetMessageId(this IRequestContext context)
         {
-            return context.GetVariable<Guid>(ID_VARIABLE_NAME);
+            return context.GetVariable<string>(ID_VARIABLE_NAME);
         }
 
         public static void SetMessageId(this IRequestContext context, string id)
@@ -99,6 +99,17 @@ namespace Takenet.MessagingHub.Client.Textc
         public static void SetMessageMetadata(this IRequestContext context, IDictionary<string, string> metadata)
         {
             context.SetVariable(METADATA_VARIABLE_NAME, metadata);
+        }
+
+        public static void SetMessage(this IRequestContext context, Message message)
+        {
+            context.SetMessageId(message.Id);
+            context.SetMessageFrom(message.From);
+            context.SetMessageTo(message.To);
+            context.SetMessagePp(message.Pp);
+            context.SetMessageType(message.Type);
+            context.SetMessageContent(message.Content);
+            context.SetMessageMetadata(message.Metadata);
         }
 
         public static bool HasToClearSession(this IRequestContext context)

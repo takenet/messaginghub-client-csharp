@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Caching;
+using System.Threading.Tasks;
 using Lime.Protocol;
 using Takenet.Textc;
 
@@ -19,12 +20,28 @@ namespace Takenet.MessagingHub.Client.Textc
             _cacheItemPolicy = new CacheItemPolicy() { SlidingExpiration = contextValidity };
         }
 
-        public IRequestContext GetContext(Node sender, Node destination)
+        public Task<IRequestContext> GetContextAsync(Node sender, Node destination)
+        {
+            var key = GetKey(sender, destination);
+            var requestContext = new RequestContext();
+
+            return Task.FromResult<IRequestContext>(
+                (RequestContext)(_contextCache.AddOrGetExisting(key, requestContext, _cacheItemPolicy) ?? requestContext));
+        }
+
+        public Task SaveContextAsync(Node sender, Node destination, IRequestContext context)
+        {
+            var key = GetKey(sender, destination);
+            _contextCache.Set(key, context, _cacheItemPolicy);
+            return Task.CompletedTask;
+        }
+
+        private static string GetKey(Node sender, Node destination)
         {
             var key = $"{sender}-{destination}".ToLowerInvariant();
-            var requestContext = new RequestContext();
-            return (RequestContext)(_contextCache.AddOrGetExisting(key, requestContext, _cacheItemPolicy) ?? requestContext);
+            return key;
         }
+
 
         public void Dispose()
         {

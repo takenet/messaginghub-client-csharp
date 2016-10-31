@@ -5,68 +5,45 @@ using System.Threading.Tasks;
 using Lime.Protocol;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Messages;
-using Takenet.MessagingHub.Client.Sender;
 using Takenet.Textc;
 
 namespace Takenet.MessagingHub.Client.Textc
 {
     public class TextcMessageReceiver : IMessageReceiver
     {
-        private readonly IMessagingHubSender _sender;
         private readonly ITextProcessor _textProcessor;
         private readonly IContextProvider _contextProvider;
-        private readonly Func<Message, IMessageReceiver, Task> _matchNotFoundHandler;
-        private readonly TimeSpan _processTimeout;
-
-        private static readonly TimeSpan DefaultProcessTimeout = TimeSpan.FromSeconds(60);
+        private readonly IMatchNotFoundHandler _matchNotFoundHandler;
 
         public TextcMessageReceiver(
-            IMessagingHubSender sender, 
             ITextProcessor textProcessor, 
             IContextProvider contextProvider, 
-            Func<Message, IMessageReceiver, Task> matchNotFoundHandler = null, 
-            TimeSpan? processTimeout = null)
+            IMatchNotFoundHandler matchNotFoundHandler = null)
         {
             if (textProcessor == null) throw new ArgumentNullException(nameof(textProcessor));
             if (contextProvider == null) throw new ArgumentNullException(nameof(contextProvider));
-            _sender = sender;
             _textProcessor = textProcessor;
             _contextProvider = contextProvider;
             _matchNotFoundHandler = matchNotFoundHandler;
-            _processTimeout = processTimeout ?? DefaultProcessTimeout;
         }
 
         public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
         {
-            var context = _contextProvider.GetContext(message.Pp ?? message.From, message.To);
+            var context = await _contextProvider.GetContextAsync(message.GetSender(), message.To);
+            context.SetMessage(message);
 
             try
             {
-                context.SetMessageId(message.Id);
-                context.SetMessageFrom(message.From);
-                context.SetMessageTo(message.To);
-                context.SetMessagePp(message.Pp);
-                context.SetMessageType(message.Type);
-                context.SetMessageContent(message.Content);
-                context.SetMessageMetadata(message.Metadata);
-
-                using (var cts = new CancellationTokenSource(_processTimeout))
-                {
-                    await
-                        _textProcessor.ProcessAsync(message.Content.ToString(), context, cts.Token)
-                            .ConfigureAwait(false);
-                }
+                await
+                    _textProcessor.ProcessAsync(message.Content.ToString(), context, cancellationToken)
+                        .ConfigureAwait(false);
             }
             catch (MatchNotFoundException)
             {
                 if (_matchNotFoundHandler != null)
                 {
-                    await _matchNotFoundHandler(message, this).ConfigureAwait(false);
+                    await _matchNotFoundHandler.OnMatchNotFoundAsync(message, context, cancellationToken).ConfigureAwait(false);
                 }
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError(ex.ToString());
             }
             finally
             {
@@ -74,6 +51,8 @@ namespace Takenet.MessagingHub.Client.Textc
                 {
                     context.Clear();
                 }
+
+                await _contextProvider.SaveContextAsync(message.GetSender(), message.To, context);
             }
         }
     }

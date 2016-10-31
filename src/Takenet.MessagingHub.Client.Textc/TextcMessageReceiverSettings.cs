@@ -23,6 +23,10 @@ namespace Takenet.MessagingHub.Client.Textc
 
         public TextcMessageReceiverContextCommandSettings Context { get; set; }
 
+        public string MatchNotFoundMessage { get; set; }
+
+        public string MatchNotFoundHandlerType { get; set; }
+
         public static TextcMessageReceiverSettings ParseFromSettings(IDictionary<string, object> settings)
         {
             var jObject = JObject.FromObject(settings);
