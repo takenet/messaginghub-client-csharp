@@ -77,8 +77,8 @@
     <Compile Include="Extensions\Broadcast\BroadcastExtension.cs" />
     <Compile Include="Extensions\Directory\DirectoryExtension.cs" />
     <Compile Include="Extensions\Directory\IDirectoryExtension.cs" />
-    <Compile Include="Extensions\EventTracker\EventTrackExtension.cs" />
-    <Compile Include="Extensions\EventTracker\IEventTrackExtension.cs" />
+    <Compile Include="Extensions\EventTrack\EventTrackExtension.cs" />
+    <Compile Include="Extensions\EventTrack\IEventTrackExtension.cs" />
     <Compile Include="Extensions\ExtensionBase.cs" />
     <Compile Include="Extensions\Broadcast\IBroadcastExtension.cs" />
     <Compile Include="Extensions\Bucket\BucketExtension.cs" />
