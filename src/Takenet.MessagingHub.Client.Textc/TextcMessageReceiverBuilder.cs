@@ -13,6 +13,7 @@ using Takenet.Textc.Csdl;
 using Takenet.Textc.Processors;
 using Takenet.Textc.Scorers;
 using Takenet.MessagingHub.Client.Sender;
+using Takenet.Textc.PreProcessors;
 
 namespace Takenet.MessagingHub.Client.Textc
 {
@@ -31,6 +32,7 @@ namespace Takenet.MessagingHub.Client.Textc
         private ICultureProvider _cultureProvider;
         private readonly List<Func<IOutputProcessor, ICommandProcessor>> _commandProcessorFactories;
         private readonly IMessagingHubSender _sender;
+        private readonly List<ITextPreprocessor> _textPrePreprocessors;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextcMessageReceiverBuilder"/> class.
@@ -53,6 +55,7 @@ namespace Takenet.MessagingHub.Client.Textc
             _expressionScorer = expressionScorer ?? new RatioExpressionScorer();
             _cultureProvider = cultureProvider ?? new DefaultCultureProvider(CultureInfo.InvariantCulture);
             _commandProcessorFactories = new List<Func<IOutputProcessor, ICommandProcessor>>();
+            _textPrePreprocessors = new List<ITextPreprocessor>();
         }
 
         /// <summary>
@@ -69,7 +72,7 @@ namespace Takenet.MessagingHub.Client.Textc
             ISyntaxParser syntaxParser = null,
             IExpressionScorer expressionScorer = null, 
             ICultureProvider cultureProvider = null)
-            :this(clientBuilder.Build(), outputProcessor, syntaxParser, expressionScorer, cultureProvider)
+            : this(clientBuilder.Build(), outputProcessor, syntaxParser, expressionScorer, cultureProvider)
         {
          
         }
@@ -130,10 +133,10 @@ namespace Takenet.MessagingHub.Client.Textc
         /// <summary>
         /// Sets the message text to be returned in case of no match of the user input.
         /// </summary>
-        /// <param name="matchNotFoundMessage">The message text.</param>
+        /// <param name="matchNotFoundReturnText">The message text.</param>
         /// <returns></returns>
-        public TextcMessageReceiverBuilder WithMatchNotFoundMessage(string matchNotFoundMessage) => 
-            WithMatchNotFoundHandler(new MessageMatchNotFoundHandler(_sender, matchNotFoundMessage));
+        public TextcMessageReceiverBuilder WithMatchNotFoundReturnText(string matchNotFoundReturnText) => 
+            WithMatchNotFoundHandler(new MessageMatchNotFoundHandler(_sender, matchNotFoundReturnText));
 
         /// <summary>
         /// Sets a handler to be called in case of no match of the user input.
@@ -203,6 +206,17 @@ namespace Takenet.MessagingHub.Client.Textc
         }
 
         /// <summary>
+        /// Adds an <see cref="ITextPreprocessor"/> instance.
+        /// </summary>        
+        public TextcMessageReceiverBuilder AddTextPreprocessor(ITextPreprocessor textPreprocessor)
+        {
+            if (textPreprocessor == null) throw new ArgumentNullException(nameof(textPreprocessor));
+            _textPrePreprocessors.Add(textPreprocessor);
+            
+            return this;
+        }
+
+        /// <summary>
         /// Builds a new instance of <see cref="TextcMessageReceiver"/> using the defined configurations.
         /// </summary>
         /// <returns></returns>
@@ -214,6 +228,13 @@ namespace Takenet.MessagingHub.Client.Textc
                 textProcessor.CommandProcessors.Add(
                     commandProcessorFactory(_outputProcessor));
             }
+
+            foreach (var textPrePreprocessor in _textPrePreprocessors)
+            {
+                textProcessor.TextPreprocessors.Add(
+                    textPrePreprocessor);
+            }
+
             return new TextcMessageReceiver(
                 textProcessor, 
                 _contextProvider ?? new ContextProvider(_cultureProvider, TimeSpan.FromMinutes(5)), 

@@ -9,6 +9,7 @@ using Takenet.MessagingHub.Client.Host;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.Textc;
 using Takenet.Textc.Csdl;
+using Takenet.Textc.PreProcessors;
 using Takenet.Textc.Processors;
 using Takenet.Textc.Scorers;
 
@@ -26,27 +27,37 @@ namespace Takenet.MessagingHub.Client.Textc
                 var textcMessageReceiverSettings = TextcMessageReceiverSettings.ParseFromSettings(settings);
                 if (textcMessageReceiverSettings.Commands != null)
                 {
-                    builder = SetupCommands(serviceProvider, settings, textcMessageReceiverSettings.Commands, builder);
+                    builder = SetupCommands(
+                        serviceProvider, settings, textcMessageReceiverSettings.Commands, builder);
                 }
 
                 if (textcMessageReceiverSettings.ScorerType != null)
                 {
-                    builder = await SetupScorerAsync(serviceProvider, settings, textcMessageReceiverSettings.ScorerType, builder).ConfigureAwait(false);
+                    builder = await SetupScorerAsync(
+                        serviceProvider, settings, textcMessageReceiverSettings.ScorerType, builder).ConfigureAwait(false);
                 }
 
                 if (textcMessageReceiverSettings.Context != null)
                 {
-                    builder = await SetupContextProviderAsync(serviceProvider, settings, textcMessageReceiverSettings.Context, builder).ConfigureAwait(false);
+                    builder = await SetupContextProviderAsync(
+                        serviceProvider, settings, textcMessageReceiverSettings.Context, builder).ConfigureAwait(false);
                 }
 
-                if (textcMessageReceiverSettings.MatchNotFoundMessage != null)
+                if (textcMessageReceiverSettings.MatchNotFoundReturnText != null)
                 {
-                    builder = builder.WithMatchNotFoundMessage(textcMessageReceiverSettings.MatchNotFoundMessage);
+                    builder = builder.WithMatchNotFoundReturnText(textcMessageReceiverSettings.MatchNotFoundReturnText);
                 }
 
                 if (textcMessageReceiverSettings.MatchNotFoundHandlerType != null)
                 {
-                    builder = await SetupMatchNotFoundHandlerAsync(serviceProvider, settings, textcMessageReceiverSettings.MatchNotFoundHandlerType, builder).ConfigureAwait(false);
+                    builder = await SetupMatchNotFoundHandlerAsync(
+                        serviceProvider, settings, textcMessageReceiverSettings.MatchNotFoundHandlerType, builder).ConfigureAwait(false);
+                }
+
+                if (textcMessageReceiverSettings.PreProcessorTypes != null)
+                {
+                    builder = await SetupTextPreprocessorsAsync(
+                        serviceProvider, settings, textcMessageReceiverSettings, builder).ConfigureAwait(false);
                 }
             }
 
@@ -161,6 +172,18 @@ namespace Takenet.MessagingHub.Client.Textc
         {
             var matchNotFoundHandler = await Bootstrapper.CreateAsync<IMatchNotFoundHandler>(matchNotFoundHandlerType, serviceProvider, settings, TypeResolver.Instance).ConfigureAwait(false);
             builder = builder.WithMatchNotFoundHandler(matchNotFoundHandler);
+            return builder;
+        }
+
+        private static async Task<TextcMessageReceiverBuilder> SetupTextPreprocessorsAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings,
+            TextcMessageReceiverSettings textcMessageReceiverSettings, TextcMessageReceiverBuilder builder)
+        {
+            foreach (var textPreprocessorType in textcMessageReceiverSettings.PreProcessorTypes)
+            {
+                var textPreprocessor = await Bootstrapper.CreateAsync<ITextPreprocessor>(
+                    textPreprocessorType, serviceProvider, settings, TypeResolver.Instance).ConfigureAwait(false);
+                builder = builder.AddTextPreprocessor(textPreprocessor);
+            }
             return builder;
         }
     }
