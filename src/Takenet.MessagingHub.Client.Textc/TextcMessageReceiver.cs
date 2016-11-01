@@ -13,18 +13,18 @@ namespace Takenet.MessagingHub.Client.Textc
     {
         private readonly ITextProcessor _textProcessor;
         private readonly IContextProvider _contextProvider;
-        private readonly IMatchNotFoundHandler _matchNotFoundHandler;
+        private readonly IExceptionHandler _exceptionHandler;
 
         public TextcMessageReceiver(
             ITextProcessor textProcessor, 
             IContextProvider contextProvider, 
-            IMatchNotFoundHandler matchNotFoundHandler = null)
+            IExceptionHandler exceptionHandler = null)
         {
             if (textProcessor == null) throw new ArgumentNullException(nameof(textProcessor));
             if (contextProvider == null) throw new ArgumentNullException(nameof(contextProvider));
             _textProcessor = textProcessor;
             _contextProvider = contextProvider;
-            _matchNotFoundHandler = matchNotFoundHandler;
+            _exceptionHandler = exceptionHandler;
         }
 
         public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
@@ -38,11 +38,12 @@ namespace Takenet.MessagingHub.Client.Textc
                     _textProcessor.ProcessAsync(message.Content.ToString(), context, cancellationToken)
                         .ConfigureAwait(false);
             }
-            catch (MatchNotFoundException)
+            catch (Exception ex)
             {
-                if (_matchNotFoundHandler != null)
+                if (_exceptionHandler == null || 
+                    !await _exceptionHandler.HandleExceptionAsync(ex, message, context, cancellationToken).ConfigureAwait(false))
                 {
-                    await _matchNotFoundHandler.OnMatchNotFoundAsync(message, context, cancellationToken).ConfigureAwait(false);
+                    throw;
                 }
             }
             finally

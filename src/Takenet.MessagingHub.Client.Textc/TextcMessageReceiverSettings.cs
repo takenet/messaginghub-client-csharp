@@ -25,7 +25,7 @@ namespace Takenet.MessagingHub.Client.Textc
 
         public string MatchNotFoundReturnText { get; set; }
 
-        public string MatchNotFoundHandlerType { get; set; }
+        public string ExceptionHandlerType { get; set; }
 
         public string[] PreProcessorTypes { get; set; }
 

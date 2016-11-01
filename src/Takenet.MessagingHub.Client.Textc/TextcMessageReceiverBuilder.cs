@@ -24,7 +24,7 @@ namespace Takenet.MessagingHub.Client.Textc
     {
         //private readonly MessagingHubClientBuilder _clientBuilder;
         private IContextProvider _contextProvider;
-        private IMatchNotFoundHandler _matchNotFoundHandler;
+        private IExceptionHandler _exceptionHandler;
 
         private readonly IOutputProcessor _outputProcessor;
         private ISyntaxParser _syntaxParser;
@@ -136,16 +136,16 @@ namespace Takenet.MessagingHub.Client.Textc
         /// <param name="matchNotFoundReturnText">The message text.</param>
         /// <returns></returns>
         public TextcMessageReceiverBuilder WithMatchNotFoundReturnText(string matchNotFoundReturnText) => 
-            WithMatchNotFoundHandler(new MessageMatchNotFoundHandler(_sender, matchNotFoundReturnText));
+            WithExceptionHandler(new MatchNotFoundExceptionHandler(_sender, matchNotFoundReturnText));
 
         /// <summary>
         /// Sets a handler to be called in case of no match of the user input.
         /// </summary>
-        /// <param name="matchNotFoundHandler">The handler.</param>
+        /// <param name="exceptionHandler">The handler.</param>
         /// <returns></returns>
-        public TextcMessageReceiverBuilder WithMatchNotFoundHandler(IMatchNotFoundHandler matchNotFoundHandler)
+        public TextcMessageReceiverBuilder WithExceptionHandler(IExceptionHandler exceptionHandler)
         {
-            _matchNotFoundHandler = matchNotFoundHandler;
+            _exceptionHandler = exceptionHandler;
             return this;
         }
 
@@ -238,7 +238,7 @@ namespace Takenet.MessagingHub.Client.Textc
             return new TextcMessageReceiver(
                 textProcessor, 
                 _contextProvider ?? new ContextProvider(_cultureProvider, TimeSpan.FromMinutes(5)), 
-                _matchNotFoundHandler);
+                _exceptionHandler);
         }
         
         /// <summary>

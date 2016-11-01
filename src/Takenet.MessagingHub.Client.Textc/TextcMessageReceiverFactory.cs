@@ -48,10 +48,10 @@ namespace Takenet.MessagingHub.Client.Textc
                     builder = builder.WithMatchNotFoundReturnText(textcMessageReceiverSettings.MatchNotFoundReturnText);
                 }
 
-                if (textcMessageReceiverSettings.MatchNotFoundHandlerType != null)
+                if (textcMessageReceiverSettings.ExceptionHandlerType != null)
                 {
-                    builder = await SetupMatchNotFoundHandlerAsync(
-                        serviceProvider, settings, textcMessageReceiverSettings.MatchNotFoundHandlerType, builder).ConfigureAwait(false);
+                    builder = await SetupExceptionHandlerAsync(
+                        serviceProvider, settings, textcMessageReceiverSettings.ExceptionHandlerType, builder).ConfigureAwait(false);
                 }
 
                 if (textcMessageReceiverSettings.PreProcessorTypes != null)
@@ -167,11 +167,11 @@ namespace Takenet.MessagingHub.Client.Textc
             return builder;
         }
 
-        private static async Task<TextcMessageReceiverBuilder> SetupMatchNotFoundHandlerAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings,
+        private static async Task<TextcMessageReceiverBuilder> SetupExceptionHandlerAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings,
             string matchNotFoundHandlerType, TextcMessageReceiverBuilder builder)
         {
-            var matchNotFoundHandler = await Bootstrapper.CreateAsync<IMatchNotFoundHandler>(matchNotFoundHandlerType, serviceProvider, settings, TypeResolver.Instance).ConfigureAwait(false);
-            builder = builder.WithMatchNotFoundHandler(matchNotFoundHandler);
+            var exceptionHandler = await Bootstrapper.CreateAsync<IExceptionHandler>(matchNotFoundHandlerType, serviceProvider, settings, TypeResolver.Instance).ConfigureAwait(false);
+            builder = builder.WithExceptionHandler(exceptionHandler);
             return builder;
         }
 
