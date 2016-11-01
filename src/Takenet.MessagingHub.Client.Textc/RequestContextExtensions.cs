@@ -69,7 +69,7 @@ namespace Takenet.MessagingHub.Client.Textc
             context.SetVariable(TYPE_VARIABLE_NAME, type);
         }
 
-        public static Document GetMessageContent<T>(this IRequestContext context) where T : Document
+        public static T GetMessageContent<T>(this IRequestContext context) where T : Document
         {
             var content = context.GetVariable<string>(CONTENT_VARIABLE_NAME);
             var mediaType = context.GetVariable<MediaType>(TYPE_VARIABLE_NAME);
@@ -80,15 +80,26 @@ namespace Takenet.MessagingHub.Client.Textc
             }
             else
             {
-                object document = null;
-                TypeUtil.TryParseString(content, typeof(T), out document);
-                return (T)document;
+                object document;
+                if (TypeUtil.TryParseString(content, typeof(T), out document))
+                {
+                    return (T)document;
+                }
+                return null;
             }
         }
 
         public static void SetMessageContent(this IRequestContext context, Document content)
         {
-            context.SetVariable(CONTENT_VARIABLE_NAME, JsonConvert.SerializeObject(content, JsonNetSerializer.Settings));
+            if (content.GetMediaType().IsJson)
+            {
+                context.SetVariable(CONTENT_VARIABLE_NAME,
+                    JsonConvert.SerializeObject(content, JsonNetSerializer.Settings));
+            }
+            else
+            {
+                context.SetVariable(CONTENT_VARIABLE_NAME, content.ToString());
+            }
         }
 
         public static IDictionary<string, string> GetMessageMetadata(this IRequestContext context)
