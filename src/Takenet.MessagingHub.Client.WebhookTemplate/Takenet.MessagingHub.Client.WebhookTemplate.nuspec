@@ -11,7 +11,7 @@
     <copyright>Copyright © 2016 Curupira S/A</copyright>
     <tags>messagingHub blip webhook asp.net webapi</tags>
     <dependencies>
-      <dependency id="Takenet.MessagingHub.Client" version="0.3.176" />      
+      <dependency id="Takenet.MessagingHub.Client" version="$version$" />      
       <dependency id="Microsoft.AspNet.WebApi" version="5.2.3" />
       <dependency id="Microsoft.AspNet.WebApi.WebHost" version="5.2.3" />
       <dependency id="Newtonsoft.Json" version="9.0.1" />
