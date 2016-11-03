@@ -35,7 +35,10 @@ namespace $rootnamespace$
             _serializer = serializer;
             _webhookKey = ConfigurationManager.AppSettings[WebhookKeyConfigurationName];
             _baseUrl = ConfigurationManager.AppSettings[BaseUrlConfigurationName];
+
             if (string.IsNullOrWhiteSpace(_baseUrl)) _baseUrl = DefaultBaseUrl;
+            _baseUrl = _baseUrl.TrimEnd('/');
+
             CheckCredentialsOrThrow();
 
             _client = new HttpClient();
@@ -89,13 +92,6 @@ namespace $rootnamespace$
             return Task.CompletedTask;
         }
 
-        public async Task<Command> ProcessCommandAsync(Command requestCommand, CancellationToken cancellationToken)
-        {
-            var response = await _client.PostAsJsonAsync($"{_baseUrl}/commands", requestCommand, cancellationToken);
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsAsync<Command>(cancellationToken);
-        }
-
         public Task<Command> ReceiveCommandAsync(CancellationToken cancellationToken)
         {
             return _envelopeBuffer.Commands.ReceiveAsync(cancellationToken);
@@ -111,21 +107,36 @@ namespace $rootnamespace$
             return _envelopeBuffer.Notifications.ReceiveAsync(cancellationToken);
         }
 
+        public async Task<Command> ProcessCommandAsync(Command command, CancellationToken cancellationToken)
+        {
+            using (var content = GetContent(command))
+            using (var request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}/commands"))
+            {
+                request.Content = content;
+                using (var response = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false))
+                {
+                    response.EnsureSuccessStatusCode();
+                    var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    return (Command)_serializer.Deserialize(jsonResponse);
+                }
+            }
+        }
+
         public async Task SendCommandAsync(Command command, CancellationToken cancellationToken)
         {
             using (var content = GetContent(command))
-            using (var response = await _client.PostAsync($"{_baseUrl}commands", content, cancellationToken))
+            using (var response = await _client.PostAsync($"{_baseUrl}/commands", content, cancellationToken).ConfigureAwait(false))
             {
                 response.EnsureSuccessStatusCode();
                 _envelopeBuffer.Commands.Post(
-                    _serializer.Deserialize((await response.Content.ReadAsStringAsync())) as Command);
+                    _serializer.Deserialize((await response.Content.ReadAsStringAsync().ConfigureAwait(false))) as Command);
             }
         }
 
         public async Task SendMessageAsync(Message message, CancellationToken cancellationToken)
         {
             using (var content = GetContent(message))
-            using (var response = await _client.PostAsync($"{_baseUrl}messages", content, cancellationToken))
+            using (var response = await _client.PostAsync($"{_baseUrl}/messages", content, cancellationToken).ConfigureAwait(false))
             {
                 response.EnsureSuccessStatusCode();
             }
@@ -134,7 +145,7 @@ namespace $rootnamespace$
         public async Task SendNotificationAsync(Notification notification, CancellationToken cancellationToken)
         {
             using(var content = GetContent(notification))
-            using (var response = await _client.PostAsync($"{_baseUrl}notifications", content, cancellationToken))
+            using (var response = await _client.PostAsync($"{_baseUrl}/notifications", content, cancellationToken).ConfigureAwait(false))
             {
                 response.EnsureSuccessStatusCode();
             }
