@@ -28,7 +28,7 @@ namespace $rootnamespace$
 
             var envelopeBuffer = new EnvelopeBuffer();
             localServiceProvider.RegisterService(typeof(IEnvelopeBuffer), envelopeBuffer);
-            localServiceProvider.RegisterService(typeof(EnvelopeController), new EnvelopeController(envelopeBuffer));
+            localServiceProvider.RegisterService(typeof(EnvelopeController), () => new EnvelopeController(envelopeBuffer));
 
             var client = await Bootstrapper.BuildMessagingHubClientAsync(application, () => new MessagingHubClient(new HttpMessagingHubConnection(envelopeBuffer, new JsonNetSerializer(), application)), localServiceProvider, TypeResolver.Instance);
             await client.StartAsync().ConfigureAwait(false);
