@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Host;
+using $rootnamespace$.Controllers;
 
 namespace $rootnamespace$
 {
@@ -27,8 +28,9 @@ namespace $rootnamespace$
 
             var envelopeBuffer = new EnvelopeBuffer();
             localServiceProvider.RegisterService(typeof(IEnvelopeBuffer), envelopeBuffer);
-            var client = await Bootstrapper.BuildMessagingHubClientAsync(application, () => new MessagingHubClient(new HttpMessagingHubConnection(envelopeBuffer, new JsonNetSerializer(), application)), localServiceProvider, TypeResolver.Instance);
+            localServiceProvider.RegisterService(typeof(EnvelopeController), new EnvelopeController(envelopeBuffer));
 
+            var client = await Bootstrapper.BuildMessagingHubClientAsync(application, () => new MessagingHubClient(new HttpMessagingHubConnection(envelopeBuffer, new JsonNetSerializer(), application)), localServiceProvider, TypeResolver.Instance);
             await client.StartAsync().ConfigureAwait(false);
 
             await Bootstrapper.BuildStartupAsync(application, localServiceProvider, TypeResolver.Instance);

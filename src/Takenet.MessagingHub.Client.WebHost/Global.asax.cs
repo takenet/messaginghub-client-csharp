@@ -15,9 +15,6 @@ namespace Takenet.MessagingHub.Client.WebHost
             GlobalConfiguration.Configure(WebApiConfig.Register);
 
             var serviceContainer = MessagingHubConfig.StartAsync().Result;
-            serviceContainer.RegisterService(
-                typeof(EnvelopeController), 
-                () => new EnvelopeController(serviceContainer.GetService(typeof(IEnvelopeBuffer)) as IEnvelopeBuffer));
             GlobalConfiguration.Configuration.DependencyResolver = new MessagingHubClientResolver(serviceContainer);
         }
     }
