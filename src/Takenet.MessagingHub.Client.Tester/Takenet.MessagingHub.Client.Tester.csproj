@@ -73,8 +73,8 @@
       <HintPath>..\packages\Takenet.Iris.Common.1.8.241\lib\net461\Takenet.Iris.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Takenet.MessagingHub.Client, Version=0.4.13.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Takenet.MessagingHub.Client.0.4.13\lib\net461\Takenet.MessagingHub.Client.dll</HintPath>
+    <Reference Include="Takenet.MessagingHub.Client, Version=0.4.17.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Takenet.MessagingHub.Client.0.4.17\lib\net461\Takenet.MessagingHub.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -96,7 +96,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Takenet.MessagingHub.Client.Tester.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
