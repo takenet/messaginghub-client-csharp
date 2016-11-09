@@ -34,16 +34,24 @@
       <HintPath>..\..\packages\Lime.Messaging.0.6.40\lib\net461\Lime.Messaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Protocol, Version=0.6.40.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Lime.Protocol.0.6.40\lib\net461\Lime.Protocol.dll</HintPath>
+    <Reference Include="Lime.Protocol, Version=0.6.47.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lime.Protocol.0.6.47\lib\net461\Lime.Protocol.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Lime.Transport.Tcp, Version=0.6.40.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Lime.Transport.Tcp.0.6.40\lib\net461\Lime.Transport.Tcp.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="mhh, Version=0.4.13.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.MessagingHub.Client.Host.0.4.13\lib\net461\mhh.exe</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SimpleInjector, Version=3.2.4.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SimpleInjector.3.2.4\lib\net45\SimpleInjector.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -58,6 +66,22 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Takenet.Elephant, Version=0.4.85.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.Elephant.0.4.85\lib\net461\Takenet.Elephant.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Takenet.Elephant.Msmq, Version=0.4.85.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.Elephant.Msmq.0.4.85\lib\net461\Takenet.Elephant.Msmq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Takenet.Iris.Common, Version=1.8.229.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.Iris.Common.1.8.229\lib\net461\Takenet.Iris.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Takenet.MessagingHub.Client, Version=0.4.13.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.MessagingHub.Client.0.4.13\lib\net461\Takenet.MessagingHub.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DateMessageReceiver.cs" />
@@ -69,16 +93,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Takenet.MessagingHub.Client.Host\Takenet.MessagingHub.Client.Host.csproj">
-      <Project>{288513c0-fcd1-47b0-9c98-00b34ce99b63}</Project>
-      <Name>Takenet.MessagingHub.Client.Host</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Takenet.MessagingHub.Client\Takenet.MessagingHub.Client.csproj">
-      <Project>{628f8ee4-956a-49ce-b9d6-bd5f6800fe6f}</Project>
-      <Name>Takenet.MessagingHub.Client</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

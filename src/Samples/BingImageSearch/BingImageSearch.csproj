@@ -42,6 +42,10 @@
       <HintPath>..\..\packages\Lime.Transport.Tcp.0.6.40\lib\net461\Lime.Transport.Tcp.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="mhh, Version=0.4.13.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.MessagingHub.Client.Host.0.4.13\lib\net461\mhh.exe</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -94,12 +98,6 @@
     </None>
     <None Include="packages.config" />
     <None Include="Readme.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Takenet.MessagingHub.Client.Host\Takenet.MessagingHub.Client.Host.csproj">
-      <Project>{288513c0-fcd1-47b0-9c98-00b34ce99b63}</Project>
-      <Name>Takenet.MessagingHub.Client.Host</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
