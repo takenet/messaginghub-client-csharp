@@ -34,9 +34,9 @@ namespace Takenet.MessagingHub.Client.Extensions.EventTracker
             return response.Items.Cast<EventTrack>();
         }
 
-        public async Task AddAsync(string eventName, string actionName, CancellationToken cancellationToken = new CancellationToken())
+        public async Task AddAsync(string categoryName, string actionName, CancellationToken cancellationToken = new CancellationToken())
         {
-            if (string.IsNullOrEmpty(eventName)) throw new ArgumentNullException(nameof(eventName));
+            if (string.IsNullOrEmpty(categoryName)) throw new ArgumentNullException(nameof(categoryName));
             if (string.IsNullOrEmpty(actionName)) throw new ArgumentNullException(nameof(actionName));
 
 
@@ -46,8 +46,8 @@ namespace Takenet.MessagingHub.Client.Extensions.EventTracker
                 Uri = new LimeUri(EVENTRACK_URI),
                 Resource = new EventTrack
                 {
+                    Category = categoryName,
                     Action = actionName,
-                    Event = eventName
                 }
             };
 

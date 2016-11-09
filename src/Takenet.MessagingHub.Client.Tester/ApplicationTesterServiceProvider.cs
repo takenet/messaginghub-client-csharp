@@ -14,12 +14,22 @@ namespace Takenet.MessagingHub.Client.Tester
             try
             {
                 var testService = _testServiceTypes.ContainsKey(serviceType) ? _testServiceTypes[serviceType] : null;
-                return testService ?? ApplicationTester.ApplicationServiceProvider?.GetService(serviceType);
+                var service = testService ?? ApplicationTester.ApplicationServiceProvider?.GetService(serviceType);
+                if (service is Func<object>)
+                {
+                    return (service as Func<object>)();
+                }
+                return service;
             }
             catch (Exception ex)
             {
                 throw new TypeInitializationException(serviceType.FullName, ex);
             }
+        }
+
+        public void RegisterService(Type serviceType, Func<object> instanceFactory)
+        {
+            RegisterService(serviceType, instanceFactory as object);
         }
 
         public void RegisterService(Type serviceType, object instance)
