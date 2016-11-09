@@ -34,8 +34,8 @@
       <HintPath>..\packages\Lime.Messaging.0.6.40\lib\net461\Lime.Messaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Protocol, Version=0.6.40.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Protocol.0.6.40\lib\net461\Lime.Protocol.dll</HintPath>
+    <Reference Include="Lime.Protocol, Version=0.6.47.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Protocol.0.6.47\lib\net461\Lime.Protocol.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Lime.Transport.Tcp, Version=0.6.40.0, Culture=neutral, processorArchitecture=MSIL">
@@ -50,6 +50,10 @@
       <HintPath>..\packages\Shouldly.2.8.0\lib\net40\Shouldly.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="SimpleInjector, Version=3.2.4.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleInjector.3.2.4\lib\net45\SimpleInjector.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -57,8 +61,20 @@
       <HintPath>..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Takenet.MessagingHub.Client, Version=0.3.112.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Takenet.MessagingHub.Client.0.3.112\lib\net461\Takenet.MessagingHub.Client.dll</HintPath>
+    <Reference Include="Takenet.Elephant, Version=0.4.85.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Takenet.Elephant.0.4.85\lib\net461\Takenet.Elephant.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Takenet.Elephant.Msmq, Version=0.4.85.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Takenet.Elephant.Msmq.0.4.85\lib\net461\Takenet.Elephant.Msmq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Takenet.Iris.Common, Version=1.8.241.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Takenet.Iris.Common.1.8.241\lib\net461\Takenet.Iris.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Takenet.MessagingHub.Client, Version=0.4.13.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Takenet.MessagingHub.Client.0.4.13\lib\net461\Takenet.MessagingHub.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

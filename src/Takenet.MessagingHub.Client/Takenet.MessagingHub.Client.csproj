@@ -65,8 +65,8 @@
       <HintPath>..\packages\Takenet.Elephant.Msmq.0.4.85\lib\net461\Takenet.Elephant.Msmq.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Takenet.Iris.Common, Version=1.8.229.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Takenet.Iris.Common.1.8.229\lib\net461\Takenet.Iris.Common.dll</HintPath>
+    <Reference Include="Takenet.Iris.Common, Version=1.8.241.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Takenet.Iris.Common.1.8.241\lib\net461\Takenet.Iris.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
