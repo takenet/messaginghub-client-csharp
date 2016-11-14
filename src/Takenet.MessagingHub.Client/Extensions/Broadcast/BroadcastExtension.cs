@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
@@ -89,6 +90,45 @@ namespace Takenet.MessagingHub.Client.Extensions.Broadcast
             };
 
             await ProcessCommandAsync(requestCommand, cancellationToken);
+        }
+
+        public async Task<bool> HasRecipientAsync(string listName, Identity recipientIdentity, CancellationToken cancellationToken = new CancellationToken())
+        {
+            var listIdentity = GetListIdentity(listName);
+            if (recipientIdentity == null) throw new ArgumentNullException(nameof(recipientIdentity));
+
+            var requestCommand = new Command()
+            {
+                Id = EnvelopeId.NewId(),
+                To = DistributionListAddress,
+                Method = CommandMethod.Get,
+                Uri = new LimeUri($"/lists/{Uri.EscapeDataString(listIdentity.ToString())}/recipients/{Uri.EscapeDataString(recipientIdentity.ToString())}")
+            };
+
+            try
+            {
+                await ProcessCommandAsync(requestCommand, cancellationToken);
+                return true;
+            }
+            catch (LimeException ex) when (ex.Reason.Code == ReasonCodes.COMMAND_RESOURCE_NOT_FOUND)
+            {
+                return false;
+            }
+        }
+
+        public Task<DocumentCollection> GetRecipientsAsync(string listName, int skip = 0, int take = 100, CancellationToken cancellationToken = new CancellationToken())
+        {
+            var listIdentity = GetListIdentity(listName);
+
+            var requestCommand = new Command()
+            {
+                Id = EnvelopeId.NewId(),
+                To = DistributionListAddress,
+                Method = CommandMethod.Get,
+                Uri = new LimeUri($"/lists/{Uri.EscapeDataString(listIdentity.ToString())}/recipients?$skip={skip}&$take={take}")
+            };
+
+            return ProcessCommandAsync<DocumentCollection>(requestCommand, cancellationToken);
         }
 
         public Identity GetListIdentity(string listName)

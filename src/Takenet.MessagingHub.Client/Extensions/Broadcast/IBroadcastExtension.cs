@@ -37,7 +37,6 @@ namespace Takenet.MessagingHub.Client.Extensions.Broadcast
         /// <returns></returns>
         Task AddRecipientAsync(string listName, Identity recipientIdentity, CancellationToken cancellationToken = default(CancellationToken));
 
-
         /// <summary>
         /// Deletes a recipient identity from an existing distribution list.
         /// </summary>
@@ -46,6 +45,25 @@ namespace Takenet.MessagingHub.Client.Extensions.Broadcast
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task DeleteRecipientAsync(string listName, Identity recipientIdentity, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Determines whether the distribution list has the specified recipient.
+        /// </summary>
+        /// <param name="listName">Name of the list.</param>
+        /// <param name="recipientIdentity">The recipient identity.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<bool> HasRecipientAsync(string listName, Identity recipientIdentity, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Gets the recipients of the specified list.
+        /// </summary>
+        /// <param name="listName">Name of the list.</param>
+        /// <param name="skip">The number of  skip.</param>
+        /// <param name="take">The take.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<DocumentCollection> GetRecipientsAsync(string listName, int skip = 0, int take = 100, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Gets the list identity from a name.
