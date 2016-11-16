@@ -18,8 +18,8 @@ namespace Takenet.MessagingHub.Client.Listener
         protected IMessagingHubSender Sender { get; }
 
         protected EnvelopeReceivedHandler(
-            IMessagingHubSender sender, 
-            EnvelopeListenerRegistrar registrar, 
+            IMessagingHubSender sender,
+            EnvelopeListenerRegistrar registrar,
             CancellationTokenSource cts)
         {
             Sender = sender;
@@ -37,13 +37,14 @@ namespace Takenet.MessagingHub.Client.Listener
                     Trace.TraceError(ex.ToString());
                 }
             },
-            new ExecutionDataflowBlockOptions()
+            new ExecutionDataflowBlockOptions
             {
-                MaxDegreeOfParallelism = DataflowBlockOptions.Unbounded
+                MaxDegreeOfParallelism = DataflowBlockOptions.Unbounded,
+                BoundedCapacity = DataflowBlockOptions.Unbounded
             });
         }
 
-        public Task<bool> HandleAsync(TEnvelope envelope, CancellationToken cancellationToken) => 
+        public Task<bool> HandleAsync(TEnvelope envelope, CancellationToken cancellationToken) =>
             _envelopeActionBlock.SendAsync(envelope, cancellationToken);
 
         protected virtual Task CallReceiversAsync(TEnvelope envelope, CancellationToken cancellationToken)
@@ -54,13 +55,13 @@ namespace Takenet.MessagingHub.Client.Listener
                 .GroupBy(r => r.Priority)
                 .OrderBy(r => r.Key)
                 .First(r => r.Any());
-            
+
             return
                 Task.WhenAll(
-                    receiverGroup.Select(r => CallReceiverAsync(r.ReceiverFactory(), envelope, cancellationToken)));               
+                    receiverGroup.Select(r => CallReceiverAsync(r.ReceiverFactory(), envelope, cancellationToken)));
         }
 
-        protected Task CallReceiverAsync(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken cancellationToken)            
+        protected Task CallReceiverAsync(IEnvelopeReceiver<TEnvelope> envelopeReceiver, TEnvelope envelope, CancellationToken cancellationToken)
         {
             return envelopeReceiver.ReceiveAsync(envelope, cancellationToken);
         }

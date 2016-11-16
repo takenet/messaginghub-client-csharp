@@ -22,6 +22,11 @@ namespace Takenet.MessagingHub.Client.Listener
         {
             try
             {
+                if (_autoNotifiy)
+                {
+                    await Sender.SendNotificationAsync(message.ToReceivedNotification(), cancellationToken);
+                }
+
                 await base.CallReceiversAsync(message, cancellationToken);
                 if (_autoNotifiy)
                 {
