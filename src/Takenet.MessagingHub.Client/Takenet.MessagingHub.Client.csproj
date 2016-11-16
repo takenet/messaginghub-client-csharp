@@ -75,6 +75,8 @@
     <Compile Include="Connection\TcpTransportFactory.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\Broadcast\BroadcastExtension.cs" />
+    <Compile Include="Extensions\Contacts\ContactExtension.cs" />
+    <Compile Include="Extensions\Contacts\IContactExtension.cs" />
     <Compile Include="Extensions\Directory\DirectoryExtension.cs" />
     <Compile Include="Extensions\Directory\IDirectoryExtension.cs" />
     <Compile Include="Extensions\EventTrack\EventTrackExtension.cs" />

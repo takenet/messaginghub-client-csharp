@@ -55,6 +55,14 @@ namespace Takenet.MessagingHub.Client.Extensions
                 Uri = new LimeUri(uriPath)
             };
 
+        protected Command CreateDeleteCommandRequest(string uriPath, Node to = null) =>
+            new Command()
+            {
+                To = to,
+                Method = CommandMethod.Delete,
+                Uri = new LimeUri(uriPath)
+            };
+
         private static void EnsuseSuccess(Command responseCommand)
         {
             if (responseCommand.Status != CommandStatus.Success)

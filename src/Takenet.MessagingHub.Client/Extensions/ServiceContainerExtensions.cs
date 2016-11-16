@@ -1,5 +1,6 @@
 ﻿using Takenet.MessagingHub.Client.Extensions.Broadcast;
 using Takenet.MessagingHub.Client.Extensions.Bucket;
+using Takenet.MessagingHub.Client.Extensions.Contacts;
 using Takenet.MessagingHub.Client.Extensions.Delegation;
 using Takenet.MessagingHub.Client.Extensions.Directory;
 using Takenet.MessagingHub.Client.Extensions.EventTracker;
@@ -18,6 +19,7 @@ namespace Takenet.MessagingHub.Client.Extensions
             serviceContainer.RegisterService(typeof(IBroadcastExtension), new BroadcastExtension(sender));
             serviceContainer.RegisterService(typeof(IDelegationExtension), new DelegationExtension(sender));
             serviceContainer.RegisterService(typeof(IDirectoryExtension), new DirectoryExtension(sender));
+            serviceContainer.RegisterService(typeof(IContactExtension), new ContactExtension(sender));
             var bucketExtension = new BucketExtension(sender);
             serviceContainer.RegisterService(typeof(ISchedulerExtension), new SchedulerExtension(sender));
             serviceContainer.RegisterService(typeof(IEventTrackExtension), new EventTrackExtension(sender));
