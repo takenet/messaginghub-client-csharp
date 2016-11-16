@@ -22,18 +22,6 @@ namespace Takenet.MessagingHub.Client.Extensions.EventTracker
             TypeUtil.RegisterDocument<EventTrack>();
         }
 
-        public async Task<IEnumerable<EventTrack>> GetAsync(DateTime filterDate, int take = 20, CancellationToken cancellationToken = new CancellationToken())
-        {
-            var requestCommand = new Command
-            {
-                Method = CommandMethod.Get,
-                Uri = new LimeUri($"{EVENTRACK_URI}?filterDate={filterDate.ToString("yyyy-MM-dd")}&take={take}"),
-            };
-
-            var response = await ProcessCommandAsync<DocumentCollection>(requestCommand, cancellationToken);
-            return response.Items.Cast<EventTrack>();
-        }
-
         public async Task AddAsync(string categoryName, string actionName, CancellationToken cancellationToken = new CancellationToken())
         {
             if (string.IsNullOrEmpty(categoryName)) throw new ArgumentNullException(nameof(categoryName));
