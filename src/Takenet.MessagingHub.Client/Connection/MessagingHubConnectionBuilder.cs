@@ -38,11 +38,7 @@ namespace Takenet.MessagingHub.Client.Connection
                 channelBuilder.AddBuiltHandler(
                     (c, t) =>
                     {
-                        if (Throughput == default(int))
-                        {
-                            ThroughputControlChannelModule.CreateAndRegister(c);
-                        }
-                        else
+                        if (Throughput > 0)
                         {
                             ThroughputControlChannelModule.CreateAndRegister(c, Throughput);
                         }

@@ -28,6 +28,7 @@ namespace Takenet.MessagingHub.Client.Listener
                 }
 
                 await base.CallReceiversAsync(message, cancellationToken);
+
                 if (_autoNotifiy)
                 {
                     await Sender.SendNotificationAsync(message.ToConsumedNotification(), cancellationToken);
