@@ -140,10 +140,11 @@ namespace Takenet.MessagingHub.Client.Extensions.Broadcast
             return new Identity(listName, DistributionListAddress.Domain);
         }
 
-        public Task SendMessageAsync(string listName, Document content, CancellationToken cancellationToken = new CancellationToken())
+        public Task SendMessageAsync(string listName, Document content, string id = null, CancellationToken cancellationToken = new CancellationToken())
         {
-            var message = new Message()
+            var message = new Message
             {
+                Id = id,
                 To = GetListIdentity(listName).ToNode(),
                 Content = content
             };

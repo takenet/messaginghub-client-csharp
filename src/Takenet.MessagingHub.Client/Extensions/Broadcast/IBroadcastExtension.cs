@@ -79,6 +79,6 @@ namespace Takenet.MessagingHub.Client.Extensions.Broadcast
         /// <param name="content">The content.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task SendMessageAsync(string listName, Document content, CancellationToken cancellationToken = default(CancellationToken));
+        Task SendMessageAsync(string listName, Document content, string id = null, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
