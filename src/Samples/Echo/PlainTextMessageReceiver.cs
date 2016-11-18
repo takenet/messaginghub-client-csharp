@@ -5,6 +5,7 @@ using Lime.Protocol;
 using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
+using System.Diagnostics;
 
 namespace Echo
 {
@@ -19,7 +20,7 @@ namespace Echo
 
         public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
         {
-            Console.WriteLine($"From: {message.From} \tContent: {message.Content}");
+            Trace.TraceInformation($"From: {message.From} \tContent: {message.Content}");
             await _sender.SendMessageAsync("Pong!", message.From, cancellationToken);
         }
     }

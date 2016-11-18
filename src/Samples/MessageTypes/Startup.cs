@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Sender;
 using Takenet.MessagingHub.Client.Listener;
+using System.Diagnostics;
+using System;
 
 namespace MessageTypes
 {
@@ -20,6 +22,7 @@ namespace MessageTypes
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
+			Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
             return Task.CompletedTask;
         }
     }
