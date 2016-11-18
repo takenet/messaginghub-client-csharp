@@ -50,8 +50,8 @@
       <HintPath>..\packages\Shouldly.2.8.0\lib\net40\Shouldly.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SimpleInjector, Version=3.2.4.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
-      <HintPath>..\packages\SimpleInjector.3.2.4\lib\net45\SimpleInjector.dll</HintPath>
+    <Reference Include="SimpleInjector, Version=3.2.7.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleInjector.3.2.7\lib\net45\SimpleInjector.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -69,8 +69,8 @@
       <HintPath>..\packages\Takenet.Elephant.Msmq.0.4.85\lib\net461\Takenet.Elephant.Msmq.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Takenet.Iris.Common, Version=1.8.241.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Takenet.Iris.Common.1.8.241\lib\net461\Takenet.Iris.Common.dll</HintPath>
+    <Reference Include="Takenet.Iris.Common, Version=1.8.248.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Takenet.Iris.Common.1.8.248\lib\net461\Takenet.Iris.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Takenet.MessagingHub.Client, Version=0.4.24.0, Culture=neutral, processorArchitecture=MSIL">
