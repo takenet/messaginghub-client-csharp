@@ -15,64 +15,33 @@ namespace Takenet.MessagingHub.Client.Sender
             Connection = connection;
         }
 
-        public async Task<Command> SendCommandAsync(Command command, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<Command> SendCommandAsync(Command command, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!Connection.IsConnected)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation");
 
-            using (var timeoutTokenSource = new CancellationTokenSource(Connection.SendTimeout))
-            {
-                using (
-                    var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutTokenSource.Token,
-                        cancellationToken))
-                {
-                    return
-                        await
-                            Connection.OnDemandClientChannel.ProcessCommandAsync(command, linkedTokenSource.Token)
-                                .ConfigureAwait(false);
-                }
-            }
+            return Connection.OnDemandClientChannel.ProcessCommandAsync(command, cancellationToken);
         }
 
-        public async Task SendMessageAsync(Message message, CancellationToken cancellationToken = default(CancellationToken))
+        public Task SendMessageAsync(Message message, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!Connection.IsConnected)
                 throw new InvalidOperationException("Client must be started before to proceed with this operation");
 
-            using (var timeoutTokenSource = new CancellationTokenSource(Connection.SendTimeout))
-            {
-                using (
-                    var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutTokenSource.Token,
-                        cancellationToken))
-                {
-                    await
-                        Connection.OnDemandClientChannel.SendMessageAsync(message, linkedTokenSource.Token)
-                            .ConfigureAwait(false);
-                }
-            }
+            return Connection.OnDemandClientChannel.SendMessageAsync(message, cancellationToken);
         }
 
         /// <summary>
         /// Dispatch a notification, if its id is not null or empty.
         /// </summary>
-        public async Task SendNotificationAsync(Notification notification, CancellationToken cancellationToken = default(CancellationToken))
+        public Task SendNotificationAsync(Notification notification, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (string.IsNullOrWhiteSpace(notification.Id)) return;
+            if (string.IsNullOrWhiteSpace(notification.Id)) return Task.CompletedTask;
 
             if (!Connection.IsConnected)
                 throw new InvalidOperationException("A connection must be established before to proceed with this operation!");
 
-            using (var timeoutTokenSource = new CancellationTokenSource(Connection.SendTimeout))
-            {
-                using (
-                    var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutTokenSource.Token,
-                        cancellationToken))
-                {
-                    await
-                        Connection.OnDemandClientChannel.SendNotificationAsync(notification,
-                            linkedTokenSource.Token).ConfigureAwait(false);
-                }
-            }
+            return Connection.OnDemandClientChannel.SendNotificationAsync(notification, cancellationToken);
         }
     }
 }

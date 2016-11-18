@@ -33,7 +33,7 @@ namespace Takenet.MessagingHub.Client.Connection
             Scheme = Constants.DEFAULT_SCHEME;
             HostName = Constants.DEFAULT_DOMAIN;
             Port = Constants.DEFAULT_PORT;
-            SendTimeout = TimeSpan.FromSeconds(20);
+            SendTimeout = TimeSpan.FromSeconds(60);
             MaxConnectionRetries = 3;
             Compression = SessionCompression.None;
             Encryption = SessionEncryption.TLS;
