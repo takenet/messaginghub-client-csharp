@@ -84,6 +84,7 @@ namespace Takenet.MessagingHub.Client.Host
             if (application.SessionCompression.HasValue) builder = builder.UsingCompression(application.SessionCompression.Value);
             if (application.Throughput != 0) builder = builder.WithThroughput(application.Throughput);
             if (application.DisableNotify) builder = builder.WithAutoNotify(false);
+            if (application.ChannelCount.HasValue) builder = builder.WithChannelCount(application.ChannelCount.Value);
 
             if (typeResolver == null) typeResolver = TypeResolver.Instance;
 
@@ -170,9 +171,9 @@ namespace Takenet.MessagingHub.Client.Host
         }
 
         public static async Task<IMessagingHubClient> BuildMessagingHubClientAsync(
-            Application application, 
+            Application application,
             Func<IMessagingHubClient> builder,
-            IServiceContainer serviceContainer, 
+            IServiceContainer serviceContainer,
             ITypeResolver typeResolver)
         {
             RegisterSettingsTypes(application, serviceContainer, typeResolver);
@@ -350,7 +351,7 @@ namespace Takenet.MessagingHub.Client.Host
 
             return factory.CreateAsync(serviceProvider, settings);
         }
-                
+
         private class StoppableWrapper : IStoppable
         {
             private readonly IStoppable[] _stoppables;

@@ -17,16 +17,19 @@ namespace Takenet.MessagingHub.Client.Connection
         private readonly SemaphoreSlim _semaphore;
         private readonly IOnDemandClientChannelFactory _onDemandClientChannelFactory;
         private bool _isDisconnecting;
+        private int _channelCount;
 
         internal MessagingHubConnection(
             TimeSpan sendTimeout,
             int maxConnectionRetries,
-            IOnDemandClientChannelFactory onDemandClientChannelFactory)
+            IOnDemandClientChannelFactory onDemandClientChannelFactory,
+            int channelCount)
         {
             _semaphore = new SemaphoreSlim(1);
             MaxConnectionRetries = maxConnectionRetries;
             SendTimeout = sendTimeout;
             _onDemandClientChannelFactory = onDemandClientChannelFactory;
+            _channelCount = channelCount;
         }
 
         public bool IsConnected => OnDemandClientChannel?.IsEstablished ?? false;
@@ -87,7 +90,7 @@ namespace Takenet.MessagingHub.Client.Connection
 
         private void CreateOnDemandClientChannel()
         {
-            OnDemandClientChannel = _onDemandClientChannelFactory.Create();
+            OnDemandClientChannel = _onDemandClientChannelFactory.Create(_channelCount);
             OnDemandClientChannel.ChannelCreatedHandlers.Add(ChannelCreatedAsync);
             OnDemandClientChannel.ChannelCreationFailedHandlers.Add(ChannelCreationFailedAsync);
             OnDemandClientChannel.ChannelDiscardedHandlers.Add(ChannelDiscardedAsync);
