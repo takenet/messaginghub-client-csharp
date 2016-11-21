@@ -16,7 +16,6 @@ namespace Takenet.MessagingHub.Client.LimeProtocol
 
         public IOnDemandClientChannel Create()
         {
-            //return new OnDemandClientChannel(ChannelBuilder);
             return new MultiplexerClientChannel(ChannelBuilder as EstablishedClientChannelBuilder);
         }
     }
