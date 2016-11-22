@@ -31,7 +31,7 @@ namespace Takenet.MessagingHub.Client.Connection
         {
             var channelBuilder = ClientChannelBuilder.Create(() => _transportFactory.Create(EndPoint), EndPoint)
                                  .WithSendTimeout(SendTimeout)
-                                 .WithBuffersLimit(100)
+                                 .WithEnvelopeBufferSize(100)
                                  .AddCommandModule(c => new ReplyPingChannelModule(c));
 
             channelBuilder =
