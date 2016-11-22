@@ -72,5 +72,12 @@ namespace Takenet.MessagingHub.Client.Connection
         /// <param name="timeout">A timespan representing the desired send timeout</param>
         /// <returns>The same instance of the <see cref="IMessagingHubConnectionConfigurator"/>, configured to use the given send timeout</returns>
         TConfigurator WithSendTimeout(TimeSpan timeout);
+
+        /// <summary>
+        /// Overrides the client channel count
+        /// </summary>
+        /// <param name="channelCount">The number of channels with the server that will be created</param>
+        /// <returns></returns>
+        TConfigurator WithChannelCount(int channelCount);
     }
 }

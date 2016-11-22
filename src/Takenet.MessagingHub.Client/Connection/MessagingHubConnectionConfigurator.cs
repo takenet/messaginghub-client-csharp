@@ -23,7 +23,7 @@ namespace Takenet.MessagingHub.Client.Connection
         protected RoutingRule RoutingRule { get; private set; }
         protected int Throughput { get; private set; }
         protected bool AutoNotify { get; private set; }
-
+        protected int ChannelCount { get; private set; }
         protected Identity Identity => Identity.Parse($"{Identifier}@{Domain}");
         protected Uri EndPoint => new Uri($"{Scheme}://{HostName}:{Port}");
 
@@ -33,12 +33,13 @@ namespace Takenet.MessagingHub.Client.Connection
             Scheme = Constants.DEFAULT_SCHEME;
             HostName = Constants.DEFAULT_DOMAIN;
             Port = Constants.DEFAULT_PORT;
-            SendTimeout = TimeSpan.FromSeconds(20);
+            SendTimeout = TimeSpan.FromSeconds(60);
             MaxConnectionRetries = 3;
             Compression = SessionCompression.None;
             Encryption = SessionEncryption.TLS;
             RoutingRule = RoutingRule.Identity;
             AutoNotify = true;
+            ChannelCount = 1;
         }
 
         public TConfigurator UsingPassword(string identifier, string password)
@@ -121,6 +122,12 @@ namespace Takenet.MessagingHub.Client.Connection
         public TConfigurator UsingCompression(SessionCompression sessionCompression)
         {
             Compression = sessionCompression;
+            return (TConfigurator)this;
+        }
+
+        public TConfigurator WithChannelCount(int channelCount)
+        {
+            ChannelCount = channelCount;
             return (TConfigurator)this;
         }
 

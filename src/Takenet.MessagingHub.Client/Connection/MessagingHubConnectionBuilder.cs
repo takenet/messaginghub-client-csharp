@@ -62,7 +62,7 @@ namespace Takenet.MessagingHub.Client.Connection
 
             var onDemandClientChannelFactory = new OnDemandClientChannelFactory(establishedClientChannelBuilder);
 
-            return new MessagingHubConnection(SendTimeout, MaxConnectionRetries, onDemandClientChannelFactory);
+            return new MessagingHubConnection(SendTimeout, MaxConnectionRetries, onDemandClientChannelFactory, ChannelCount);
         }
 
         private Authentication GetAuthenticationScheme()

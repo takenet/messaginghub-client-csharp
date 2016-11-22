@@ -159,7 +159,7 @@ namespace Takenet.MessagingHub.Client.Host
 
         public bool DisableNotify { get; set; }
         
-
+        public int? ChannelCount { get; set; }
 
         /// <summary>
         /// Indicates which schema version must be used to publish new applications

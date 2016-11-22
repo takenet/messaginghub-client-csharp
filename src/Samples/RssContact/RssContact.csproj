@@ -37,16 +37,16 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lime.Messaging, Version=0.6.59.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Lime.Messaging.0.6.59\lib\net461\Lime.Messaging.dll</HintPath>
+    <Reference Include="Lime.Messaging, Version=0.6.80.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lime.Messaging.0.6.80\lib\net461\Lime.Messaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Protocol, Version=0.6.59.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Lime.Protocol.0.6.59\lib\net461\Lime.Protocol.dll</HintPath>
+    <Reference Include="Lime.Protocol, Version=0.6.80.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lime.Protocol.0.6.80\lib\net461\Lime.Protocol.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lime.Transport.Tcp, Version=0.6.59.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Lime.Transport.Tcp.0.6.59\lib\net461\Lime.Transport.Tcp.dll</HintPath>
+    <Reference Include="Lime.Transport.Tcp, Version=0.6.80.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lime.Transport.Tcp.0.6.80\lib\net461\Lime.Transport.Tcp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mhh, Version=0.4.24.0, Culture=neutral, processorArchitecture=MSIL">
@@ -82,8 +82,8 @@
       <HintPath>..\..\packages\Takenet.Elephant.Msmq.0.4.85\lib\net461\Takenet.Elephant.Msmq.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Takenet.Iris.Common, Version=1.8.249.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Takenet.Iris.Common.1.8.249\lib\net461\Takenet.Iris.Common.dll</HintPath>
+    <Reference Include="Takenet.Iris.Common, Version=1.8.250.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.Iris.Common.1.8.250\lib\net461\Takenet.Iris.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Takenet.MessagingHub.Client, Version=0.4.24.0, Culture=neutral, processorArchitecture=MSIL">

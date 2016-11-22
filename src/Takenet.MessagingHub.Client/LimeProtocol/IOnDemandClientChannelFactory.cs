@@ -6,6 +6,6 @@ namespace Takenet.MessagingHub.Client.LimeProtocol
     {
         IEstablishedClientChannelBuilder ChannelBuilder { get; set; }
 
-        IOnDemandClientChannel Create();
+        IOnDemandClientChannel Create(int channelCount);
     }
 }
