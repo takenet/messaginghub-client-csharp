@@ -12,6 +12,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Scheduler
 
         public const string WHEN = "when";
         public const string MESSAGE = "message";
+        public const string STATUS = "status";
 
         public Schedule()
             : base(MediaType)
@@ -24,5 +25,19 @@ namespace Takenet.MessagingHub.Client.Extensions.Scheduler
 
         [DataMember(Name = MESSAGE)]
         public Message Message { get; set; }
+
+        [DataMember(Name = STATUS)]
+        public ScheduleStatus? Status { get; set; }
+    }
+
+    [DataContract]
+    public enum ScheduleStatus
+    {
+        [EnumMember(Value = "scheduled")]
+        Scheduled,
+        [EnumMember(Value = "executed")]
+        Executed,
+        [EnumMember(Value = "canceled")]
+        Canceled
     }
 }
