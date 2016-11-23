@@ -61,6 +61,7 @@ namespace Takenet.MessagingHub.Client.Test
             {
                 Status = CommandStatus.Success
             }));
+            OnDemandClientChannel.IsEstablished.Returns(true);
         }
 
         private void SubstituteEstablishedClientChannelBuilder()
