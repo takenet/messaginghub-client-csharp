@@ -92,6 +92,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="install.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="OwinStartup.cs.pp" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="packages.config" />

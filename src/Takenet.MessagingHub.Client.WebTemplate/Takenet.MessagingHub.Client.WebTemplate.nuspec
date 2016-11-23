@@ -17,5 +17,6 @@
     <file src="PlainTextMessageReceiver.cs.pp" target="content\PlainTextMessageReceiver.cs.pp"/>
     <file src="Startup.cs.pp" target="content\Startup.cs.pp"/>
     <file src="OwinStartup.cs.pp" target="content\OwinStartup.cs.pp"/>
+    <file src="install.ps1" target="tools\net461\install.ps1"/>
   </files>
 </package>
