@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Http;
-using System.Web.Routing;
-using Takenet.MessagingHub.Client.WebHost.Controllers;
+﻿using System.Web.Http;
 
-namespace Takenet.MessagingHub.Client.WebHost
+namespace Takenet.MessagingHub.Client.WebhookHost
 {
     public class WebApiApplication : System.Web.HttpApplication
     {

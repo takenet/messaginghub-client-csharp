@@ -1,11 +1,8 @@
-﻿using Lime.Protocol;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
-using Takenet.MessagingHub.Client.WebHost.Models;
+﻿using System.Web.Http;
+using Lime.Protocol;
+using Takenet.MessagingHub.Client.WebhookHost.Models;
 
-namespace Takenet.MessagingHub.Client.WebHost
+namespace Takenet.MessagingHub.Client.WebhookHost
 {
     public static class WebApiConfig
     {

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Threading.Tasks.Dataflow;
+﻿using System.Threading.Tasks.Dataflow;
 using Lime.Protocol;
 
-namespace Takenet.MessagingHub.Client.WebHost
+namespace Takenet.MessagingHub.Client.WebhookHost
 {
     public class EnvelopeBuffer : IEnvelopeBuffer
     {

@@ -68,7 +68,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingImageSearch", "Samples\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.WebhookTemplate", "Takenet.MessagingHub.Client.WebhookTemplate\Takenet.MessagingHub.Client.WebhookTemplate.csproj", "{02ECD27B-7A12-4097-8DD4-CEA83B0D064E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.WebHost", "Takenet.MessagingHub.Client.WebHost\Takenet.MessagingHub.Client.WebHost.csproj", "{5ED33BDE-A2BA-480B-B487-C5C896DA726E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.MessagingHub.Client.WebhookHost", "Takenet.MessagingHub.Client.WebhookHost\Takenet.MessagingHub.Client.WebhookHost.csproj", "{5ED33BDE-A2BA-480B-B487-C5C896DA726E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

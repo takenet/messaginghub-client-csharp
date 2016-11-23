@@ -1,14 +1,14 @@
-﻿using Lime.Protocol.Serialization.Newtonsoft;
-using System;
+﻿using System;
 using System.Configuration;
 using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using Lime.Protocol.Serialization.Newtonsoft;
 using Takenet.MessagingHub.Client.Host;
-using Takenet.MessagingHub.Client.WebHost.Controllers;
+using Takenet.MessagingHub.Client.WebhookHost.Controllers;
 
-namespace Takenet.MessagingHub.Client.WebHost
+namespace Takenet.MessagingHub.Client.WebhookHost
 {
     public static class MessagingHubConfig
     {

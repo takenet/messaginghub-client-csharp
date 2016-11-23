@@ -1,8 +1,4 @@
-﻿using Lime.Protocol;
-using Lime.Protocol.Client;
-using Lime.Protocol.Network;
-using Lime.Protocol.Serialization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Net.Http;
@@ -11,9 +7,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Lime.Protocol;
+using Lime.Protocol.Client;
+using Lime.Protocol.Network;
+using Lime.Protocol.Serialization;
 using Takenet.MessagingHub.Client.Host;
 
-namespace Takenet.MessagingHub.Client.WebHost
+namespace Takenet.MessagingHub.Client.WebhookHost
 {
     internal class HttpOnDemandClientChannel : IOnDemandClientChannel, IDisposable
     {

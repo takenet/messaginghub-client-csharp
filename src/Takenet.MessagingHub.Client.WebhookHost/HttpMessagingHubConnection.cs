@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using Lime.Protocol.Client;
+using Lime.Protocol.Serialization;
 using Takenet.MessagingHub.Client.Connection;
 using Takenet.MessagingHub.Client.Host;
-using Lime.Protocol.Serialization;
 
-namespace Takenet.MessagingHub.Client.WebHost
+namespace Takenet.MessagingHub.Client.WebhookHost
 {
     public class HttpMessagingHubConnection : IMessagingHubConnection
     {

@@ -1,11 +1,11 @@
-﻿using Lime.Protocol;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http.Dependencies;
+using Lime.Protocol;
 using Takenet.MessagingHub.Client.Host;
 
-namespace Takenet.MessagingHub.Client.WebHost
+namespace Takenet.MessagingHub.Client.WebhookHost
 {
     internal class MessagingHubClientResolver : IDependencyResolver, IDependencyScope
     {

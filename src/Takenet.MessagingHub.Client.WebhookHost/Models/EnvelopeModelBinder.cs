@@ -1,10 +1,8 @@
-﻿using Lime.Protocol.Serialization;
-using Lime.Protocol.Serialization.Newtonsoft;
-using System;
-using System.Web.Http.Controllers;
+﻿using System.Web.Http.Controllers;
 using System.Web.Http.ModelBinding;
+using Lime.Protocol.Serialization.Newtonsoft;
 
-namespace Takenet.MessagingHub.Client.WebHost.Models
+namespace Takenet.MessagingHub.Client.WebhookHost.Models
 {
     public class EnvelopeModelBinder : IModelBinder
     {
