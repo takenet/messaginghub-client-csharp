@@ -11,7 +11,6 @@ namespace Takenet.MessagingHub.Client
     public class MessagingHubClient : IMessagingHubClient
     {
         private readonly SemaphoreSlim _semaphore;
-        private bool _started;
 
         private IMessagingHubConnection Connection { get; }
 
@@ -32,11 +31,10 @@ namespace Takenet.MessagingHub.Client
             await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
-                if (!_started)
+                if (!Listening)
                 {
                     await Connection.ConnectAsync(cancellationToken);
-                    await Listener.StartAsync(cancellationToken);
-                    _started = true;
+                    await Listener.StartAsync(cancellationToken);                    
                 }
             }
             finally
@@ -50,11 +48,10 @@ namespace Takenet.MessagingHub.Client
             await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
-                if (_started)
+                if (Listening)
                 {
                     await Listener.StopAsync(cancellationToken);
-                    await Connection.DisconnectAsync(cancellationToken);
-                    _started = false;
+                    await Connection.DisconnectAsync(cancellationToken);                    
                 }
             }
             finally
