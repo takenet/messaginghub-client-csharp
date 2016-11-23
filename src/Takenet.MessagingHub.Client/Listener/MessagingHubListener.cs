@@ -9,7 +9,7 @@ using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
-    internal sealed class MessagingHubListener : IMessagingHubListener
+    internal sealed class MessagingHubListener : IMessagingHubListener, IDisposable
     {
         private readonly bool _autoNotify;
         private readonly IMessagingHubConnection _connection;
@@ -68,9 +68,17 @@ namespace Takenet.MessagingHub.Client.Listener
 
         private void StopEnvelopeListeners()
         {
-            _channelListener?.Stop();
+            try
+            {
+                _channelListener?.Stop();
+                _cts?.Cancel();
+            }
+            catch (ObjectDisposedException) { }
+        }
+
+        public void Dispose()
+        {
             _channelListener?.Dispose();
-            _cts?.Cancel();
             _cts?.Dispose();
         }
     }
