@@ -69,7 +69,8 @@ namespace Takenet.MessagingHub.Client.Connection
 
             try
             {
-                if (OnDemandClientChannel != null)
+                if (OnDemandClientChannel != null &&
+                    OnDemandClientChannel.IsEstablished)
                 {
                     _isDisconnecting = true;
 
@@ -78,9 +79,9 @@ namespace Takenet.MessagingHub.Client.Connection
                     {
                         await OnDemandClientChannel.FinishAsync(linkedCts.Token).ConfigureAwait(false);
                     }
-
-                    OnDemandClientChannel.DisposeIfDisposable();
                 }
+
+                OnDemandClientChannel?.DisposeIfDisposable();
             }
             finally
             {

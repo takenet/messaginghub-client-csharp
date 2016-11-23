@@ -10,6 +10,9 @@ namespace Takenet.MessagingHub.Client
 {
     public class MessagingHubClient : IMessagingHubClient
     {
+        private readonly SemaphoreSlim _semaphore;
+        private bool _started;
+
         private IMessagingHubConnection Connection { get; }
 
         private IMessagingHubListener Listener { get; }
@@ -21,18 +24,43 @@ namespace Takenet.MessagingHub.Client
             Connection = connection;
             Sender = new MessagingHubSender(connection);
             Listener = new MessagingHubListener(connection, Sender, autoNotify);
+            _semaphore = new SemaphoreSlim(1, 1);
         }
 
         public async Task StartAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            await Connection.ConnectAsync(cancellationToken);
-            await Listener.StartAsync(cancellationToken);
+            await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+            try
+            {
+                if (!_started)
+                {
+                    await Connection.ConnectAsync(cancellationToken);
+                    await Listener.StartAsync(cancellationToken);
+                    _started = true;
+                }
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task StopAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            await Listener.StopAsync(cancellationToken);
-            await Connection.DisconnectAsync(cancellationToken);
+            await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+            try
+            {
+                if (_started)
+                {
+                    await Listener.StopAsync(cancellationToken);
+                    await Connection.DisconnectAsync(cancellationToken);
+                    _started = false;
+                }
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public bool Listening => Listener.Listening;
