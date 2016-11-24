@@ -25,5 +25,6 @@
     <file src="bin\Release\Lime.Transport.Tcp.dll" target="tools\net461\Lime.Transport.Tcp.dll" />
     <file src="bin\Release\Newtonsoft.Json.dll" target="tools\net461\Newtonsoft.Json.dll" />
     <file src="bin\Release\Takenet.MessagingHub.Client.dll" target="tools\net461\Takenet.MessagingHub.Client.dll" />
+    <file src="bin\Release\Topshelf.dll" target="tools\net461\Topshelf.dll" />
   </files>
 </package>
