@@ -46,7 +46,7 @@ namespace Takenet.MessagingHub.Client.Host
 
                 if (HasArgument(args, "serviceName") ||
                     HasArgument(args, "displayName") ||
-                    HasArgument(args, "serviceName"))
+                    HasArgument(args, "description"))
                 {
                     var serviceName = GetArgumentValue(args, "serviceName");
                     if (serviceName == null)
@@ -71,7 +71,7 @@ namespace Takenet.MessagingHub.Client.Host
                     {
                         configurator.ApplyCommandLine(commandLine);
                         configurator.SetServiceName(serviceName); //cannot contain spaces or / or \
-                            configurator.SetDisplayName(serviceDisplayName);
+                        configurator.SetDisplayName(serviceDisplayName);
                         configurator.SetDescription(serviceDescription);
                         configurator.StartAutomatically();
                         configurator.Service<HostService>();
