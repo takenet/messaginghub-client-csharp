@@ -85,6 +85,7 @@ namespace Takenet.MessagingHub.Client.Host
             if (application.Throughput != 0) builder = builder.WithThroughput(application.Throughput);
             if (application.DisableNotify) builder = builder.WithAutoNotify(false);
             if (application.ChannelCount.HasValue) builder = builder.WithChannelCount(application.ChannelCount.Value);
+            if (application.ReceiptEvents != null) builder = builder.WithReceiptEvents(application.ReceiptEvents);
 
             if (typeResolver == null) typeResolver = TypeResolver.Instance;
 

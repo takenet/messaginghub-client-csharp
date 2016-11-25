@@ -1,6 +1,7 @@
 ﻿using Lime.Protocol;
 using System;
 using Lime.Messaging.Resources;
+using System.Collections.Generic;
 
 namespace Takenet.MessagingHub.Client.Connection
 {
@@ -17,7 +18,7 @@ namespace Takenet.MessagingHub.Client.Connection
         protected string Domain { get; private set; }
         protected string Scheme { get; private set; }
         protected string HostName { get; private set; }
-        protected int Port { get; private set; }        
+        protected int Port { get; private set; }
         protected SessionCompression Compression { get; private set; }
         protected SessionEncryption Encryption { get; private set; }
         protected RoutingRule RoutingRule { get; private set; }
@@ -26,6 +27,8 @@ namespace Takenet.MessagingHub.Client.Connection
         protected int ChannelCount { get; private set; }
         protected Identity Identity => Identity.Parse($"{Identifier}@{Domain}");
         protected Uri EndPoint => new Uri($"{Scheme}://{HostName}:{Port}");
+
+        protected Event[] ReceiptEvents { get; private set; }
 
         public MessagingHubConnectionConfigurator()
         {
@@ -40,6 +43,7 @@ namespace Takenet.MessagingHub.Client.Connection
             RoutingRule = RoutingRule.Identity;
             AutoNotify = true;
             ChannelCount = 1;
+            ReceiptEvents = new Event[] { Event.Accepted, Event.Dispatched, Event.Received, Event.Consumed, Event.Failed };
         }
 
         public TConfigurator UsingPassword(string identifier, string password)
@@ -140,6 +144,12 @@ namespace Takenet.MessagingHub.Client.Connection
         public TConfigurator WithAutoNotify(bool enabled)
         {
             AutoNotify = enabled;
+            return (TConfigurator)this;
+        }
+
+        public TConfigurator WithReceiptEvents(Event[] events)
+        {
+            ReceiptEvents = events;
             return (TConfigurator)this;
         }
 

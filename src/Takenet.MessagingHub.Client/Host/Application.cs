@@ -161,6 +161,8 @@ namespace Takenet.MessagingHub.Client.Host
         
         public int? ChannelCount { get; set; }
 
+        public Event[] ReceiptEvents { get; set; }
+
         /// <summary>
         /// Indicates which schema version must be used to publish new applications
         /// </summary>
