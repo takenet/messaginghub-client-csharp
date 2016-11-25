@@ -69,6 +69,10 @@
       <HintPath>..\packages\Takenet.Iris.Common.1.8.255\lib\net461\Takenet.Iris.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Takenet.Omni.Model, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Takenet.Omni.Model.1.1.8\lib\net461\Takenet.Omni.Model.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Connection\ITransportFactory.cs" />
