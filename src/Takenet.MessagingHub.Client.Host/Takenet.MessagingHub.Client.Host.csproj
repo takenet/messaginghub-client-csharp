@@ -70,6 +70,9 @@
     <None Include="Takenet.MessagingHub.Client.Host.nuspec">
       <SubType>Designer</SubType>
     </None>
+    <None Include="uninstall.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Takenet.MessagingHub.Client\Takenet.MessagingHub.Client.csproj">
