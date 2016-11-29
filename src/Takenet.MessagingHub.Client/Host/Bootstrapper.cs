@@ -87,7 +87,7 @@ namespace Takenet.MessagingHub.Client.Host
             if (application.ChannelCount.HasValue) builder = builder.WithChannelCount(application.ChannelCount.Value);
             if (application.ReceiptEvents != null && application.ReceiptEvents.Any())
                 builder = builder.WithReceiptEvents(application.ReceiptEvents);
-            else
+            else if(application.ReceiptEvents != null)
                 builder = builder.WithReceiptEvents(new[] { Event.Failed });
 
             if (typeResolver == null) typeResolver = TypeResolver.Instance;
