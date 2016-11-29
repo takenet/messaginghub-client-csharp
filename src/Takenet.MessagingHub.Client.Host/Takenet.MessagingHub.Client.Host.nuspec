@@ -12,7 +12,7 @@
     <copyright>Copyright © 2016 Curupira S/A</copyright>
     <tags>messagingHub</tags>
     <dependencies>
-      <dependency id="Takenet.MessagingHub.Client" version="0.4.54" />
+      <dependency id="Takenet.MessagingHub.Client" version="$version$" />
     </dependencies>
   </metadata>
   <files>
