@@ -49,8 +49,8 @@
       <HintPath>..\..\packages\Lime.Transport.Tcp.0.6.92\lib\net461\Lime.Transport.Tcp.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="mhh, Version=0.4.37.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Takenet.MessagingHub.Client.Host.0.4.37\lib\net461\mhh.exe</HintPath>
+    <Reference Include="mhh, Version=0.4.54.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.MessagingHub.Client.Host.0.4.54\lib\net461\mhh.exe</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -86,18 +86,27 @@
       <HintPath>..\..\packages\Takenet.Iris.Common.1.8.255\lib\net461\Takenet.Iris.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Takenet.MessagingHub.Client, Version=0.4.37.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Takenet.MessagingHub.Client.0.4.37\lib\net461\Takenet.MessagingHub.Client.dll</HintPath>
+    <Reference Include="Takenet.MessagingHub.Client, Version=0.4.57.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.MessagingHub.Client.0.4.57-beta\lib\net461\Takenet.MessagingHub.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Takenet.MessagingHub.Client.Template, Version=0.4.24.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Takenet.MessagingHub.Client.Template.0.4.24\lib\net461\Takenet.MessagingHub.Client.Template.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Takenet.Omni.Model, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.Omni.Model.1.1.8\lib\net461\Takenet.Omni.Model.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Topshelf, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Topshelf.4.0.3\lib\net452\Topshelf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FeedItem.cs" />
     <Compile Include="FeedParser.cs" />
+    <Compile Include="ForwardToOperatorChannelModule.cs" />
     <Compile Include="InteractionEvents.cs" />
     <Compile Include="PlainTextMessageReceiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
