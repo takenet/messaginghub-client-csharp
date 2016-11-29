@@ -1,7 +1,6 @@
 ﻿{
-  "identifier": "",
-  "accessKey": "",
-  "hostname":  "hmg.msging.net",
+  "identifier": "bingimagesearch",
+  "accessKey": "eXY5eDhkaWs2OHNwemthaWpPbEI=",
   "messageReceivers": [
     {
       "type": "PlainTextMessageReceiver",
