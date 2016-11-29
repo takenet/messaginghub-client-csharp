@@ -17,7 +17,6 @@ namespace Takenet.MessagingHub.Client.Extensions.EventTracker
         public EventTrackExtension(IMessagingHubSender sender)
             : base(sender)
         {
-            TypeUtil.RegisterDocument<EventTrack>();
         }
 
         public async Task AddAsync(string categoryName, string actionName, CancellationToken cancellationToken = new CancellationToken())
