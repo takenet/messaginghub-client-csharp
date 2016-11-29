@@ -15,6 +15,5 @@
   </metadata>
   <files>
     <file src="bin\$configuration$\Takenet.MessagingHub.Client.Textc.dll" target="lib\net45\Takenet.MessagingHub.Client.Textc.dll" />
-    <file src="bin\$configuration$\Takenet.MessagingHub.Client.Textc.xml" target="lib\net45\Takenet.MessagingHub.Client.Textc.xml" />
   </files>
 </package>
