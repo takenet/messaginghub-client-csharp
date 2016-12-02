@@ -26,7 +26,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Contacts
             if (identity == null) throw new ArgumentNullException(nameof(identity));
 
             var requestCommand = CreateGetCommandRequest(
-                UriTemplates.CONTACT.NamedFormat(new { contactIdentity = identity }));
+                UriTemplates.CONTACT.NamedFormat(new { contactIdentity = Uri.EscapeDataString(identity.ToString()) }));
 
             return ProcessCommandAsync<Contact>(requestCommand, cancellationToken);
         }
@@ -48,7 +48,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Contacts
             if (identity == null) throw new ArgumentNullException(nameof(identity));
 
             var requestCommand = CreateDeleteCommandRequest(
-                UriTemplates.CONTACT.NamedFormat(new { contactIdentity = identity }));
+                UriTemplates.CONTACT.NamedFormat(new { contactIdentity = Uri.EscapeDataString(identity.ToString()) }));
 
             return ProcessCommandAsync(requestCommand, cancellationToken);
         }

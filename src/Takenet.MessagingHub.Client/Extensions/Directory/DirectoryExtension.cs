@@ -22,7 +22,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Directory
             if (string.IsNullOrWhiteSpace(identity.Domain)) throw new ArgumentException("Invalid identity domain", nameof(identity));
 
             var requestCommand = CreateGetCommandRequest(
-                string.Format(URI_FORMAT, identity.Domain, identity.Name),
+                string.Format(URI_FORMAT, identity.Domain, Uri.EscapeDataString(identity.Name)),
                 Node.Parse(string.Format(POSTMASTER_FORMAT, identity.Domain)));
 
             return ProcessCommandAsync<Account>(requestCommand, cancellationToken);
