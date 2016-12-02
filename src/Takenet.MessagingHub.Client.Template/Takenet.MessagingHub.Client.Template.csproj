@@ -36,30 +36,13 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lime.Messaging, Version=0.6.92.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Messaging.0.6.92\lib\net461\Lime.Messaging.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Lime.Protocol, Version=0.6.92.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Protocol.0.6.92\lib\net461\Lime.Protocol.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Install.ps1" />
     <None Include="Takenet.MessagingHub.Client.Template.nuspec">
       <SubType>Designer</SubType>
-    </None>
-    <None Include="uninstall.ps1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="install.ps1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -68,22 +51,11 @@
     <None Include="application.template.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
     <None Include="PlainTextMessageReceiver.cs.pp" />
     <None Include="Startup.cs.pp" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Takenet.MessagingHub.Client.Host\Takenet.MessagingHub.Client.Host.csproj">
-      <Project>{288513c0-fcd1-47b0-9c98-00b34ce99b63}</Project>
-      <Name>Takenet.MessagingHub.Client.Host</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Takenet.MessagingHub.Client\Takenet.MessagingHub.Client.csproj">
-      <Project>{628f8ee4-956a-49ce-b9d6-bd5f6800fe6f}</Project>
-      <Name>Takenet.MessagingHub.Client</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

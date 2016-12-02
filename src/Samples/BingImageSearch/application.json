@@ -1,6 +1,7 @@
 ﻿{
   "identifier": "bingimagesearch",
   "accessKey": "eXY5eDhkaWs2OHNwemthaWpPbEI=",
+  "receiptEvents": [],
   "messageReceivers": [
     {
       "type": "PlainTextMessageReceiver",

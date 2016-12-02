@@ -2,11 +2,9 @@
 using Lime.Protocol.Serialization;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Takenet.Iris.Common.Resources;
+using Takenet.Iris.Messaging.Resources;
 using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Extensions.EventTracker
@@ -19,7 +17,6 @@ namespace Takenet.MessagingHub.Client.Extensions.EventTracker
         public EventTrackExtension(IMessagingHubSender sender)
             : base(sender)
         {
-            TypeUtil.RegisterDocument<EventTrack>();
         }
 
         public async Task AddAsync(string categoryName, string actionName, CancellationToken cancellationToken = new CancellationToken())

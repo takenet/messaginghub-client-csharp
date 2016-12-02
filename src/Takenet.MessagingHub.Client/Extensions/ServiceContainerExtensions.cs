@@ -1,4 +1,5 @@
-﻿using Takenet.MessagingHub.Client.Extensions.Broadcast;
+﻿using Takenet.Iris.Messaging;
+using Takenet.MessagingHub.Client.Extensions.Broadcast;
 using Takenet.MessagingHub.Client.Extensions.Bucket;
 using Takenet.MessagingHub.Client.Extensions.Contacts;
 using Takenet.MessagingHub.Client.Extensions.Delegation;
@@ -15,6 +16,8 @@ namespace Takenet.MessagingHub.Client.Extensions
     {
         internal static IServiceContainer RegisterExtensions(this IServiceContainer serviceContainer)
         {
+            TypeRegistration.RegisterAllDocuments();
+
             var sender = serviceContainer.GetService<IMessagingHubSender>();
             serviceContainer.RegisterService(typeof(IBroadcastExtension), new BroadcastExtension(sender));
             serviceContainer.RegisterService(typeof(IDelegationExtension), new DelegationExtension(sender));

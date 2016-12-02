@@ -11,6 +11,9 @@
     <summary>A template to create Messaging Hub applications</summary>
     <copyright>Copyright © 2016 Curupira S/A</copyright>
     <tags>messagingHub</tags>
+    <dependencies>
+      <dependency id="Takenet.MessagingHub.Client.Host" version="$version$" />
+    </dependencies>
   </metadata>
   <files>
     <file src="application.template.json" target="content\application.json"/>
@@ -18,13 +21,5 @@
     <file src="Readme.txt" target="" />
     <file src="Startup.cs.pp" target="content\Startup.cs.pp"/>
     <file src="install.ps1" target="tools\net461\install.ps1"/>
-    <file src="uninstall.ps1" target="tools\net461\uninstall.ps1"/>
-    <file src="bin\Release\mhh.exe" target="tools\net461\mhh.exe" />
-    <file src="bin\Release\Lime.Messaging.dll" target="tools\net461\Lime.Messaging.dll" />
-    <file src="bin\Release\Lime.Protocol.dll" target="tools\net461\Lime.Protocol.dll" />
-    <file src="bin\Release\Lime.Transport.Tcp.dll" target="tools\net461\Lime.Transport.Tcp.dll" />
-    <file src="bin\Release\Newtonsoft.Json.dll" target="tools\net461\Newtonsoft.Json.dll" />
-    <file src="bin\Release\Takenet.MessagingHub.Client.dll" target="tools\net461\Takenet.MessagingHub.Client.dll" />
-    <file src="bin\Release\Topshelf.dll" target="tools\net461\Topshelf.dll" />
   </files>
 </package>

@@ -13,8 +13,4 @@
     <copyright>Copyright ©  2015 Curupira S/A</copyright>
     <tags>lime messaginghub</tags>
   </metadata>
-  <files>
-    <file src="bin\Release\Takenet.MessagingHub.Client.dll" target="lib\net461\Takenet.MessagingHub.Client.dll" />
-    <file src="bin\Release\Takenet.MessagingHub.Client.xml" target="lib\net461\Takenet.MessagingHub.Client.xml" />
-  </files>
 </package>

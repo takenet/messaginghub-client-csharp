@@ -1,20 +1,14 @@
+using Lime.Messaging.Contents;
+using Lime.Protocol;
+using Newtonsoft.Json;
 using System;
+using System.Linq;
+using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Lime.Protocol;
-using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
-using System.Diagnostics;
-using System.Net;
-using System.Collections.Generic;
-using System.Linq;
-using Lime.Messaging.Contents;
-using System.Net.Http;
-using Newtonsoft.Json;
-using System.Text.RegularExpressions;
-using Takenet.MessagingHub.Client.Extensions.EventTracker;
-using Takenet.Iris.Common.Resources;
 
 namespace BingImageSearch
 {

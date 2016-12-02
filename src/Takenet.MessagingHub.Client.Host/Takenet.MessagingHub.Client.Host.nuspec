@@ -11,15 +11,14 @@
     <summary>A host implementation to run libraries that use the Messaging Hub Client</summary>
     <copyright>Copyright © 2016 Curupira S/A</copyright>
     <tags>messagingHub</tags>
+    <dependencies>
+      <dependency id="Takenet.MessagingHub.Client" version="0.4.66" />
+    </dependencies>
   </metadata>
   <files>
     <file src="install.ps1" target="tools\net461\install.ps1"/>
-    <file src="bin\Release\mhh.exe" target="tools\net461\mhh.exe" />
-    <file src="bin\Release\mhh.exe.config" target="tools\net461\mhh.exe.config" />
-    <file src="bin\Release\Lime.Messaging.dll" target="tools\net461\Lime.Messaging.dll" />
-    <file src="bin\Release\Lime.Protocol.dll" target="tools\net461\Lime.Protocol.dll" />   
-    <file src="bin\Release\Newtonsoft.Json.dll" target="tools\net461\Newtonsoft.Json.dll" />
-    <file src="bin\Release\Takenet.MessagingHub.Client.dll" target="tools\net461\Takenet.MessagingHub.Client.dll" />
-    <file src="bin\Release\Topshelf.dll" target="tools\net461\Topshelf.dll" />
+    <file src="uninstall.ps1" target="tools\net461\uninstall.ps1"/>
+    <file src="bin\$configuration$\mhh.exe" target="tools\net461\mhh.exe" />
+    <file src="bin\$configuration$\mhh.exe.config" target="tools\net461\mhh.exe.config" />
   </files>
 </package>

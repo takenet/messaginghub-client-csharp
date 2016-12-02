@@ -10,6 +10,7 @@ using Lime.Protocol.Network.Modules;
 using Lime.Protocol.Serialization.Newtonsoft;
 using Lime.Transport.Tcp;
 using Takenet.MessagingHub.Client.LimeProtocol;
+using System.Linq;
 
 namespace Takenet.MessagingHub.Client.Connection
 {
@@ -104,14 +105,17 @@ namespace Takenet.MessagingHub.Client.Connection
                         .ConfigureAwait(false);
         }
 
-        private static async Task SetReceiptAsync(IClientChannel clientChannel, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task SetReceiptAsync(IClientChannel clientChannel, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!IsGuest(clientChannel.LocalNode.Name))
-                await clientChannel.SetResourceAsync(
-                        LimeUri.Parse(UriTemplates.RECEIPT),
-                        new Receipt { Events = new[] { Event.Accepted, Event.Dispatched, Event.Received, Event.Consumed, Event.Failed } },
-                        cancellationToken)
-                        .ConfigureAwait(false);
+                if (ReceiptEvents.Any())
+                {
+                    await clientChannel.SetResourceAsync(
+                            LimeUri.Parse(UriTemplates.RECEIPT),
+                            new Receipt { Events = ReceiptEvents },
+                            cancellationToken)
+                            .ConfigureAwait(false);
+                }
         }
 
         private static bool IsGuest(string name)

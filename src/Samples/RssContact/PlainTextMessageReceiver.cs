@@ -24,7 +24,12 @@ namespace RssContact
 
         public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
         {
-            Debug.WriteLine($"From: {message.From} \tContent: {message.Content}");
+            Trace.WriteLine($"From: {message.From} \tContent: {message.Content}");
+            //if (true)
+            //{
+            //    _sender.SendMessageAsync(message.CreateForwardingTo("5531988356247"))
+            //}
+
             await _eventTracker.AddAsync(MessageReceived.Category, MessageReceived.Action, cancellationToken);
             try
             {
@@ -46,7 +51,7 @@ namespace RssContact
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e);
+                Trace.WriteLine(e);
                 await SendMessageAsync("Houve um erro ao processar o feed.\nPor favor, tenta novamente.", message.From, cancellationToken);
                 await _eventTracker.AddAsync(MessageReceivedFailed.Category, MessageReceivedFailed.Action, cancellationToken);
             }
