@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Takenet.MessagingHub.Client.Sender;
+using Takenet.Iris.Messaging.Resources;
 
 namespace Takenet.MessagingHub.Client.Extensions.Scheduler
 {
@@ -21,7 +22,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Scheduler
             if (message == null) throw new ArgumentNullException(nameof(message));
             return ProcessCommandAsync(
                 CreateSetCommandRequest(
-                    new Schedule()
+                    new Schedule
                     {
                         Message = message,
                         When = when
