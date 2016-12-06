@@ -1,55 +1,70 @@
 ﻿param($installPath, $toolsPath, $package, $project)
 
-function Add-StartProgramIfNeeded {
-	[xml] $prjXml = Get-Content $project.FullName
-	foreach($PropertyGroup in $prjXml.project.ChildNodes)
-	{
-		if($PropertyGroup.StartAction -ne $null)
-		{
-			return
+$hostFile = "mhh.exe"
+$projectPath = [String](Split-Path -Path $project.FullName);
+
+function ModifyItems
+{
+	$hostPath = Join-Path (Join-Path $installPath "tools\net461\") $hostFile
+
+	$project.ProjectItems | ForEach-Object {
+		if ($_.FileNames(0).EndsWith($hostFile)) { 
+			$_.Remove()
+			$project.ProjectItems.AddFromFile($hostPath) | out-null
+			$project.ProjectItems.Item($hostFile).Properties.Item("CopyToOutputDirectory").Value = 2
+			$project.Save()
+			write-host "Updated reference to $hostPath"
+			continue
 		}
 	}
 
-	$propertyGroupElement = $prjXml.CreateElement("PropertyGroup", $prjXml.Project.GetAttribute("xmlns"));
-	$startActionElement = $prjXml.CreateElement("StartAction", $prjXml.Project.GetAttribute("xmlns"));
-	$propertyGroupElement.AppendChild($startActionElement) | Out-Null
-	$propertyGroupElement.StartAction = "Program"
-	$startProgramElement = $prjXml.CreateElement("StartProgram", $prjXml.Project.GetAttribute("xmlns"));
-	$propertyGroupElement.AppendChild($startProgramElement) | Out-Null
-	$propertyGroupElement.StartProgram = "`$(ProjectDir)`$(OutputPath)mhh.exe"
-	$prjXml.project.AppendChild($propertyGroupElement) | Out-Null
-	$writerSettings = new-object System.Xml.XmlWriterSettings
-	$writerSettings.OmitXmlDeclaration = $false
-	$writerSettings.NewLineOnAttributes = $false
-	$writerSettings.Indent = $true
-	$projectFilePath = Resolve-Path -Path $project.FullName
-	$writer = [System.Xml.XmlWriter]::Create($projectFilePath, $writerSettings)
-	$prjXml.WriteTo($writer)
-	$writer.Flush()
-	$writer.Close()
+	$project.Save()
+
+}
+
+function HasStartAction ($item)
+{
+    foreach ($property in $item.Properties)
+    {
+       if ($property.Name -eq "StartAction")
+       {
+           return $true
+       }            
+    } 
+
+    return $false
+}
+
+function ModifyConfigurations
+{
+    $configurationManager = $project.ConfigurationManager
+
+    foreach ($name in $configurationManager.ConfigurationRowNames)
+    {
+        $projectConfigurations = $configurationManager.ConfigurationRow($name)
+
+        foreach ($projectConfiguration in $projectConfigurations)
+        {                
+
+            if (HasStartAction $projectConfiguration)
+            {
+                $newStartAction = 1
+                [String]$newStartProgram = Join-Path (Join-Path $projectPath $projectConfiguration.Properties.Item("OutputPath").Value) $hostFile
+                #Write-Host "Changing project start action to " $newStartAction
+                Write-Host "Changing project start program to " $newStartProgram                
+                $projectConfiguration.Properties.Item("StartAction").Value = $newStartAction
+                $projectConfiguration.Properties.Item("StartProgram").Value = $newStartProgram                
+            }
+        }
+    }
+
+    $project.Save
 }
 
 write-host "Trying to update mhh.exe project reference (if one exists)"
-
-$hostFile = "mhh.exe"
-$hostPath = Join-Path (Join-Path $installPath "tools\net461\") $hostFile
-
-$projectPathUri = [String](Split-Path -Path $project.FullName);
-
-$project.ProjectItems | ForEach-Object {
-	if ($_.FileNames(0).EndsWith($hostFile)) { 
-		$_.Remove()
-		$project.ProjectItems.AddFromFile($hostPath) | out-null
-		$project.ProjectItems.Item($hostFile).Properties.Item("CopyToOutputDirectory").Value = 2
-		$project.Save()
-		write-host "Updated reference to $hostPath"
-		continue
-	}
-}
-
-$project.Save()
+ModifyItems
 
 Write-Host "Modifying Configurations..."
-Add-StartProgramIfNeeded
+ModifyConfigurations
 
 
