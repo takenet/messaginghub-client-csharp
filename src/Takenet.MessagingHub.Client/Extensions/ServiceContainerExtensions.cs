@@ -1,4 +1,5 @@
 ﻿using Takenet.Iris.Messaging;
+using Takenet.MessagingHub.Client.Extensions.AttendanceForwarding;
 using Takenet.MessagingHub.Client.Extensions.Broadcast;
 using Takenet.MessagingHub.Client.Extensions.Bucket;
 using Takenet.MessagingHub.Client.Extensions.Contacts;
@@ -28,6 +29,7 @@ namespace Takenet.MessagingHub.Client.Extensions
             serviceContainer.RegisterService(typeof(IEventTrackExtension), new EventTrackExtension(sender));
             serviceContainer.RegisterService(typeof(IBucketExtension), bucketExtension);
             serviceContainer.RegisterService(typeof(ISessionManager), new SessionManager(bucketExtension));
+            serviceContainer.RegisterService(typeof(IAttendanceExtension), new AttendanceExtension(sender));
 
             return serviceContainer;
         }
