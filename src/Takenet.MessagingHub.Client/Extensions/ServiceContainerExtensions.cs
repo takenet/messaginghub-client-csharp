@@ -8,6 +8,7 @@ using Takenet.MessagingHub.Client.Extensions.Directory;
 using Takenet.MessagingHub.Client.Extensions.EventTracker;
 using Takenet.MessagingHub.Client.Extensions.Scheduler;
 using Takenet.MessagingHub.Client.Extensions.Session;
+using Takenet.MessagingHub.Client.Extensions.Threads;
 using Takenet.MessagingHub.Client.Host;
 using Takenet.MessagingHub.Client.Sender;
 
@@ -30,6 +31,7 @@ namespace Takenet.MessagingHub.Client.Extensions
             serviceContainer.RegisterService(typeof(IBucketExtension), bucketExtension);
             serviceContainer.RegisterService(typeof(ISessionManager), new SessionManager(bucketExtension));
             serviceContainer.RegisterService(typeof(IAttendanceExtension), new AttendanceExtension(sender));
+            serviceContainer.RegisterService(typeof(IThreadExtension), new ThreadExtension(sender));
 
             return serviceContainer;
         }
