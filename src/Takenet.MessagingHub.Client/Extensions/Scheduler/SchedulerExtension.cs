@@ -9,6 +9,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Scheduler
 {
     public class SchedulerExtension : ExtensionBase, ISchedulerExtension
     {
+        private const string SCHEDULE_URI = "/schedules";
         private static readonly Node SchedulerAddress = Node.Parse($"postmaster@scheduler.{Constants.DEFAULT_DOMAIN}");
 
         public SchedulerExtension(IMessagingHubSender sender) 
@@ -27,9 +28,21 @@ namespace Takenet.MessagingHub.Client.Extensions.Scheduler
                         Message = message,
                         When = when
                     },
-                    "/schedules",
+                    SCHEDULE_URI,
                     SchedulerAddress),
                 cancellationToken);
         }
+
+        public Task<Schedule> GetScheduledMessageAsync(string messageId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (messageId == null) throw new ArgumentNullException(nameof(messageId));
+
+            var scheduledMessage = $"{SCHEDULE_URI}/{messageId}";
+
+            return ProcessCommandAsync<Schedule>(
+                CreateGetCommandRequest(scheduledMessage, SchedulerAddress),
+                cancellationToken);
+        }
+
     }
 }

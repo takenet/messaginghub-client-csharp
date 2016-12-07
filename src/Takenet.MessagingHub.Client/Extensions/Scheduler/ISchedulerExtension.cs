@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
+using Takenet.Iris.Messaging.Resources;
 
 namespace Takenet.MessagingHub.Client.Extensions.Scheduler
 {
@@ -21,5 +22,13 @@ namespace Takenet.MessagingHub.Client.Extensions.Scheduler
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task ScheduleMessageAsync(Message message, DateTimeOffset when, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Get scheduled message details, including status.
+        /// </summary>
+        /// <param name="messageId">Id of the scheduled message</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<Schedule> GetScheduledMessageAsync(string messageId, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
