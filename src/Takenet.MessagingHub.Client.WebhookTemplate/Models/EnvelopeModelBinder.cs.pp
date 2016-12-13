@@ -1,5 +1,4 @@
-﻿using Lime.Protocol.Serialization;
-using Lime.Protocol.Serialization.Newtonsoft;
+﻿using Lime.Protocol.Serialization.Newtonsoft;
 using System;
 using System.Web.Http.Controllers;
 using System.Web.Http.ModelBinding;

@@ -5,6 +5,7 @@ using Takenet.Textc;
 using Lime.Protocol.Serialization.Newtonsoft;
 using Newtonsoft.Json;
 using Lime.Protocol.Serialization;
+using Takenet.MessagingHub.Client.Host;
 
 namespace Takenet.MessagingHub.Client.Textc
 {
@@ -81,7 +82,7 @@ namespace Takenet.MessagingHub.Client.Textc
             else
             {
                 object document;
-                if (TypeUtil.TryParseString(content, typeof(T), out document))
+                if (TypeUtilEx.TryParseString(content, typeof(T), out document))
                 {
                     return (T)document;
                 }

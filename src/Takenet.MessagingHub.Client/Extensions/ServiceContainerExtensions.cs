@@ -18,7 +18,7 @@ namespace Takenet.MessagingHub.Client.Extensions
     {
         internal static IServiceContainer RegisterExtensions(this IServiceContainer serviceContainer)
         {
-            TypeRegistration.RegisterAllDocuments();
+            Registrator.RegisterDocuments();
 
             var sender = serviceContainer.GetService<IMessagingHubSender>();
             serviceContainer.RegisterService(typeof(IBroadcastExtension), new BroadcastExtension(sender));

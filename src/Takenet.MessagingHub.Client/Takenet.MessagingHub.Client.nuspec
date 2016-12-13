@@ -12,9 +12,5 @@
     <description>The C# SDK for the Messaging Hub</description>
     <copyright>Copyright ©  2015 Curupira S/A</copyright>
     <tags>lime messaginghub</tags>
-    <dependencies>
-      <dependency id="Takenet.Iris.Messaging" version="[1.1.1]" />
-      <dependency id="Lime.Protocol" version="[0.6.92,0.7)" />
-    </dependencies>
 </metadata>
 </package>

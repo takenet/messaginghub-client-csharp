@@ -10,10 +10,6 @@ using Lime.Protocol;
 using Lime.Protocol.Serialization;
 using Newtonsoft.Json;
 using Takenet.MessagingHub.Client.Extensions;
-using Takenet.MessagingHub.Client.Extensions.Broadcast;
-using Takenet.MessagingHub.Client.Extensions.Bucket;
-using Takenet.MessagingHub.Client.Extensions.Delegation;
-using Takenet.MessagingHub.Client.Extensions.Session;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
 
@@ -49,7 +45,7 @@ namespace Takenet.MessagingHub.Client.Host
 
             if (loadAssembliesFromWorkingDirectory)
             {
-                TypeUtil.LoadAssembliesAndReferences(path, assemblyFilter: TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter, ignoreExceptionLoadingReferencedAssembly: true);
+                ReferencesUtil.LoadAssembliesAndReferences(path, assemblyFilter: ReferencesUtil.IgnoreSystemAndMicrosoftAssembliesFilter, ignoreExceptionLoadingReferencedAssembly: true);
             }
 
             if (builder == null) builder = new MessagingHubClientBuilder();
