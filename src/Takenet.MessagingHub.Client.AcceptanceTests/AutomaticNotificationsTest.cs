@@ -13,7 +13,6 @@ using Shouldly;
 
 namespace Takenet.MessagingHub.Client.AcceptanceTests
 {
-    [Ignore("Blip endpoint is not working")]
     [TestFixture]
     internal class AutomaticNotificationsTest
     {
