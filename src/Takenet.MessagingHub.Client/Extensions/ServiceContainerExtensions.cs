@@ -1,5 +1,4 @@
-﻿using Takenet.Iris.Messaging;
-using Takenet.MessagingHub.Client.Extensions.AttendanceForwarding;
+﻿using Takenet.MessagingHub.Client.Extensions.AttendanceForwarding;
 using Takenet.MessagingHub.Client.Extensions.Broadcast;
 using Takenet.MessagingHub.Client.Extensions.Bucket;
 using Takenet.MessagingHub.Client.Extensions.Contacts;
@@ -18,7 +17,8 @@ namespace Takenet.MessagingHub.Client.Extensions
     {
         internal static IServiceContainer RegisterExtensions(this IServiceContainer serviceContainer)
         {
-            Registrator.RegisterDocuments();
+            Lime.Messaging.Registrator.RegisterDocuments();
+            Iris.Messaging.Registrator.RegisterDocuments();
 
             var sender = serviceContainer.GetService<IMessagingHubSender>();
             serviceContainer.RegisterService(typeof(IBroadcastExtension), new BroadcastExtension(sender));
