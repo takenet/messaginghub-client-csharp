@@ -72,7 +72,7 @@ namespace Takenet.MessagingHub.Client.Listener
             Predicate<T> predicate, 
             int priority) where T : Envelope, new()
         {
-            if (_listener.Listening) throw new InvalidOperationException("Cannot add receivers when the listener is already started listening");
+            if (_listener.Listening) throw new InvalidOperationException("Cannot add receivers while the listener is running");
             if (receiverFactory == null) throw new ArgumentNullException(nameof(receiverFactory));
             if (predicate == null) throw new ArgumentNullException(nameof(predicate));
 
