@@ -7,13 +7,13 @@ using System.Threading;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
-    internal class EnvelopeListenerRegistrar
+    internal class EnvelopeReceiverManager
     {
         private readonly IMessagingHubListener _listener;
         private readonly IList<ReceiverFactoryPredicate<Message>> _messageReceivers;
         private readonly IList<ReceiverFactoryPredicate<Notification>> _notificationReceivers;
 
-        internal EnvelopeListenerRegistrar(IMessagingHubListener listener)
+        internal EnvelopeReceiverManager(IMessagingHubListener listener)
         {
             _listener = listener;
             _messageReceivers = new List<ReceiverFactoryPredicate<Message>>(new[]

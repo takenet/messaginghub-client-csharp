@@ -6,7 +6,7 @@ namespace Takenet.MessagingHub.Client.Listener
 {
     internal class NotificationReceivedHandler : EnvelopeReceivedHandler<Notification>
     {
-        public NotificationReceivedHandler(IMessagingHubSender sender, EnvelopeListenerRegistrar registrar, CancellationTokenSource cts) 
+        public NotificationReceivedHandler(IMessagingHubSender sender, EnvelopeReceiverManager registrar, CancellationTokenSource cts) 
             : base(sender, registrar, cts)
         {
         }

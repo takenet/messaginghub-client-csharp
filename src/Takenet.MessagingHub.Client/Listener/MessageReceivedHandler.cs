@@ -12,7 +12,7 @@ namespace Takenet.MessagingHub.Client.Listener
     {
         private readonly bool _autoNotifiy;
 
-        public MessageReceivedHandler(IMessagingHubSender sender, bool autoNotifiy, EnvelopeListenerRegistrar registrar, CancellationTokenSource cts)
+        public MessageReceivedHandler(IMessagingHubSender sender, bool autoNotifiy, EnvelopeReceiverManager registrar, CancellationTokenSource cts)
             : base(sender, registrar, cts)
         {
             _autoNotifiy = autoNotifiy;

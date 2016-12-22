@@ -21,13 +21,13 @@ namespace Takenet.MessagingHub.Client.Listener
         {
             _connection = connection;
             _sender = sender ?? new MessagingHubSender(connection);
-            EnvelopeRegistrar = new EnvelopeListenerRegistrar(this);
+            EnvelopeRegistrar = new EnvelopeReceiverManager(this);
             _autoNotify = autoNotify;
         }
         
         public bool Listening { get; private set; }
 
-        internal EnvelopeListenerRegistrar EnvelopeRegistrar { get; }
+        internal EnvelopeReceiverManager EnvelopeRegistrar { get; }
 
         public void AddMessageReceiver(IMessageReceiver messageReceiver, Predicate<Message> messageFilter, int priority = 0)
         {

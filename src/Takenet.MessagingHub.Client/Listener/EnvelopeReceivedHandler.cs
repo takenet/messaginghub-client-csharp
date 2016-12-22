@@ -11,7 +11,7 @@ namespace Takenet.MessagingHub.Client.Listener
 {
     internal abstract class EnvelopeReceivedHandler<TEnvelope> where TEnvelope : Envelope, new()
     {
-        private readonly EnvelopeListenerRegistrar _registrar;
+        private readonly EnvelopeReceiverManager _registrar;
         private readonly ActionBlock<TEnvelope> _envelopeActionBlock;
         private readonly CancellationTokenSource _cts;
 
@@ -19,7 +19,7 @@ namespace Takenet.MessagingHub.Client.Listener
 
         protected EnvelopeReceivedHandler(
             IMessagingHubSender sender,
-            EnvelopeListenerRegistrar registrar,
+            EnvelopeReceiverManager registrar,
             CancellationTokenSource cts)
         {
             Sender = sender;
