@@ -8,9 +8,9 @@ namespace Takenet.MessagingHub.Client.Listener
     /// <summary>
     /// Notification receiver that simply ignores the received notification
     /// </summary>
-    public class BlackholeNotificationReceiver : INotificationReceiver
+    public class BlackholeReceiver : IEnvelopeReceiver<Envelope>
     {
-        public Task ReceiveAsync(Notification notification, CancellationToken cancellationToken = default(CancellationToken))
+        public Task ReceiveAsync(Envelope envelope, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.CompletedTask;
         }

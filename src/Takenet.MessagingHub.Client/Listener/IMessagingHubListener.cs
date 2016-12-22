@@ -32,5 +32,13 @@ namespace Takenet.MessagingHub.Client.Listener
         /// <param name="notificationFilter">The criteria to filter the notifications</param>
         /// <param name="priority">The priority of the receiver related to the others. Lower values have higher priority. This value can be repeated among receivers. In this cases, the receivers are evaluated in parallel.</param>
         void AddNotificationReceiver(INotificationReceiver notificationReceiver, Predicate<Notification> notificationFilter, int priority = 0);
+
+        /// <summary>
+        /// Add a command receiver that satifies the given predicate
+        /// </summary>
+        /// <param name="commandReceiver"></param>
+        /// <param name="commandFilter"></param>
+        /// <param name="priority"></param>
+        void AddCommandReceiver(ICommandReceiver commandReceiver, Predicate<Command> commandFilter, int priority = 0);
     }
 }

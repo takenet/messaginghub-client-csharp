@@ -72,6 +72,11 @@ namespace Takenet.MessagingHub.Client
             Listener.AddNotificationReceiver(notificationReceiver, notificationFilter, priority);
         }
 
+        public void AddCommandReceiver(ICommandReceiver commandReceiver, Predicate<Command> commandFilter, int priority = 0)
+        {
+            Listener.AddCommandReceiver(commandReceiver, commandFilter, priority);
+        }
+
         public Task<Command> SendCommandAsync(Command command, CancellationToken cancellationToken = new CancellationToken())
         {
             return Sender.SendCommandAsync(command, cancellationToken);

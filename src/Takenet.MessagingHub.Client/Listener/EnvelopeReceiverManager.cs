@@ -12,6 +12,7 @@ namespace Takenet.MessagingHub.Client.Listener
         private readonly IMessagingHubListener _listener;
         private readonly IList<ReceiverFactoryPredicate<Message>> _messageReceivers;
         private readonly IList<ReceiverFactoryPredicate<Notification>> _notificationReceivers;
+        private readonly IList<ReceiverFactoryPredicate<Command>> _commandReceivers;
 
         internal EnvelopeReceiverManager(IMessagingHubListener listener)
         {
@@ -22,7 +23,11 @@ namespace Takenet.MessagingHub.Client.Listener
             });
             _notificationReceivers = new List<ReceiverFactoryPredicate<Notification>>(new[]
             {
-                new ReceiverFactoryPredicate<Notification>(() => new BlackholeNotificationReceiver(), m => true, int.MaxValue)
+                new ReceiverFactoryPredicate<Notification>(() => new BlackholeReceiver(), m => true, int.MaxValue)
+            });
+            _commandReceivers = new List<ReceiverFactoryPredicate<Command>>(new[]
+            {
+                new ReceiverFactoryPredicate<Command>(() => new UnsupportedCommandReceiver(), c => true, int.MaxValue)
             });
         }
 
@@ -34,6 +39,11 @@ namespace Takenet.MessagingHub.Client.Listener
         /// <param name="priority"></param>
         public void AddMessageReceiver(Func<IMessageReceiver> receiverFactory, Predicate<Message> predicate, int priority) => 
             AddEnvelopeReceiver(_messageReceivers, receiverFactory, predicate, priority);
+
+
+        internal void AddCommandReceiver(Func<ICommandReceiver> receiverFactory, Predicate<Command> predicate, int priority) =>
+            AddEnvelopeReceiver(_commandReceivers, receiverFactory, predicate, priority);
+        
 
         /// <summary>
         /// Add a notification receiver listener to handle received notifications.
@@ -61,6 +71,12 @@ namespace Takenet.MessagingHub.Client.Listener
             {
                 return (IEnumerable<ReceiverFactoryPredicate<TEnvelope>>)
                     FilterReceivers(_notificationReceivers, envelope as Notification);
+            }
+
+            if(envelope is Command)
+            {
+                return (IEnumerable<ReceiverFactoryPredicate<TEnvelope>>)
+                    FilterReceivers(_commandReceivers, envelope as Command);
             }
 
             return Enumerable.Empty<ReceiverFactoryPredicate<TEnvelope>>();

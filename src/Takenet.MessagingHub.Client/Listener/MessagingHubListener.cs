@@ -21,22 +21,27 @@ namespace Takenet.MessagingHub.Client.Listener
         {
             _connection = connection;
             _sender = sender ?? new MessagingHubSender(connection);
-            EnvelopeRegistrar = new EnvelopeReceiverManager(this);
+            EnvelopeManager = new EnvelopeReceiverManager(this);
             _autoNotify = autoNotify;
         }
         
         public bool Listening { get; private set; }
 
-        internal EnvelopeReceiverManager EnvelopeRegistrar { get; }
+        internal EnvelopeReceiverManager EnvelopeManager { get; }
 
         public void AddMessageReceiver(IMessageReceiver messageReceiver, Predicate<Message> messageFilter, int priority = 0)
         {
-            EnvelopeRegistrar.AddMessageReceiver(() => messageReceiver, messageFilter, priority);
+            EnvelopeManager.AddMessageReceiver(() => messageReceiver, messageFilter, priority);
         }
 
         public void AddNotificationReceiver(INotificationReceiver notificationReceiver, Predicate<Notification> notificationFilter, int priority = 0)
         {
-            EnvelopeRegistrar.AddNotificationReceiver(() => notificationReceiver, notificationFilter, priority);
+            EnvelopeManager.AddNotificationReceiver(() => notificationReceiver, notificationFilter, priority);
+        }
+
+        public void AddCommandReceiver(ICommandReceiver commandReceiver, Predicate<Command> commandFilter, int priority = 0)
+        {
+            EnvelopeManager.AddCommandReceiver(() => commandReceiver, commandFilter, priority);
         }
 
         public Task StartAsync(CancellationToken cancellationToken = default(CancellationToken))
@@ -56,13 +61,14 @@ namespace Takenet.MessagingHub.Client.Listener
         private void StartEnvelopeListeners()
         {
             _cts = new CancellationTokenSource();
-            var messageHandler = new MessageReceivedHandler(_sender, _autoNotify, EnvelopeRegistrar, _cts);
-            var notificationHandler = new NotificationReceivedHandler(_sender, EnvelopeRegistrar, _cts);
-            
+            var messageHandler = new MessageReceivedHandler(_sender, _autoNotify, EnvelopeManager, _cts);
+            var notificationHandler = new NotificationReceivedHandler(_sender, EnvelopeManager, _cts);
+            var commandHandler = new CommandReceivedHandler(_sender, EnvelopeManager, _cts);
+
             _channelListener = new ChannelListener(
                 m => messageHandler.HandleAsync(m, _cts.Token),
                 n => notificationHandler.HandleAsync(n, _cts.Token),
-                c => TaskUtil.TrueCompletedTask);
+                c => commandHandler.HandleAsync(c, _cts.Token));
             _channelListener.Start(_connection.OnDemandClientChannel);
         }
 

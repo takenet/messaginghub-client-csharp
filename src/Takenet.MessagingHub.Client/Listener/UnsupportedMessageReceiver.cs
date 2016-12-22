@@ -9,18 +9,44 @@ namespace Takenet.MessagingHub.Client.Listener
     /// <summary>
     /// Message receiver that automatically respond to any message as an unsupported message
     /// </summary>
-    public class UnsupportedMessageReceiver : IMessageReceiver
+    public class UnsupportedMessageReceiver : UnsupportedEnvelopeReceiver<Message>
     {
-        public Task ReceiveAsync(Message message, CancellationToken cancellationToken = default(CancellationToken))
+        public UnsupportedMessageReceiver() : base(
+            new Reason
+            {
+                Code = ReasonCodes.MESSAGE_UNSUPPORTED_CONTENT_TYPE,
+                Description = "There's no processor available to handle the received message"
+            })
+        { }
+    }
+
+    public class UnsupportedCommandReceiver : UnsupportedEnvelopeReceiver<Command>
+    {
+        public UnsupportedCommandReceiver() : base(
+            new Reason
+            {
+                Code = ReasonCodes.COMMAND_RESOURCE_NOT_SUPPORTED,
+                Description = "There's no resource processor available to handle the received command"
+            })
+        { }
+    }
+
+    public abstract class UnsupportedEnvelopeReceiver<TEnvelope> : IEnvelopeReceiver<TEnvelope>
+        where TEnvelope : Envelope
+    {
+        private Reason _reason;
+
+        protected UnsupportedEnvelopeReceiver(Reason reason)
         {
-            if (!string.IsNullOrWhiteSpace(message.Id) || message.Id == Guid.Empty.ToString())
+            _reason = reason;
+        }
+
+        public virtual Task ReceiveAsync(TEnvelope enevelope, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (!string.IsNullOrWhiteSpace(enevelope.Id) || enevelope.Id == Guid.Empty.ToString())
             {
                 throw new LimeException(
-                    new Reason
-                    {
-                        Code = ReasonCodes.MESSAGE_UNSUPPORTED_CONTENT_TYPE,
-                        Description = "There's no processor available to handle the received message"
-                    });
+                    _reason);
             }
 
             return Task.CompletedTask;

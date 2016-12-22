@@ -35,6 +35,16 @@ namespace Takenet.MessagingHub.Client
         }
 
         /// <summary>
+        /// Add a command receiver that will accept all commands
+        /// </summary>
+        /// <param name="listener"></param>
+        /// <param name="commandReceiver"></param>
+        public static void AddCommandReceiver(this IMessagingHubListener listener, ICommandReceiver commandReceiver)
+        {
+            listener.AddCommandReceiver(commandReceiver, c => true);
+        }
+
+        /// <summary>
         /// Add a message receiver for messages that satisfy the given filter criteria
         /// </summary>
         /// <param name="listener">The listener to add the receivers to</param>
@@ -43,6 +53,17 @@ namespace Takenet.MessagingHub.Client
         public static void AddMessageReceiver(this IMessagingHubListener listener, IMessageReceiver messageReceiver, Predicate<Message> messageFilter)
         {
             listener.AddMessageReceiver(messageReceiver, messageFilter);
+        }
+
+        /// <summary>
+        /// Add a command receiver for commands that satisfy the given filter criteria
+        /// </summary>
+        /// <param name="listener"></param>
+        /// <param name="commandReceiver"></param>
+        /// <param name="commandFilter"></param>
+        public static void AddCommandReceiver(this IMessagingHubListener listener, ICommandReceiver commandReceiver, Predicate<Command> commandFilter)
+        {
+            listener.AddCommandReceiver(commandReceiver, commandFilter);
         }
 
         /// <summary>
@@ -66,7 +87,7 @@ namespace Takenet.MessagingHub.Client
         {
             listener.AddMessageReceiver(new LambdaMessageReceiver(onMessageReceived), m => forMimeType == null || Equals(m.Type, forMimeType));
         }
-
+        
         /// <summary>
         /// Add a notification receiver for the given event type
         /// </summary>
@@ -98,6 +119,17 @@ namespace Takenet.MessagingHub.Client
         public static void AddNotificationReceiver(this IMessagingHubListener listener, Func<Notification, CancellationToken, Task> onNotificationReceived, Predicate<Notification> notificationFilter)
         {
             listener.AddNotificationReceiver(new LambdaNotificationReceiver(onNotificationReceived), notificationFilter);
+        }
+
+        /// <summary>
+        /// Add a command receiver for commands that satisfy the given filter criteria
+        /// </summary>
+        /// <param name="listener"></param>
+        /// <param name="onCommandReceived"></param>
+        /// <param name="commandFilter"></param>
+        public static void AddCommandReceiver(this IMessagingHubListener listener, Func<Command, CancellationToken, Task> onCommandReceived, Predicate<Command> commandFilter)
+        {
+            listener.AddCommandReceiver(new LambdaCommandReceiver(onCommandReceived), commandFilter);
         }
     }
 }
