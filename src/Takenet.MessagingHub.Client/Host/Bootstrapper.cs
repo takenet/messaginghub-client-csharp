@@ -347,10 +347,10 @@ namespace Takenet.MessagingHub.Client.Host
 
                 Predicate<Command> predicate = c => true;
 
-                if (commandReceiver.CommandMethod.HasValue)
+                if (commandReceiver.Method.HasValue)
                 {
                     var currentPredicate = predicate;
-                    predicate = c => currentPredicate(c) && c.Method == commandReceiver.CommandMethod.Value;
+                    predicate = c => currentPredicate(c) && c.Method == commandReceiver.Method.Value;
                 }
 
                 if (commandReceiver.Uri != null)

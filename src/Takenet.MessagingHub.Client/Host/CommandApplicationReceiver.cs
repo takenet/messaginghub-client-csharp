@@ -9,7 +9,7 @@ namespace Takenet.MessagingHub.Client.Host
 {
     public class CommandApplicationReceiver : ApplicationReceiver
     {
-        public CommandMethod? CommandMethod { get; set; }
+        public CommandMethod? Method { get; set; }
 
         public string Uri { get; set; }
 

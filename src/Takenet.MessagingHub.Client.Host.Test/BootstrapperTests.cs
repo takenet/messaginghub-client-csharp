@@ -335,17 +335,17 @@ namespace Takenet.MessagingHub.Client.Host.Test
                     new CommandApplicationReceiver()
                     {
                         Type = typeof(TestCommandReceiver).Name,
-                        CommandMethod = CommandMethod.Get
+                        Method = CommandMethod.Get
                     },
                     new CommandApplicationReceiver()
                     {
                         Type = typeof(TestCommandReceiver).Name,
-                        CommandMethod = CommandMethod.Set
+                        Method = CommandMethod.Set
                     },
                     new CommandApplicationReceiver()
                     {
                         Type = typeof(TestCommandReceiver).Name,
-                        CommandMethod = CommandMethod.Subscribe
+                        Method = CommandMethod.Subscribe
                     }
                 },
                 HostName = Server.ListenerUri.Host
@@ -372,19 +372,19 @@ namespace Takenet.MessagingHub.Client.Host.Test
                     new CommandApplicationReceiver()
                     {
                         Type = typeof(TestCommandReceiver).Name,
-                        CommandMethod = CommandMethod.Get,
+                        Method = CommandMethod.Get,
                         ResourceUri = "/contacts"
                     },
                     new CommandApplicationReceiver()
                     {
                         Type = typeof(TestCommandReceiver).Name,
-                        CommandMethod = CommandMethod.Set,
+                        Method = CommandMethod.Set,
                         Uri = "lime://configuration/first"
                     },
                     new CommandApplicationReceiver()
                     {
                         Type = typeof(TestCommandReceiver).Name,
-                        CommandMethod = CommandMethod.Subscribe,
+                        Method = CommandMethod.Subscribe,
                         ResourceUri = "lime://configuration/second"
                     }
                 },
