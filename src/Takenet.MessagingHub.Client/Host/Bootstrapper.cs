@@ -353,9 +353,9 @@ namespace Takenet.MessagingHub.Client.Host
                     predicate = c => currentPredicate(c) && c.Method == commandReceiver.CommandMethod.Value;
                 }
 
-                if (commandReceiver.LimeUri != null)
+                if (commandReceiver.Uri != null)
                 {
-                    var limeUriRegex = new Regex(commandReceiver.LimeUri, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                    var limeUriRegex = new Regex(commandReceiver.Uri, RegexOptions.Compiled | RegexOptions.IgnoreCase);
                     var currentPredicate = predicate;
                     predicate = c => currentPredicate(c) && limeUriRegex.IsMatch(c.Uri.ToString());
                 }
@@ -365,6 +365,13 @@ namespace Takenet.MessagingHub.Client.Host
                     var resourceUriRegex = new Regex(commandReceiver.ResourceUri, RegexOptions.Compiled | RegexOptions.IgnoreCase);
                     var currentPredicate = predicate;
                     predicate = c => currentPredicate(c) && resourceUriRegex.IsMatch(c.GetResourceUri().ToString());
+                }
+
+                if (commandReceiver.MediaType != null)
+                {
+                    var currentPredicate = predicate;
+                    var mediaTypeRegex = new Regex(commandReceiver.MediaType, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                    predicate = c => currentPredicate(c) && mediaTypeRegex.IsMatch(c.Type.ToString());
                 }
 
                 client.AddCommandReceiver(receiver, predicate, commandReceiver.Priority);

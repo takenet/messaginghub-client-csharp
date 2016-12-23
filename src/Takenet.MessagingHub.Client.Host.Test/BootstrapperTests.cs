@@ -379,7 +379,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
                     {
                         Type = typeof(TestCommandReceiver).Name,
                         CommandMethod = CommandMethod.Set,
-                        LimeUri = "lime://configuration/first"
+                        Uri = "lime://configuration/first"
                     },
                     new CommandApplicationReceiver()
                     {

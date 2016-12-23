@@ -11,8 +11,10 @@ namespace Takenet.MessagingHub.Client.Host
     {
         public CommandMethod? CommandMethod { get; set; }
 
-        public string LimeUri { get; set; }
+        public string Uri { get; set; }
 
         public string ResourceUri { get; set; }
+       
+        public string MediaType { get; set; }
     }
 }
