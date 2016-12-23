@@ -322,6 +322,83 @@ namespace Takenet.MessagingHub.Client.Host.Test
         }
 
         [Test]
+        public async Task Create_With_CommandReceiverType_Should_Return_Instance()
+        {
+            // Arrange
+            var application = new Application()
+            {
+                Identifier = "testlogin",
+                AccessKey = "12345".ToBase64(),
+                CommandReceivers = new[]
+                {
+                    new CommandApplicationReceiver()
+                    {
+                        Type = typeof(TestCommandReceiver).Name,
+                        CommandMethod = CommandMethod.Get
+                    },
+                    new CommandApplicationReceiver()
+                    {
+                        Type = typeof(TestCommandReceiver).Name,
+                        CommandMethod = CommandMethod.Set
+                    },
+                    new CommandApplicationReceiver()
+                    {
+                        Type = typeof(TestCommandReceiver).Name,
+                        CommandMethod = CommandMethod.Subscribe
+                    }
+                },
+                HostName = Server.ListenerUri.Host
+            };
+
+            // Act
+            var actual = await Bootstrapper.StartAsync(application);
+
+            // Assert
+            actual.ShouldNotBeNull();
+            TestCommandReceiver.InstanceCount.ShouldBe(3);
+        }
+
+        [Test]
+        public async Task Create_With_CommandReceiverType_With_Settings_Should_Return_Instance()
+        {
+            // Arrange
+            var application = new Application()
+            {
+                Identifier = "testlogin",
+                AccessKey = "12345".ToBase64(),
+                CommandReceivers = new[]
+                {
+                    new CommandApplicationReceiver()
+                    {
+                        Type = typeof(TestCommandReceiver).Name,
+                        CommandMethod = CommandMethod.Get,
+                        ResourceUri = "/contacts"
+                    },
+                    new CommandApplicationReceiver()
+                    {
+                        Type = typeof(TestCommandReceiver).Name,
+                        CommandMethod = CommandMethod.Set,
+                        LimeUri = "lime://configuration/first"
+                    },
+                    new CommandApplicationReceiver()
+                    {
+                        Type = typeof(TestCommandReceiver).Name,
+                        CommandMethod = CommandMethod.Subscribe,
+                        ResourceUri = "lime://configuration/second"
+                    }
+                },
+                HostName = Server.ListenerUri.Host
+            };
+
+            // Act
+            var actual = await Bootstrapper.StartAsync(application);
+
+            // Assert
+            actual.ShouldNotBeNull();
+            TestCommandReceiver.InstanceCount.ShouldBe(3);
+        }
+
+        [Test]
         public async Task Create_With_CustomServiceProvider()
         {
             // Arrange
@@ -580,6 +657,23 @@ namespace Takenet.MessagingHub.Client.Host.Test
         }
 
         public Task ReceiveAsync(Notification envelope, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class TestCommandReceiver : ICommandReceiver
+    {
+        public static int InstanceCount;
+        public static IDictionary<string, object> Settings;
+
+        public TestCommandReceiver(IDictionary<string, object> settings)
+        {
+            InstanceCount++;
+            Settings = settings;
+        }
+
+        public Task ReceiveAsync(Command envelope, CancellationToken cancellationToken = default(CancellationToken))
         {
             throw new NotImplementedException();
         }

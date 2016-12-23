@@ -82,6 +82,7 @@
     <Compile Include="Host\Application.cs" />
     <Compile Include="Host\ApplicationReceiver.cs" />
     <Compile Include="Host\Bootstrapper.cs" />
+    <Compile Include="Host\CommandApplicationReceiver.cs" />
     <Compile Include="Host\DocumentDefinition.cs" />
     <Compile Include="Host\DomainManager.cs" />
     <Compile Include="Host\DomainManagerFactory.cs" />

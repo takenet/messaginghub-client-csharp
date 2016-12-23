@@ -92,7 +92,7 @@ namespace Takenet.MessagingHub.Client.Host
         public int SendTimeout { get; set; }
 
         /// <summary>
-        /// Gets or sets the receivers.
+        /// Gets or sets the messages receivers.
         /// </summary>
         /// <value>
         /// The receivers.
@@ -100,12 +100,17 @@ namespace Takenet.MessagingHub.Client.Host
         public MessageApplicationReceiver[] MessageReceivers { get; set; }
 
         /// <summary>
-        /// Gets or sets the receivers.
+        /// Gets or sets the notifications receivers.
         /// </summary>
         /// <value>
         /// The receivers.
         /// </value>
         public NotificationApplicationReceiver[] NotificationReceivers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the command receivers
+        /// </summary>
+        public CommandApplicationReceiver[] CommandReceivers { get; set; }
 
         /// <summary>
         /// Gets or sets the type for the startup .NET type. It must implement <see cref="IStartable"/> or <see cref="IFactory{IStartable}"/>.

@@ -190,9 +190,12 @@ namespace Takenet.MessagingHub.Client.Host
             // Now creates the receivers instances
             await AddMessageReceivers(application, serviceContainer, client, typeResolver);
             await AddNotificationReceivers(application, serviceContainer, client, typeResolver);
+            await AddCommandReceivers(application, serviceContainer, client, typeResolver);
 
             return client;
         }
+
+        
 
         public static void RegisterSettingsTypes(Application application, IServiceContainer serviceContainer, ITypeResolver typeResolver)
         {
@@ -330,6 +333,40 @@ namespace Takenet.MessagingHub.Client.Host
 
                     client.AddMessageReceiver(receiver, messagePredicate, applicationReceiver.Priority);
                 }
+            }
+        }
+
+        private static async Task AddCommandReceivers(Application application, IServiceContainer serviceContainer, IMessagingHubClient client, ITypeResolver typeResolver)
+        {
+            if(application.CommandReceivers == null || application.CommandReceivers.Length == 0)
+            {
+                return;
+            }
+
+            foreach (var commandReceiver in application.CommandReceivers)
+            {
+                var receiver = await CreateAsync<ICommandReceiver>(
+                           commandReceiver.Type, serviceContainer, commandReceiver.Settings, typeResolver)
+                           .ConfigureAwait(false);
+
+                Predicate<Command> predicate = c => true;
+
+                if (commandReceiver.CommandMethod.HasValue)
+                {
+                    predicate = c => predicate(c) && c.Method == commandReceiver.CommandMethod.Value;
+                }
+
+                if (commandReceiver.LimeUri != null)
+                {
+                    predicate = c => predicate(c) && c.Uri.Equals(LimeUri.Parse(commandReceiver.LimeUri));
+                }
+
+                if (commandReceiver.ResourceUri != null)
+                {
+                    predicate = c => predicate(c) && c.GetResourceUri().Equals(new Uri(commandReceiver.ResourceUri, UriKind.RelativeOrAbsolute));
+                }
+
+                client.AddCommandReceiver(receiver, predicate, commandReceiver.Priority);
             }
         }
 
