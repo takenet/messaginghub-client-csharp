@@ -34,6 +34,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             Server.Dispose();
             TestMessageReceiver.InstanceCount = 0;
             TestNotificationReceiver.InstanceCount = 0;
+            TestCommandReceiver.InstanceCount = 0;
         }
 
         [Test]

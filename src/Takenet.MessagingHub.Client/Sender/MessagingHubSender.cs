@@ -23,6 +23,14 @@ namespace Takenet.MessagingHub.Client.Sender
             return Connection.OnDemandClientChannel.ProcessCommandAsync(command, cancellationToken);
         }
 
+        public Task SendCommandResponseAsync(Command command, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (!Connection.IsConnected)
+                throw new InvalidOperationException("Client must be started before to proceed with this operation");
+
+            return Connection.OnDemandClientChannel.SendCommandAsync(command, cancellationToken);
+        }
+
         public Task SendMessageAsync(Message message, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!Connection.IsConnected)

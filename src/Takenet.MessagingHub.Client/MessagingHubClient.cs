@@ -82,6 +82,11 @@ namespace Takenet.MessagingHub.Client
             return Sender.SendCommandAsync(command, cancellationToken);
         }
 
+        public Task SendCommandResponseAsync(Command command, CancellationToken cancellationToken = new CancellationToken())
+        {
+            return Sender.SendCommandResponseAsync(command, cancellationToken);
+        }
+
         public async Task SendMessageAsync(Message message, CancellationToken cancellationToken = new CancellationToken())
         {
             await Sender.SendMessageAsync(message, cancellationToken);

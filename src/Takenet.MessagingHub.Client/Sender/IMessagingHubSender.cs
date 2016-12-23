@@ -18,6 +18,14 @@ namespace Takenet.MessagingHub.Client.Sender
         Task<Command> SendCommandAsync(Command command, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
+        /// Send a command response through the Messaging Hub
+        /// </summary>
+        /// <param name="command">Command to be sent</param>
+        /// <param name="cancellationToken">A cancellation token to allow the task to be canceled</param>
+        /// <returns>A task representing the sending operation. When completed, it will contain the command response</returns>
+        Task SendCommandResponseAsync(Command command, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
         /// Send a message through the Messaging Hub
         /// </summary>
         /// <param name="message">Message to be sent</param>
