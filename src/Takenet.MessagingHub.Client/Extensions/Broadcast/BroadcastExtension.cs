@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Network;
 using Takenet.MessagingHub.Client.Sender;
+using Takenet.Iris.Messaging.Resources;
 
 namespace Takenet.MessagingHub.Client.Extensions.Broadcast
 {
     public class BroadcastExtension : ExtensionBase, IBroadcastExtension
     {
         private static readonly Node DistributionListAddress = Node.Parse($"postmaster@broadcast.{Constants.DEFAULT_DOMAIN}");
-        private static readonly MediaType DistributionListMediaType = MediaType.Parse("application/vnd.iris.distribution-list+json");
         
         /// <summary>
         /// Initializes a new instance of the <see cref="BroadcastExtension"/> class.
@@ -33,7 +33,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Broadcast
                 To = DistributionListAddress,
                 Method = CommandMethod.Set,
                 Uri = new LimeUri("/lists"),
-                Resource = new JsonDocument(DistributionListMediaType)
+                Resource = new JsonDocument(DistributionList.MediaType)
                 {
                     {"identity", listIdentity.ToString()}
                 }

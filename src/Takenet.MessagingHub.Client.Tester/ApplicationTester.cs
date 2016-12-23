@@ -7,8 +7,8 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
-using Lime.Protocol.Serialization;
 using Newtonsoft.Json;
+using Takenet.MessagingHub.Client;
 using Takenet.MessagingHub.Client.Extensions.Delegation;
 using Takenet.MessagingHub.Client.Host;
 using Takenet.MessagingHub.Client.Listener;
@@ -162,10 +162,7 @@ namespace Takenet.MessagingHub.Client.Tester
         [Obsolete("Must use the same method exposed by the TypeUtil")]
         private static Type ParseTypeName(string typeName)
         {
-            return TypeUtil
-                .GetAllLoadedTypes()
-                .FirstOrDefault(t => t.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase)) ??
-                       Type.GetType(typeName, true, true);
+            return TypeResolver.Instance.Resolve(typeName);
         }
 
         private void DiscardReceivedMessages()

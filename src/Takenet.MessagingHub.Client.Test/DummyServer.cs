@@ -9,6 +9,8 @@ using Lime.Protocol.Server;
 using Lime.Protocol.Util;
 using Lime.Transport.Tcp;
 using Takenet.MessagingHub.Client.Listener;
+using IStartable = Takenet.MessagingHub.Client.Listener.IStartable;
+using IStoppable = Takenet.MessagingHub.Client.Listener.IStoppable;
 
 namespace Takenet.MessagingHub.Client.Test
 {

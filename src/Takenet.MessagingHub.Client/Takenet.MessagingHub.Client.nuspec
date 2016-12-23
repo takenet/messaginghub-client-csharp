@@ -12,5 +12,5 @@
     <description>The C# SDK for the Messaging Hub</description>
     <copyright>Copyright ©  2015 Curupira S/A</copyright>
     <tags>lime messaginghub</tags>
-  </metadata>
+</metadata>
 </package>

@@ -113,7 +113,7 @@ namespace Takenet.MessagingHub.Client.Textc
                                 var methodName = commandSetting.Method;
                                 var assembly = typeof(TextcMessageReceiverBuilder).Assembly;
                                 var path = new FileInfo(assembly.Location).DirectoryName;
-                                Lime.Protocol.Serialization.TypeUtil.LoadAssembliesAndReferences(path, assemblyFilter: Lime.Protocol.Serialization.TypeUtil.IgnoreSystemAndMicrosoftAssembliesFilter,
+                                ReferencesUtil.LoadAssembliesAndReferences(path, assemblyFilter: ReferencesUtil.IgnoreSystemAndMicrosoftAssembliesFilter,
                                     ignoreExceptionLoadingReferencedAssembly: true);
                                 var processorType = TypeResolver.Instance.Resolve(processorTypeName);
                                 object processor;

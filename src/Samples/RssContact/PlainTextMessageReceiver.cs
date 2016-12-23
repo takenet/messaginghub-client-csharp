@@ -8,27 +8,32 @@ using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
 using Takenet.MessagingHub.Client.Extensions.EventTracker;
 using static RssContact.InteractionEvents;
+using RssContact;
+using Takenet.Iris.Messaging.Contents;
+using Takenet.MessagingHub.Client.Extensions.AttendanceForwarding;
 
 namespace RssContact
 {
     public class PlainTextMessageReceiver : IMessageReceiver
     {
+        private const string _operator = "5531988356247";
         private readonly IEventTrackExtension _eventTracker;
         private readonly IMessagingHubSender _sender;
+        private readonly IAttendanceExtension _attendance;
 
-        public PlainTextMessageReceiver(IMessagingHubSender sender, IEventTrackExtension eventTracker)
+        public PlainTextMessageReceiver(
+            IMessagingHubSender sender, 
+            IEventTrackExtension eventTracker,
+            IAttendanceExtension attendanceExtension)
         {
             _sender = sender;
             _eventTracker = eventTracker;
+            _attendance = attendanceExtension;
         }
 
         public async Task ReceiveAsync(Message message, CancellationToken cancellationToken)
         {
             Trace.WriteLine($"From: {message.From} \tContent: {message.Content}");
-            //if (true)
-            //{
-            //    _sender.SendMessageAsync(message.CreateForwardingTo("5531988356247"))
-            //}
 
             await _eventTracker.AddAsync(MessageReceived.Category, MessageReceived.Action, cancellationToken);
             try
@@ -36,7 +41,8 @@ namespace RssContact
                 Uri feedUri;
                 if (!Uri.TryCreate(message.Content.ToString(), UriKind.Absolute, out feedUri))
                 {
-                    await SendMessageAsync("URL inválida", message.From, cancellationToken);
+                    await _attendance.ForwardMessageToAttendantAsync(message, _operator, cancellationToken);
+                    //await SendMessageAsync("URL inválida", message.From, cancellationToken);
                     await _eventTracker.AddAsync(MessageReceivedFailed.Category, MessageReceivedFailed.Action, cancellationToken);
                     return;
                 }

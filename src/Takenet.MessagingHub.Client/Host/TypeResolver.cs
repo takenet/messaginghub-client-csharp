@@ -14,7 +14,7 @@ namespace Takenet.MessagingHub.Client.Host
         public static TypeResolver Instance => new TypeResolver();
 
         public Type Resolve(string typeName) => 
-            TypeUtil
+            ReferencesUtil
                 .GetAllLoadedTypes()
                 .FirstOrDefault(t => t.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase)) ?? 
             Type.GetType(typeName, true, true);

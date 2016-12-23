@@ -1,4 +1,5 @@
-﻿using Takenet.MessagingHub.Client.Extensions.Broadcast;
+﻿using Takenet.MessagingHub.Client.Extensions.AttendanceForwarding;
+using Takenet.MessagingHub.Client.Extensions.Broadcast;
 using Takenet.MessagingHub.Client.Extensions.Bucket;
 using Takenet.MessagingHub.Client.Extensions.Contacts;
 using Takenet.MessagingHub.Client.Extensions.Delegation;
@@ -6,6 +7,7 @@ using Takenet.MessagingHub.Client.Extensions.Directory;
 using Takenet.MessagingHub.Client.Extensions.EventTracker;
 using Takenet.MessagingHub.Client.Extensions.Scheduler;
 using Takenet.MessagingHub.Client.Extensions.Session;
+using Takenet.MessagingHub.Client.Extensions.Threads;
 using Takenet.MessagingHub.Client.Host;
 using Takenet.MessagingHub.Client.Sender;
 
@@ -15,6 +17,9 @@ namespace Takenet.MessagingHub.Client.Extensions
     {
         internal static IServiceContainer RegisterExtensions(this IServiceContainer serviceContainer)
         {
+            Lime.Messaging.Registrator.RegisterDocuments();
+            Iris.Messaging.Registrator.RegisterDocuments();
+
             var sender = serviceContainer.GetService<IMessagingHubSender>();
             serviceContainer.RegisterService(typeof(IBroadcastExtension), new BroadcastExtension(sender));
             serviceContainer.RegisterService(typeof(IDelegationExtension), new DelegationExtension(sender));
@@ -25,6 +30,8 @@ namespace Takenet.MessagingHub.Client.Extensions
             serviceContainer.RegisterService(typeof(IEventTrackExtension), new EventTrackExtension(sender));
             serviceContainer.RegisterService(typeof(IBucketExtension), bucketExtension);
             serviceContainer.RegisterService(typeof(ISessionManager), new SessionManager(bucketExtension));
+            serviceContainer.RegisterService(typeof(IAttendanceExtension), new AttendanceExtension(sender));
+            serviceContainer.RegisterService(typeof(IThreadExtension), new ThreadExtension(sender));
 
             return serviceContainer;
         }

@@ -1,10 +1,17 @@
 ﻿{
-  "identifier": "bingimagesearch",
-  "accessKey": "eXY5eDhkaWs2OHNwemthaWpPbEI=",
+  "identifier": "",
+  "accessKey": "",
   "messageReceivers": [
     {
-      "type": "PlainTextMessageReceiver",
-      "mediaType": "text/plain"
+      "mediaType": "application/vnd.omni.attendance\\+json",
+      "type": "AttendanceReplyMessageReceiver",
+      "settings": {
+        "attendantIdentity": "5531988356247"
+      }
+    },
+    {
+      "mediaType": "text/plain",
+      "type": "PlainTextMessageReceiver"
     }
   ],
   "startupType": "Startup",
