@@ -14,6 +14,8 @@ namespace Takenet.MessagingHub.Client.Listener
 
         protected override async Task CallReceiversAsync(Command command, CancellationToken cancellationToken)
         {
+            if (command.Status != CommandStatus.Pending) return;
+
             try
             {
                 await base.CallReceiversAsync(command, cancellationToken);
