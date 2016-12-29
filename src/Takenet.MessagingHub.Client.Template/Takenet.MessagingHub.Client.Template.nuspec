@@ -13,6 +13,7 @@
     <tags>messagingHub</tags>
     <dependencies>
       <dependency id="Takenet.MessagingHub.Client.Host" version="$version$" />
+      <dependency id="Takenet.MessagingHub.Client" version="$version$" />
     </dependencies>
   </metadata>
   <files>
