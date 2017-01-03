@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Takenet.MessagingHub.Client.Host;
@@ -21,6 +22,7 @@ namespace Takenet.MessagingHub.Client.Textc
 
         public async Task<IMessageReceiver> CreateAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings)
         {
+            string outState = null;
             var builder = new TextcMessageReceiverBuilder(serviceProvider.GetService<Sender.IMessagingHubSender>());
             if (settings != null)
             {
@@ -59,9 +61,11 @@ namespace Takenet.MessagingHub.Client.Textc
                     builder = await SetupTextPreprocessorsAsync(
                         serviceProvider, settings, textcMessageReceiverSettings, builder).ConfigureAwait(false);
                 }
+
+                outState = textcMessageReceiverSettings.OutState;
             }
 
-            return builder.Build();
+            return new SetStateIfDefinedMessageReceiver(builder.Build(), outState);
         }
 
         private static readonly Regex ReturnVariablesRegex = new Regex("{[a-zA-Z0-9]+}", RegexOptions.Compiled);
@@ -185,6 +189,27 @@ namespace Takenet.MessagingHub.Client.Textc
                 builder = builder.AddTextPreprocessor(textPreprocessor);
             }
             return builder;
+        }
+
+        private class SetStateIfDefinedMessageReceiver : IMessageReceiver
+        {
+            private readonly IMessageReceiver _receiver;
+            private readonly string _state;
+
+            public SetStateIfDefinedMessageReceiver(IMessageReceiver receiver, string state)
+            {
+                _receiver = receiver;
+                _state = state;
+            }
+
+            public async Task ReceiveAsync(Message envelope, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                await _receiver.ReceiveAsync(envelope, cancellationToken).ConfigureAwait(false);
+                if (_state != null)
+                {
+                    StateManager.Instance.SetState(envelope.From.ToIdentity(), _state);
+                }
+            }
         }
     }
 }

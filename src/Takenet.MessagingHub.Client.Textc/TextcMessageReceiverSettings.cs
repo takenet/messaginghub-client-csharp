@@ -27,6 +27,8 @@ namespace Takenet.MessagingHub.Client.Textc
 
         public string ExceptionHandlerType { get; set; }
 
+        public string OutState { get; set; }
+
         public string[] PreProcessorTypes { get; set; }
 
         public static TextcMessageReceiverSettings ParseFromSettings(IDictionary<string, object> settings)
