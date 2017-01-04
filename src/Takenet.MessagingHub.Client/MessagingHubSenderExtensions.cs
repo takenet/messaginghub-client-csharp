@@ -30,7 +30,7 @@ namespace Takenet.MessagingHub.Client
         /// <param name="to">The destination of the message</param>
         /// <param name="cancellationToken">A cancellation token to allow the task to be canceled</param>
         public static Task SendMessageAsync(this IMessagingHubSender sender, string content, Node to, CancellationToken cancellationToken = default(CancellationToken))
-            => sender.SendMessageAsync(CreatePlainTextContent(content), to, cancellationToken);
+            => sender.SendMessageAsync(CreatePlainTextContent(content) as Document, to, cancellationToken);
 
         /// <summary>
         /// Send a message through the Messaging Hub
