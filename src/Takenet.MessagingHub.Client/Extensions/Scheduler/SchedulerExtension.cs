@@ -44,5 +44,15 @@ namespace Takenet.MessagingHub.Client.Extensions.Scheduler
                 cancellationToken);
         }
 
+        public Task CancelScheduledMessageAsync(string messageId, CancellationToken cancellationToken = new CancellationToken())
+        {
+            if (messageId == null) throw new ArgumentNullException(nameof(messageId));
+
+            var scheduledMessage = $"{SCHEDULE_URI}/{messageId}";
+
+            return ProcessCommandAsync<Schedule>(
+                CreateDeleteCommandRequest(scheduledMessage, SchedulerAddress),
+                cancellationToken);
+        }
     }
 }

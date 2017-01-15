@@ -30,5 +30,13 @@ namespace Takenet.MessagingHub.Client.Extensions.Scheduler
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task<Schedule> GetScheduledMessageAsync(string messageId, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Cancels a scheduled message.
+        /// </summary>
+        /// <param name="messageId">Id of the scheduled message</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task CancelScheduledMessageAsync(string messageId, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
