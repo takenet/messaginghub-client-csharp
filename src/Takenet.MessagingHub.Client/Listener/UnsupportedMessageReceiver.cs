@@ -19,37 +19,4 @@ namespace Takenet.MessagingHub.Client.Listener
             })
         { }
     }
-
-    public class UnsupportedCommandReceiver : UnsupportedEnvelopeReceiver<Command>
-    {
-        public UnsupportedCommandReceiver() : base(
-            new Reason
-            {
-                Code = ReasonCodes.COMMAND_RESOURCE_NOT_SUPPORTED,
-                Description = "There's no resource processor available to handle the received command"
-            })
-        { }
-    }
-
-    public abstract class UnsupportedEnvelopeReceiver<TEnvelope> : IEnvelopeReceiver<TEnvelope>
-        where TEnvelope : Envelope
-    {
-        private Reason _reason;
-
-        protected UnsupportedEnvelopeReceiver(Reason reason)
-        {
-            _reason = reason;
-        }
-
-        public virtual Task ReceiveAsync(TEnvelope enevelope, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (!string.IsNullOrWhiteSpace(enevelope.Id) || enevelope.Id == Guid.Empty.ToString())
-            {
-                throw new LimeException(
-                    _reason);
-            }
-
-            return Task.CompletedTask;
-        }
-    }
 }

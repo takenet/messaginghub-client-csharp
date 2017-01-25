@@ -12,7 +12,7 @@ namespace Takenet.MessagingHub.Client.Listener
         where TEnvelope : Envelope
     {
         /// <summary>
-        /// Receives an envelope
+        /// Receives an envelope.
         /// </summary>
         /// <param name="envelope">Envelope type</param>
         /// <param name="cancellationToken">A cancellation token to allow the task to be canceled</param>

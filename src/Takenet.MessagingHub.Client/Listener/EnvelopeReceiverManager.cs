@@ -23,7 +23,7 @@ namespace Takenet.MessagingHub.Client.Listener
             });
             _notificationReceivers = new List<ReceiverFactoryPredicate<Notification>>(new[]
             {
-                new ReceiverFactoryPredicate<Notification>(() => new BlackholeReceiver(), m => true, int.MaxValue)
+                new ReceiverFactoryPredicate<Notification>(() => new BlackholeEnvelopeReceiver(), m => true, int.MaxValue)
             });
             _commandReceivers = new List<ReceiverFactoryPredicate<Command>>(new[]
             {
