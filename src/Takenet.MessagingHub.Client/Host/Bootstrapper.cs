@@ -35,7 +35,12 @@ namespace Takenet.MessagingHub.Client.Host
         /// <exception cref="ArgumentException">At least an access key or password must be defined</exception>
         /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="ArgumentException">At least an access key or password must be defined</exception>
-        public static async Task<IStoppable> StartAsync(Application application = null, bool loadAssembliesFromWorkingDirectory = true, string path = ".", MessagingHubClientBuilder builder = null, ITypeResolver typeResolver = null)
+        public static async Task<IStoppable> StartAsync(
+            Application application = null, 
+            bool loadAssembliesFromWorkingDirectory = true, 
+            string path = ".", 
+            MessagingHubClientBuilder builder = null, 
+            ITypeResolver typeResolver = null)
         {
             if (application == null)
             {
@@ -90,11 +95,7 @@ namespace Takenet.MessagingHub.Client.Host
 
             var localServiceProvider = BuildServiceProvider(application, typeResolver);
 
-            localServiceProvider.RegisterService(typeof(IServiceProvider), localServiceProvider);
-            localServiceProvider.RegisterService(typeof(IServiceContainer), localServiceProvider);
             localServiceProvider.RegisterService(typeof(MessagingHubClientBuilder), builder);
-            localServiceProvider.RegisterService(typeof(Application), application);
-            RegisterSettingsContainer(application, localServiceProvider, typeResolver);
 
             var client = await BuildMessagingHubClientAsync(application, builder.Build, localServiceProvider, typeResolver);
 
@@ -174,14 +175,21 @@ namespace Takenet.MessagingHub.Client.Host
             Application application,
             Func<IMessagingHubClient> builder,
             IServiceContainer serviceContainer,
-            ITypeResolver typeResolver)
+            ITypeResolver typeResolver,
+            Action<IServiceContainer> serviceOverrides = null)
         {
+            RegisterSettingsContainer(application, serviceContainer, typeResolver);
             RegisterSettingsTypes(application, serviceContainer, typeResolver);
+
+            serviceContainer.RegisterService(typeof(IServiceProvider), serviceContainer);
+            serviceContainer.RegisterService(typeof(IServiceContainer), serviceContainer);
+            serviceContainer.RegisterService(typeof(Application), application);
+            serviceContainer.RegisterService(typeof(IStateManager), StateManager.Instance);
+            serviceContainer.RegisterExtensions();
 
             var client = builder();
             serviceContainer.RegisterService(typeof(IMessagingHubSender), client);
-            serviceContainer.RegisterService(typeof(IStateManager), StateManager.Instance);
-            serviceContainer.RegisterExtensions();
+            serviceOverrides?.Invoke(serviceContainer);
 
             // Now creates the receivers instances
             await AddMessageReceivers(application, serviceContainer, client, typeResolver);
