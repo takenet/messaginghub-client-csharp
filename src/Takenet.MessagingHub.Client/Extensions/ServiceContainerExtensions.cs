@@ -1,4 +1,5 @@
-﻿using Takenet.MessagingHub.Client.Extensions.AttendanceForwarding;
+﻿using System;
+using Takenet.MessagingHub.Client.Extensions.AttendanceForwarding;
 using Takenet.MessagingHub.Client.Extensions.Broadcast;
 using Takenet.MessagingHub.Client.Extensions.Bucket;
 using Takenet.MessagingHub.Client.Extensions.Contacts;
@@ -20,18 +21,18 @@ namespace Takenet.MessagingHub.Client.Extensions
             Lime.Messaging.Registrator.RegisterDocuments();
             Iris.Messaging.Registrator.RegisterDocuments();
 
-            var sender = serviceContainer.GetService<IMessagingHubSender>();
-            serviceContainer.RegisterService(typeof(IBroadcastExtension), new BroadcastExtension(sender));
-            serviceContainer.RegisterService(typeof(IDelegationExtension), new DelegationExtension(sender));
-            serviceContainer.RegisterService(typeof(IDirectoryExtension), new DirectoryExtension(sender));
-            serviceContainer.RegisterService(typeof(IContactExtension), new ContactExtension(sender));
-            var bucketExtension = new BucketExtension(sender);
-            serviceContainer.RegisterService(typeof(ISchedulerExtension), new SchedulerExtension(sender));
-            serviceContainer.RegisterService(typeof(IEventTrackExtension), new EventTrackExtension(sender));
-            serviceContainer.RegisterService(typeof(IBucketExtension), bucketExtension);
-            serviceContainer.RegisterService(typeof(ISessionManager), new SessionManager(bucketExtension));
-            serviceContainer.RegisterService(typeof(IAttendanceExtension), new AttendanceExtension(sender));
-            serviceContainer.RegisterService(typeof(IThreadExtension), new ThreadExtension(sender));
+            Func<IMessagingHubSender> senderFactory = () => serviceContainer.GetService<IMessagingHubSender>();
+            serviceContainer.RegisterService(typeof(IBroadcastExtension), () => new BroadcastExtension(senderFactory()));
+            serviceContainer.RegisterService(typeof(IDelegationExtension), () => new DelegationExtension(senderFactory()));
+            serviceContainer.RegisterService(typeof(IDirectoryExtension), () => new DirectoryExtension(senderFactory()));
+            serviceContainer.RegisterService(typeof(IContactExtension), () => new ContactExtension(senderFactory()));
+            Func<IBucketExtension> bucketExtensionFactory = () => new BucketExtension(senderFactory());
+            serviceContainer.RegisterService(typeof(ISchedulerExtension), () => new SchedulerExtension(senderFactory()));
+            serviceContainer.RegisterService(typeof(IEventTrackExtension), () => new EventTrackExtension(senderFactory()));
+            serviceContainer.RegisterService(typeof(IBucketExtension), bucketExtensionFactory);
+            serviceContainer.RegisterService(typeof(ISessionManager), () => new SessionManager(bucketExtensionFactory()));
+            serviceContainer.RegisterService(typeof(IAttendanceExtension), () => new AttendanceExtension(senderFactory()));
+            serviceContainer.RegisterService(typeof(IThreadExtension), () => new ThreadExtension(senderFactory()));
 
             return serviceContainer;
         }
