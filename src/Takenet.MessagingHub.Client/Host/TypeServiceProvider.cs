@@ -24,7 +24,7 @@ namespace Takenet.MessagingHub.Client.Host
         /// <param name="serviceType">Type of the service.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public object GetService(Type serviceType)
+        public virtual object GetService(Type serviceType)
         {
             if (serviceType == null) throw new ArgumentNullException(nameof(serviceType));
             object result;
@@ -47,7 +47,7 @@ namespace Takenet.MessagingHub.Client.Host
         /// <param name="instance">The instance.</param>
         /// <exception cref="System.ArgumentNullException">
         /// </exception>
-        public void RegisterService(Type serviceType, object instance)
+        public virtual void RegisterService(Type serviceType, object instance)
         {
             if (serviceType == null) throw new ArgumentNullException(nameof(serviceType));
             if (instance == null) throw new ArgumentNullException(nameof(instance));            
@@ -55,18 +55,12 @@ namespace Takenet.MessagingHub.Client.Host
             (SecondaryServiceProvider as IServiceContainer)?.RegisterService(serviceType, instance);
         }
 
-        public void RegisterService(Type serviceType, Func<object> instanceFactory)
+        public virtual void RegisterService(Type serviceType, Func<object> instanceFactory)
         {
             if (serviceType == null) throw new ArgumentNullException(nameof(serviceType));
             if (instanceFactory == null) throw new ArgumentNullException(nameof(instanceFactory));
             TypeDictionary.Add(serviceType, instanceFactory);
             (SecondaryServiceProvider as IServiceContainer)?.RegisterService(serviceType, instanceFactory);
         }
-
-        public void RegisterExtensions()
-        {
-            throw new NotImplementedException();
-        }
-
     }
 }
