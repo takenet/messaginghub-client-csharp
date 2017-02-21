@@ -86,6 +86,7 @@
     <Compile Include="Extensions\Bucket\IBucketExtension.cs" />
     <Compile Include="Extensions\Delegation\DelegationExtension.cs" />
     <Compile Include="Extensions\Delegation\IDelegationExtension.cs" />
+    <Compile Include="Extensions\Registrator.cs" />
     <Compile Include="Extensions\Scheduler\ISchedulerExtension.cs" />
     <Compile Include="Extensions\Scheduler\SchedulerExtension.cs" />
     <Compile Include="Extensions\ServiceContainerExtensions.cs" />

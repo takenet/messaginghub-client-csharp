@@ -20,6 +20,7 @@ namespace Takenet.MessagingHub.Client.Extensions
         {
             Lime.Messaging.Registrator.RegisterDocuments();
             Iris.Messaging.Registrator.RegisterDocuments();
+            Registrator.RegisterDocuments();
 
             Func<IMessagingHubSender> senderFactory = () => serviceContainer.GetService<IMessagingHubSender>();
             serviceContainer.RegisterService(typeof(IBroadcastExtension), () => new BroadcastExtension(senderFactory()));
