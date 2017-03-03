@@ -11,5 +11,7 @@ namespace Takenet.MessagingHub.Client
         public const int DEFAULT_PORT = 55321;
 
         public const string POSTMASTER = "postmaster";
+
+        public const string DEFAULT_STATE = "default";
     }
 }

@@ -8,6 +8,7 @@ namespace Takenet.MessagingHub.Client.Extensions
         public static void RegisterDocuments()
         {
             TypeUtil.RegisterDocument<NavigationSession>();
+            TypeUtil.RegisterDocument<StateDocument>();
         }
     }
 }

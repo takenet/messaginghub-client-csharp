@@ -29,17 +29,17 @@ namespace Takenet.MessagingHub.Client.Listener
 
         internal EnvelopeReceiverManager EnvelopeManager { get; }
 
-        public void AddMessageReceiver(IMessageReceiver messageReceiver, Predicate<Message> messageFilter, int priority = 0)
+        public void AddMessageReceiver(IMessageReceiver messageReceiver, Func<Message, Task<bool>> messageFilter, int priority = 0)
         {
             EnvelopeManager.AddMessageReceiver(() => messageReceiver, messageFilter, priority);
         }
 
-        public void AddNotificationReceiver(INotificationReceiver notificationReceiver, Predicate<Notification> notificationFilter, int priority = 0)
+        public void AddNotificationReceiver(INotificationReceiver notificationReceiver, Func<Notification, Task<bool>> notificationFilter, int priority = 0)
         {
             EnvelopeManager.AddNotificationReceiver(() => notificationReceiver, notificationFilter, priority);
         }
 
-        public void AddCommandReceiver(ICommandReceiver commandReceiver, Predicate<Command> commandFilter, int priority = 0)
+        public void AddCommandReceiver(ICommandReceiver commandReceiver, Func<Command, Task<bool>> commandFilter, int priority = 0)
         {
             EnvelopeManager.AddCommandReceiver(() => commandReceiver, commandFilter, priority);
         }
