@@ -13,7 +13,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Threads
         /// Returns all threads, with latest message from each one.
         /// </summary>
         /// <param name="cancellationToken"></param>
-        /// <returns>Collection of <see cref="Takenet.Iris.Messaging.Resources.Thread"/>, on decrescenting order of date</returns>
+        /// <returns>Collection of <see cref="Takenet.Iris.Messaging.Resources.Thread"/>, on descending order of date</returns>
         Task<DocumentCollection> GetThreadsAsync(CancellationToken cancellationToken);
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Threads
         /// </summary>
         /// <param name="identity">Contact's identity to get message history</param>
         /// <param name="cancellationToken"></param>
-        /// <returns>Collection of <see cref="Takenet.Iris.Messaging.Resources.ThreadMessage"/>, on decrescenting order of date</returns>
+        /// <returns>Collection of <see cref="Takenet.Iris.Messaging.Resources.ThreadMessage"/>, on descending order of date</returns>
         /// 
         Task<DocumentCollection> GetThreadAsync(Identity identity, CancellationToken cancellationToken = default(CancellationToken));
 
@@ -31,7 +31,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Threads
         /// <param name="identity">Contact's identity to get message history</param>
         /// <param name="take">Max number of messages to retrieve</param>
         /// <param name="cancellationToken"></param>
-        /// <returns>Collection of <see cref="Takenet.Iris.Messaging.Resources.ThreadMessage"/>, on decrescenting order of date</returns>
+        /// <returns>Collection of <see cref="Takenet.Iris.Messaging.Resources.ThreadMessage"/>, on descending order of date</returns>
         Task<DocumentCollection> GetThreadAsync(Identity identity, int take, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

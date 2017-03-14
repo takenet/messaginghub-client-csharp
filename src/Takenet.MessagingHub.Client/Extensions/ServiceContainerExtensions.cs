@@ -6,6 +6,7 @@ using Takenet.MessagingHub.Client.Extensions.Contacts;
 using Takenet.MessagingHub.Client.Extensions.Delegation;
 using Takenet.MessagingHub.Client.Extensions.Directory;
 using Takenet.MessagingHub.Client.Extensions.EventTracker;
+using Takenet.MessagingHub.Client.Extensions.Profile;
 using Takenet.MessagingHub.Client.Extensions.Scheduler;
 using Takenet.MessagingHub.Client.Extensions.Session;
 using Takenet.MessagingHub.Client.Extensions.Threads;
@@ -30,6 +31,7 @@ namespace Takenet.MessagingHub.Client.Extensions
             Func<IBucketExtension> bucketExtensionFactory = () => new BucketExtension(senderFactory());
             serviceContainer.RegisterService(typeof(ISchedulerExtension), () => new SchedulerExtension(senderFactory()));
             serviceContainer.RegisterService(typeof(IEventTrackExtension), () => new EventTrackExtension(senderFactory()));
+            serviceContainer.RegisterService(typeof(IProfileExtension), () => new ProfileExtension(senderFactory()));
             serviceContainer.RegisterService(typeof(IBucketExtension), bucketExtensionFactory);
             serviceContainer.RegisterService(typeof(ISessionManager), () => new SessionManager(bucketExtensionFactory()));
             serviceContainer.RegisterService(typeof(IAttendanceExtension), () => new AttendanceExtension(senderFactory()));

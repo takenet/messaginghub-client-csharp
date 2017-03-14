@@ -22,7 +22,7 @@ namespace Takenet.MessagingHub.Client.Extensions
                 .SendCommandAsync(requestCommand, cancellationToken)
                 .ConfigureAwait(false);
 
-            EnsuseSuccess(responseCommand);
+            EnsureSuccess(responseCommand);
         }
 
         protected async Task<T> ProcessCommandAsync<T>(Command requestCommand, CancellationToken cancellationToken) where T : Document
@@ -33,7 +33,7 @@ namespace Takenet.MessagingHub.Client.Extensions
                 .SendCommandAsync(requestCommand, cancellationToken)
                 .ConfigureAwait(false);
 
-            EnsuseSuccess(responseCommand);
+            EnsureSuccess(responseCommand);
 
             return responseCommand.Resource as T;
         }
@@ -63,7 +63,7 @@ namespace Takenet.MessagingHub.Client.Extensions
                 Uri = new LimeUri(uriPath)
             };
 
-        private static void EnsuseSuccess(Command responseCommand)
+        protected virtual void EnsureSuccess(Command responseCommand)
         {
             if (responseCommand.Status != CommandStatus.Success)
             {
