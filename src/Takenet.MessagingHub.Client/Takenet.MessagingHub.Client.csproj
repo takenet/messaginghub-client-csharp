@@ -124,6 +124,7 @@
     <Compile Include="Listener\DocumentMessageReceiverBase.cs" />
     <Compile Include="Listener\HandleExceptionMessageReceiver.cs" />
     <Compile Include="Listener\ICommandReceiver.cs" />
+    <Compile Include="Listener\InputMessageReceiver.cs" />
     <Compile Include="Listener\LambdaCommandReceiver.cs" />
     <Compile Include="Listener\MessageReceivedHandler.cs" />
     <Compile Include="Listener\NotificationReceivedHandler.cs" />
