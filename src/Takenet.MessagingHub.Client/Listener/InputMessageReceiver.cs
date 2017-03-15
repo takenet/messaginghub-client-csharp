@@ -12,40 +12,54 @@ using Takenet.MessagingHub.Client.Extensions.Session;
 using System.Text.RegularExpressions;
 using Lime.Protocol.Serialization;
 using System.Globalization;
+using System.Runtime.Serialization;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
+    /// <summary>
+    /// Defines a receiver for getting input data with validation from user.
+    /// The data is stored in the user session.
+    /// </summary>
     public class InputMessageReceiver : IMessageReceiver
     {
-        private const string INPUT_VALIDATION_KEY = "InputValidation";
+        private const string INPUT_SETTINGS_KEY = "InputSettings";
 
         private readonly IMessagingHubSender _sender;
         private readonly ISessionManager _sessionManager;
+        private readonly IStateManager _stateManager;
         private readonly InputSettings _settings;
         private readonly IDocumentSerializer _documentSerializer;
-        
-        public InputMessageReceiver(IMessagingHubSender sender, ISessionManager sessionManager, IDictionary<string, object> settings)
+
+
+        public InputMessageReceiver(
+            IMessagingHubSender sender,
+            ISessionManager sessionManager,
+            IStateManager stateManager,
+            IDictionary<string, object> settings)
         {
             _sender = sender;
             _sessionManager = sessionManager;
             _settings = InputSettings.Parse(settings);
             _settings.Validate();
             _documentSerializer = new DocumentSerializer();
+            _stateManager = stateManager;
         }
 
         public async Task ReceiveAsync(Message envelope, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!await ValidateInputAsync(envelope, cancellationToken)) return;
 
-            // Save the value
-            var variableValue = _documentSerializer.Serialize(envelope.Content);
-            await _sessionManager.AddVariableAsync(envelope.From, _settings.VariableName, variableValue, cancellationToken);
-
             // Configure for the next receiver
             if (_settings.Validation != null)
             {
-                var validationJson = JsonConvert.SerializeObject(_settings.Validation, Application.SerializerSettings);
-                await _sessionManager.AddVariableAsync(envelope.From, INPUT_VALIDATION_KEY, validationJson, cancellationToken);
+                var validationJson = JsonConvert.SerializeObject(_settings, Application.SerializerSettings);
+                await _sessionManager.AddVariableAsync(envelope.From, INPUT_SETTINGS_KEY, validationJson, cancellationToken);
+            }
+
+            // Set the out state 
+            if (_settings.SuccessOutState != null)
+            {
+                _stateManager.SetState(envelope.From.ToIdentity(), _settings.SuccessOutState);
             }
 
             // Send the label
@@ -54,13 +68,23 @@ namespace Takenet.MessagingHub.Client.Listener
 
         public async Task<bool> ValidateInputAsync(Message envelope, CancellationToken cancellationToken)
         {
-            var validationJson = await _sessionManager.GetVariableAsync(envelope.From, INPUT_VALIDATION_KEY, cancellationToken);
-            if (validationJson == null) return true;
+            // Gets the settings from the previous input
+            var settingsJson = await _sessionManager.GetVariableAsync(envelope.From, INPUT_SETTINGS_KEY, cancellationToken);
+            if (settingsJson == null) return true;
 
-            var inputValidation = JsonConvert.DeserializeObject<InputValidation>(validationJson, Application.SerializerSettings);
-            if (ValidateRule(envelope.Content, inputValidation)) return true;
+            var inputSettings = JsonConvert.DeserializeObject<InputSettings>(settingsJson, Application.SerializerSettings);
+            if (ValidateRule(envelope.Content, inputSettings.Validation))
+            {
+                // Save the value in the session
+                var variableValue = _documentSerializer.Serialize(envelope.Content);
+                await _sessionManager.AddVariableAsync(envelope.From, inputSettings.Validation.VariableName, variableValue, cancellationToken);
+                return true;
+            }
 
-            await _sender.SendMessageAsync(inputValidation.Error ?? "An validation error has occurred", envelope.From, cancellationToken);
+            // Send a validation error message and resend the previous label
+            await _sender.SendMessageAsync(inputSettings.Validation.Error ?? "An validation error has occurred", envelope.From, cancellationToken);
+            await Task.Delay(250, cancellationToken);
+            await _sender.SendMessageAsync(inputSettings.Label.ToDocument(), envelope.From, cancellationToken);
             return false;
         }
 
@@ -98,15 +122,15 @@ namespace Takenet.MessagingHub.Client.Listener
 
     public class InputSettings
     {
-        internal static JsonSerializer Serializer = JsonSerializer.Create(Application.SerializerSettings);
+        private static JsonSerializer Serializer = JsonSerializer.Create(Application.SerializerSettings);
 
         public DocumentDefinition Label { get; set; }
 
-        public InputValidation Validation { get; set; }
-
-        public string VariableName { get; set; }
+        public InputValidationSettings Validation { get; set; }
 
         public string Culture { get; set; } = CultureInfo.InvariantCulture.Name;
+
+        public string SuccessOutState { get; set; }
 
         public static InputSettings Parse(IDictionary<string, object> dictionary)
             => JObject.FromObject(dictionary).ToObject<InputSettings>(Serializer);
@@ -114,24 +138,26 @@ namespace Takenet.MessagingHub.Client.Listener
         public void Validate()
         {
             if (Label == null) throw new ArgumentException("Label cannot be null");
-            if (VariableName == null) throw new ArgumentException("VariableName cannot be null");
-            if (Validation != null)
+            if (Validation == null) throw new ArgumentException("Validation cannot be null");
+            if (Validation.VariableName == null) throw new ArgumentException("Validation variable name cannot be null");
+            if (Validation.Rule == InputValidationRule.Regex
+                && Validation.Regex == null)
             {
-
-                if (Validation.Rule == InputValidationRule.Regex
-                    && Validation.Regex == null)
-                {
-                    throw new ArgumentException("Regex validation cannot be null");
-                }
-
-                if (Validation.Rule == InputValidationRule.Type
-                    && Validation.Type == null)
-                {
-                    throw new ArgumentException("Type validation cannot be null");
-                }
+                throw new ArgumentException("Regex validation cannot be null");
             }
 
+            if (Validation.Rule == InputValidationRule.Type
+                && Validation.Type == null)
+            {
+                throw new ArgumentException("Type validation cannot be null");
+            }
         }
     }
 
+    [DataContract]
+    public class InputValidationSettings : InputValidation
+    {
+        [DataMember(Name = "variableName")]
+        public string VariableName { get; set; }
+    }
 }
