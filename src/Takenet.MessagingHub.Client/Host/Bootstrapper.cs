@@ -248,7 +248,7 @@ namespace Takenet.MessagingHub.Client.Host
                         receiver = new SetStateNotificationReceiver(receiver, stateManager, applicationReceiver.OutState);
                     }
 
-                    Func<Notification, Task<bool>> notificationPredicate = BuildPredicate<Notification>(stateManager, sessionManager, applicationReceiver);
+                    Func<Notification, Task<bool>> notificationPredicate = BuildPredicate<Notification>(applicationReceiver, stateManager, sessionManager);
 
                     if (applicationReceiver.EventType != null)
                     {
@@ -293,7 +293,7 @@ namespace Takenet.MessagingHub.Client.Host
                         receiver = new SetStateMessageReceiver(receiver, stateManager, applicationReceiver.OutState);
                     }
 
-                    Func<Message, Task<bool>> messagePredicate = BuildPredicate<Message>(stateManager, sessionManager, applicationReceiver);
+                    Func<Message, Task<bool>> messagePredicate = BuildPredicate<Message>(applicationReceiver, stateManager, sessionManager);
 
                     if (applicationReceiver.MediaType != null)
                     {
@@ -365,9 +365,9 @@ namespace Takenet.MessagingHub.Client.Host
         }
 
         private static Func<T, Task<bool>> BuildPredicate<T>(
+            ApplicationReceiver applicationReceiver,
             IStateManager stateManager,
-            ISessionManager sessionManager,
-            ApplicationReceiver applicationReceiver) where T : Envelope, new()
+            ISessionManager sessionManager) where T : Envelope, new()
         {
             Func<T, Task<bool>> predicate = m => Task.FromResult(m != null);
 
@@ -434,12 +434,12 @@ namespace Takenet.MessagingHub.Client.Host
                 _stoppables = stoppables;
             }
 
-            public async Task StopAsync(CancellationToken cancellationTokenn)
+            public async Task StopAsync(CancellationToken cancellationToken)
             {
                 foreach (var stoppable in _stoppables)
                 {
                     if (stoppable != null)
-                        await stoppable.StopAsync(cancellationTokenn).ConfigureAwait(false);
+                        await stoppable.StopAsync(cancellationToken).ConfigureAwait(false);
                 }
             }
         }
