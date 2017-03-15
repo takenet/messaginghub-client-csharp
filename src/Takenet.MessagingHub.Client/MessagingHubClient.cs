@@ -62,17 +62,17 @@ namespace Takenet.MessagingHub.Client
 
         public bool Listening => Listener.Listening;
 
-        public void AddMessageReceiver(IMessageReceiver messageReceiver, Predicate<Message> messageFilter, int priority = 0)
+        public void AddMessageReceiver(IMessageReceiver messageReceiver, Func<Message, Task<bool>> messageFilter, int priority = 0)
         {
             Listener.AddMessageReceiver(messageReceiver, messageFilter, priority);
         }
 
-        public void AddNotificationReceiver(INotificationReceiver notificationReceiver, Predicate<Notification> notificationFilter, int priority = 0)
+        public void AddNotificationReceiver(INotificationReceiver notificationReceiver, Func<Notification, Task<bool>> notificationFilter, int priority = 0)
         {
             Listener.AddNotificationReceiver(notificationReceiver, notificationFilter, priority);
         }
 
-        public void AddCommandReceiver(ICommandReceiver commandReceiver, Predicate<Command> commandFilter, int priority = 0)
+        public void AddCommandReceiver(ICommandReceiver commandReceiver, Func<Command, Task<bool>> commandFilter, int priority = 0)
         {
             Listener.AddCommandReceiver(commandReceiver, commandFilter, priority);
         }

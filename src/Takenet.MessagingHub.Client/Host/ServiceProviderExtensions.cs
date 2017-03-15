@@ -6,7 +6,14 @@ namespace Takenet.MessagingHub.Client.Host
     {
         public static T GetService<T>(this IServiceProvider serviceProvider) where T : class 
         {
-            return serviceProvider.GetService(typeof (T)) as T;
+            var service = serviceProvider.GetService(typeof(T));
+            var factory = service as Func<T>;
+            if (factory != null)
+            {
+                return factory();
+            }
+
+            return service as T;
         }
     }
 }

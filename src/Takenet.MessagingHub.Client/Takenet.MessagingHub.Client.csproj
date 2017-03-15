@@ -131,6 +131,7 @@
     <Compile Include="Listener\SendResponseMessageReceiver.cs" />
     <Compile Include="Listener\UnsupportedCommandReceiver.cs" />
     <Compile Include="Listener\UnsupportedEnvelopeReceiver.cs" />
+    <Compile Include="BucketStateManager.cs" />
     <Compile Include="MessagingHubClient.cs" />
     <Compile Include="MessagingHubClientBuilder.cs" />
     <Compile Include="Connection\IMessagingHubConnection.cs" />
@@ -163,7 +164,8 @@
     <Compile Include="MessagingHubSenderExtensions.cs" />
     <Compile Include="Sender\MessagingHubSender.cs" />
     <Compile Include="Extensions\Session\SessionManager.cs" />
-    <Compile Include="StateManager.cs" />
+    <Compile Include="MemoryStateManager.cs" />
+    <Compile Include="StateDocument.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

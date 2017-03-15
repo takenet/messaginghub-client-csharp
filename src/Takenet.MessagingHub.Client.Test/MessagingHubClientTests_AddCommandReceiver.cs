@@ -139,8 +139,8 @@ namespace Takenet.MessagingHub.Client.Test
         {
             //Arrange
             var otherCommandReceiver = Substitute.For<ICommandReceiver>();
-            MessagingHubListener.AddCommandReceiver(_commandReceiver, c => c.Uri.Equals(_someCommand.Uri));
-            MessagingHubListener.AddCommandReceiver(otherCommandReceiver, c => c.Uri.Equals(new LimeUri("lime://test/message")));
+            MessagingHubListener.AddCommandReceiver(_commandReceiver, c => Task.FromResult(c.Uri.Equals(_someCommand.Uri)));
+            MessagingHubListener.AddCommandReceiver(otherCommandReceiver, c => Task.FromResult(c.Uri.Equals(new LimeUri("lime://test/message"))));
 
             await MessagingHubConnection.ConnectAsync();
             await MessagingHubListener.StartAsync();

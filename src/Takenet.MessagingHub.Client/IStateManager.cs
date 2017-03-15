@@ -1,5 +1,6 @@
-﻿using System;
-using Lime.Protocol;
+﻿using Lime.Protocol;
+using System;
+using System.Threading.Tasks;
 
 namespace Takenet.MessagingHub.Client
 {
@@ -22,24 +23,64 @@ namespace Takenet.MessagingHub.Client
         /// <param name="identity">The identity.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException"></exception>
-        string GetState(Identity identity);
+        Task<string> GetStateAsync(Identity identity);
 
         /// <summary>
         /// Sets the node state.
         /// </summary>
         /// <param name="identity">The identity.</param>
         /// <param name="state">The state.</param>
-        void SetState(Identity identity, string state);
+        Task SetStateAsync(Identity identity, string state);
 
         /// <summary>
         /// Resets the node state to the default value.
         /// </summary>
         /// <param name="identity">The identity.</param>
-        void ResetState(Identity identity);
+        Task ResetStateAsync(Identity identity);
 
         /// <summary>
         /// Occurs when a state for a node is changed.
         /// </summary>
         event EventHandler<StateEventArgs> StateChanged;
     }
+
+
+    /// <summary>
+    /// Represents an event for the user state.
+    /// </summary>
+    /// <seealso cref="System.EventArgs" />
+    public class StateEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StateEventArgs"/> class.
+        /// </summary>
+        /// <param name="identity">The node.</param>
+        /// <param name="state">The state.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// </exception>
+        public StateEventArgs(Identity identity, string state)
+        {
+            if (identity == null) throw new ArgumentNullException(nameof(identity));
+            if (state == null) throw new ArgumentNullException(nameof(state));
+            Identity = identity;
+            State = state;
+        }
+
+        /// <summary>
+        /// Gets the identity.
+        /// </summary>
+        /// <value>
+        /// The node.
+        /// </value>
+        public Identity Identity { get; }
+
+        /// <summary>
+        /// Gets the state.
+        /// </summary>
+        /// <value>
+        /// The state.
+        /// </value>
+        public string State { get; }
+    }
+
 }

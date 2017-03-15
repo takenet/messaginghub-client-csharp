@@ -47,17 +47,16 @@ namespace Takenet.MessagingHub.Client.Listener
         public Task<bool> HandleAsync(TEnvelope envelope, CancellationToken cancellationToken) =>
             _envelopeActionBlock.SendAsync(envelope, cancellationToken);
 
-        protected virtual Task CallReceiversAsync(TEnvelope envelope, CancellationToken cancellationToken)
+        protected virtual async Task CallReceiversAsync(TEnvelope envelope, CancellationToken cancellationToken)
         {
+            var receivers = await _registrar.GetReceiversAsync(envelope);
             // Gets the first non empty group, ordered by priority
-            var receiverGroup = _registrar
-                .GetReceiversFor(envelope)
-                .GroupBy(r => r.Priority)
-                .OrderBy(r => r.Key)
-                .First(r => r.Any());
+            var receiverGroup = receivers
+                                .GroupBy(r => r.Priority)
+                                .OrderBy(r => r.Key)
+                                .First(r => r.Any());
 
-            return
-                Task.WhenAll(
+            await Task.WhenAll(
                     receiverGroup.Select(r => CallReceiverAsync(r.ReceiverFactory(), envelope, cancellationToken)));
         }
 

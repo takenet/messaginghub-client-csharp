@@ -65,7 +65,8 @@ namespace Takenet.MessagingHub.Client.Textc
                 outState = textcMessageReceiverSettings.OutState;
             }
 
-            return new SetStateIfDefinedMessageReceiver(builder.Build(), outState);
+            var stateManager = serviceProvider.GetService<IStateManager>();
+            return new SetStateIfDefinedMessageReceiver(builder.Build(), stateManager, outState);
         }
 
         private static readonly Regex ReturnVariablesRegex = new Regex("{[a-zA-Z0-9]+}", RegexOptions.Compiled);
@@ -195,11 +196,13 @@ namespace Takenet.MessagingHub.Client.Textc
         {
             private readonly IMessageReceiver _receiver;
             private readonly string _state;
+            private readonly IStateManager _stateManager;
 
-            public SetStateIfDefinedMessageReceiver(IMessageReceiver receiver, string state)
+            public SetStateIfDefinedMessageReceiver(IMessageReceiver receiver, IStateManager stateManager, string state)
             {
                 _receiver = receiver;
                 _state = state;
+                _stateManager = stateManager;
             }
 
             public async Task ReceiveAsync(Message envelope, CancellationToken cancellationToken = default(CancellationToken))
@@ -207,7 +210,7 @@ namespace Takenet.MessagingHub.Client.Textc
                 await _receiver.ReceiveAsync(envelope, cancellationToken).ConfigureAwait(false);
                 if (_state != null)
                 {
-                    StateManager.Instance.SetState(envelope.From.ToIdentity(), _state);
+                    await _stateManager.SetStateAsync(envelope.From.ToIdentity(), _state);
                 }
             }
         }
