@@ -68,7 +68,7 @@
     {
       "mediaType": "text/plain",
       "content": "(start|help|begin|activate)",
-      "state": "answer",
+      "culture": "en-US",
       "response": {
         "mediaType": "application/vnd.lime.select+json",
         "jsonContent": {
@@ -94,7 +94,8 @@
             }
           ]
         }
-      }
+      },
+      "outState": "answer"
     },
     {
       "mediaType": "text/plain",
