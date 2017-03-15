@@ -59,6 +59,11 @@ namespace Takenet.MessagingHub.Client.Host
         public string Destination { get; set; }
 
         /// <summary>
+        /// Gets or sets the culture filter.
+        /// </summary>
+        public string Culture { get; set; }
+
+        /// <summary>
         /// Gets or sets the message to be sent in case of the occurrences of the specified envelope filter.
         /// This overrides the receiver type definition, if present.
         /// </summary>

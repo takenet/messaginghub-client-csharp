@@ -10,7 +10,6 @@ namespace Takenet.MessagingHub.Client
     /// </summary>
     public sealed class MemoryStateManager : IStateManager
     {
-        private static MemoryStateManager _instance;
         private readonly ObjectCache _nodeStateCache;
 
         private MemoryStateManager()

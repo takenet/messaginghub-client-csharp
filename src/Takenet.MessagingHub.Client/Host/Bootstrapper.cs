@@ -13,6 +13,7 @@ using Takenet.MessagingHub.Client.Extensions;
 using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
 using Takenet.MessagingHub.Client.Extensions.Bucket;
+using Takenet.MessagingHub.Client.Extensions.Session;
 
 namespace Takenet.MessagingHub.Client.Host
 {
@@ -192,17 +193,16 @@ namespace Takenet.MessagingHub.Client.Host
             serviceOverrides?.Invoke(serviceContainer);
 
             var stateManager = serviceContainer.GetService<IStateManager>();
+            var sessionManager = serviceContainer.GetService<ISessionManager>();
 
             // Now creates the receivers instances
-            await AddMessageReceivers(application, serviceContainer, client, typeResolver, stateManager);
-            await AddNotificationReceivers(application, serviceContainer, client, typeResolver, stateManager);
-            await AddCommandReceivers(application, serviceContainer, client, typeResolver, stateManager);
+            await AddMessageReceivers(application, serviceContainer, client, typeResolver, stateManager, sessionManager);
+            await AddNotificationReceivers(application, serviceContainer, client, typeResolver, stateManager, sessionManager);
+            await AddCommandReceivers(application, serviceContainer, client, typeResolver);
 
             return client;
         }
-
         
-
         public static void RegisterSettingsTypes(Application application, IServiceContainer serviceContainer, ITypeResolver typeResolver)
         {
             var applicationReceivers =
@@ -221,7 +221,8 @@ namespace Takenet.MessagingHub.Client.Host
             IServiceContainer serviceContainer, 
             IMessagingHubClient client, 
             ITypeResolver typeResolver,
-            IStateManager stateManager)
+            IStateManager stateManager,
+            ISessionManager sessionManager)
         {
             if (application.NotificationReceivers != null && application.NotificationReceivers.Length > 0)
             {
@@ -242,37 +243,17 @@ namespace Takenet.MessagingHub.Client.Host
                             .ConfigureAwait(false);
                     }
 
-                    Func<Notification, Task<bool>> notificationPredicate = n => Task.FromResult(n != null);
+                    if (applicationReceiver.OutState != null)
+                    {
+                        receiver = new SetStateNotificationReceiver(receiver, stateManager, applicationReceiver.OutState);
+                    }
+
+                    Func<Notification, Task<bool>> notificationPredicate = BuildPredicate<Notification>(stateManager, sessionManager, applicationReceiver);
 
                     if (applicationReceiver.EventType != null)
                     {
                         var currentNotificationPredicate = notificationPredicate;
                         notificationPredicate = async (n) => await currentNotificationPredicate(n) && n.Event.Equals(applicationReceiver.EventType);
-                    }
-
-                    if (applicationReceiver.Sender != null)
-                    {
-                        var currentNotificationPredicate = notificationPredicate;
-                        var senderRegex = new Regex(applicationReceiver.Sender, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-                        notificationPredicate = async (n) => await currentNotificationPredicate(n) && senderRegex.IsMatch(n.From.ToString());
-                    }
-
-                    if (applicationReceiver.Destination != null)
-                    {
-                        var currentNotificationPredicate = notificationPredicate;
-                        var destinationRegex = new Regex(applicationReceiver.Destination, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-                        notificationPredicate = async (n) => await currentNotificationPredicate(n) && destinationRegex.IsMatch(n.To.ToString());
-                    }
-
-                    if (applicationReceiver.State != null)
-                    {
-                        var currentNotificationPredicate = notificationPredicate;
-                        notificationPredicate = async (n) => await currentNotificationPredicate(n) && (await stateManager.GetStateAsync(n.From.ToIdentity())).Equals(applicationReceiver.State, StringComparison.OrdinalIgnoreCase);
-                    }
-
-                    if (applicationReceiver.OutState != null)
-                    {
-                        receiver = new SetStateNotificationReceiver(receiver, stateManager, applicationReceiver.OutState);
                     }
 
                     client.AddNotificationReceiver(receiver, notificationPredicate, applicationReceiver.Priority);
@@ -281,11 +262,12 @@ namespace Takenet.MessagingHub.Client.Host
         }
 
         public static async Task AddMessageReceivers(
-            Application application, 
-            IServiceContainer serviceContainer, 
-            IMessagingHubClient client, 
+            Application application,
+            IServiceContainer serviceContainer,
+            IMessagingHubClient client,
             ITypeResolver typeResolver,
-            IStateManager stateManager)
+            IStateManager stateManager,
+            ISessionManager sessionManager)
         {
             if (application.MessageReceivers != null && application.MessageReceivers.Length > 0)
             {
@@ -306,7 +288,12 @@ namespace Takenet.MessagingHub.Client.Host
                             .ConfigureAwait(false);
                     }
 
-                    Func<Message, Task<bool>> messagePredicate = m => Task.FromResult(m != null);
+                    if (applicationReceiver.OutState != null)
+                    {
+                        receiver = new SetStateMessageReceiver(receiver, stateManager, applicationReceiver.OutState);
+                    }
+
+                    Func<Message, Task<bool>> messagePredicate = BuildPredicate<Message>(stateManager, sessionManager, applicationReceiver);
 
                     if (applicationReceiver.MediaType != null)
                     {
@@ -322,31 +309,6 @@ namespace Takenet.MessagingHub.Client.Host
                         messagePredicate = async (m) => await currentMessagePredicate(m) && contentRegex.IsMatch(m.Content.ToString());
                     }
 
-                    if (applicationReceiver.Sender != null)
-                    {
-                        var currentMessagePredicate = messagePredicate;
-                        var senderRegex = new Regex(applicationReceiver.Sender, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-                        messagePredicate = async (m) => await currentMessagePredicate(m) && senderRegex.IsMatch(m.From.ToString());
-                    }
-
-                    if (applicationReceiver.Destination != null)
-                    {
-                        var currentMessagePredicate = messagePredicate;
-                        var destinationRegex = new Regex(applicationReceiver.Destination, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-                        messagePredicate = async (m) => await currentMessagePredicate(m) && destinationRegex.IsMatch(m.To.ToString());
-                    }
-
-                    if (applicationReceiver.State != null)
-                    {
-                        var currentMessagePredicate = messagePredicate;
-                        messagePredicate = async (m) => await currentMessagePredicate(m) && (await stateManager.GetStateAsync(m.From.ToIdentity())).Equals(applicationReceiver.State, StringComparison.OrdinalIgnoreCase);
-                    }
-
-                    if (applicationReceiver.OutState != null)
-                    {
-                        receiver = new SetStateMessageReceiver(receiver, stateManager, applicationReceiver.OutState);
-                    }
-
                     client.AddMessageReceiver(receiver, messagePredicate, applicationReceiver.Priority);
                 }
             }
@@ -356,10 +318,9 @@ namespace Takenet.MessagingHub.Client.Host
             Application application, 
             IServiceContainer serviceContainer, 
             IMessagingHubClient client, 
-            ITypeResolver typeResolver,
-            IStateManager stateManager)
+            ITypeResolver typeResolver)
         {
-            if(application.CommandReceivers == null || application.CommandReceivers.Length == 0)
+            if (application.CommandReceivers == null || application.CommandReceivers.Length == 0)
             {
                 return;
             }
@@ -401,6 +362,44 @@ namespace Takenet.MessagingHub.Client.Host
 
                 client.AddCommandReceiver(receiver, predicate, commandReceiver.Priority);
             }
+        }
+
+        private static Func<T, Task<bool>> BuildPredicate<T>(
+            IStateManager stateManager,
+            ISessionManager sessionManager,
+            ApplicationReceiver applicationReceiver) where T : Envelope, new()
+        {
+            Func<T, Task<bool>> predicate = m => Task.FromResult(m != null);
+
+            if (applicationReceiver.Sender != null)
+            {
+                var currentPredicate = predicate;
+                var senderRegex = new Regex(applicationReceiver.Sender, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                predicate = async (m) => await currentPredicate(m) && senderRegex.IsMatch(m.From.ToString());
+            }
+
+            if (applicationReceiver.Destination != null)
+            {
+                var currentPredicate = predicate;
+                var destinationRegex = new Regex(applicationReceiver.Destination, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                predicate = async (m) => await currentPredicate(m) && destinationRegex.IsMatch(m.To.ToString());
+            }
+
+            if (applicationReceiver.State != null)
+            {
+                var currentPredicate = predicate;
+                predicate = async (m) => await currentPredicate(m)
+                    && (await stateManager.GetStateAsync(m.From.ToIdentity())).Equals(applicationReceiver.State, StringComparison.OrdinalIgnoreCase);
+            }
+
+            if (applicationReceiver.Culture != null)
+            {
+                var currentPredicate = predicate;
+                predicate = async (m) => await currentPredicate(m)
+                    && (await sessionManager.GetCultureAsync(m.From, CancellationToken.None) ?? "").Equals(applicationReceiver.Culture, StringComparison.OrdinalIgnoreCase);
+            }
+
+            return predicate;
         }
 
         public static Task<T> CreateAsync<T>(string typeName, IServiceProvider serviceProvider, IDictionary<string, object> settings, ITypeResolver typeResolver) where T : class

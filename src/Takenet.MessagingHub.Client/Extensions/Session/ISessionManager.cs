@@ -38,7 +38,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Session
         /// <summary>
         /// Gets an existing variable from a node session.
         /// </summary>
-        /// <param name="node">The node.</param>
+        /// <param name="node">The session node.</param>
         /// <param name="key">The key.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
@@ -47,10 +47,27 @@ namespace Takenet.MessagingHub.Client.Extensions.Session
         /// <summary>
         /// Removes an existing variable from a node session.
         /// </summary>
-        /// <param name="node">The node.</param>
+        /// <param name="node">The session node.</param>
         /// <param name="key">The key.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task RemoveVariableAsync(Node node, string key, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Gets the node session culture. This value should be specified using the SetCultureAsync method.
+        /// </summary>
+        /// <param name="node">The session node.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<string> GetCultureAsync(Node node, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Sets the node session culture.
+        /// </summary>
+        /// <param name="node">The session node.</param>
+        /// <param name="culture">The culture code.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task SetCultureAsync(Node node, string culture, CancellationToken cancellationToken);
     }
 }

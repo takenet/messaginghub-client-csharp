@@ -9,6 +9,8 @@ namespace Takenet.MessagingHub.Client.Extensions.Session
 {
     public class SessionManager : ISessionManager
     {
+        private const string CULTURE_KEY = "#culture";
+
         private readonly IBucketExtension _bucketExtension;
         private static readonly TimeSpan SessionExpiration = TimeSpan.FromMinutes(30);
 
@@ -17,8 +19,8 @@ namespace Takenet.MessagingHub.Client.Extensions.Session
             _bucketExtension = bucketExtension;
         }
 
-        public Task ClearSessionAsync(Node node, CancellationToken cancellationToken) => 
-            _bucketExtension.DeleteAsync(GetSessionKey(node), cancellationToken);
+        public Task ClearSessionAsync(Node node, CancellationToken cancellationToken) 
+            => _bucketExtension.DeleteAsync(GetSessionKey(node), cancellationToken);
 
         public async Task AddVariableAsync(Node node, string key, string value, CancellationToken cancellationToken)
         {
@@ -47,26 +49,33 @@ namespace Takenet.MessagingHub.Client.Extensions.Session
             await SaveSessionAsync(node, session, cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<NavigationSession> GetSessionAsync(Node node, CancellationToken cancellationToken) => 
-            _bucketExtension.GetAsync<NavigationSession>(GetSessionKey(node), cancellationToken);
+        public Task<NavigationSession> GetSessionAsync(Node node, CancellationToken cancellationToken)
+            => _bucketExtension.GetAsync<NavigationSession>(GetSessionKey(node), cancellationToken);
 
-        private async Task<NavigationSession> GetOrCreateSessionAsync(Node node, CancellationToken cancellationToken)
-        {
-            return await GetSessionAsync(node, cancellationToken) ??
-                          new NavigationSession()
-                          {
-                              Creation = DateTimeOffset.UtcNow
-                          };
-        }
+        public Task<string> GetCultureAsync(Node node, CancellationToken cancellationToken)
+            => GetVariableAsync(node, CULTURE_KEY, cancellationToken);
+        
 
-        private Task SaveSessionAsync(Node node, NavigationSession session, CancellationToken cancellationToken) => 
-            _bucketExtension.SetAsync(GetSessionKey(node), session, SessionExpiration, cancellationToken);
+        public Task SetCultureAsync(Node node, string culture, CancellationToken cancellationToken)
+            => AddVariableAsync(node, CULTURE_KEY, culture, cancellationToken);
+
+        private async Task<NavigationSession> GetOrCreateSessionAsync(Node node, CancellationToken cancellationToken) 
+            => await GetSessionAsync(node, cancellationToken) ??
+                new NavigationSession()
+                {
+                    Creation = DateTimeOffset.UtcNow
+                };
+
+        private Task SaveSessionAsync(Node node, NavigationSession session, CancellationToken cancellationToken) 
+            => _bucketExtension.SetAsync(GetSessionKey(node), session, SessionExpiration, cancellationToken);
 
         private static string GetSessionKey(Node node)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
             return $"sessions:{node.ToIdentity()}".ToLowerInvariant();
         }
+
+
     }
 
     public class SessionSettings
