@@ -30,7 +30,6 @@ namespace Takenet.MessagingHub.Client.Listener
         private readonly InputSettings _settings;
         private readonly IDocumentSerializer _documentSerializer;
 
-
         public InputMessageReceiver(
             IMessagingHubSender sender,
             ISessionManager sessionManager,
@@ -59,7 +58,7 @@ namespace Takenet.MessagingHub.Client.Listener
             // Set the out state 
             if (_settings.SuccessOutState != null)
             {
-                _stateManager.SetState(envelope.From.ToIdentity(), _settings.SuccessOutState);
+                await _stateManager.SetStateAsync(envelope.From.ToIdentity(), _settings.SuccessOutState);
             }
 
             // Send the label
@@ -88,7 +87,7 @@ namespace Takenet.MessagingHub.Client.Listener
             return false;
         }
 
-        private static bool ValidateRule(Document content, InputValidation inputValidation)
+        private bool ValidateRule(Document content, InputValidation inputValidation)
         {
             string contentString;
 
@@ -100,8 +99,7 @@ namespace Takenet.MessagingHub.Client.Listener
 
                 case InputValidationRule.Number:
                     contentString = content.ToString();
-                    int result;
-                    return int.TryParse(contentString, out result);
+                    return int.TryParse(contentString, out int result);
 
                 case InputValidationRule.Date:
                     throw new NotSupportedException("Date validation not supported yet");
