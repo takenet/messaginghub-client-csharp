@@ -1,6 +1,7 @@
 ﻿{
-  "identifier": "",
-  "accessKey": "",
+  "identifier": "sdkbreno",
+  "accessKey": "OENvWVRtWUJUN2JjYWQ3S2xUSGI=",
+  "hostName": "hmg.msging.net",
   "messageReceivers": [
     {
       "type": "EchoMessageReceiver"
