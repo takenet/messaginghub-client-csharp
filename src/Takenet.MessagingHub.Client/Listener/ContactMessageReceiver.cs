@@ -16,7 +16,7 @@ namespace Takenet.MessagingHub.Client.Listener
         private readonly IDirectoryExtension _directoryExtension;
 
         protected ContactMessageReceiver(
-            IContactExtension contactExtension, 
+            IContactExtension contactExtension,
             IDirectoryExtension directoryExtension)
         {
             _directoryExtension = directoryExtension;
@@ -29,24 +29,25 @@ namespace Takenet.MessagingHub.Client.Listener
             var contact = await _contactExtension.GetAsync(identity, cancellationToken);
             if (contact == null)
             {
+                contact = new Contact
+                {
+                    Identity = identity
+                };
+
                 var account = await _directoryExtension.GetDirectoryAccountAsync(identity, cancellationToken);
                 if (account != null)
                 {
-                    contact = new Contact
-                    {
-                        Identity = identity,
-                        Name = account.FullName,
-                        Address = account.Address,
-                        CellPhoneNumber = account.CellPhoneNumber,
-                        City = account.City,
-                        Culture = account.Culture,
-                        Email = account.Email,
-                        Extras = account.Extras,
-                        Gender = account.Gender,
-                        PhoneNumber = account.PhoneNumber,
-                        PhotoUri = account.PhotoUri,
-                        Timezone = account.Timezone
-                    };
+                    contact.Name = account.FullName;
+                    contact.Address = account.Address;
+                    contact.CellPhoneNumber = account.CellPhoneNumber;
+                    contact.City = account.City;
+                    contact.Culture = account.Culture;
+                    contact.Email = account.Email;
+                    contact.Extras = account.Extras;
+                    contact.Gender = account.Gender;
+                    contact.PhoneNumber = account.PhoneNumber;
+                    contact.PhotoUri = account.PhotoUri;
+                    contact.Timezone = account.Timezone;
                 }
             }
 
