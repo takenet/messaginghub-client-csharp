@@ -409,7 +409,7 @@ namespace Takenet.MessagingHub.Client.Host
             return CreateAsync<T>(type, serviceProvider, settings);
         }
 
-        public static Task<T> CreateAsync<T>(Type type, IServiceProvider serviceProvider, IDictionary<string, object> settings) where T : class
+        public static async Task<T> CreateAsync<T>(Type type, IServiceProvider serviceProvider, IDictionary<string, object> settings) where T : class
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             IFactory<T> factory;
@@ -422,7 +422,12 @@ namespace Takenet.MessagingHub.Client.Host
                 factory = new Factory<T>(type);
             }
 
-            return factory.CreateAsync(serviceProvider, settings);
+            var instance = await factory.CreateAsync(serviceProvider, settings);
+            if (instance == null)
+            {
+                throw new Exception($"{type.Name} does not implement {typeof(T).Name}");
+            }
+            return instance;
         }
 
         private class StoppableWrapper : IStoppable
