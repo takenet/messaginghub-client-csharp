@@ -118,7 +118,7 @@
     <Compile Include="Listener\AggregateNotificationReceiver.cs" />
     <Compile Include="Listener\CommandReceivedHandler.cs" />
     <Compile Include="Listener\ComposingMessageReceiver.cs" />
-    <Compile Include="Listener\ContactMessageReceiver.cs" />
+    <Compile Include="Listener\ContactMessageReceiverBase.cs" />
     <Compile Include="Listener\DocumentMessageReceiverBase.cs" />
     <Compile Include="Listener\HandleExceptionMessageReceiver.cs" />
     <Compile Include="Listener\ICommandReceiver.cs" />

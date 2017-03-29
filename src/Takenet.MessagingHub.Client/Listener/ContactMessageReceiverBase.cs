@@ -6,13 +6,14 @@ using Takenet.MessagingHub.Client.Extensions.Directory;
 using Takenet.MessagingHub.Client.Extensions.Contacts;
 using System.Runtime.Caching;
 using System;
+using Lime.Protocol.Network;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
     /// <summary>
     /// Defines a <see cref="IMessageReceiver"/> that includes contact information about the message sender.
     /// </summary>
-    public abstract class ContactMessageReceiver : IMessageReceiver, IDisposable
+    public abstract class ContactMessageReceiverBase : IMessageReceiver, IDisposable
     {
         private readonly IContactExtension _contactExtension;
         private readonly IDirectoryExtension _directoryExtension;
@@ -21,13 +22,13 @@ namespace Takenet.MessagingHub.Client.Listener
         private readonly TimeSpan _cacheExpiration;
 
         /// <summary>
-        /// Initializes a new instance of <see cref="ContactMessageReceiver"/> class.
+        /// Initializes a new instance of <see cref="ContactMessageReceiverBase"/> class.
         /// </summary>
         /// <param name="contactExtension"></param>
         /// <param name="directoryExtension"></param>
         /// <param name="cacheLocally">Indicates if the contact information should be cached locally.</param>
         /// <param name="cacheExpiration">Defines the local cache expiration, if configured.</param>
-        protected ContactMessageReceiver(
+        protected ContactMessageReceiverBase(
             IContactExtension contactExtension,
             IDirectoryExtension directoryExtension,
             bool cacheLocally = true,
@@ -36,7 +37,7 @@ namespace Takenet.MessagingHub.Client.Listener
             _directoryExtension = directoryExtension;
             _contactExtension = contactExtension;
             _cacheLocally = cacheLocally;
-            _contactCache = new MemoryCache(nameof(ContactMessageReceiver));
+            _contactCache = new MemoryCache(nameof(ContactMessageReceiverBase));
             _cacheExpiration = cacheExpiration == default(TimeSpan) ? TimeSpan.FromMinutes(30) : cacheExpiration;
         }
 
@@ -50,11 +51,22 @@ namespace Takenet.MessagingHub.Client.Listener
             
             if (contact == null)
             {
-                // Second, try from the roster.
-                contact = await _contactExtension.GetAsync(identity, cancellationToken);
+                try
+                {
+                    // Second, try from the roster.
+                    contact = await _contactExtension.GetAsync(identity, cancellationToken);
+                }
+                catch (LimeException ex) when (ex.Reason.Code == ReasonCodes.COMMAND_RESOURCE_NOT_FOUND) { }
 
                 // Third, try from the directory.
-                if (contact == null) contact = await GetContactFromDirectoryAsync(identity, cancellationToken);
+                if (contact == null)
+                {
+                    try
+                    {
+                        contact = await GetContactFromDirectoryAsync(identity, cancellationToken);
+                    }
+                    catch (LimeException ex) when (ex.Reason.Code == ReasonCodes.COMMAND_RESOURCE_NOT_FOUND) { }
+                }
                 
                 // Stores in the cache, if configured.
                 if (contact != null && _cacheLocally)
@@ -95,7 +107,7 @@ namespace Takenet.MessagingHub.Client.Listener
             }
 
             return contact;
-        }
+        }        
 
         private bool _disposed;
 
