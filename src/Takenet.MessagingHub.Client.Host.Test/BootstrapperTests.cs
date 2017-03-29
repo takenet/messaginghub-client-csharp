@@ -287,6 +287,58 @@ namespace Takenet.MessagingHub.Client.Host.Test
         }
 
         [Test]
+        public void Create_With_NotInheritingMessageReceiver_Should_Throw()
+        {
+            // Arrange
+            var application = new Application
+            {
+                Identifier = "testlogin",
+                AccessKey = "12345".ToBase64(),
+                MessageReceivers = new[]
+                {
+                    new MessageApplicationReceiver
+                    {
+                        Type = typeof(InvalidReceiver).Name,
+                    }
+
+                },
+                HostName = Server.ListenerUri.Host
+            };
+
+            // Act & Assert
+            Should.Throw<Exception>(async () =>
+            {
+                var actual = await Bootstrapper.StartAsync(application);
+            });
+        }
+
+        [Test]
+        public void Create_With_SameNameClassMessageReceiver_Should_Throw()
+        {
+            // Arrange
+            var application = new Application
+            {
+                Identifier = "testlogin",
+                AccessKey = "12345".ToBase64(),
+                MessageReceivers = new[]
+                {
+                    new MessageApplicationReceiver
+                    {
+                        Type = typeof(DuplicatedReceiver).Name,
+                    }
+
+                },
+                HostName = Server.ListenerUri.Host
+            };
+
+            // Act & Assert
+            Should.Throw<Exception>(async () =>
+            {
+                var actual = await Bootstrapper.StartAsync(application);
+            });
+        }
+
+        [Test]
         public async Task Create_With_NotificationReceiverType_Should_Return_Instance()
         {
             // Arrange
@@ -488,6 +540,17 @@ namespace Takenet.MessagingHub.Client.Host.Test
 
             TestMessageReceiverWithCustomSettings.TestApplicationSettings.ShouldBe(TestStartupWithCustomSettings.CustomSettings);
         }
+    }
+
+    public class InvalidReceiver
+    {
+    }
+
+    /// <summary>
+    /// Another class with same name exists on folder Dummies
+    /// </summary>
+    public class DuplicatedReceiver
+    {
     }
 
     public class TestStartupWithCustomSettings : IStartable

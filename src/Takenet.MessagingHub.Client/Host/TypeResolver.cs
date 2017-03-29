@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Lime.Protocol.Serialization;
 
 namespace Takenet.MessagingHub.Client.Host
 {
@@ -8,15 +7,19 @@ namespace Takenet.MessagingHub.Client.Host
     {
         private TypeResolver()
         {
-            
         }
 
         public static TypeResolver Instance => new TypeResolver();
 
-        public Type Resolve(string typeName) => 
-            ReferencesUtil
-                .GetAllLoadedTypes()
-                .FirstOrDefault(t => t.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase)) ?? 
-            Type.GetType(typeName, true, true);
+        public Type Resolve(string typeName)
+        {
+            var types = ReferencesUtil
+                            .GetAllLoadedTypes()
+                            .Where(t => t.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase));
+
+            if (types.Count() == 1) return types.First();
+            else if (types.Count() == 0) return Type.GetType(typeName, true, true);
+            else throw new Exception($"There are multiple types named {typeName}");
+        }
     }
 }
