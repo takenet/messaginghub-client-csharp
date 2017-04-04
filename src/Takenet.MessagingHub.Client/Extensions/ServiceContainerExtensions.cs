@@ -1,4 +1,5 @@
 ﻿using System;
+using Takenet.MessagingHub.Client.Extensions.ArtificialIntelligence;
 using Takenet.MessagingHub.Client.Extensions.AttendanceForwarding;
 using Takenet.MessagingHub.Client.Extensions.Broadcast;
 using Takenet.MessagingHub.Client.Extensions.Bucket;
@@ -35,6 +36,7 @@ namespace Takenet.MessagingHub.Client.Extensions
             serviceContainer.RegisterService(typeof(IBucketExtension), bucketExtensionFactory);
             serviceContainer.RegisterService(typeof(ISessionManager), () => new SessionManager(bucketExtensionFactory()));
             serviceContainer.RegisterService(typeof(IAttendanceExtension), () => new AttendanceExtension(senderFactory()));
+            serviceContainer.RegisterService(typeof(ITalkServiceExtension), () => new TalkServiceExtension(senderFactory()));
             serviceContainer.RegisterService(typeof(IThreadExtension), () => new ThreadExtension(senderFactory()));
 
             return serviceContainer;
