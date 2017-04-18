@@ -50,7 +50,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Scheduler
 
             var scheduledMessage = $"{SCHEDULE_URI}/{messageId}";
 
-            return ProcessCommandAsync<Schedule>(
+            return ProcessCommandAsync(
                 CreateDeleteCommandRequest(scheduledMessage, SchedulerAddress),
                 cancellationToken);
         }
