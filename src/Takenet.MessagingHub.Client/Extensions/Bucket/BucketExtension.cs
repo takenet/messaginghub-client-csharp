@@ -7,13 +7,20 @@ using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Extensions.Bucket
 {
-    public sealed class BucketExtension : IBucketExtension
+    public class BucketExtension : IBucketExtension
     {
-        private readonly IMessagingHubSender _messagingHubSender;
+        private readonly IMessagingHubSender _sender;
+        private readonly string _resourceName;
 
-        public BucketExtension(IMessagingHubSender messagingHubSender)
+        public BucketExtension(IMessagingHubSender sender)
+            : this(sender, "buckets")
         {
-            _messagingHubSender = messagingHubSender;
+        }
+
+        protected BucketExtension(IMessagingHubSender sender, string resourceName)
+        {
+            _sender = sender;
+            _resourceName = resourceName ?? throw new ArgumentNullException(nameof(resourceName));
         }
 
         public async Task<T> GetAsync<T>(string id, CancellationToken cancellationToken = default(CancellationToken)) where T : Document
@@ -23,10 +30,10 @@ namespace Takenet.MessagingHub.Client.Extensions.Bucket
             var getRequestCommand = new Command()
             {
                 Method = CommandMethod.Get,
-                Uri = new LimeUri($"/buckets/{Uri.EscapeDataString(id)}")
+                Uri = new LimeUri($"/{_resourceName}/{Uri.EscapeDataString(id)}")
             };
 
-            var getResponseCommand = await _messagingHubSender.SendCommandAsync(
+            var getResponseCommand = await _sender.SendCommandAsync(
                 getRequestCommand,
                 cancellationToken);
 
@@ -44,12 +51,38 @@ namespace Takenet.MessagingHub.Client.Extensions.Bucket
             return (T)getResponseCommand.Resource;
         }
 
+        public async Task<DocumentCollection> GetIdsAsync(int skip = 0, int take = 100, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var getRequestCommand = new Command()
+            {
+                Method = CommandMethod.Get,
+                Uri = new LimeUri($"/{_resourceName}?$skip={skip}&$take={take}")
+            };
+
+            var getResponseCommand = await _sender.SendCommandAsync(
+                getRequestCommand,
+                cancellationToken);
+
+            if (getResponseCommand.Status != CommandStatus.Success)
+            {
+                if (getResponseCommand.Reason?.Code == ReasonCodes.COMMAND_RESOURCE_NOT_FOUND)
+                {
+                    return null;
+                }
+
+                throw new LimeException(
+                    getResponseCommand.Reason ??
+                    new Reason() { Code = ReasonCodes.COMMAND_PROCESSING_ERROR, Description = "An error occurred" });
+            }
+            return (DocumentCollection)getResponseCommand.Resource;
+        }
+
         public async Task SetAsync<T>(string id, T document, TimeSpan expiration = default(TimeSpan), CancellationToken cancellationToken = default(CancellationToken)) where T : Document
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (document == null) throw new ArgumentNullException(nameof(document));
 
-            var uri = $"/buckets/{Uri.EscapeDataString(id)}";
+            var uri = $"/{_resourceName}/{Uri.EscapeDataString(id)}";
             if (expiration != default(TimeSpan))
             {
                 uri = $"{uri}?expiration={expiration.TotalMilliseconds}";
@@ -62,7 +95,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Bucket
                 Resource = document
             };
 
-            var setResponseCommand = await _messagingHubSender.SendCommandAsync(
+            var setResponseCommand = await _sender.SendCommandAsync(
                 setRequestCommand,
                 cancellationToken);
             if (setResponseCommand.Status != CommandStatus.Success)
@@ -79,10 +112,10 @@ namespace Takenet.MessagingHub.Client.Extensions.Bucket
             var deleteRequestCommand = new Command()
             {
                 Method = CommandMethod.Delete,
-                Uri = new LimeUri($"/buckets/{Uri.EscapeDataString(id)}")
+                Uri = new LimeUri($"/{_resourceName}/{Uri.EscapeDataString(id)}")
             };
 
-            var deleteResponseCommand = await _messagingHubSender.SendCommandAsync(
+            var deleteResponseCommand = await _sender.SendCommandAsync(
                 deleteRequestCommand,
                 cancellationToken);
 

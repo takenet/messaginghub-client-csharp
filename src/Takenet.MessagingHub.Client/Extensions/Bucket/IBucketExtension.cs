@@ -20,6 +20,13 @@ namespace Takenet.MessagingHub.Client.Extensions.Bucket
         Task<T> GetAsync<T>(string id, CancellationToken cancellationToken = default(CancellationToken)) where T : Document;
 
         /// <summary>
+        /// Gets the stored documents ids.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<DocumentCollection> GetIdsAsync(int skip = 0, int take = 100, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
         /// Stores a document in the bucket.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -36,6 +43,6 @@ namespace Takenet.MessagingHub.Client.Extensions.Bucket
         /// <param name="id">The identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task DeleteAsync(string id, CancellationToken cancellationToken = default(CancellationToken));
+        Task DeleteAsync(string id, CancellationToken cancellationToken = default(CancellationToken));       
     }
 }
