@@ -1,9 +1,5 @@
 ﻿using Lime.Messaging.Contents;
 using Lime.Protocol;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,6 +26,13 @@ namespace Takenet.MessagingHub.Client.Extensions.Profile
         Task SetPersistentMenuAsync(DocumentSelect persistentMenu, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Deletes the current persistent menu.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task DeletePersistentMenuAsync(CancellationToken cancellationToken);
+
+        /// <summary>
         /// Gets the current get started document.
         /// </summary>
         /// <param name="cancellationToken"></param>
@@ -45,6 +48,13 @@ namespace Takenet.MessagingHub.Client.Extensions.Profile
         Task<Document> SetGetStartedAsync(Document getStarted, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Deletes the current get started document.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task DeleteGetStartedAsync(CancellationToken cancellationToken);
+
+        /// <summary>
         /// Gets the current greeting text.
         /// </summary>
         /// <param name="cancellationToken"></param>
@@ -58,5 +68,12 @@ namespace Takenet.MessagingHub.Client.Extensions.Profile
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task SetGreetingAsync(PlainText greeting, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Deletes the current greeting text.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task DeleteGreetingAsync(CancellationToken cancellationToken);
     }
 }

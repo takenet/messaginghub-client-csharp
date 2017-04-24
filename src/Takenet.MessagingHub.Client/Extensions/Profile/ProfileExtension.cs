@@ -3,6 +3,7 @@ using Lime.Protocol;
 using System.Threading;
 using System.Threading.Tasks;
 using Takenet.MessagingHub.Client.Sender;
+using System;
 
 namespace Takenet.MessagingHub.Client.Extensions.Profile
 {
@@ -27,6 +28,11 @@ namespace Takenet.MessagingHub.Client.Extensions.Profile
                 CreateSetCommandRequest(getStarted, $"{PROFILE_URI}/{GET_STARTED_ID}"),
                 cancellationToken);
 
+        public Task DeleteGetStartedAsync(CancellationToken cancellationToken)
+            => ProcessCommandAsync<Document>(
+                CreateDeleteCommandRequest($"{PROFILE_URI}/{GET_STARTED_ID}"),
+                cancellationToken);
+
         public Task<PlainText> GetGreetingAsync(CancellationToken cancellationToken)
             => ProcessCommandAsync<PlainText>(
                 CreateGetCommandRequest($"{PROFILE_URI}/{GREETING_ID}"),
@@ -37,6 +43,11 @@ namespace Takenet.MessagingHub.Client.Extensions.Profile
                 CreateSetCommandRequest(greeting, $"{PROFILE_URI}/{GREETING_ID}"),
                 cancellationToken);
 
+        public Task DeleteGreetingAsync(CancellationToken cancellationToken)
+            => ProcessCommandAsync<PlainText>(
+                CreateDeleteCommandRequest($"{PROFILE_URI}/{GREETING_ID}"),
+                cancellationToken);
+
         public Task<DocumentSelect> GetPersistentMenuAsync(CancellationToken cancellationToken)
             => ProcessCommandAsync<DocumentSelect>(
                 CreateGetCommandRequest($"{PROFILE_URI}/{PERSISTENT_MENU_ID}"),
@@ -45,6 +56,11 @@ namespace Takenet.MessagingHub.Client.Extensions.Profile
         public Task SetPersistentMenuAsync(DocumentSelect persistentMenu, CancellationToken cancellationToken)
             => ProcessCommandAsync<Document>(
                 CreateSetCommandRequest(persistentMenu, $"{PROFILE_URI}/{PERSISTENT_MENU_ID}"),
+                cancellationToken);
+
+        public Task DeletePersistentMenuAsync(CancellationToken cancellationToken)
+            => ProcessCommandAsync(
+                CreateDeleteCommandRequest($"{PROFILE_URI}/{PERSISTENT_MENU_ID}"),
                 cancellationToken);
 
         protected override void EnsureSuccess(Command responseCommand)
