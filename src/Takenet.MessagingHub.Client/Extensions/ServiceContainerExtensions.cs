@@ -8,6 +8,7 @@ using Takenet.MessagingHub.Client.Extensions.Delegation;
 using Takenet.MessagingHub.Client.Extensions.Directory;
 using Takenet.MessagingHub.Client.Extensions.EventTracker;
 using Takenet.MessagingHub.Client.Extensions.Profile;
+using Takenet.MessagingHub.Client.Extensions.Resource;
 using Takenet.MessagingHub.Client.Extensions.Scheduler;
 using Takenet.MessagingHub.Client.Extensions.Session;
 using Takenet.MessagingHub.Client.Extensions.Threads;
@@ -38,6 +39,7 @@ namespace Takenet.MessagingHub.Client.Extensions
             serviceContainer.RegisterService(typeof(IAttendanceExtension), () => new AttendanceExtension(senderFactory()));
             serviceContainer.RegisterService(typeof(ITalkServiceExtension), () => new TalkServiceExtension(senderFactory()));
             serviceContainer.RegisterService(typeof(IThreadExtension), () => new ThreadExtension(senderFactory()));
+            serviceContainer.RegisterService(typeof(IResourceExtension), () => new ResourceExtension(senderFactory()));
 
             return serviceContainer;
         }
