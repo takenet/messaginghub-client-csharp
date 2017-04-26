@@ -56,7 +56,7 @@ namespace Takenet.MessagingHub.Client.Listener
                     // Second, try from the roster.
                     contact = await _contactExtension.GetAsync(identity, cancellationToken);
                 }
-                catch (LimeException ex) when (ex.Reason.Code == ReasonCodes.COMMAND_RESOURCE_NOT_FOUND) { }
+                catch (LimeException ex) when (ex.Reason.Code == ReasonCodes.COMMAND_RESOURCE_NOT_FOUND || ex.Reason.Code == ReasonCodes.COMMAND_RESOURCE_NOT_SUPPORTED) { }
 
                 // Third, try from the directory.
                 if (contact == null)
@@ -65,7 +65,7 @@ namespace Takenet.MessagingHub.Client.Listener
                     {
                         contact = await GetContactFromDirectoryAsync(identity, cancellationToken);
                     }
-                    catch (LimeException ex) when (ex.Reason.Code == ReasonCodes.COMMAND_RESOURCE_NOT_FOUND) { }
+                    catch (LimeException ex) when (ex.Reason.Code == ReasonCodes.COMMAND_RESOURCE_NOT_FOUND || ex.Reason.Code == ReasonCodes.COMMAND_RESOURCE_NOT_SUPPORTED) { }
                 }
                 
                 // Stores in the cache, if configured.
