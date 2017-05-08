@@ -22,7 +22,7 @@ namespace Takenet.MessagingHub.Client.Test
         private static readonly SemaphoreSlim ListenerSemaphore = new SemaphoreSlim(1, 1);
 
         public DummyServer()
-            : this(new Uri("net.tcp://localhost:55321"))
+            : this(new Uri("net.tcp://localhost:443"))
         {
             
         }

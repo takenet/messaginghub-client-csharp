@@ -22,7 +22,7 @@ namespace Takenet.MessagingHub.Client.Tester
         {
             Application = application;
             DefaultTimeout = defaultTimeout;
-            EndPoint = new Uri($"net.tcp://{Application.HostName ?? "msging.net"}:55321");
+            EndPoint = new Uri($"net.tcp://{Application.HostName ?? "msging.net"}:443");
             Domain = Application.Domain ?? "msging.net";
         }
 
