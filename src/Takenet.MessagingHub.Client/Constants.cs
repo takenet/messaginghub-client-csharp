@@ -8,7 +8,9 @@ namespace Takenet.MessagingHub.Client
 
         public const string DEFAULT_SCHEME = "net.tcp";
 
-        public const int DEFAULT_PORT = 55321;
+        public const string DEFAULT_HOST_NAME = "tcp.msging.net";
+
+        public const int DEFAULT_PORT = 443;
 
         public const string POSTMASTER = "postmaster";
 

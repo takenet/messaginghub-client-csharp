@@ -34,7 +34,7 @@ namespace Takenet.MessagingHub.Client.Connection
         {
             Domain = Constants.DEFAULT_DOMAIN;
             Scheme = Constants.DEFAULT_SCHEME;
-            HostName = Constants.DEFAULT_DOMAIN;
+            HostName = Constants.DEFAULT_HOST_NAME;
             Port = Constants.DEFAULT_PORT;
             SendTimeout = TimeSpan.FromSeconds(60);
             MaxConnectionRetries = 3;
