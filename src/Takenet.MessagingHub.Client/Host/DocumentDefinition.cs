@@ -1,11 +1,17 @@
 using System;
 using System.Collections.Generic;
 using Lime.Protocol;
+using Takenet.Iris.Messaging.Contents;
 
 namespace Takenet.MessagingHub.Client.Host
 {
     public class DocumentDefinition
     {
+        /// <summary>
+        /// Gets or sets the resource key to be used as content for the message.
+        /// </summary>
+        public string ResourceKey { get; set; }
+
         /// <summary>
         /// Gets or sets the media type of the message.
         /// </summary>
@@ -34,6 +40,14 @@ namespace Takenet.MessagingHub.Client.Host
 
         public Document ToDocument()
         {
+            if (!string.IsNullOrWhiteSpace(ResourceKey))
+            {
+                return new Resource()
+                {
+                    Key = ResourceKey
+                };
+            }
+
             if (MediaType == null) throw new InvalidOperationException($"The '{nameof(MediaType)}' property is not defined");
             var mediaType = Lime.Protocol.MediaType.Parse(MediaType);
             if (mediaType.IsJson)
