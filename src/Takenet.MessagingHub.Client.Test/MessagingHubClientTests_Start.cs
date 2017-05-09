@@ -34,6 +34,7 @@ namespace Takenet.MessagingHub.Client.Test
             var client = new MessagingHubClientBuilder()
                 .WithMaxConnectionRetries(1)
                 .UsingHostName("hmg.msging.net")
+                .UsingPort(55321)
                 .UsingGuest()
                 .Build();
 

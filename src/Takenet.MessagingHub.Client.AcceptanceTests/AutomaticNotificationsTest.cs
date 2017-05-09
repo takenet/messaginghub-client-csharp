@@ -305,6 +305,7 @@ namespace Takenet.MessagingHub.Client.AcceptanceTests
 
             var client = new MessagingHubClientBuilder()
                 .UsingHostName("hmg.msging.net")
+                .UsingPort(55321)
                 .UsingAccessKey(appShortName, appAccessKey)
                 .WithMaxConnectionRetries(1)
                 .WithSendTimeout(Timeout)

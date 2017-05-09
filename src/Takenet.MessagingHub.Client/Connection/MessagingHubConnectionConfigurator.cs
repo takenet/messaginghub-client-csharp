@@ -9,23 +9,39 @@ namespace Takenet.MessagingHub.Client.Connection
         where TConfigurator : MessagingHubConnectionConfigurator<TConfigurator>
     {
         protected string Identifier { get; private set; }
+
         protected string Instance { get; private set; }
 
         protected string Password { get; private set; }
+
         protected string AccessKey { get; private set; }
+
         protected TimeSpan SendTimeout { get; private set; }
+
         protected int MaxConnectionRetries { get; private set; }
+
         protected string Domain { get; private set; }
+
         protected string Scheme { get; private set; }
+
         protected string HostName { get; private set; }
+
         protected int Port { get; private set; }
+
         protected SessionCompression Compression { get; private set; }
+
         protected SessionEncryption Encryption { get; private set; }
+
         protected RoutingRule RoutingRule { get; private set; }
+
         protected int Throughput { get; private set; }
+
         protected bool AutoNotify { get; private set; }
+
         protected int ChannelCount { get; private set; }
+
         protected Identity Identity => Identity.Parse($"{Identifier}@{Domain}");
+
         protected Uri EndPoint => new Uri($"{Scheme}://{HostName}:{Port}");
 
         protected Event[] ReceiptEvents { get; private set; }
