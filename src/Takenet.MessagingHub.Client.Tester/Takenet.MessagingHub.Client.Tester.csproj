@@ -59,8 +59,8 @@
       <HintPath>..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Takenet.Iris.Messaging, Version=1.1.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Takenet.Iris.Messaging.1.1.7\lib\net461\Takenet.Iris.Messaging.dll</HintPath>
+    <Reference Include="Takenet.Iris.Messaging, Version=1.1.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Takenet.Iris.Messaging.1.1.8\lib\net461\Takenet.Iris.Messaging.dll</HintPath>
     </Reference>
     <Reference Include="Takenet.MessagingHub.Client, Version=0.4.116.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Takenet.MessagingHub.Client.0.4.116\lib\net461\Takenet.MessagingHub.Client.dll</HintPath>

@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Messaging.Resources;
 using Lime.Protocol;
 using Takenet.MessagingHub.Client.Sender;
-using Lime.Protocol.Network;
 using SmartFormat;
 
 namespace Takenet.MessagingHub.Client.Extensions.Contacts

@@ -1,5 +1,4 @@
 ﻿using Lime.Protocol;
-using Lime.Protocol.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -13,17 +12,15 @@ namespace Takenet.MessagingHub.Client.Extensions.EventTracker
     {
         const string EVENTRACK_URI = "/event-track";
 
-
         public EventTrackExtension(IMessagingHubSender sender)
             : base(sender)
         {
         }
 
-        public async Task AddAsync(string categoryName, string actionName, CancellationToken cancellationToken = new CancellationToken())
+        public async Task AddAsync(string category, string action, IDictionary<string, string> extras = null, CancellationToken cancellationToken = new CancellationToken())
         {
-            if (string.IsNullOrEmpty(categoryName)) throw new ArgumentNullException(nameof(categoryName));
-            if (string.IsNullOrEmpty(actionName)) throw new ArgumentNullException(nameof(actionName));
-
+            if (string.IsNullOrEmpty(category)) throw new ArgumentNullException(nameof(category));
+            if (string.IsNullOrEmpty(action)) throw new ArgumentNullException(nameof(action));
 
             var requestCommand = new Command
             {
@@ -31,12 +28,31 @@ namespace Takenet.MessagingHub.Client.Extensions.EventTracker
                 Uri = new LimeUri(EVENTRACK_URI),
                 Resource = new EventTrack
                 {
-                    Category = categoryName,
-                    Action = actionName,
+                    Category = category,
+                    Action = action,
+                    Extras = extras
                 }
             };
 
             await ProcessCommandAsync(requestCommand, cancellationToken);
+        }
+
+        public Task<DocumentCollection> GetAllAsync(DateTimeOffset startDate, DateTimeOffset endDate, string category, string action, int skip = 0, int take = 20, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var commandRequest = CreateGetCommandRequest($"{EVENTRACK_URI}/{category}/{action}?{nameof(startDate)}={Uri.EscapeDataString(startDate.ToString("s"))}&{nameof(endDate)}={Uri.EscapeDataString(endDate.ToString("s"))}&${nameof(skip)}={skip}&{nameof(take)}={take}");
+            return ProcessCommandAsync<DocumentCollection>(commandRequest, cancellationToken);
+        }
+
+        public Task<DocumentCollection> GetCategoriesAsync(int take = 20, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var commandRequest = CreateGetCommandRequest($"{EVENTRACK_URI}?$take={take}");
+            return ProcessCommandAsync<DocumentCollection>(commandRequest, cancellationToken);
+        }
+
+        public Task<DocumentCollection> GetCategoryActionsCounterAsync(DateTimeOffset startDate, DateTimeOffset endDate, string category, int take = 20, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var commandRequest = CreateGetCommandRequest($"{EVENTRACK_URI}/{category}?{nameof(startDate)}={Uri.EscapeDataString(startDate.ToString("s"))}&{nameof(endDate)}={Uri.EscapeDataString(endDate.ToString("s"))}&$take={take}");
+            return ProcessCommandAsync<DocumentCollection>(commandRequest, cancellationToken);
         }
     }
 }
