@@ -19,7 +19,7 @@ namespace Takenet.MessagingHub.Client.Host
 
             if (types.Count() == 1) return types.First();
             else if (types.Count() == 0) return Type.GetType(typeName, true, true);
-            else throw new Exception($"There are multiple types named {typeName}");
+            else throw new Exception($"There are multiple types named {typeName}:\n{string.Join("\n", types.Select(t => t.AssemblyQualifiedName))}");
         }
     }
 }
