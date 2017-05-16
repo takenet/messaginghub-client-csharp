@@ -154,6 +154,11 @@ namespace Takenet.MessagingHub.Client.Host
                 }
             }
 
+            if (localServiceProvider.SecondaryServiceProvider is IServiceContainer serviceContainer)
+            {
+                return serviceContainer;
+            }
+
             return localServiceProvider;
         }
 

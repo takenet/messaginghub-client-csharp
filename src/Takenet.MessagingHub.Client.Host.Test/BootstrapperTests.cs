@@ -483,6 +483,38 @@ namespace Takenet.MessagingHub.Client.Host.Test
         }
 
         [Test]
+        public async Task Create_With_CustomServiceContainer()
+        {
+            // Arrange
+            var application = new Application
+            {
+                Identifier = "testlogin",
+                AccessKey = "12345".ToBase64(),
+                MessageReceivers = new[]
+                {
+                    new MessageApplicationReceiver
+                    {
+                        Type = nameof(SimpleMessageReceiver),
+                        MediaType = "text/plain"
+                    }
+
+                },
+                HostName = Server.ListenerUri.Host,
+                ServiceProviderType = nameof(TestServiceContainer)
+            };
+
+            // Act
+            var actual = await Bootstrapper.StartAsync(application);
+
+            // Assert
+            actual.ShouldNotBeNull();
+            TestServiceContainer.CurrentInstance.ShouldNotBeNull();
+            TestServiceContainer.CurrentInstance.Registrations.ShouldContainKeyAndValue(typeof(IServiceContainer), TestServiceContainer.CurrentInstance);
+            TestServiceContainer.CurrentInstance.Registrations.ShouldContainKey(typeof(IMessagingHubSender));
+            TestServiceContainer.CurrentInstance.Registrations.Keys.Count.ShouldBeGreaterThan(10);
+        }
+
+        [Test]
         public async Task Create_With_CustomSettings()
         {
             // Arrange
@@ -525,7 +557,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             TestMessageReceiverWithCustomSettings.InstanceCount.ShouldBe(1);
             TestMessageReceiverWithCustomSettings.DefaultSettings.Count.ShouldBe(2);
             TestMessageReceiverWithCustomSettings.DefaultSettings["setting1"].ShouldBe("value1");
-            TestMessageReceiverWithCustomSettings.DefaultSettings["setting2"].ShouldBe(22);            
+            TestMessageReceiverWithCustomSettings.DefaultSettings["setting2"].ShouldBe(22);
 
             TestMessageReceiverWithCustomSettings.CustomSettings.Setting1.ShouldBe("value1");
             TestMessageReceiverWithCustomSettings.CustomSettings.Setting2.ShouldBe(22);
@@ -640,6 +672,41 @@ namespace Takenet.MessagingHub.Client.Host.Test
         }
     }
 
+    public class TestServiceContainer : IServiceContainer
+    {
+        public static TestServiceContainer CurrentInstance;
+
+        public readonly IDictionary<Type, object> Registrations;
+
+        public TestServiceContainer()
+        {
+            Registrations = new Dictionary<Type, object>();
+            CurrentInstance = this;
+        }
+
+        public object GetService(Type serviceType)
+        {
+            try
+            {
+                return Activator.CreateInstance(serviceType);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public void RegisterService(Type serviceType, object instance)
+        {
+            Registrations.Add(serviceType, instance);
+        }
+
+        public void RegisterService(Type serviceType, Func<object> instanceFactory)
+        {
+            Registrations.Add(serviceType, instanceFactory);
+        }
+    }
+
     public class TestStartable : IStartable
     {
         public static bool _Started;
@@ -676,7 +743,6 @@ namespace Takenet.MessagingHub.Client.Host.Test
         }
     }
 
-
     public class TestStartableFactory : IFactory<IStartable>
     {
         public static IServiceProvider ServiceProvider;
@@ -691,6 +757,13 @@ namespace Takenet.MessagingHub.Client.Host.Test
         }
     }
 
+    public class SimpleMessageReceiver : IMessageReceiver
+    {
+        public Task ReceiveAsync(Message envelope, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            throw new NotImplementedException();
+        }
+    }
 
     public class TestMessageReceiver : IMessageReceiver
     {
