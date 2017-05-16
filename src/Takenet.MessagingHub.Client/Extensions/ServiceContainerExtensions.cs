@@ -12,6 +12,7 @@ using Takenet.MessagingHub.Client.Extensions.Resource;
 using Takenet.MessagingHub.Client.Extensions.Scheduler;
 using Takenet.MessagingHub.Client.Extensions.Session;
 using Takenet.MessagingHub.Client.Extensions.Threads;
+using Takenet.MessagingHub.Client.Extensions.Tunnel;
 using Takenet.MessagingHub.Client.Host;
 using Takenet.MessagingHub.Client.Sender;
 
@@ -40,6 +41,7 @@ namespace Takenet.MessagingHub.Client.Extensions
             serviceContainer.RegisterService(typeof(ITalkServiceExtension), () => new TalkServiceExtension(senderFactory()));
             serviceContainer.RegisterService(typeof(IThreadExtension), () => new ThreadExtension(senderFactory()));
             serviceContainer.RegisterService(typeof(IResourceExtension), () => new ResourceExtension(senderFactory()));
+            serviceContainer.RegisterService(typeof(ITunnelExtension), () => new TunnelExtension(senderFactory()));
 
             return serviceContainer;
         }

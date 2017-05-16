@@ -169,6 +169,12 @@ namespace Takenet.MessagingHub.Client.Host
         public Event[] ReceiptEvents { get; set; }
 
         /// <summary>
+        /// Indicates if the tunnel receivers for automatically forwarding envelopes
+        /// should be registered.
+        /// </summary>
+        public bool RegisterTunnelReceivers { get; set; }
+
+        /// <summary>
         /// Indicates which schema version must be used to publish new applications
         /// </summary>
         public const int ExpectedSchemaVersion = 2;

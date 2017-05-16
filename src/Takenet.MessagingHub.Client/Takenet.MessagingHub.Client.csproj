@@ -93,6 +93,11 @@
     <Compile Include="Extensions\ServiceContainerExtensions.cs" />
     <Compile Include="Extensions\Threads\IThreadExtension.cs" />
     <Compile Include="Extensions\Threads\ThreadExtension.cs" />
+    <Compile Include="Extensions\Tunnel\ITunnelExtension.cs" />
+    <Compile Include="Extensions\Tunnel\TunnelEnvelopeReceiver.cs" />
+    <Compile Include="Extensions\Tunnel\TunnelExtension.cs" />
+    <Compile Include="Extensions\Tunnel\TunnelMessageReceiver.cs" />
+    <Compile Include="Extensions\Tunnel\TunnelNotificationReceiver.cs" />
     <Compile Include="Host\Application.cs" />
     <Compile Include="Host\ApplicationReceiver.cs" />
     <Compile Include="Host\Bootstrapper.cs" />

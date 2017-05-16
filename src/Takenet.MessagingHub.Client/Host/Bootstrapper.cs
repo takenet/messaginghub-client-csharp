@@ -14,6 +14,7 @@ using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
 using Takenet.MessagingHub.Client.Extensions.Bucket;
 using Takenet.MessagingHub.Client.Extensions.Session;
+using Takenet.MessagingHub.Client.Extensions.Tunnel;
 
 namespace Takenet.MessagingHub.Client.Host
 {
@@ -200,14 +201,18 @@ namespace Takenet.MessagingHub.Client.Host
             var stateManager = serviceContainer.GetService<IStateManager>();
             var sessionManager = serviceContainer.GetService<ISessionManager>();
 
-            // Now creates the receivers instances
+            if (application.RegisterTunnelReceivers)
+            {
+                RegisterTunnelReceivers(application);
+            }
+
             await AddMessageReceivers(application, serviceContainer, client, typeResolver, stateManager, sessionManager);
             await AddNotificationReceivers(application, serviceContainer, client, typeResolver, stateManager, sessionManager);
             await AddCommandReceivers(application, serviceContainer, client, typeResolver);
 
             return client;
         }
-        
+
         public static void RegisterSettingsTypes(Application application, IServiceContainer serviceContainer, ITypeResolver typeResolver)
         {
             var applicationReceivers =
@@ -219,6 +224,41 @@ namespace Takenet.MessagingHub.Client.Host
             {
                 RegisterSettingsContainer(applicationReceiver, serviceContainer, typeResolver);
             }
+        }
+
+        private static void RegisterTunnelReceivers(Application application)
+        {
+            // Message
+            var messageReceivers = new List<MessageApplicationReceiver>();
+            if (application.MessageReceivers == null
+                && application.MessageReceivers.Length > 0)
+            {
+                messageReceivers.AddRange(application.MessageReceivers);
+            }
+            messageReceivers.Add(
+                new MessageApplicationReceiver
+                {
+                    Sender = $"(.+)@{TunnelExtension.TunnelAddress.Domain.Replace(".", "\\.")}\\/(.+)",
+                    Type = nameof(TunnelMessageReceiver)
+                });
+
+            application.MessageReceivers = messageReceivers.ToArray();
+
+            // Notification
+            var notificationReceivers = new List<NotificationApplicationReceiver>();
+            if (application.NotificationReceivers == null
+                && application.NotificationReceivers.Length > 0)
+            {
+                notificationReceivers.AddRange(application.NotificationReceivers);
+            }
+            notificationReceivers.Add(
+                new NotificationApplicationReceiver
+                {
+                    Sender = $"(.+)@{TunnelExtension.TunnelAddress.Domain.Replace(".", "\\.")}\\/(.+)",
+                    Type = nameof(TunnelMessageReceiver)
+                });
+
+            application.NotificationReceivers = notificationReceivers.ToArray();
         }
 
         private static async Task AddNotificationReceivers(
