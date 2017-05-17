@@ -71,5 +71,10 @@ namespace Takenet.MessagingHub.Client.Host
         /// The response.
         /// </value>
         public DocumentDefinition Response { get; set; }
+
+        /// <summary>
+        /// Gets or sets the address for forwarding the envelope in a tunnel.
+        /// </summary>
+        public string ForwardTo { get; set; }
     }
 }

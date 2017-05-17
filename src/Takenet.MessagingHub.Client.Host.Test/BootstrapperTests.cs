@@ -243,6 +243,60 @@ namespace Takenet.MessagingHub.Client.Host.Test
         }
 
         [Test]
+        public async Task Create_With_Registering_Tunnel_Should_Add_Receiver()
+        {
+            // Arrange
+            var application = new Application()
+            {
+                Identifier = "testlogin",
+                AccessKey = "12345".ToBase64(),
+                RegisterTunnelReceivers = true,
+                MessageReceivers = new[]
+                {
+                    new MessageApplicationReceiver()
+                    {
+                        Type = typeof(TestMessageReceiver).Name,
+                        MediaType = "text/plain"
+                    }
+                },
+                HostName = Server.ListenerUri.Host
+            };
+
+            // Act
+            var actual = await Bootstrapper.StartAsync(application);
+
+            // Assert
+            actual.ShouldNotBeNull();
+            TestMessageReceiver.InstanceCount.ShouldBe(1);
+        }
+
+        [Test]
+        public async Task Create_With_Message_ForwardTo_Should_Add_Receiver()
+        {
+            // Arrange
+            var application = new Application()
+            {
+                Identifier = "testlogin",
+                AccessKey = "12345".ToBase64(),
+                RegisterTunnelReceivers = true,
+                MessageReceivers = new[]
+                {
+                    new MessageApplicationReceiver()
+                    {
+                        ForwardTo = "bot@msging.net"
+                    }
+                },
+                HostName = Server.ListenerUri.Host
+            };
+
+            // Act
+            var actual = await Bootstrapper.StartAsync(application);
+
+            // Assert
+            actual.ShouldNotBeNull();
+        }
+
+        [Test]
         public async Task Create_With_MessageReceiverType_With_Settings_Should_Return_Instance()
         {
             // Arrange
@@ -372,6 +426,32 @@ namespace Takenet.MessagingHub.Client.Host.Test
             // Assert
             actual.ShouldNotBeNull();
             TestNotificationReceiver.InstanceCount.ShouldBe(3);
+        }
+
+        [Test]
+        public async Task Create_With_Notification_ForwardTo_Should_Add_Receiver()
+        {
+            // Arrange
+            var application = new Application()
+            {
+                Identifier = "testlogin",
+                AccessKey = "12345".ToBase64(),
+                RegisterTunnelReceivers = true,
+                NotificationReceivers = new[]
+                {
+                    new NotificationApplicationReceiver()
+                    {
+                        ForwardTo = "bot@msging.net"
+                    }
+                },
+                HostName = Server.ListenerUri.Host
+            };
+
+            // Act
+            var actual = await Bootstrapper.StartAsync(application);
+
+            // Assert
+            actual.ShouldNotBeNull();
         }
 
         [Test]

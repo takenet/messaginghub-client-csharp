@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DummyServer.cs" />
+    <Compile Include="Extensions\Tunnel\TunnelEnvelopeReceiverTest.cs" />
     <Compile Include="MessagingHubClientTestBase.cs" />
     <Compile Include="MessagingHubClientTests_AddCommandReceiver.cs" />
     <Compile Include="MessagingHubClientTests_AddMessageReceiver.cs" />

@@ -230,7 +230,7 @@ namespace Takenet.MessagingHub.Client.Host
         {
             // Message
             var messageReceivers = new List<MessageApplicationReceiver>();
-            if (application.MessageReceivers == null
+            if (application.MessageReceivers != null
                 && application.MessageReceivers.Length > 0)
             {
                 messageReceivers.AddRange(application.MessageReceivers);
@@ -246,7 +246,7 @@ namespace Takenet.MessagingHub.Client.Host
 
             // Notification
             var notificationReceivers = new List<NotificationApplicationReceiver>();
-            if (application.NotificationReceivers == null
+            if (application.NotificationReceivers != null
                 && application.NotificationReceivers.Length > 0)
             {
                 notificationReceivers.AddRange(application.NotificationReceivers);
@@ -255,7 +255,7 @@ namespace Takenet.MessagingHub.Client.Host
                 new NotificationApplicationReceiver
                 {
                     Sender = $"(.+)@{TunnelExtension.TunnelAddress.Domain.Replace(".", "\\.")}\\/(.+)",
-                    Type = nameof(TunnelMessageReceiver)
+                    Type = nameof(TunnelNotificationReceiver)
                 });
 
             application.NotificationReceivers = notificationReceivers.ToArray();
@@ -280,6 +280,14 @@ namespace Takenet.MessagingHub.Client.Host
                         receiver =
                             new LambdaNotificationReceiver(
                                 (notification, c) => client.SendMessageAsync(content, notification.From, c));
+                    }
+                    else if (!string.IsNullOrWhiteSpace(applicationReceiver.ForwardTo))
+                    {
+                        var tunnelExtension = serviceContainer.GetService<ITunnelExtension>();
+                        var destination = Identity.Parse(applicationReceiver.ForwardTo);
+                        receiver =
+                            new LambdaNotificationReceiver(
+                                (notification, c) => tunnelExtension.ForwardNotificationAsync(notification, destination, c));
                     }
                     else
                     {
@@ -325,6 +333,14 @@ namespace Takenet.MessagingHub.Client.Host
                         receiver =
                             new LambdaMessageReceiver(
                                 (message, c) => client.SendMessageAsync(content, message.From, c));
+                    }
+                    else if (!string.IsNullOrWhiteSpace(applicationReceiver.ForwardTo))
+                    {
+                        var tunnelExtension = serviceContainer.GetService<ITunnelExtension>();
+                        var destination = Identity.Parse(applicationReceiver.ForwardTo);
+                        receiver =
+                            new LambdaMessageReceiver(
+                                (message, c) => tunnelExtension.ForwardMessageAsync(message, destination, c));
                     }
                     else
                     {
