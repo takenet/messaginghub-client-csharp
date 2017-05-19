@@ -20,7 +20,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Tunnel
             _senderFunc = senderFunc;
         }
 
-        public async Task ReceiveAsync(TEnvelope envelope, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task ReceiveAsync(TEnvelope envelope, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!(envelope.From?.Domain?.Equals(TunnelExtension.TunnelAddress.Domain, StringComparison.OrdinalIgnoreCase) ?? false)
                 || envelope.From?.Instance == null)
