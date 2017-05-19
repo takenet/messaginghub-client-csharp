@@ -39,8 +39,8 @@
     <Reference Include="Lime.Protocol.Serialization, Version=0.7.137.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lime.Protocol.Serialization.0.7.137-beta\lib\net461\Lime.Protocol.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="Lime.Transport.Tcp, Version=0.7.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Transport.Tcp.0.7.112\lib\net461\Lime.Transport.Tcp.dll</HintPath>
+    <Reference Include="Lime.Transport.Tcp, Version=0.7.137.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Transport.Tcp.0.7.137-beta\lib\net461\Lime.Transport.Tcp.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
