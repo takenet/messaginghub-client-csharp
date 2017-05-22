@@ -37,17 +37,17 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lime.Messaging, Version=0.7.137.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Lime.Messaging.0.7.137-beta\lib\net461\Lime.Messaging.dll</HintPath>
+    <Reference Include="Lime.Messaging, Version=0.7.141.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lime.Messaging.0.7.141-beta\lib\net461\Lime.Messaging.dll</HintPath>
     </Reference>
-    <Reference Include="Lime.Protocol, Version=0.7.137.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Lime.Protocol.0.7.137-beta\lib\net461\Lime.Protocol.dll</HintPath>
+    <Reference Include="Lime.Protocol, Version=0.7.141.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lime.Protocol.0.7.141-beta\lib\net461\Lime.Protocol.dll</HintPath>
     </Reference>
-    <Reference Include="Lime.Protocol.Serialization, Version=0.7.137.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Lime.Protocol.Serialization.0.7.137-beta\lib\net461\Lime.Protocol.Serialization.dll</HintPath>
+    <Reference Include="Lime.Protocol.Serialization, Version=0.7.141.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lime.Protocol.Serialization.0.7.141-beta\lib\net461\Lime.Protocol.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="Lime.Transport.Tcp, Version=0.7.137.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Lime.Transport.Tcp.0.7.137-beta\lib\net461\Lime.Transport.Tcp.dll</HintPath>
+    <Reference Include="Lime.Transport.Tcp, Version=0.7.141.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lime.Transport.Tcp.0.7.141-beta\lib\net461\Lime.Transport.Tcp.dll</HintPath>
     </Reference>
     <Reference Include="mhh, Version=0.4.116.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Takenet.MessagingHub.Client.Host.0.4.116\lib\net461\mhh.exe</HintPath>
