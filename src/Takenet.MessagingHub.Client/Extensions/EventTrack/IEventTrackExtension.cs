@@ -8,7 +8,7 @@ namespace Takenet.MessagingHub.Client.Extensions.EventTracker
 {
     public interface IEventTrackExtension
     {
-        Task AddAsync(string category, string action, IDictionary<string, string> extras = null, CancellationToken cancellationToken = new CancellationToken());
+        Task AddAsync(string category, string action, IDictionary<string, string> extras = null, CancellationToken cancellationToken = new CancellationToken(), Identity identity = null);
 
         Task<DocumentCollection> GetCategoriesAsync(int take = 20, CancellationToken cancellationToken = new CancellationToken());
 

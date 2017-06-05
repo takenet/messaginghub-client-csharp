@@ -17,7 +17,7 @@ namespace Takenet.MessagingHub.Client.Extensions.EventTracker
         {
         }
 
-        public async Task AddAsync(string category, string action, IDictionary<string, string> extras = null, CancellationToken cancellationToken = new CancellationToken())
+        public async Task AddAsync(string category, string action, IDictionary<string, string> extras = null, CancellationToken cancellationToken = new CancellationToken(), Identity identity = null)
         {
             if (string.IsNullOrEmpty(category)) throw new ArgumentNullException(nameof(category));
             if (string.IsNullOrEmpty(action)) throw new ArgumentNullException(nameof(action));
@@ -30,7 +30,8 @@ namespace Takenet.MessagingHub.Client.Extensions.EventTracker
                 {
                     Category = category,
                     Action = action,
-                    Extras = extras
+                    Extras = extras,
+                    Identity = identity
                 }
             };
 
