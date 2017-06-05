@@ -11,6 +11,7 @@ namespace Takenet.MessagingHub.Client
     public class MessagingHubClient : IMessagingHubClient
     {
         private readonly SemaphoreSlim _semaphore;
+        private bool _started;
 
         private IMessagingHubConnection Connection { get; }
 
@@ -18,12 +19,15 @@ namespace Takenet.MessagingHub.Client
 
         public IMessagingHubSender Sender { get; }
 
+        
+
         public MessagingHubClient(IMessagingHubConnection connection, bool autoNotify = true)
         {
             Connection = connection;
             Sender = new MessagingHubSender(connection);
             Listener = new MessagingHubListener(connection, Sender, autoNotify);
             _semaphore = new SemaphoreSlim(1, 1);
+            _started = false;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken = new CancellationToken())
@@ -34,8 +38,9 @@ namespace Takenet.MessagingHub.Client
                 if (!Listening)
                 {
                     await Connection.ConnectAsync(cancellationToken);
-                    await Listener.StartAsync(cancellationToken);                    
+                    await Listener.StartAsync(cancellationToken);
                 }
+                _started = true;
             }
             finally
             {
@@ -53,6 +58,7 @@ namespace Takenet.MessagingHub.Client
                     await Listener.StopAsync(cancellationToken);
                     await Connection.DisconnectAsync(cancellationToken);                    
                 }
+                _started = false;
             }
             finally
             {
@@ -79,21 +85,25 @@ namespace Takenet.MessagingHub.Client
 
         public Task<Command> SendCommandAsync(Command command, CancellationToken cancellationToken = new CancellationToken())
         {
+            if (!_started) throw new InvalidOperationException("Client must be started before to proceed with this operation");
             return Sender.SendCommandAsync(command, cancellationToken);
         }
 
         public Task SendCommandResponseAsync(Command command, CancellationToken cancellationToken = new CancellationToken())
         {
+            if (!_started) throw new InvalidOperationException("Client must be started before to proceed with this operation");
             return Sender.SendCommandResponseAsync(command, cancellationToken);
         }
 
         public async Task SendMessageAsync(Message message, CancellationToken cancellationToken = new CancellationToken())
         {
+            if (!_started) throw new InvalidOperationException("Client must be started before to proceed with this operation");
             await Sender.SendMessageAsync(message, cancellationToken);
         }
 
         public async Task SendNotificationAsync(Notification notification, CancellationToken cancellationToken = new CancellationToken())
         {
+            if (!_started) throw new InvalidOperationException("Client must be started before to proceed with this operation");
             await Sender.SendNotificationAsync(notification, cancellationToken);
         }
     }

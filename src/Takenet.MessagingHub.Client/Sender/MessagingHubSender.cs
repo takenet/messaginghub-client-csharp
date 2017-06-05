@@ -17,25 +17,16 @@ namespace Takenet.MessagingHub.Client.Sender
 
         public Task<Command> SendCommandAsync(Command command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (!Connection.IsConnected)
-                throw new InvalidOperationException("Client must be started before to proceed with this operation");
-
             return Connection.OnDemandClientChannel.ProcessCommandAsync(command, cancellationToken);
         }
 
         public Task SendCommandResponseAsync(Command command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (!Connection.IsConnected)
-                throw new InvalidOperationException("Client must be started before to proceed with this operation");
-
             return Connection.OnDemandClientChannel.SendCommandAsync(command, cancellationToken);
         }
 
         public Task SendMessageAsync(Message message, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (!Connection.IsConnected)
-                throw new InvalidOperationException("Client must be started before to proceed with this operation");
-
             return Connection.OnDemandClientChannel.SendMessageAsync(message, cancellationToken);
         }
 
@@ -45,10 +36,7 @@ namespace Takenet.MessagingHub.Client.Sender
         public Task SendNotificationAsync(Notification notification, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(notification.Id)) return Task.CompletedTask;
-
-            if (!Connection.IsConnected)
-                throw new InvalidOperationException("A connection must be established before to proceed with this operation!");
-
+            
             return Connection.OnDemandClientChannel.SendNotificationAsync(notification, cancellationToken);
         }
     }

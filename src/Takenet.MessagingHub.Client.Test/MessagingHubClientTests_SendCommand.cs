@@ -48,12 +48,5 @@ namespace Takenet.MessagingHub.Client.Test
             result.Status.ShouldBe(CommandStatus.Success);
             result.Id.ShouldBe(commandId);
         }
-
-        [Test]
-        public void Send_Command_Without_Start_Should_Throw_Exception()
-        {
-            //Act / Assert
-            Should.ThrowAsync<InvalidOperationException>(async () => await MessagingHubSender.SendCommandAsync(Arg.Any<Command>(), CancellationToken.None).ConfigureAwait(false)).Wait();
-        }
     }
 }
