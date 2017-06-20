@@ -83,8 +83,8 @@
       <HintPath>..\..\packages\Takenet.MessagingHub.Client.Template.0.4.65\lib\net461\Takenet.MessagingHub.Client.Template.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Takenet.Textc, Version=0.2.20.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Takenet.Textc.0.2.20\lib\net451\Takenet.Textc.dll</HintPath>
+    <Reference Include="Takenet.Textc, Version=0.2.26.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Takenet.Textc.0.2.26\lib\net451\Takenet.Textc.dll</HintPath>
     </Reference>
     <Reference Include="Topshelf, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Topshelf.4.0.3\lib\net452\Topshelf.dll</HintPath>

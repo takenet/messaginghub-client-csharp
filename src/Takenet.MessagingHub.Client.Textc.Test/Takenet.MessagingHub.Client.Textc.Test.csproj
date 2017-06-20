@@ -54,8 +54,8 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="Takenet.Textc, Version=0.2.20.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Takenet.Textc.0.2.20\lib\net451\Takenet.Textc.dll</HintPath>
+    <Reference Include="Takenet.Textc, Version=0.2.26.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Takenet.Textc.0.2.26\lib\net451\Takenet.Textc.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
