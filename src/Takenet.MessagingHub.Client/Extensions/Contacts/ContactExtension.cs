@@ -30,8 +30,8 @@ namespace Takenet.MessagingHub.Client.Extensions.Contacts
 
         public Task SetAsync(Identity identity, Contact contact, CancellationToken cancellationToken)
         {
-            if (identity == null) throw new ArgumentNullException(nameof(identity));
             if (contact == null) throw new ArgumentNullException(nameof(contact));
+            contact.Identity = identity ?? throw new ArgumentNullException(nameof(identity));
 
             var requestCommand = CreateSetCommandRequest(
                 contact,
