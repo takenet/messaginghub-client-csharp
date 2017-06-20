@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using Takenet.MessagingHub.Client.Host;
 
 namespace Takenet.MessagingHub.Client.Textc
 {
@@ -21,9 +22,13 @@ namespace Takenet.MessagingHub.Client.Textc
 
         public string ScorerType { get; set; }
 
+        public string TextSplitterType { get; set; }
+
         public TextcMessageReceiverContextCommandSettings Context { get; set; }
 
         public string MatchNotFoundReturnText { get; set; }
+
+        public DocumentDefinition MatchNotFoundReturn { get; set; }
 
         public string ExceptionHandlerType { get; set; }
 

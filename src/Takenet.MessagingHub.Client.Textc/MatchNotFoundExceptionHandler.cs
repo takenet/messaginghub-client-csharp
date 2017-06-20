@@ -10,9 +10,9 @@ namespace Takenet.MessagingHub.Client.Textc
     public class MatchNotFoundExceptionHandler : IExceptionHandler
     {
         private readonly IMessagingHubSender _sender;
-        private readonly string _messageContent;
+        private readonly Document _messageContent;
 
-        public MatchNotFoundExceptionHandler(IMessagingHubSender sender, string messageContent)
+        public MatchNotFoundExceptionHandler(IMessagingHubSender sender, Document messageContent)
         {
             _sender = sender;
             _messageContent = messageContent;

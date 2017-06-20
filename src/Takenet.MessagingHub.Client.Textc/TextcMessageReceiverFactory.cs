@@ -39,6 +39,12 @@ namespace Takenet.MessagingHub.Client.Textc
                         serviceProvider, settings, textcMessageReceiverSettings.ScorerType, builder).ConfigureAwait(false);
                 }
 
+                if (textcMessageReceiverSettings.TextSplitterType != null)
+                {
+                    builder = await SetupTextSplitterAsync(
+                        serviceProvider, settings, textcMessageReceiverSettings.TextSplitterType, builder).ConfigureAwait(false);
+                }
+
                 if (textcMessageReceiverSettings.Context != null)
                 {
                     builder = await SetupContextProviderAsync(
@@ -47,7 +53,12 @@ namespace Takenet.MessagingHub.Client.Textc
 
                 if (textcMessageReceiverSettings.MatchNotFoundReturnText != null)
                 {
-                    builder = builder.WithMatchNotFoundReturnText(textcMessageReceiverSettings.MatchNotFoundReturnText);
+                    builder = builder.WithMatchNotFoundReturn(textcMessageReceiverSettings.MatchNotFoundReturnText);
+                }
+
+                if (textcMessageReceiverSettings.MatchNotFoundReturn != null)
+                {
+                    builder = builder.WithMatchNotFoundReturn(textcMessageReceiverSettings.MatchNotFoundReturn.ToDocument());
                 }
 
                 if (textcMessageReceiverSettings.ExceptionHandlerType != null)
@@ -161,6 +172,14 @@ namespace Takenet.MessagingHub.Client.Textc
                 scorer = await Bootstrapper.CreateAsync<IExpressionScorer>(scorerType, serviceProvider, settings, TypeResolver.Instance).ConfigureAwait(false);
             }
             builder = builder.WithExpressionScorer(scorer);
+            return builder;
+        }
+
+        private static async Task<TextcMessageReceiverBuilder> SetupTextSplitterAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings,
+            string textSplitterType, TextcMessageReceiverBuilder builder)
+        {            
+            var textSplitter = await Bootstrapper.CreateAsync<ITextSplitter>(textSplitterType, serviceProvider, settings, TypeResolver.Instance).ConfigureAwait(false);            
+            builder = builder.WithTextSplitter(textSplitter);
             return builder;
         }
 

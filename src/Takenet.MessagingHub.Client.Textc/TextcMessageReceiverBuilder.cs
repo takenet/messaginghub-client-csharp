@@ -29,6 +29,7 @@ namespace Takenet.MessagingHub.Client.Textc
         private readonly IOutputProcessor _outputProcessor;
         private ISyntaxParser _syntaxParser;
         private IExpressionScorer _expressionScorer;
+        private ITextSplitter _textSplitter;
         private ICultureProvider _cultureProvider;
         private readonly List<Func<IOutputProcessor, ICommandProcessor>> _commandProcessorFactories;
         private readonly IMessagingHubSender _sender;
@@ -131,12 +132,12 @@ namespace Takenet.MessagingHub.Client.Textc
             new SyntaxTextcMessageReceiverBuilder(_commandProcessorFactories, syntaxes.ToList(), this);
 
         /// <summary>
-        /// Sets the message text to be returned in case of no match of the user input.
+        /// Sets the message content to be returned in case of no match of the user input.
         /// </summary>
         /// <param name="matchNotFoundReturnText">The message text.</param>
         /// <returns></returns>
-        public TextcMessageReceiverBuilder WithMatchNotFoundReturnText(string matchNotFoundReturnText) => 
-            WithExceptionHandler(new MatchNotFoundExceptionHandler(_sender, matchNotFoundReturnText));
+        public TextcMessageReceiverBuilder WithMatchNotFoundReturn(Document matchNotFoundReturn) => 
+            WithExceptionHandler(new MatchNotFoundExceptionHandler(_sender, matchNotFoundReturn));
 
         /// <summary>
         /// Sets a handler to be called in case of no match of the user input.
@@ -194,6 +195,18 @@ namespace Takenet.MessagingHub.Client.Textc
         }
 
         /// <summary>
+        /// Defines a text splitter to be used by the instance of <see cref="TextProcessor"/> for the current <see cref="TextcMessageReceiver"/>.
+        /// </summary>
+        /// <param name="expressionScorer">The expression scorer instance.</param>
+        /// <returns></returns>
+        public TextcMessageReceiverBuilder WithTextSplitter(ITextSplitter textSplitter)
+        {
+            if (textSplitter == null) throw new ArgumentNullException(nameof(textSplitter));
+            _textSplitter = textSplitter;
+            return this;
+        }
+
+        /// <summary>
         /// Defines a culture provider for the session contexts to be used by the instance of <see cref="TextProcessor"/> for the current <see cref="TextcMessageReceiver"/>.
         /// </summary>
         /// <param name="cultureProvider">The culture provider instance.</param>
@@ -222,7 +235,7 @@ namespace Takenet.MessagingHub.Client.Textc
         /// <returns></returns>
         public TextcMessageReceiver Build()
         {
-            var textProcessor = new TextProcessor(_syntaxParser, _expressionScorer);
+            var textProcessor = new TextProcessor(_syntaxParser, _expressionScorer, _textSplitter);
             foreach (var commandProcessorFactory in _commandProcessorFactories)
             {
                 textProcessor.CommandProcessors.Add(
