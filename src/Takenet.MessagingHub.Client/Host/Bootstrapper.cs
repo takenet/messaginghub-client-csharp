@@ -86,6 +86,7 @@ namespace Takenet.MessagingHub.Client.Host
             if (application.SessionEncryption.HasValue) builder = builder.UsingEncryption(application.SessionEncryption.Value);
             if (application.SessionCompression.HasValue) builder = builder.UsingCompression(application.SessionCompression.Value);
             if (application.Throughput != 0) builder = builder.WithThroughput(application.Throughput);
+            if (application.ChannelBuffer != 0) builder = builder.WithChannelBuffer(application.ChannelBuffer);
             if (application.DisableNotify) builder = builder.WithAutoNotify(false);
             if (application.ChannelCount.HasValue) builder = builder.WithChannelCount(application.ChannelCount.Value);
             if (application.ReceiptEvents != null && application.ReceiptEvents.Any())

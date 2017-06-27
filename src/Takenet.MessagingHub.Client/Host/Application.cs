@@ -162,6 +162,8 @@ namespace Takenet.MessagingHub.Client.Host
         /// </summary>
         public int Throughput { get; set; }
 
+        public int ChannelBuffer { get; set; }
+
         public bool DisableNotify { get; set; }
         
         public int? ChannelCount { get; set; }

@@ -46,6 +46,8 @@ namespace Takenet.MessagingHub.Client.Connection
 
         protected Event[] ReceiptEvents { get; private set; }
 
+        protected int ChannelBuffer { get; private set; }
+
         public MessagingHubConnectionConfigurator()
         {
             Domain = Constants.DEFAULT_DOMAIN;
@@ -59,6 +61,7 @@ namespace Takenet.MessagingHub.Client.Connection
             RoutingRule = RoutingRule.Identity;
             AutoNotify = true;
             ChannelCount = 1;
+            ChannelBuffer = 100;
             ReceiptEvents = new Event[] { Event.Accepted, Event.Dispatched, Event.Received, Event.Consumed, Event.Failed };
         }
 
@@ -181,6 +184,12 @@ namespace Takenet.MessagingHub.Client.Connection
         public TConfigurator WithThroughput(int throughput)
         {
             Throughput = throughput;
+            return (TConfigurator)this;
+        }
+
+        public TConfigurator WithChannelBuffer(int channelBuffer)
+        {
+            ChannelBuffer = channelBuffer;
             return (TConfigurator)this;
         }
     }
