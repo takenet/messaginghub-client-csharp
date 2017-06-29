@@ -5,7 +5,7 @@ The **Blip Messaging Hub Client** is a set of Nuget packages that allow the crea
 
 ## Getting Started
 
-To get started with the Blip Messaging Hub Client, see our SDK documentation [here](https://blip.ai/portal/#/docs/home).
+To get started with the Blip Messaging Hub Client, see our SDK documentation [here](https://portal.blip.ai/#/docs/home).
 
 An introdutory application can be found [here](https://github.com/takenet/messaginghub-client-csharp/tree/master/src/Samples/GettingStarted), but we encourage you to use the *Messaging Hub Application Template* as described below.
 
@@ -15,7 +15,7 @@ To easily create Messaging Hub applications, create a new *class library* projec
 
 ## Documentation
 
-The full documentation can be found at [https://blip.ai/portal/#/docs/home](https://blip.ai/portal/#/docs/home).
+The full documentation can be found at [https://portal.blip.ai/#/docs/home](https://portal.blip.ai/#/docs/home).
 
 ## License
 

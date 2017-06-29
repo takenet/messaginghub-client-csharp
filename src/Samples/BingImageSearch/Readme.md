@@ -7,7 +7,7 @@ O primeiro passo é, no Visual Studio, criar um novo projeto do tipo Class Libra
 Install-Package Takenet.MessagingHub.Client.Template
 
 Desta forma, é adicionado ao projeto entre outras dependências, o arquivo application.json, onde ficam registrados os receivers de mensagens e notificações. Os receivers são as entidades responsáveis por processar as mensagens e notificações recebidas realizando ações específicas (invocando APIs, salvando informações no banco de dados, etc.) e, se necessário, enviar uma resposta ao usuário.
-Para mais informações acessar a documentação: https://blip.ai/portal/#/docs/home
+Para mais informações acessar a documentação: https://portal.blip.ai/#/docs/home
 
 ## Passo 2 - Configurando o BOT
 Vamos obter um identifier e accessKey para configurar o seu application.json, acesse o portal http://blip.ai e registre o seu contato, utilizando a opção Chat Bot SDK. Após a criação do seu contato você vai encontrar as informações no menu configuração, coloque então os valores no seu arquivo application.json.
