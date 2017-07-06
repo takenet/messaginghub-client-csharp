@@ -23,7 +23,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Contacts
             if (identity == null) throw new ArgumentNullException(nameof(identity));
 
             var requestCommand = CreateGetCommandRequest(
-                Smart.Format(UriTemplates.CONTACT, new { contactIdentity = Uri.EscapeDataString(identity.ToString()) }));
+                Smart.Format(Lime.Messaging.Resources.UriTemplates.CONTACT, new { contactIdentity = Uri.EscapeDataString(identity.ToString()) }));
 
             return ProcessCommandAsync<Contact>(requestCommand, cancellationToken);
         }
@@ -35,7 +35,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Contacts
 
             var requestCommand = CreateSetCommandRequest(
                 contact,
-                UriTemplates.CONTACTS);
+                Lime.Messaging.Resources.UriTemplates.CONTACTS);
 
             return ProcessCommandAsync(requestCommand, cancellationToken);
         }
@@ -45,7 +45,7 @@ namespace Takenet.MessagingHub.Client.Extensions.Contacts
             if (identity == null) throw new ArgumentNullException(nameof(identity));
 
             var requestCommand = CreateDeleteCommandRequest(
-                Smart.Format(UriTemplates.CONTACT, new { contactIdentity = Uri.EscapeDataString(identity.ToString()) }));
+                Smart.Format(Lime.Messaging.Resources.UriTemplates.CONTACT, new { contactIdentity = Uri.EscapeDataString(identity.ToString()) }));
 
             return ProcessCommandAsync(requestCommand, cancellationToken);
         }
