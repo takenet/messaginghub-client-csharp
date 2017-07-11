@@ -595,6 +595,39 @@ namespace Takenet.MessagingHub.Client.Host.Test
         }
 
         [Test]
+        public async Task Create_With_CustomStateManager()
+        {
+            // Arrange
+            var application = new Application
+            {
+                Identifier = "testlogin",
+                AccessKey = "12345".ToBase64(),
+                MessageReceivers = new[]
+                {
+                    new MessageApplicationReceiver
+                    {
+                        Type = nameof(SimpleMessageReceiver),
+                        MediaType = "text/plain"
+                    }
+                },
+                HostName = Server.ListenerUri.Host,
+                StateManagerType = nameof(TestStateManager),
+                ServiceProviderType = nameof(TestServiceContainerWithStateManager)
+            };
+
+            // Act
+            var actual = await Bootstrapper.StartAsync(application);
+
+            // Assert
+            actual.ShouldNotBeNull();
+            TestStateManager.CurrentInstance.ShouldNotBeNull();
+            var factoryRegistration = TestServiceContainer.CurrentInstance.Registrations[typeof(IStateManager)];
+            var factory = factoryRegistration.ShouldBeOfType<Func<object>>();
+            var instance = factory();
+            instance.ShouldBeOfType<TestStateManager>();
+        }
+
+        [Test]
         public async Task Create_With_CustomSettings()
         {
             // Arrange
@@ -768,6 +801,9 @@ namespace Takenet.MessagingHub.Client.Host.Test
         {
             try
             {
+                if (Registrations.TryGetValue(serviceType, out var service))
+                    return service;
+
                 return Activator.CreateInstance(serviceType);
             }
             catch
@@ -784,6 +820,43 @@ namespace Takenet.MessagingHub.Client.Host.Test
         public void RegisterService(Type serviceType, Func<object> instanceFactory)
         {
             Registrations.Add(serviceType, instanceFactory);
+        }
+    }
+
+    public class TestStateManager : IStateManager
+    {
+        public static TestStateManager CurrentInstance;
+
+        public TestStateManager()
+        {
+            CurrentInstance = this;
+        }
+
+        public TimeSpan StateTimeout { get; set; }
+
+        public event EventHandler<StateEventArgs> StateChanged;
+
+        public Task<string> GetStateAsync(Identity identity)
+        {
+            return Task.FromResult(Constants.DEFAULT_STATE);
+        }
+
+        public Task ResetStateAsync(Identity identity)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task SetStateAsync(Identity identity, string state)
+        {
+            return Task.CompletedTask;
+        }
+    }
+
+    public class TestServiceContainerWithStateManager : TestServiceContainer
+    {
+        public TestServiceContainerWithStateManager()
+        {
+            Registrations.Add(typeof(TestStateManager), new TestStateManager());
         }
     }
 
