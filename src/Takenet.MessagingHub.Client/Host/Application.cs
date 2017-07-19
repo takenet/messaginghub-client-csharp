@@ -129,6 +129,11 @@ namespace Takenet.MessagingHub.Client.Host
         public string ServiceProviderType { get; set; }
 
         /// <summary>
+        /// Gets or sets a type to be used as the state manager for message receivers. It must be an implementation of <see cref="IStateManager"/>.
+        /// </summary>
+        public string StateManagerType { get; set; }
+
+        /// <summary>
         /// Gets or sets the session encryption mode to be used
         /// </summary>
         /// <value>

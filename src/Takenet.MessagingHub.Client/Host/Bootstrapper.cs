@@ -7,14 +7,13 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
-using Lime.Protocol.Serialization;
 using Newtonsoft.Json;
 using Takenet.MessagingHub.Client.Extensions;
-using Takenet.MessagingHub.Client.Listener;
-using Takenet.MessagingHub.Client.Sender;
 using Takenet.MessagingHub.Client.Extensions.Bucket;
 using Takenet.MessagingHub.Client.Extensions.Session;
 using Takenet.MessagingHub.Client.Extensions.Tunnel;
+using Takenet.MessagingHub.Client.Listener;
+using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Host
 {
@@ -188,12 +187,12 @@ namespace Takenet.MessagingHub.Client.Host
         {
             RegisterSettingsContainer(application, serviceContainer, typeResolver);
             RegisterSettingsTypes(application, serviceContainer, typeResolver);
+            RegisterStateManager(application, serviceContainer, typeResolver);
 
             serviceContainer.RegisterExtensions();
             serviceContainer.RegisterService(typeof(IServiceProvider), serviceContainer);
             serviceContainer.RegisterService(typeof(IServiceContainer), serviceContainer);
             serviceContainer.RegisterService(typeof(Application), application);
-            serviceContainer.RegisterService(typeof(IStateManager), () => new BucketStateManager(serviceContainer.GetService<IBucketExtension>()));
 
             var client = builder();
             serviceContainer.RegisterService(typeof(IMessagingHubSender), client);
@@ -224,6 +223,19 @@ namespace Takenet.MessagingHub.Client.Host
             foreach (var applicationReceiver in applicationReceivers.Where(a => a.SettingsType != null))
             {
                 RegisterSettingsContainer(applicationReceiver, serviceContainer, typeResolver);
+            }
+        }
+
+        public static void RegisterStateManager(Application application, IServiceContainer serviceContainer, ITypeResolver typeResolver)
+        {
+            if (string.IsNullOrWhiteSpace(application.StateManagerType))
+            {
+                serviceContainer.RegisterService(typeof(IStateManager), () => new BucketStateManager(serviceContainer.GetService<IBucketExtension>()));
+            }
+            else
+            {
+                var stateManagerType = typeResolver.Resolve(application.StateManagerType);
+                serviceContainer.RegisterService(typeof(IStateManager), () => serviceContainer.GetService(stateManagerType));
             }
         }
 
