@@ -27,8 +27,6 @@ namespace Takenet.MessagingHub.Client.Extensions
 
         protected async Task<T> ProcessCommandAsync<T>(Command requestCommand, CancellationToken cancellationToken) where T : Document
         {
-            if (requestCommand.Method != CommandMethod.Get) throw new ArgumentException("Invalid command method. The expected is 'get'.", nameof(requestCommand));
-
             var responseCommand = await Sender
                 .SendCommandAsync(requestCommand, cancellationToken)
                 .ConfigureAwait(false);
