@@ -19,7 +19,19 @@ namespace Takenet.MessagingHub.Client.Extensions.ArtificialIntelligence
         }
 
         public Task<AnalysisResponse> AnalyzeAsync(AnalysisRequest analysisRequest, CancellationToken cancellationToken = default(CancellationToken)) 
-            => ProcessCommandAsync<AnalysisResponse>(CreateSetCommandRequest(analysisRequest, UriTemplates.ANALYSIS, ArtificialIntelligenceAddress), cancellationToken);
+            => ProcessCommandAsync<AnalysisResponse>(
+                CreateSetCommandRequest(
+                    analysisRequest, UriTemplates.ANALYSIS, ArtificialIntelligenceAddress), 
+                cancellationToken);
+
+        public Task SendFeedbackAsync(string analysisId, AnalysisFeedback analysisFeedback,
+            CancellationToken cancellationToken = new CancellationToken())
+            => ProcessCommandAsync<AnalysisFeedback>(
+                CreateSetCommandRequest(
+                    analysisFeedback,
+                    Smart.Format(UriTemplates.ANALYSIS_FEEDBACK, new { analysisId }),
+                    ArtificialIntelligenceAddress),
+                cancellationToken);
 
         public Task<Answer> GetAnswerAsync(string intentionId, string answerId, CancellationToken cancellationToken = default(CancellationToken))
             => ProcessCommandAsync<Answer>(

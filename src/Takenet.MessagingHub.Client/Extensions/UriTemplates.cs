@@ -258,5 +258,10 @@ namespace Takenet.MessagingHub.Client.Extensions
         /// Template for an AI models.
         /// </summary>
         public const string MODELS = "/models";
+
+        /// <summary>
+        /// Template for an AI analysis feedback.
+        /// </summary>
+        public const string ANALYSIS_FEEDBACK = "/analysis/{analysisId}/feedback";
     }
 }

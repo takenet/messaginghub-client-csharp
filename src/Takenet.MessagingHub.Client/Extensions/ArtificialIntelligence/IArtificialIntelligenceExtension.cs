@@ -153,5 +153,14 @@ namespace Takenet.MessagingHub.Client.Extensions.ArtificialIntelligence
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<AnalysisResponse> AnalyzeAsync(AnalysisRequest analysisRequest, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Send a feedback to a executed analysis to help improving the model.
+        /// </summary>
+        /// <param name="analysisId"></param>
+        /// <param name="analysisFeedback"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task SendFeedbackAsync(string analysisId, AnalysisFeedback analysisFeedback, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
