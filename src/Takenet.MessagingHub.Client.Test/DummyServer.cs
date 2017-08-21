@@ -69,7 +69,7 @@ namespace Takenet.MessagingHub.Client.Test
                             AuthenticationScheme.Plain,
                             AuthenticationScheme.Transport,
                         },
-                        (n, a) => new AuthenticationResult(null, clientNode), _cts.Token);
+                        (n, a) => new AuthenticationResult(null, clientNode).AsCompletedTask(), _cts.Token);
 
                     var channelListener = new ChannelListener(
                         m => TaskUtil.TrueCompletedTask,
