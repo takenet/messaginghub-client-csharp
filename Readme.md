@@ -1,5 +1,9 @@
 
-> Note: This SDK version is deprecated. Please check the new version at https://github.com/takenet/blip-sdk-csharp
+# Deprecation notice
+This SDK version is deprecated. Please check the new version at https://github.com/takenet/blip-sdk-csharp
+
+
+## Introduction
 
 The **Blip Messaging Hub Client** is a set of Nuget packages that allow the creation of [Blip Messaging Hub](https://blip.ai/) applications.
 
