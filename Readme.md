@@ -1,4 +1,6 @@
 
+> Note: This SDK version is deprecated. Please check the new version at https://github.com/takenet/blip-sdk-csharp
+
 The **Blip Messaging Hub Client** is a set of Nuget packages that allow the creation of [Blip Messaging Hub](https://blip.ai/) applications.
 
 <a href="https://www.nuget.org/packages/Takenet.MessagingHub.Client.Template/" rel="NuGet">![NuGet](https://img.shields.io/nuget/v/Takenet.MessagingHub.Client.Template.svg)</a>
