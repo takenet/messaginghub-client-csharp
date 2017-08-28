@@ -35,7 +35,7 @@ namespace RssContact
         {
             Trace.WriteLine($"From: {message.From} \tContent: {message.Content}");
 
-            await _eventTracker.AddAsync(MessageReceived.Category, MessageReceived.Action, cancellationToken);
+            await _eventTracker.AddAsync(MessageReceived.Category, MessageReceived.Action, cancellationToken: cancellationToken);
             try
             {
                 Uri feedUri;
@@ -43,7 +43,7 @@ namespace RssContact
                 {
                     await _attendance.ForwardMessageToAttendantAsync(message, _operator, cancellationToken);
                     //await SendMessageAsync("URL inválida", message.From, cancellationToken);
-                    await _eventTracker.AddAsync(MessageReceivedFailed.Category, MessageReceivedFailed.Action, cancellationToken);
+                    await _eventTracker.AddAsync(MessageReceivedFailed.Category, MessageReceivedFailed.Action, cancellationToken: cancellationToken);
                     return;
                 }
 
@@ -53,13 +53,13 @@ namespace RssContact
                 {
                     await SendMessageAsync($"[{item.Title}]\n{item.Content}", message.From, cancellationToken);
                 }
-                await _eventTracker.AddAsync(MessageReceivedSuccess.Category, MessageReceivedSuccess.Action, cancellationToken);
+                await _eventTracker.AddAsync(MessageReceivedSuccess.Category, MessageReceivedSuccess.Action, cancellationToken: cancellationToken);
             }
             catch (Exception e)
             {
                 Trace.WriteLine(e);
                 await SendMessageAsync("Houve um erro ao processar o feed.\nPor favor, tenta novamente.", message.From, cancellationToken);
-                await _eventTracker.AddAsync(MessageReceivedFailed.Category, MessageReceivedFailed.Action, cancellationToken);
+                await _eventTracker.AddAsync(MessageReceivedFailed.Category, MessageReceivedFailed.Action, cancellationToken: cancellationToken);
             }
         }
 
@@ -67,7 +67,7 @@ namespace RssContact
         {
             return Task.WhenAll(
                 _sender.SendMessageAsync(text, to, cancellationToken),
-                _eventTracker.AddAsync(MessageSent.Category, MessageSent.Action, cancellationToken));
+                _eventTracker.AddAsync(MessageSent.Category, MessageSent.Action, cancellationToken: cancellationToken));
         }
     }
 }
