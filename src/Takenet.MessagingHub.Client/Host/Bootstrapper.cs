@@ -337,8 +337,6 @@ namespace Takenet.MessagingHub.Client.Host
         {
             if (application.MessageReceivers != null && application.MessageReceivers.Length > 0)
             {
-                var messageReceiverFactory = GetMessageReceiverFactory(serviceContainer);
-
                 foreach (var applicationReceiver in application.MessageReceivers)
                 {
                     IMessageReceiver receiver;
@@ -360,7 +358,7 @@ namespace Takenet.MessagingHub.Client.Host
                     else
                     {
                         var receiverType = typeResolver.Resolve(applicationReceiver.Type);
-                        receiver = new FactoryMessageReceiverWrapper(messageReceiverFactory, receiverType, applicationReceiver.Settings);
+                        receiver = await BuildByLifetimeAsync(applicationReceiver.Lifetime, receiverType, applicationReceiver.Settings, serviceContainer);
                     }
 
                     if (applicationReceiver.OutState != null)
@@ -505,6 +503,19 @@ namespace Takenet.MessagingHub.Client.Host
             return instance;
         }
 
+        private static Task<IMessageReceiver> BuildByLifetimeAsync(string lifetime, Type receiverType, IDictionary<string, object> settings, IServiceContainer serviceContainer)
+        {
+            if ("scoped".Equals(lifetime, StringComparison.InvariantCultureIgnoreCase))
+            {
+                var messageReceiverFactory = GetMessageReceiverFactory(serviceContainer);
+                return Task.FromResult<IMessageReceiver>(new ScopedMessageReceiverWrapper(messageReceiverFactory, receiverType, settings));
+            }
+            else
+            {
+                return CreateAsync<IMessageReceiver>(receiverType, serviceContainer, settings);
+            }
+        }
+
         private static IMessageReceiverFactory GetMessageReceiverFactory(IServiceContainer container)
         {
             IMessageReceiverFactory containerResolved = null;
@@ -575,13 +586,13 @@ namespace Takenet.MessagingHub.Client.Host
             }
         }
 
-        private class FactoryMessageReceiverWrapper : IMessageReceiver
+        private class ScopedMessageReceiverWrapper : IMessageReceiver
         {
             private readonly IMessageReceiverFactory _messageReceiverFactory;
             private readonly Type _receiverType;
             private readonly IDictionary<string, object> _settings;
 
-            public FactoryMessageReceiverWrapper(IMessageReceiverFactory messageReceiverFactory, Type receiverType, IDictionary<string, object> settings) 
+            public ScopedMessageReceiverWrapper(IMessageReceiverFactory messageReceiverFactory, Type receiverType, IDictionary<string, object> settings) 
             {
                 _messageReceiverFactory = messageReceiverFactory;
                 _receiverType = receiverType;

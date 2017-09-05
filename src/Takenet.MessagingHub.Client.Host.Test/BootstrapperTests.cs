@@ -207,7 +207,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
         }
 
         [Test]
-        public async Task Create_With_MessageReceiverType_Should_NotReturn_Instance()
+        public async Task Create_With_MessageReceiverType_Should_Return_Instance()
         {
             // Arrange
             var application = new Application()
@@ -239,7 +239,44 @@ namespace Takenet.MessagingHub.Client.Host.Test
 
             // Assert
             actual.ShouldNotBeNull();
-            TestMessageReceiver.InstanceCount.ShouldBe(0);
+            TestMessageReceiver.InstanceCount.ShouldBe(3);
+        }
+
+        [Test]
+        public async Task Create_With_MessageReceiverTypeAndScopedLifetime_Should_NotReturn_Instance()
+        {
+            // Arrange
+            var application = new Application()
+            {
+                Identifier = "testlogin",
+                AccessKey = "12345".ToBase64(),
+                MessageReceivers = new[]
+                {
+                    new MessageApplicationReceiver()
+                    {
+                        Type = typeof(TestMessageReceiver).Name,
+                        MediaType = "text/plain",
+                        Lifetime = "scoped"
+                    },
+                    new MessageApplicationReceiver()
+                    {
+                        Type = typeof(TestMessageReceiver).Name,
+                        MediaType = "application/json"
+                    },
+                    new MessageApplicationReceiver()
+                    {
+                        Type = typeof(TestMessageReceiver).AssemblyQualifiedName
+                    }
+                },
+                HostName = Server.ListenerUri.Host
+            };
+
+            // Act
+            var actual = await Bootstrapper.StartAsync(application);
+
+            // Assert
+            actual.ShouldNotBeNull();
+            TestMessageReceiver.InstanceCount.ShouldBe(2);
         }
 
         [Test]
