@@ -119,6 +119,7 @@
     <Compile Include="Host\ITypeResolver.cs" />
     <Compile Include="Host\MessageApplicationReceiver.cs" />
     <Compile Include="Host\NotificationApplicationReceiver.cs" />
+    <Compile Include="Host\ReceiverLifetime.cs" />
     <Compile Include="Host\ServiceProviderExtensions.cs" />
     <Compile Include="Host\SettingsContainer.cs" />
     <Compile Include="Host\TypeResolver.cs" />
