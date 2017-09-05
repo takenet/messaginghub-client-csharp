@@ -207,7 +207,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
         }
 
         [Test]
-        public async Task Create_With_MessageReceiverType_Should_Return_Instance()
+        public async Task Create_With_MessageReceiverType_Should_NotReturn_Instance()
         {
             // Arrange
             var application = new Application()
@@ -239,7 +239,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
 
             // Assert
             actual.ShouldNotBeNull();
-            TestMessageReceiver.InstanceCount.ShouldBe(3);
+            TestMessageReceiver.InstanceCount.ShouldBe(0);
         }
 
         [Test]

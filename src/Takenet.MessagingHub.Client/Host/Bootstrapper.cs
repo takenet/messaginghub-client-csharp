@@ -337,6 +337,8 @@ namespace Takenet.MessagingHub.Client.Host
         {
             if (application.MessageReceivers != null && application.MessageReceivers.Length > 0)
             {
+                var messageReceiverFactory = GetMessageReceiverFactory(serviceContainer);
+
                 foreach (var applicationReceiver in application.MessageReceivers)
                 {
                     IMessageReceiver receiver;
@@ -357,9 +359,8 @@ namespace Takenet.MessagingHub.Client.Host
                     }
                     else
                     {
-                        receiver = await CreateAsync<IMessageReceiver>(
-                            applicationReceiver.Type, serviceContainer, applicationReceiver.Settings, typeResolver)
-                            .ConfigureAwait(false);
+                        var receiverType = typeResolver.Resolve(applicationReceiver.Type);
+                        receiver = new FactoryMessageReceiverWrapper(messageReceiverFactory, receiverType, applicationReceiver.Settings);
                     }
 
                     if (applicationReceiver.OutState != null)
@@ -504,6 +505,20 @@ namespace Takenet.MessagingHub.Client.Host
             return instance;
         }
 
+        private static IMessageReceiverFactory GetMessageReceiverFactory(IServiceContainer container)
+        {
+            IMessageReceiverFactory containerResolved = null;
+            try
+            {
+                 containerResolved = container.GetService<IMessageReceiverFactory>();
+            }
+            catch
+            {
+            }
+
+            return containerResolved ?? new MessageReceiverFactory(container);
+        }
+
         private class StoppableWrapper : IStoppable
         {
             private readonly IStoppable[] _stoppables;
@@ -559,5 +574,64 @@ namespace Takenet.MessagingHub.Client.Host
                 await _stateManager.SetStateAsync(envelope.From.ToIdentity(), _state);
             }
         }
+
+        private class FactoryMessageReceiverWrapper : IMessageReceiver
+        {
+            private readonly IMessageReceiverFactory _messageReceiverFactory;
+            private readonly Type _receiverType;
+            private readonly IDictionary<string, object> _settings;
+
+            public FactoryMessageReceiverWrapper(IMessageReceiverFactory messageReceiverFactory, Type receiverType, IDictionary<string, object> settings) 
+            {
+                _messageReceiverFactory = messageReceiverFactory;
+                _receiverType = receiverType;
+                _settings = settings;
+            }
+
+            public async Task ReceiveAsync(Message message, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                var receiver = await _messageReceiverFactory.CreateAsync(_receiverType, _settings)
+                        .ConfigureAwait(false);
+
+                try
+                {
+                    await receiver
+                            .ReceiveAsync(message, cancellationToken)
+                            .ConfigureAwait(false);
+                }
+                finally
+                {
+                    await _messageReceiverFactory.ReleaseAsync(receiver);
+                }
+
+            }
+        }
+
+        private class MessageReceiverFactory : IMessageReceiverFactory
+        {
+            private IServiceProvider _provider;
+
+            public MessageReceiverFactory(IServiceProvider provider)
+            {
+                this._provider = provider;
+            }
+
+            public Task<IMessageReceiver> CreateAsync(Type receiverType, IDictionary<string, object> settings)
+            {
+                return CreateAsync<IMessageReceiver>(receiverType, _provider, settings);
+            }
+
+            public Task ReleaseAsync(IMessageReceiver receiver)
+            {
+                return Task.CompletedTask;
+            }
+        }
+
+    }
+
+    public interface IMessageReceiverFactory
+    {
+        Task<IMessageReceiver> CreateAsync(Type receiverType, IDictionary<string, object> settings);
+        Task ReleaseAsync(IMessageReceiver receiver);
     }
 }
