@@ -24,6 +24,6 @@ namespace Takenet.MessagingHub.Client.Host
         /// - singleton (default)
         /// - scoped (an instance per message request)
         /// </summary>
-        public string Lifetime { get; set; }
+        public ReceiverLifetime? Lifetime { get; set; }
     }
 }

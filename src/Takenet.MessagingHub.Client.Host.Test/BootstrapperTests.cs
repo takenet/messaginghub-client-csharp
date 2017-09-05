@@ -256,7 +256,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
                     {
                         Type = typeof(TestMessageReceiver).Name,
                         MediaType = "text/plain",
-                        Lifetime = "scoped"
+                        Lifetime = ReceiverLifetime.Scoped
                     },
                     new MessageApplicationReceiver()
                     {
