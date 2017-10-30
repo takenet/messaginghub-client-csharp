@@ -36,16 +36,27 @@ namespace Takenet.MessagingHub.Client.Connection
                                  .AddCommandModule(c => new ReplyPingChannelModule(c));
 
             channelBuilder =
-                channelBuilder.AddBuiltHandler(
-                    (c, t) =>
-                    {
-                        if (Throughput > 0)
+                channelBuilder
+                    .AddBuiltHandler(
+                        (c, t) =>
                         {
-                            ThroughputControlChannelModule.CreateAndRegister(c, Throughput);
-                        }
+                            if (Throughput > 0)
+                            {
+                                ThroughputControlChannelModule.CreateAndRegister(c, Throughput);
+                            }
 
-                        return Task.CompletedTask;
-                    });
+                            return Task.CompletedTask;
+                        })
+                    .AddBuiltHandler(
+                        (c, t) =>
+                        {
+                            if (ChannelCount > 1)
+                            {
+                                FillEnvelopeRecipientsChannelModule.CreateAndRegister(c);
+                            }
+
+                            return Task.CompletedTask;
+                        });
 
 
             var establishedClientChannelBuilder = new EstablishedClientChannelBuilder(channelBuilder)
