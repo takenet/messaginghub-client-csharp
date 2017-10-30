@@ -41,7 +41,11 @@ namespace Takenet.MessagingHub.Client.Extensions
             serviceContainer.RegisterService(typeof(ITalkServiceExtension), () => new TalkServiceExtension(senderFactory()));
             serviceContainer.RegisterService(typeof(IThreadExtension), () => new ThreadExtension(senderFactory()));
             serviceContainer.RegisterService(typeof(IResourceExtension), () => new ResourceExtension(senderFactory()));
-            serviceContainer.RegisterService(typeof(ITunnelExtension), () => new TunnelExtension(senderFactory()));
+            serviceContainer.RegisterService(typeof(ITunnelExtension), () => 
+            {
+                var application = serviceContainer.GetService<Application>();
+                return new TunnelExtension(senderFactory(), application);
+            });
             serviceContainer.RegisterService(typeof(IArtificialIntelligenceExtension), () => new ArtificialIntelligenceExtension(senderFactory()));
 
             return serviceContainer;

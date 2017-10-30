@@ -9,15 +9,15 @@ namespace Takenet.MessagingHub.Client.Extensions.Tunnel
 {
     public class TunnelExtension : ITunnelExtension
     {
-        public readonly Node TunnelAddress;
+        public static Node TunnelAddress => Node.Parse($"postmaster@tunnel.{Domain ?? Constants.DEFAULT_DOMAIN}");
+        private static string Domain;
 
         private readonly IMessagingHubSender _sender;
 
         public TunnelExtension(IMessagingHubSender sender, Application application)
         {
             _sender = sender;
-            var domain = string.IsNullOrWhiteSpace(application.Domain) ? Constants.DEFAULT_DOMAIN : application.Domain;
-            TunnelAddress = Node.Parse($"postmaster@tunnel.{domain}");
+            Domain = string.IsNullOrWhiteSpace(application.Domain) ? Constants.DEFAULT_DOMAIN : application.Domain;
         }
 
         public Task<Node> ForwardMessageAsync(Message message, Identity destination, CancellationToken cancellationToken)
