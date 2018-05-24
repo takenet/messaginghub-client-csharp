@@ -44,8 +44,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lime.Protocol, Version=0.7.197.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lime.Protocol.0.7.197\lib\net461\Lime.Protocol.dll</HintPath>
+    <Reference Include="Lime.Protocol, Version=0.7.278.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lime.Protocol.0.7.278\lib\net461\Lime.Protocol.dll</HintPath>
     </Reference>
     <Reference Include="Lime.Protocol.Serialization, Version=0.7.73.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lime.Protocol.Serialization.0.7.73\lib\net461\Lime.Protocol.Serialization.dll</HintPath>
