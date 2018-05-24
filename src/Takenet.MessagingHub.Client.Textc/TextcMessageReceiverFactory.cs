@@ -131,7 +131,7 @@ namespace Takenet.MessagingHub.Client.Textc
                                 var path = new FileInfo(assembly.Location).DirectoryName;
                                 ReferencesUtil.LoadAssembliesAndReferences(path, assemblyFilter: ReferencesUtil.IgnoreSystemAndMicrosoftAssembliesFilter,
                                     ignoreExceptionLoadingReferencedAssembly: true);
-                                var processorType = TypeResolver.Instance.Resolve(processorTypeName);
+                                var processorType = new TypeResolver().Resolve(processorTypeName);
                                 object processor;
                                 if (!ProcessorInstancesDictionary.TryGetValue(processorType, out processor))
                                 {
@@ -169,7 +169,7 @@ namespace Takenet.MessagingHub.Client.Textc
             }
             else
             {
-                scorer = await Bootstrapper.CreateAsync<IExpressionScorer>(scorerType, serviceProvider, settings, TypeResolver.Instance).ConfigureAwait(false);
+                scorer = await Bootstrapper.CreateAsync<IExpressionScorer>(scorerType, serviceProvider, settings, new TypeResolver()).ConfigureAwait(false);
             }
             builder = builder.WithExpressionScorer(scorer);
             return builder;
@@ -178,7 +178,7 @@ namespace Takenet.MessagingHub.Client.Textc
         private static async Task<TextcMessageReceiverBuilder> SetupTextSplitterAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings,
             string textSplitterType, TextcMessageReceiverBuilder builder)
         {            
-            var textSplitter = await Bootstrapper.CreateAsync<ITextSplitter>(textSplitterType, serviceProvider, settings, TypeResolver.Instance).ConfigureAwait(false);            
+            var textSplitter = await Bootstrapper.CreateAsync<ITextSplitter>(textSplitterType, serviceProvider, settings, new TypeResolver()).ConfigureAwait(false);            
             builder = builder.WithTextSplitter(textSplitter);
             return builder;
         }
@@ -186,7 +186,7 @@ namespace Takenet.MessagingHub.Client.Textc
         private static async Task<TextcMessageReceiverBuilder> SetupContextProviderAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings,
             TextcMessageReceiverContextCommandSettings context, TextcMessageReceiverBuilder builder)
         {
-            var contextProvider = await Bootstrapper.CreateAsync<IContextProvider>(context.Type, serviceProvider, settings, TypeResolver.Instance).ConfigureAwait(false);
+            var contextProvider = await Bootstrapper.CreateAsync<IContextProvider>(context.Type, serviceProvider, settings, new TypeResolver()).ConfigureAwait(false);
             builder = builder.WithContextProvider(contextProvider);
             return builder;
         }
@@ -194,7 +194,7 @@ namespace Takenet.MessagingHub.Client.Textc
         private static async Task<TextcMessageReceiverBuilder> SetupExceptionHandlerAsync(IServiceProvider serviceProvider, IDictionary<string, object> settings,
             string matchNotFoundHandlerType, TextcMessageReceiverBuilder builder)
         {
-            var exceptionHandler = await Bootstrapper.CreateAsync<IExceptionHandler>(matchNotFoundHandlerType, serviceProvider, settings, TypeResolver.Instance).ConfigureAwait(false);
+            var exceptionHandler = await Bootstrapper.CreateAsync<IExceptionHandler>(matchNotFoundHandlerType, serviceProvider, settings, new TypeResolver()).ConfigureAwait(false);
             builder = builder.WithExceptionHandler(exceptionHandler);
             return builder;
         }
@@ -205,7 +205,7 @@ namespace Takenet.MessagingHub.Client.Textc
             foreach (var textPreprocessorType in textcMessageReceiverSettings.PreProcessorTypes)
             {
                 var textPreprocessor = await Bootstrapper.CreateAsync<ITextPreprocessor>(
-                    textPreprocessorType, serviceProvider, settings, TypeResolver.Instance).ConfigureAwait(false);
+                    textPreprocessorType, serviceProvider, settings, new TypeResolver()).ConfigureAwait(false);
                 builder = builder.AddTextPreprocessor(textPreprocessor);
             }
             return builder;

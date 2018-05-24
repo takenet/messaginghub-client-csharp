@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
 using Lime.Protocol.Serialization;
+using Lime.Protocol.Server;
 using NUnit.Framework;
 using Shouldly;
 using Takenet.MessagingHub.Client.Listener;
@@ -15,15 +16,19 @@ using Takenet.MessagingHub.Client.Test;
 namespace Takenet.MessagingHub.Client.Host.Test
 {
     [TestFixture]
-    public class BootstrapperTests
+    public class BootstrapperTests : TestsBase
     {
         public DummyServer Server;
+
+        public ITypeResolver TypeResolver { get; set; }
+
 
         [SetUp]
         public async Task SetUpAsync()
         {
             Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             Server = new DummyServer();
+            TypeResolver = new TypeResolver(new AssemblyProvider(typeof(BootstrapperTests).GetTypeInfo().Assembly, typeof(MessagingHubClient).GetTypeInfo().Assembly));
             await Server.StartAsync();
         }
 
@@ -61,7 +66,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -80,7 +85,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -99,7 +104,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -119,7 +124,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -144,7 +149,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -168,7 +173,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -195,7 +200,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -235,7 +240,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -272,7 +277,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -300,7 +305,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -327,7 +332,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -366,7 +371,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -399,7 +404,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             // Act & Assert
             Should.Throw<Exception>(async () =>
             {
-                var actual = await Bootstrapper.StartAsync(application);
+                var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
             });
         }
 
@@ -425,7 +430,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             // Act & Assert
             Should.Throw<Exception>(async () =>
             {
-                var actual = await Bootstrapper.StartAsync(application);
+                var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
             });
         }
 
@@ -458,7 +463,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -485,7 +490,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -521,7 +526,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -561,7 +566,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -590,7 +595,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -621,7 +626,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -653,7 +658,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -699,7 +704,7 @@ namespace Takenet.MessagingHub.Client.Host.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken, application, typeResolver: TypeResolver);
 
             // Assert
             actual.ShouldNotBeNull();

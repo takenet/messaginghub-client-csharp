@@ -1,25 +1,45 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace Takenet.MessagingHub.Client.Host
 {
     public sealed class TypeResolver : ITypeResolver
     {
-        private TypeResolver()
+        public TypeResolver()
+            : this(Path.GetDirectoryName((Assembly.GetEntryAssembly() ?? typeof(TypeResolver).GetTypeInfo().Assembly).Location))
         {
+
         }
 
-        public static TypeResolver Instance => new TypeResolver();
+        public TypeResolver(string workingDir)
+            : this(new PathAssemblyProvider(workingDir))
+        {
+
+        }
+
+        public TypeResolver(IAssemblyProvider assemblyProvider)
+        {
+            if (assemblyProvider == null) throw new ArgumentNullException(nameof(assemblyProvider));
+            LoadedTypes = assemblyProvider.GetAssemblies()
+                .SelectMany(a => a.GetTypes())
+                .ToList();
+        }
+
+        public IEnumerable<Type> LoadedTypes { get; }
 
         public Type Resolve(string typeName)
         {
-            var types = ReferencesUtil
-                            .GetAllLoadedTypes()
-                            .Where(t => t.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase));
+            if (typeName == null) throw new ArgumentNullException(nameof(typeName));
+            var types = LoadedTypes
+                .Where(t => t.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase))
+                .ToArray();
 
-            if (types.Count() == 1) return types.First();
-            else if (types.Count() == 0) return Type.GetType(typeName, true, true);
-            else throw new Exception($"There are multiple types named {typeName}:\n{string.Join("\n", types.Select(t => t.AssemblyQualifiedName))}");
+            if (types.Length == 1) return types[0];
+            if (types.Length == 0) return Type.GetType(typeName, true, true);
+            throw new Exception($"There are multiple types named '{typeName}'");
         }
     }
 }

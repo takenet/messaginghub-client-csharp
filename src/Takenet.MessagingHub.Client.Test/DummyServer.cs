@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
@@ -8,13 +9,10 @@ using Lime.Protocol.Serialization.Newtonsoft;
 using Lime.Protocol.Server;
 using Lime.Protocol.Util;
 using Lime.Transport.Tcp;
-using Takenet.MessagingHub.Client.Listener;
-using IStartable = Takenet.MessagingHub.Client.Listener.IStartable;
-using IStoppable = Takenet.MessagingHub.Client.Listener.IStoppable;
 
 namespace Takenet.MessagingHub.Client.Test
 {
-    public sealed class DummyServer : IDisposable, IStartable, IStoppable
+    public sealed class DummyServer : IStartable, IStoppable, IDisposable
     {
         private readonly CancellationTokenSource _cts;
         private readonly TcpTransportListener _transportListener;
@@ -24,7 +22,7 @@ namespace Takenet.MessagingHub.Client.Test
         public DummyServer()
             : this(new Uri("net.tcp://localhost:443"))
         {
-            
+
         }
 
         public DummyServer(Uri listenerUri)
@@ -32,7 +30,11 @@ namespace Takenet.MessagingHub.Client.Test
             ListenerUri = listenerUri;
             _cts = new CancellationTokenSource();
             _transportListener = new TcpTransportListener(ListenerUri, null, new JsonNetSerializer());
-
+            Channels = new Queue<ServerChannel>();
+            Authentications = new Queue<Authentication>();
+            Messages = new Queue<Message>();
+            Notifications = new Queue<Notification>();
+            Commands = new Queue<Command>();
         }
 
         public Uri ListenerUri { get; }
@@ -42,22 +44,19 @@ namespace Takenet.MessagingHub.Client.Test
             await ListenerSemaphore.WaitAsync(cancellationToken);
 
             await _transportListener.StartAsync();
-#pragma warning disable 4014
-            ProducerConsumer.CreateAsync(
 
+            ProducerConsumer.CreateAsync(
                 c => _transportListener.AcceptTransportAsync(c),
-                async t =>
+                async transport =>
                 {
-                    await t.OpenAsync(null, _cts.Token);
+                    await transport.OpenAsync(null, _cts.Token);
 
                     var serverChannel = new ServerChannel(
                         Guid.NewGuid().ToString(),
                         new Node("postmaster", "msging.net", "instance"),
-                        t,
+                        transport,
                         TimeSpan.FromSeconds(60),
                         autoReplyPings: true);
-
-                    var clientNode = new Node("client", "msging.net", "instance");
 
                     await serverChannel.EstablishSessionAsync(
                         new[] { SessionCompression.None },
@@ -69,13 +68,26 @@ namespace Takenet.MessagingHub.Client.Test
                             AuthenticationScheme.Plain,
                             AuthenticationScheme.Transport,
                         },
-                        (n, a) => new AuthenticationResult(null, clientNode).AsCompletedTask(), _cts.Token);
+                        (n, a) =>
+                        {
+                            Authentications.Enqueue(a);
+                            return new AuthenticationResult(null, n).AsCompletedTask();
+                        }, _cts.Token);
 
                     var channelListener = new ChannelListener(
-                        m => TaskUtil.TrueCompletedTask,
-                        n => TaskUtil.TrueCompletedTask,
+                        m =>
+                        {
+                            Messages.Enqueue(m);
+                            return TaskUtil.TrueCompletedTask;
+                        },
+                        n =>
+                        {
+                            Notifications.Enqueue(n);
+                            return TaskUtil.TrueCompletedTask;
+                        },
                         async c =>
                         {
+                            Commands.Enqueue(c);
                             if (c.Status == CommandStatus.Pending)
                             {
                                 await serverChannel.SendCommandAsync(
@@ -89,12 +101,23 @@ namespace Takenet.MessagingHub.Client.Test
                             return true;
                         });
 
-                    channelListener.Start(serverChannel);                    
+                    channelListener.Start(serverChannel);
+                    Channels.Enqueue(serverChannel);
 
                     return true;
                 },
                 _cts.Token);
         }
+
+        public Queue<ServerChannel> Channels { get; }
+
+        public Queue<Authentication> Authentications { get; }
+
+        public Queue<Message> Messages { get; }
+
+        public Queue<Notification> Notifications { get; }
+
+        public Queue<Command> Commands { get; }
 
         public async Task StopAsync(CancellationToken cancellationToken = default(CancellationToken))
         {

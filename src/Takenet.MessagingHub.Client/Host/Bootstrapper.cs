@@ -7,7 +7,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
+using Lime.Protocol.Server;
 using Newtonsoft.Json;
+using Takenet.MessagingHub.Client.Connection;
 using Takenet.MessagingHub.Client.Extensions;
 using Takenet.MessagingHub.Client.Extensions.Bucket;
 using Takenet.MessagingHub.Client.Extensions.Session;
@@ -24,19 +26,14 @@ namespace Takenet.MessagingHub.Client.Host
         /// <summary>
         /// Creates ans starts an application with the given settings.
         /// </summary>
+        /// <param name="cancellationToken"></param>
         /// <param name="application">The application instance. If not defined, the class will look for an application.json file in the current directory.</param>
         /// <param name="loadAssembliesFromWorkingDirectory">if set to <c>true</c> indicates to the bootstrapper to load all assemblies from the current working directory.</param>
         /// <param name="path">Assembly path to load</param>
         /// <param name="builder">The builder instance to be used.</param>
         /// <param name="typeResolver">The type provider.</param>
-        /// <returns></returns>
-        /// <exception cref="System.IO.FileNotFoundException">Could not find the '{DefaultApplicationFileName}'</exception>
-        /// <exception cref="System.ArgumentException">At least an access key or password must be defined</exception>
-        /// <exception cref="FileNotFoundException"></exception>
-        /// <exception cref="ArgumentException">At least an access key or password must be defined</exception>
-        /// <exception cref="FileNotFoundException"></exception>
-        /// <exception cref="ArgumentException">At least an access key or password must be defined</exception>
         public static async Task<IStoppable> StartAsync(
+            CancellationToken cancellationToken,
             Application application = null, 
             bool loadAssembliesFromWorkingDirectory = true, 
             string path = ".", 
@@ -45,16 +42,14 @@ namespace Takenet.MessagingHub.Client.Host
         {
             if (application == null)
             {
-                if (!File.Exists(DefaultApplicationFileName)) throw new FileNotFoundException($"Could not find the '{DefaultApplicationFileName}' file", DefaultApplicationFileName);
+                if (!File.Exists(DefaultApplicationFileName))
+                {
+                    throw new FileNotFoundException($"Could not find the '{DefaultApplicationFileName}' file", DefaultApplicationFileName);
+                }
                 application = Application.ParseFromJsonFile(DefaultApplicationFileName);
             }
 
-            if (loadAssembliesFromWorkingDirectory)
-            {
-                ReferencesUtil.LoadAssembliesAndReferences(path, assemblyFilter: ReferencesUtil.IgnoreSystemAndMicrosoftAssembliesFilter, ignoreExceptionLoadingReferencedAssembly: true);
-            }
-
-            if (builder == null) builder = new MessagingHubClientBuilder();
+            if (builder == null) builder = new MessagingHubClientBuilder(new TcpTransportFactory());
             if (application.Identifier != null)
             {
                 if (application.Password != null)
@@ -85,23 +80,23 @@ namespace Takenet.MessagingHub.Client.Host
             if (application.SessionEncryption.HasValue) builder = builder.UsingEncryption(application.SessionEncryption.Value);
             if (application.SessionCompression.HasValue) builder = builder.UsingCompression(application.SessionCompression.Value);
             if (application.Throughput != 0) builder = builder.WithThroughput(application.Throughput);
-            if (application.ChannelBuffer != 0) builder = builder.WithChannelBuffer(application.ChannelBuffer);
             if (application.DisableNotify) builder = builder.WithAutoNotify(false);
             if (application.ChannelCount.HasValue) builder = builder.WithChannelCount(application.ChannelCount.Value);
-            if (application.ReceiptEvents != null && application.ReceiptEvents.Any())
+            if (application.ReceiptEvents != null && application.ReceiptEvents.Length > 0)
+            {
                 builder = builder.WithReceiptEvents(application.ReceiptEvents);
-            else if(application.ReceiptEvents != null)
+            }
+            else if (application.ReceiptEvents != null)
+            {
                 builder = builder.WithReceiptEvents(new[] { Event.Failed });
+            }
 
-            if (typeResolver == null) typeResolver = TypeResolver.Instance;
-
+            if (typeResolver == null) typeResolver = new TypeResolver();
             var localServiceProvider = BuildServiceProvider(application, typeResolver);
 
             localServiceProvider.RegisterService(typeof(MessagingHubClientBuilder), builder);
 
-            var client = await BuildMessagingHubClientAsync(application, builder.Build, localServiceProvider, typeResolver);
-
-            await client.StartAsync().ConfigureAwait(false);
+            var client = await BuildClientAsync(application, builder.Build, localServiceProvider, typeResolver, cancellationToken);
 
             var stoppables = new IStoppable[2];
             stoppables[0] = client;
@@ -113,21 +108,6 @@ namespace Takenet.MessagingHub.Client.Host
 
             return new StoppableWrapper(stoppables);
         }
-
-        public static async Task<IStartable> BuildStartupAsync(Application application, IServiceContainer localServiceProvider, ITypeResolver typeResolver)
-        {
-            if (application.StartupType == null) return null;
-
-            var startable = await CreateAsync<IStartable>(
-                application.StartupType,
-                localServiceProvider,
-                application.Settings,
-                typeResolver)
-                .ConfigureAwait(false);
-            await startable.StartAsync().ConfigureAwait(false);
-            return startable;
-        }
-
         public static IServiceContainer BuildServiceProvider(Application application, ITypeResolver typeResolver)
         {
             var localServiceProvider = new TypeServiceProvider();
@@ -163,26 +143,26 @@ namespace Takenet.MessagingHub.Client.Host
             return localServiceProvider;
         }
 
-        public static void RegisterSettingsContainer(SettingsContainer settingsContainer, IServiceContainer serviceContainer, ITypeResolver typeResolver)
+        public static async Task<IStartable> BuildStartupAsync(Application application, IServiceContainer localServiceProvider, ITypeResolver typeResolver)
         {
-            if (settingsContainer.SettingsType != null)
-            {
-                var settingsDictionary = settingsContainer.Settings;
-                var settingsType = typeResolver.Resolve(settingsContainer.SettingsType);
-                if (settingsType != null)
-                {
-                    var settingsJson = JsonConvert.SerializeObject(settingsDictionary, Application.SerializerSettings);
-                    var settings = JsonConvert.DeserializeObject(settingsJson, settingsType, Application.SerializerSettings);
-                    serviceContainer.RegisterService(settingsType, settings);
-                }
-            }
+            if (application.StartupType == null) return null;
+
+            var startable = await CreateAsync<IStartable>(
+                application.StartupType,
+                localServiceProvider,
+                application.Settings,
+                typeResolver)
+                .ConfigureAwait(false);
+            await startable.StartAsync().ConfigureAwait(false);
+            return startable;
         }
 
-        public static async Task<IMessagingHubClient> BuildMessagingHubClientAsync(
+        public static async Task<IMessagingHubClient> BuildClientAsync(
             Application application,
             Func<IMessagingHubClient> builder,
             IServiceContainer serviceContainer,
             ITypeResolver typeResolver,
+            CancellationToken cancellationToken,
             Action<IServiceContainer> serviceOverrides = null)
         {
             RegisterSettingsContainer(application, serviceContainer, typeResolver);
@@ -193,6 +173,7 @@ namespace Takenet.MessagingHub.Client.Host
             serviceContainer.RegisterService(typeof(IServiceProvider), serviceContainer);
             serviceContainer.RegisterService(typeof(IServiceContainer), serviceContainer);
             serviceContainer.RegisterService(typeof(Application), application);
+            serviceContainer.RegisterService(typeof(ISessionManager), () => new SessionManager(serviceContainer.GetService<IBucketExtension>()));
 
             var client = builder();
             serviceContainer.RegisterService(typeof(IMessagingHubSender), client);
@@ -206,11 +187,30 @@ namespace Takenet.MessagingHub.Client.Host
                 RegisterTunnelReceivers(application);
             }
 
-            await AddMessageReceivers(application, serviceContainer, client, typeResolver, stateManager, sessionManager);
-            await AddNotificationReceivers(application, serviceContainer, client, typeResolver, stateManager, sessionManager);
-            await AddCommandReceivers(application, serviceContainer, client, typeResolver);
+            var channelListener = new MessagingHubListener(client, !application.DisableNotify);
+
+            await AddMessageReceivers(application, serviceContainer, client, channelListener, typeResolver, stateManager, sessionManager);
+            await AddNotificationReceivers(application, serviceContainer, client, channelListener, typeResolver, stateManager, sessionManager);
+            await AddCommandReceivers(application, serviceContainer, channelListener, typeResolver);
+
+            await client.StartAsync(channelListener, cancellationToken).ConfigureAwait(false);
 
             return client;
+        }
+
+        public static void RegisterSettingsContainer(SettingsContainer settingsContainer, IServiceContainer serviceContainer, ITypeResolver typeResolver)
+        {
+            if (settingsContainer.SettingsType != null)
+            {
+                var settingsDictionary = settingsContainer.Settings;
+                var settingsType = typeResolver.Resolve(settingsContainer.SettingsType);
+                if (settingsType != null)
+                {
+                    var settingsJson = JsonConvert.SerializeObject(settingsDictionary, Application.SerializerSettings);
+                    var settings = JsonConvert.DeserializeObject(settingsJson, settingsType, Application.SerializerSettings);
+                    serviceContainer.RegisterService(settingsType, settings);
+                }
+            }
         }
 
         public static void RegisterSettingsTypes(Application application, IServiceContainer serviceContainer, ITypeResolver typeResolver)
@@ -238,6 +238,7 @@ namespace Takenet.MessagingHub.Client.Host
                 serviceContainer.RegisterService(typeof(IStateManager), () => serviceContainer.GetService(stateManagerType));
             }
         }
+
 
         private static void RegisterTunnelReceivers(Application application)
         {
@@ -274,10 +275,12 @@ namespace Takenet.MessagingHub.Client.Host
             application.NotificationReceivers = notificationReceivers.ToArray();
         }
 
+
         private static async Task AddNotificationReceivers(
-            Application application, 
-            IServiceContainer serviceContainer, 
-            IMessagingHubClient client, 
+            Application application,
+            IServiceContainer serviceContainer,
+            IMessagingHubSender sender,
+            IMessagingHubListener channelListener,
             ITypeResolver typeResolver,
             IStateManager stateManager,
             ISessionManager sessionManager)
@@ -292,7 +295,7 @@ namespace Takenet.MessagingHub.Client.Host
                         var content = applicationReceiver.Response.ToDocument();
                         receiver =
                             new LambdaNotificationReceiver(
-                                (notification, c) => client.SendMessageAsync(content, notification.From, c));
+                                (notification, c) => sender.SendMessageAsync(content, notification.From, c));
                     }
                     else if (!string.IsNullOrWhiteSpace(applicationReceiver.ForwardTo))
                     {
@@ -322,7 +325,7 @@ namespace Takenet.MessagingHub.Client.Host
                         notificationPredicate = async (n) => await currentNotificationPredicate(n) && n.Event.Equals(applicationReceiver.EventType);
                     }
 
-                    client.AddNotificationReceiver(receiver, notificationPredicate, applicationReceiver.Priority);
+                    channelListener.AddNotificationReceiver(receiver, notificationPredicate, applicationReceiver.Priority);
                 }
             }
         }
@@ -330,7 +333,8 @@ namespace Takenet.MessagingHub.Client.Host
         public static async Task AddMessageReceivers(
             Application application,
             IServiceContainer serviceContainer,
-            IMessagingHubClient client,
+            IMessagingHubSender sender,
+            IMessagingHubListener channelListener,
             ITypeResolver typeResolver,
             IStateManager stateManager,
             ISessionManager sessionManager)
@@ -345,7 +349,7 @@ namespace Takenet.MessagingHub.Client.Host
                         var content = applicationReceiver.Response.ToDocument();
                         receiver =
                             new LambdaMessageReceiver(
-                                (message, c) => client.SendMessageAsync(content, message.From, c));
+                                (message, c) => sender.SendMessageAsync(content, message.From, c));
                     }
                     else if (!string.IsNullOrWhiteSpace(applicationReceiver.ForwardTo))
                     {
@@ -359,9 +363,9 @@ namespace Takenet.MessagingHub.Client.Host
                     {
                         var receiverType = typeResolver.Resolve(applicationReceiver.Type);
                         receiver = await BuildByLifetimeAsync(
-                            applicationReceiver.Lifetime ?? application.DefaultMessageReceiverLifetime, 
-                            receiverType, 
-                            applicationReceiver.Settings, 
+                            applicationReceiver.Lifetime ?? application.DefaultMessageReceiverLifetime,
+                            receiverType,
+                            applicationReceiver.Settings,
                             serviceContainer);
                     }
 
@@ -386,15 +390,15 @@ namespace Takenet.MessagingHub.Client.Host
                         messagePredicate = async (m) => await currentMessagePredicate(m) && contentRegex.IsMatch(m.Content.ToString());
                     }
 
-                    client.AddMessageReceiver(receiver, messagePredicate, applicationReceiver.Priority);
+                    channelListener.AddMessageReceiver(receiver, messagePredicate, applicationReceiver.Priority);
                 }
             }
         }
 
         private static async Task AddCommandReceivers(
-            Application application, 
-            IServiceContainer serviceContainer, 
-            IMessagingHubClient client, 
+            Application application,
+            IServiceContainer serviceContainer,
+            IMessagingHubListener channelListener,
             ITypeResolver typeResolver)
         {
             if (application.CommandReceivers == null || application.CommandReceivers.Length == 0)
@@ -437,7 +441,7 @@ namespace Takenet.MessagingHub.Client.Host
                     predicate = async (c) => await currentPredicate(c) && mediaTypeRegex.IsMatch(c.Type.ToString());
                 }
 
-                client.AddCommandReceiver(receiver, predicate, commandReceiver.Priority);
+                channelListener.AddCommandReceiver(receiver, predicate, commandReceiver.Priority);
             }
         }
 
@@ -478,6 +482,7 @@ namespace Takenet.MessagingHub.Client.Host
 
             return predicate;
         }
+
 
         public static Task<T> CreateAsync<T>(string typeName, IServiceProvider serviceProvider, IDictionary<string, object> settings, ITypeResolver typeResolver) where T : class
         {
@@ -526,7 +531,7 @@ namespace Takenet.MessagingHub.Client.Host
             IMessageReceiverFactory containerResolved = null;
             try
             {
-                 containerResolved = container.GetService<IMessageReceiverFactory>();
+                containerResolved = container.GetService<IMessageReceiverFactory>();
             }
             catch
             {
@@ -556,7 +561,7 @@ namespace Takenet.MessagingHub.Client.Host
 
         private class SetStateMessageReceiver : SetStateEnvelopeReceiver<Message>, IMessageReceiver
         {
-            public SetStateMessageReceiver(IEnvelopeReceiver<Message> receiver, IStateManager stateManager, string state) 
+            public SetStateMessageReceiver(IEnvelopeReceiver<Message> receiver, IStateManager stateManager, string state)
                 : base(receiver, stateManager, state)
             {
             }
@@ -564,7 +569,7 @@ namespace Takenet.MessagingHub.Client.Host
 
         private class SetStateNotificationReceiver : SetStateEnvelopeReceiver<Notification>, INotificationReceiver
         {
-            public SetStateNotificationReceiver(IEnvelopeReceiver<Notification> receiver, IStateManager stateManager, string state) 
+            public SetStateNotificationReceiver(IEnvelopeReceiver<Notification> receiver, IStateManager stateManager, string state)
                 : base(receiver, stateManager, state)
             {
             }
@@ -597,7 +602,7 @@ namespace Takenet.MessagingHub.Client.Host
             private readonly Type _receiverType;
             private readonly IDictionary<string, object> _settings;
 
-            public ScopedMessageReceiverWrapper(IMessageReceiverFactory messageReceiverFactory, Type receiverType, IDictionary<string, object> settings) 
+            public ScopedMessageReceiverWrapper(IMessageReceiverFactory messageReceiverFactory, Type receiverType, IDictionary<string, object> settings)
             {
                 _messageReceiverFactory = messageReceiverFactory;
                 _receiverType = receiverType;
@@ -621,7 +626,6 @@ namespace Takenet.MessagingHub.Client.Host
                             .ReleaseAsync(receiver)
                             .ConfigureAwait(false);
                 }
-
             }
         }
 

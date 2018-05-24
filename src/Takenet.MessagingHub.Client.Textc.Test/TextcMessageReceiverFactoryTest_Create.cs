@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Lime.Protocol;
+using Lime.Protocol.Server;
 using NUnit.Framework;
 using Shouldly;
 using Takenet.MessagingHub.Client.Host;

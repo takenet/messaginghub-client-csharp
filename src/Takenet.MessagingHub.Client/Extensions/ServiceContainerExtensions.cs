@@ -36,7 +36,6 @@ namespace Takenet.MessagingHub.Client.Extensions
             serviceContainer.RegisterService(typeof(IEventTrackExtension), () => new EventTrackExtension(senderFactory()));
             serviceContainer.RegisterService(typeof(IProfileExtension), () => new ProfileExtension(senderFactory()));
             serviceContainer.RegisterService(typeof(IBucketExtension), bucketExtensionFactory);
-            serviceContainer.RegisterService(typeof(ISessionManager), () => new SessionManager(bucketExtensionFactory()));
             serviceContainer.RegisterService(typeof(IAttendanceExtension), () => new AttendanceExtension(senderFactory()));
             serviceContainer.RegisterService(typeof(ITalkServiceExtension), () => new TalkServiceExtension(senderFactory()));
             serviceContainer.RegisterService(typeof(IThreadExtension), () => new ThreadExtension(senderFactory()));
