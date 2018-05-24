@@ -1,22 +1,15 @@
-﻿using System;
-using System.Threading;
+﻿using Lime.Protocol;
+using Lime.Protocol.Listeners;
+using System;
 using System.Threading.Tasks;
-using Lime.Protocol;
-using Takenet.MessagingHub.Client.Connection;
-using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
     /// <summary>
     /// Listen to envelopes sent to the account you are connected as
     /// </summary>
-    public interface IMessagingHubListener : IStartable, IStoppable
+    public interface IMessagingHubListener : IChannelListener
     {
-        /// <summary>
-        /// Indicates whether or not the listener is active
-        /// </summary>
-        bool Listening { get; }
-
         /// <summary>
         /// Add a message receiver for messages that satisfy the given filter criteria
         /// </summary>

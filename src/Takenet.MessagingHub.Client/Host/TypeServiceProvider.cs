@@ -6,7 +6,7 @@ namespace Takenet.MessagingHub.Client.Host
     /// <summary>
     /// Defines a simple type service provider.
     /// </summary>
-    /// <seealso cref="Takenet.MessagingHub.Client.Host.IServiceContainer" />
+    /// <seealso cref="IServiceContainer" />
     public class TypeServiceProvider : IServiceContainer
     {
         protected readonly Dictionary<Type, object> TypeDictionary;
@@ -50,17 +50,16 @@ namespace Takenet.MessagingHub.Client.Host
         public virtual void RegisterService(Type serviceType, object instance)
         {
             if (serviceType == null) throw new ArgumentNullException(nameof(serviceType));
-            if (instance == null) throw new ArgumentNullException(nameof(instance));            
-            TypeDictionary.Add(serviceType, instance);
+            TypeDictionary[serviceType] = instance ?? throw new ArgumentNullException(nameof(instance));
             (SecondaryServiceProvider as IServiceContainer)?.RegisterService(serviceType, instance);
         }
 
         public virtual void RegisterService(Type serviceType, Func<object> instanceFactory)
         {
             if (serviceType == null) throw new ArgumentNullException(nameof(serviceType));
-            if (instanceFactory == null) throw new ArgumentNullException(nameof(instanceFactory));
-            TypeDictionary.Add(serviceType, instanceFactory);
+            TypeDictionary[serviceType] = instanceFactory ?? throw new ArgumentNullException(nameof(instanceFactory));
             (SecondaryServiceProvider as IServiceContainer)?.RegisterService(serviceType, instanceFactory);
         }
     }
+
 }

@@ -1,46 +1,63 @@
-﻿using System;
+﻿using Lime.Protocol;
+using Lime.Protocol.Client;
+using Lime.Protocol.Listeners;
+using Lime.Protocol.Network;
+using Lime.Protocol.Util;
+using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Lime.Protocol;
-using Takenet.MessagingHub.Client.Connection;
-using Takenet.MessagingHub.Client.Listener;
 using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client
 {
     public class MessagingHubClient : IMessagingHubClient
     {
+        private static readonly TimeSpan ChannelDiscardedDelay = TimeSpan.FromSeconds(5);
+
+        private readonly IOnDemandClientChannel _onDemandClientChannel;
         private readonly SemaphoreSlim _semaphore;
-        private bool _started;
 
-        private IMessagingHubConnection Connection { get; }
+        private bool _isStopping;
+        private IChannelListener _channelListener;
 
-        private IMessagingHubListener Listener { get; }
-
-        public IMessagingHubSender Sender { get; }
-
-        
-
-        public MessagingHubClient(IMessagingHubConnection connection, bool autoNotify = true)
+        public MessagingHubClient(IOnDemandClientChannel onDemandClientChannel)
         {
-            Connection = connection;
-            Sender = new MessagingHubSender(connection);
-            Listener = new MessagingHubListener(connection, Sender, autoNotify);
+            _onDemandClientChannel = onDemandClientChannel ?? throw new ArgumentNullException(nameof(onDemandClientChannel));
             _semaphore = new SemaphoreSlim(1, 1);
-            _started = false;
+            _onDemandClientChannel.ChannelCreatedHandlers.Add(ChannelCreatedAsync);
+            _onDemandClientChannel.ChannelCreationFailedHandlers.Add(ChannelCreationFailedAsync);
+            _onDemandClientChannel.ChannelDiscardedHandlers.Add(ChannelDiscardedAsync);
+            _onDemandClientChannel.ChannelOperationFailedHandlers.Add(ChannelOperationFailedAsync);
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken = new CancellationToken())
+        public Task SendCommandAsync(Command command, CancellationToken cancellationToken)
+            => _onDemandClientChannel.SendCommandAsync(command, cancellationToken);
+
+        public Task SendCommandResponseAsync(Command command, CancellationToken cancellationToken = default(CancellationToken))
+            => _onDemandClientChannel.ProcessCommandAsync(command, cancellationToken);
+
+        public Task SendMessageAsync(Message message, CancellationToken cancellationToken)
+            => _onDemandClientChannel.SendMessageAsync(message, cancellationToken);
+
+        public Task SendNotificationAsync(Notification notification, CancellationToken cancellationToken)
+            => _onDemandClientChannel.SendNotificationAsync(notification, cancellationToken);
+
+        public async Task StartAsync(IChannelListener channelListener, CancellationToken cancellationToken)
         {
+            if (_channelListener != null) throw new InvalidOperationException("The client is already started");
+
             await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
-                if (!Listening)
-                {
-                    await Connection.ConnectAsync(cancellationToken);
-                    await Listener.StartAsync(cancellationToken);
-                }
-                _started = true;
+                _channelListener = channelListener ?? throw new ArgumentNullException(nameof(channelListener));
+                _channelListener.Start(_onDemandClientChannel);
+                await _onDemandClientChannel.EstablishAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"An error ocurred while starting the client: {ex}");
+                throw;
             }
             finally
             {
@@ -48,17 +65,27 @@ namespace Takenet.MessagingHub.Client
             }
         }
 
-        public async Task StopAsync(CancellationToken cancellationToken = new CancellationToken())
+        public Task StartAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
+            throw new NotImplementedException();
+        }
+
+        public async Task StopAsync(CancellationToken cancellationToken)
+        {
+            if (_channelListener == null) throw new InvalidOperationException("The client is not started");
+
             await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
-                if (Listening)
-                {
-                    await Listener.StopAsync(cancellationToken);
-                    await Connection.DisconnectAsync(cancellationToken);                    
-                }
-                _started = false;
+                _isStopping = true;
+                _channelListener?.Stop();
+                await _onDemandClientChannel.FinishAsync(cancellationToken).ConfigureAwait(false);
+                _channelListener = null;
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"An error ocurred while stopping the client: {ex}");
+                throw;
             }
             finally
             {
@@ -66,45 +93,55 @@ namespace Takenet.MessagingHub.Client
             }
         }
 
-        public bool Listening => Listener.Listening;
-
-        public void AddMessageReceiver(IMessageReceiver messageReceiver, Func<Message, Task<bool>> messageFilter, int priority = 0)
+        private Task ChannelCreatedAsync(ChannelInformation channelInformation)
         {
-            Listener.AddMessageReceiver(messageReceiver, messageFilter, priority);
+            Trace.TraceInformation("Channel '{0}' created - Local node {1} - Remote node: {2}",
+                channelInformation.SessionId,
+                channelInformation.LocalNode,
+                channelInformation.RemoteNode);
+            return Task.CompletedTask;
         }
 
-        public void AddNotificationReceiver(INotificationReceiver notificationReceiver, Func<Notification, Task<bool>> notificationFilter, int priority = 0)
+        private async Task<bool> ChannelCreationFailedAsync(FailedChannelInformation failedChannelInformation)
         {
-            Listener.AddNotificationReceiver(notificationReceiver, notificationFilter, priority);
+            Trace.TraceError("Channel '{0}' creation failed - Local node: {1} - Remote node: {2}. Exception: {3}",
+                failedChannelInformation.SessionId,
+                failedChannelInformation.LocalNode,
+                failedChannelInformation.RemoteNode,
+                failedChannelInformation.Exception);
+
+            if (failedChannelInformation.Exception is LimeException ex && ex.Reason.Code == ReasonCodes.SESSION_AUTHENTICATION_FAILED) return false;
+            await Task.Delay(ChannelDiscardedDelay).ConfigureAwait(false);
+            return !_isStopping;
         }
 
-        public void AddCommandReceiver(ICommandReceiver commandReceiver, Func<Command, Task<bool>> commandFilter, int priority = 0)
+        private Task ChannelDiscardedAsync(ChannelInformation channelInformation)
         {
-            Listener.AddCommandReceiver(commandReceiver, commandFilter, priority);
+            Trace.TraceInformation("Channel '{0}' discarded - Local node: {1} - Remote node: {2}",
+                channelInformation.SessionId,
+                channelInformation.LocalNode,
+                channelInformation.RemoteNode);
+
+            if (_isStopping) return Task.CompletedTask;
+            return Task.Delay(ChannelDiscardedDelay);
         }
 
-        public Task<Command> SendCommandAsync(Command command, CancellationToken cancellationToken = new CancellationToken())
+        private Task<bool> ChannelOperationFailedAsync(FailedChannelInformation failedChannelInformation)
         {
-            if (!_started) throw new InvalidOperationException("Client must be started before to proceed with this operation");
-            return Sender.SendCommandAsync(command, cancellationToken);
+            Trace.TraceError("Channel '{0}' operation '{1}' failed - Local node: {2} - Remote node: {3}. Exception: {4}",
+                failedChannelInformation.SessionId,
+                failedChannelInformation.OperationName,
+                failedChannelInformation.LocalNode,
+                failedChannelInformation.RemoteNode,
+                failedChannelInformation.Exception);
+
+            if (_isStopping) return TaskUtil.FalseCompletedTask;
+            return TaskUtil.TrueCompletedTask;
         }
 
-        public Task SendCommandResponseAsync(Command command, CancellationToken cancellationToken = new CancellationToken())
+        Task<Command> IMessagingHubSender.SendCommandAsync(Command command, CancellationToken cancellationToken)
         {
-            if (!_started) throw new InvalidOperationException("Client must be started before to proceed with this operation");
-            return Sender.SendCommandResponseAsync(command, cancellationToken);
-        }
-
-        public async Task SendMessageAsync(Message message, CancellationToken cancellationToken = new CancellationToken())
-        {
-            if (!_started) throw new InvalidOperationException("Client must be started before to proceed with this operation");
-            await Sender.SendMessageAsync(message, cancellationToken);
-        }
-
-        public async Task SendNotificationAsync(Notification notification, CancellationToken cancellationToken = new CancellationToken())
-        {
-            if (!_started) throw new InvalidOperationException("Client must be started before to proceed with this operation");
-            await Sender.SendNotificationAsync(notification, cancellationToken);
+            throw new NotImplementedException();
         }
     }
 }

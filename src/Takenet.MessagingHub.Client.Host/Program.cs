@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Lime.Protocol.Server;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.ServiceProcess;
+using System.Threading;
 using System.Threading.Tasks;
-using Takenet.MessagingHub.Client.Listener;
 using Topshelf;
 
 namespace Takenet.MessagingHub.Client.Host
@@ -126,8 +126,11 @@ namespace Takenet.MessagingHub.Client.Host
         {
             ConfigureWorkingDirectory(applicationFileName);
             var application = Application.ParseFromJsonFile(applicationFileName);
-            var stopabble = await Bootstrapper.StartAsync(application);
-            return stopabble;
+            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
+            {
+                var stopabble = await Bootstrapper.StartAsync(cts.Token, application);
+                return stopabble;
+            }
         }
 
         public static string GetApplicationFileName(string[] args)

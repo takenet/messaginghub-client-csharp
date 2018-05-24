@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Lime.Protocol.Server;
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Takenet.MessagingHub.Client.Listener;
 using Topshelf;
 
 namespace Takenet.MessagingHub.Client.Host
