@@ -105,7 +105,7 @@ namespace Takenet.MessagingHub.Client.Textc.Test
             };
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken.None, application);
 
             // Assert
             actual.ShouldNotBeNull();
@@ -132,7 +132,7 @@ namespace Takenet.MessagingHub.Client.Textc.Test
             var application = Application.ParseFromJson(json);
 
             // Act
-            var actual = await Bootstrapper.StartAsync(application);
+            var actual = await Bootstrapper.StartAsync(CancellationToken.None, application);
 
             // Assert
             actual.ShouldNotBeNull();

@@ -14,7 +14,7 @@ using Takenet.MessagingHub.Client.Sender;
 
 namespace Takenet.MessagingHub.Client.Listener
 {
-    internal sealed class MessagingHubListener : IMessagingHubListener, IDisposable
+    public sealed class MessagingHubListener : IMessagingHubListener, IDisposable
     {
         private readonly IMessagingHubSender _sender;
         private readonly bool _autoNotify;
